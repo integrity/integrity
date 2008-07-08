@@ -39,6 +39,7 @@ Future plans
 * [Twitter][]/[Campfire][]/[IRC][] bots
 * Other SCMs like Subversion
 
+[Sinatra]: http://sinatrarb.com
 [git]: http://git.or.cz
 [svn]: http://subversion.tigris.org
 [GitHub]: http://github.com
