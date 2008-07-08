@@ -1,1 +1,5 @@
 #!/usr/bin/env ruby
+require File.dirname(__FILE__) + "/../lib/integrity"
+require "sinatra"
+
+load "web_interface.rb"
