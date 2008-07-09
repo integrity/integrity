@@ -11,14 +11,14 @@
     %label{ :for => "project_branch" } Branch to track:
     %input.text#project_branch{ :name => "branch", :type => "text", :value => "master" }
   
-  %p.normal.checkbox
-    %label{ :for => "project_privacy" } Public project:
-    %input.checkbox#project_privacy{ :name => "privacy", :type => "checkbox", :checked => "checked" }
-  
   %p.normal
     %label{ :for => "project_build_script" } Build script:
     %textarea#project_build_script{ :name => "build_script", :type => "text", :value => "rake", :rows => 1 } rake
   
+  %p.normal.checkbox
+    %label{ :for => "project_privacy" } Public project:
+    %input.checkbox#project_privacy{ :name => "privacy", :type => "checkbox", :checked => "checked" }
+
   %p.submit
     %button.positive{ :type => "submit" } 
       %img{ :src => "/tick.png" }
