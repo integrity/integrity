@@ -3,7 +3,8 @@ set :public, Integrity.root / "lib/ui/web/public"
 set :views,  Integrity.root / "lib/ui/web/views"
 
 get "/" do
-  show :home, :title => "Integrity"
+  @projects = []
+  show :home, :title => "Projects"
 end
 
 get "/new" do

@@ -1,0 +1,8 @@
+- if @projects.empty?
+  .blank_slate
+    %p None yet, huh? 
+    %h1
+      Why don't you
+      = succeed "?" do
+        %a{ :href => "/new" } create your first project
+      

@@ -8,7 +8,8 @@
     %link{ :media => "screen", :type => "text/css", :href => "/integrity.css", :rel => "stylesheet" }
   %body
     #header
-      %h1
-        managed with
-        %a{ :href => "http://github.com/foca/integrity", :title => "" } Integrity
+      %h1= @title
+      %address
+        checked with
+        %a{ :href => "http://github.com/foca/integrity", :title => "The fun continuous integration server" } Integrity
     #content= yield
