@@ -10,4 +10,7 @@ module Integrity
   end
   
   module_function :root
+
+  autoload :Builder, 'builder'
+  autoload :SCM,     'scm'
 end
