@@ -1,6 +1,6 @@
-[submodule "lib/grit"]
-	path = lib/grit
-	url = git://github.com/schacon/grit.git
 [submodule "vendor/sinatra"]
 	path = vendor/sinatra
 	url = git://github.com/bmizerany/sinatra.git
+[submodule "vendor/grit"]
+	path = vendor/grit
+	url = git://github.com/schacon/grit.git
