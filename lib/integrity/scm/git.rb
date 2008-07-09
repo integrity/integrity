@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../grit/lib/grit'
+require 'grit'
 
 module Integrity
   module SCM

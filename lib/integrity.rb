@@ -1,8 +1,9 @@
 __DIR__ = File.dirname(__FILE__)
-$:.unshift "#{__DIR__}/sinatra/lib", "#{__DIR__}/integrity", "#{__DIR__}/core_ext", "#{__DIR__}/ui"
+Dir["#{__DIR__}/../vendor/**/lib"].each { |dependency| $: << dependency }
+$: << "#{__DIR__}/integrity"
 
 require "rubygems"
-require "string"
+require "core_ext/string"
 
 module Integrity
   def root
