@@ -1,0 +1,14 @@
+!!! Strict
+%html{ :lang => "en", :"xml:lang" => "en", :xmlns => "http://www.w3.org/1999/xhtml" }
+  %head
+    %meta{ :content => "text/html; charset=utf-8", :"http-equiv" => "Content-Type" }
+    %meta{ :content => "en", :"http-equiv" => "Content-Language" }
+    %title= @title
+    %link{ :media => "screen", :type => "text/css", :href => "/reset.css", :rel => "stylesheet" }
+    %link{ :media => "screen", :type => "text/css", :href => "/integrity.css", :rel => "stylesheet" }
+  %body
+    #header
+      %h1
+        managed with
+        %a{ :href => "http://github.com/foca/integrity", :title => "" } Integrity
+    #content= yield

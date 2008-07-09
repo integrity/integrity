@@ -1,0 +1,152 @@
+!default_fonts   = "Helvetica Neue, Helvetica, Arial, sans-serif"
+!monospace_fonts = "Monaco, Deja Vu Sans Mono, Bitstream Vera Sans Mono, Inconsolata, Consolas, monospace"
+
+!page_bg      = #e0e0e0
+!content_bg   = #efefef
+!header_bg    = #fff
+!text_color   = #333
+!title_color  = #4e4e4e
+!link_color   = #ed1556
+!link_bg      = #fff
+
+html
+  :background-color = !page_bg
+  :color = !text_color
+
+body
+  :font-size 100%
+  :font-family = !default_fonts
+
+a
+  :color = !link_color
+  :text-decoration none
+  &:hover
+    :color = !link_bg
+    :background-color = !link_color
+
+#header, #content, #footer
+  :width 40em
+  :margin 0 auto
+  :background = !content_bg
+  :padding 0 2em
+  :z-index 0
+  :position relative
+  :font-size 1em
+
+#header
+  :background = !header_bg
+  h1
+    :font-weight bold
+    :text-align right
+    :font-size .75em
+    a
+      :color = !title_color
+      :font-weight bold
+      :font-size 2em
+      &:hover
+        :background transparent
+        :color = !title_color - #222
+    
+  #navigation
+    :position absolute 
+    :left 23em
+    :top 4.5em
+    li
+      :float left
+      :margin-right 1em
+
+#content
+  :padding-top 1em
+  :padding-bottom 2em
+
+  strong
+    :font-weight bold
+  em
+    :font-style italic  
+
+  h1, h2, h3, h4, h5, h6
+    :color = !title_color
+  h1
+    :position absolute
+    :font-size 2em
+    :font-weight bold
+    :top -1.5em
+    :right 0
+    :margin-top -5px
+    :padding .2em .5em
+    :border-bottom 1px solid #e0e0e0
+    :width 40em
+    :text-align right
+    :z-index 0
+  h2
+    :font-size 2em
+    :font-weight bold
+    :margin-bottom .75em
+    :padding .25em 0
+    :line-height 1.2
+    :background #f8f8f8
+    :border-bottom 1px solid #c0c0c0
+  h3
+    :font-weight bold
+    :font-size 1.5em
+    :margin 1em 0 .2em
+  h4
+    :font-weight bold
+    :font-size 1.25em
+    :margin .25em 0
+  h5, h6
+    :font-weight bold
+    :margin-top .5em
+
+  code, pre, textarea
+    :font-family = !monospace_fonts
+  pre
+    margin .5em :0
+    padding .5em
+
+  textarea
+    :border 1px :solid #ccc
+    :font-size .9em
+    :padding .5em
+    :display block 
+    :width 43em !important
+  label
+    :display block
+    :margin-top 1em
+  p.submit
+    :margin-top .5em
+    button
+      :font-weight bold
+
+  ul, ol
+    :margin-left 1em
+    :margin-bottom 1em
+  ul li
+    :list-style-type disc
+  ol li
+    :list-style-type decimal
+  
+  blockquote
+    :margin .5em 0
+    :padding .5em 0 0 2em
+    :font-size 1.25em
+    :color #333
+    :position relative 
+    :background url(/quotes.png) left top no-repeat
+    p
+      :margin 0
+      :padding 0
+      :position relative  
+    address
+      :display block
+      :text-align right 
+      :margin-top .5em 
+      :font-size .85em
+
+#footer
+  :padding 1.5em 2.5em
+  :border-top 1px solid #ccc 
+  :font-size .8em
+  :width 50em !important
+  :color #666
+  :text-align center
