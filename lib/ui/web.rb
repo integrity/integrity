@@ -11,6 +11,10 @@ get "/new" do
   show :new, :title => ["projects", "new project"]
 end
 
+post "/" do
+  redirect "/"
+end
+
 get "/integrity.css" do
   header "Content-Type" => "text/css; charset=utf-8"
   sass :integrity
@@ -19,7 +23,6 @@ end
 helpers do
   def show(view, options={})
     @title = breadcrumbs(*options[:title])
-    $stdout.puts @title.inspect
     haml view
   end
   

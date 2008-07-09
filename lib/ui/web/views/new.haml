@@ -1,0 +1,11 @@
+%form{ :method => "post", :action => "/" }
+  %p.required
+    %label{ :for => "project_name" } Name:
+    %input.text#project_name{ :name => "name", :type => "text" }
+  %p.required
+    %label{ :for => "project_repository" } Git Repository:
+    %input.text#project_repository{ :name => "repository", :type => "text" }
+  %p.submit
+    %button.positive{ :type => "submit" } 
+      %img{ :src => "/tick.png" }
+      Create Project

@@ -1,5 +1,5 @@
 !default_fonts   = "Helvetica Neue, Helvetica, Arial, sans-serif"
-!monospace_fonts = "Monaco, Deja Vu Sans Mono, Bitstream Vera Sans Mono, Inconsolata, Consolas, monospace"
+!monospace_fonts = "Monaco, Deja Vu Sans Mono, Inconsolata, Consolas, monospace"
 
 !page_bg      = #e0e0e0
 !content_bg   = #eee
@@ -85,7 +85,7 @@ a
     :font-weight bold
     :margin-top .5em
 
-  code, pre, textarea
+  code, pre, textarea, input
     :font-family = !monospace_fonts
   pre
     margin .5em :0
@@ -99,11 +99,25 @@ a
     :width 43em !important
   label
     :display block
+    :font-weight bold
     :margin-top 1em
-  p.submit
-    :margin-top .5em
-    button
+  .required
+    input.text
+      :width 25.2em
+      :font-size 1.5em
+      :padding .2em .4em
       :font-weight bold
+      :color = !title_color
+  p.submit
+    :margin-top 1em
+    :text-align right
+    &:after
+      :display block
+      :clear both
+      :float none
+      :content "."
+      :text-indent -9999em
+      :text-align left
 
   .blank_slate
     p
