@@ -9,6 +9,7 @@
 !link_color   = #ed1556
 !link_bg      = #fff
 !rule_color   = #c0c0c0
+!watermark    = #ccc
 
 html
   :background-color = !page_bg
@@ -39,19 +40,20 @@ a
   h1
     :font-weight bold
     :font-size 1.5em
-  address
+  address.watermark
     :position absolute
     :font-weight bold
     :right 3em
     :top 0
     :font-size .75em
+    :color = !watermark
     a
-      :color = !title_color
+      :color = !watermark
       :font-weight bold
       :font-size 2em
       &:hover
         :background transparent
-        :color = !title_color - #222
+        :color = !watermark - #222
 
 #content
   :padding-top 1em

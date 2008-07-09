@@ -4,11 +4,11 @@ set :views,  Integrity.root / "lib/ui/web/views"
 
 get "/" do
   @projects = []
-  show :home, :title => "Projects"
+  show :home, :title => "projects"
 end
 
 get "/new" do
-  show :new, :title => "New Project"
+  show :new, :title => ["projects", "new project"]
 end
 
 get "/integrity.css" do
@@ -18,7 +18,19 @@ end
 
 helpers do
   def show(view, options={})
-    @title = options[:title]
+    @title = breadcrumbs(*options[:title])
+    $stdout.puts @title.inspect
     haml view
+  end
+  
+  def pages
+    @pages ||= [["projects", "/"], ["new project", "/new"]]
+  end
+  
+  def breadcrumbs(*crumbs)
+    crumbs[0..-2].map do |crumb|
+      page_data = pages.detect {|c| c.first == crumb }
+      %Q(<a href="#{page_data.last}">#{page_data.first}</a>)
+    end + [crumbs.last]
   end
 end
