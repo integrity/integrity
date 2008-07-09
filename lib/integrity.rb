@@ -1,5 +1,5 @@
 __DIR__ = File.dirname(__FILE__)
-$:.unshift "#{__DIR__}/sinatra/lib", "#{__DIR__}/integrity", "#{__DIR__}/core_ext"
+$:.unshift "#{__DIR__}/sinatra/lib", "#{__DIR__}/integrity", "#{__DIR__}/core_ext", "#{__DIR__}/ui"
 
 require "rubygems"
 require "string"
