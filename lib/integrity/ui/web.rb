@@ -1,6 +1,6 @@
-set :root,   Integrity.root / "lib/ui/web"
-set :public, Integrity.root / "lib/ui/web/public"
-set :views,  Integrity.root / "lib/ui/web/views"
+set :root,   Integrity.root / "lib/integrity/ui/web"
+set :public, Integrity.root / "lib/integrity/ui/web/public"
+set :views,  Integrity.root / "lib/integrity/ui/web/views"
 
 get "/" do
   @projects = []
