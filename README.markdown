@@ -41,6 +41,12 @@ Future plans
 * [Twitter][]/[Campfire][]/[IRC][] bots
 * Other SCMs like Subversion
 
+Discuss!
+========
+
+Someone is usually around [#integrity][irc-channel] on Freenode, so don't
+hesitate to stop by for ideas, help, patches or something.
+
 License
 =======
 
@@ -75,3 +81,4 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 [Campfire]: http://campfirenow.com
 [IRC]: http://wikipedia.org/wiki/IRC
 [CitrusByte]: http://citrusbyte.com
+[irc-channel]: irc://irc.freenode.net/integrity
