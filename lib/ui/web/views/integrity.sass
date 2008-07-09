@@ -13,11 +13,11 @@
 
 html
   :background-color = !page_bg
-  :color = !text_color
 
 body
   :font-size 100%
   :font-family = !default_fonts
+  :color = !text_color
 
 a
   :color = !link_color
@@ -91,33 +91,50 @@ a
     margin .5em :0
     padding .5em
 
-  textarea
-    :border 1px :solid #ccc
-    :font-size .9em
-    :padding .5em
-    :display block 
-    :width 43em !important
-  label
-    :display block
-    :font-weight bold
-    :margin-top 1em
-  .required
-    input.text
-      :width 25.2em
-      :font-size 1.5em
+  form
+    p
+      :margin-top 1em
+      :position relative
+      &.checkbox label
+        :margin-top 0 !important
+    input.text, textarea
+      :width 30em
       :padding .2em .4em
-      :font-weight bold
       :color = !title_color
-  p.submit
-    :margin-top 1em
-    :text-align right
-    &:after
+      :height 1.4em
+    label
+      :float left
       :display block
-      :clear both
-      :float none
-      :content "."
-      :text-indent -9999em
-      :text-align left
+      :margin-top .5em
+      :width 8em
+      :margin-right .75em
+    .required
+      label
+        :float none
+        :display block
+        :width auto
+        :position relative
+        :font-weight bold
+        :margin-top 1em
+        :text-indent -.65em
+        &:before
+          :content "* "
+          :color = !link_color
+      input.text
+        :width 25.6em
+        :font-size 24px
+        :font-weight bold
+    .normal
+      :margin-top 2em
+    p.submit
+      :margin-top 2em
+      &:after
+        :display block
+        :clear both
+        :float none
+        :content "."
+        :text-indent -9999em
+        :text-align left
 
   .blank_slate
     p
