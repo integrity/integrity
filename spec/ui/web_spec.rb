@@ -6,6 +6,8 @@ require 'sinatra/test/unit'
 
 describe 'Web UI using Sinatra' do
   require File.dirname(__FILE__) + '/../../lib/integrity/ui/web'
+  
+  before { Integrity.stub!(:new) } # don't connect to the database on UI tests!
 
   describe "Getting the home page" do
     describe "with no project available" do
@@ -23,9 +25,14 @@ describe 'Web UI using Sinatra' do
         get_it "/"
       end
       
-      it "tell you that you have no projects" do
+      it "should tell you that you have no projects" do
         get_it "/"
         @response.body.should =~ /None yet, huh?/
+      end
+      
+      it "should have a link to add a new project" do
+        get_it "/"
+        @response.body.should =~ %r(<a href='/new'>.*</a>)
       end
     end
     
@@ -55,6 +62,11 @@ describe 'Web UI using Sinatra' do
         get_it "/"
         @response.body.should =~ %r(<a href='/the_1st_project'>The 1st Project</a>)
         @response.body.should =~ %r(<a href='/the_2nd_project'>The 2nd Project</a>)
+      end
+
+      it "should have a link to add a new project" do
+        get_it "/"
+        @response.body.should =~ %r(<a href='/new'>.*</a>)
       end
     end
   end

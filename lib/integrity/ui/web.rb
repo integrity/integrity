@@ -2,6 +2,10 @@ set :root,   Integrity.root / "lib/integrity/ui/web"
 set :public, Integrity.root / "lib/integrity/ui/web/public"
 set :views,  Integrity.root / "lib/integrity/ui/web/views"
 
+configure do
+  Integrity.new
+end
+
 include Integrity
 
 get "/" do
