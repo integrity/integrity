@@ -14,4 +14,8 @@ module Integrity
 
   autoload :Builder, 'builder'
   autoload :SCM,     'scm'
+
+  module SCM
+    autoload :Git, 'scm/git'
+  end
 end
