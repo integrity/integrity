@@ -42,4 +42,11 @@ helpers do
       %Q(<a href="#{page_data.last}">#{page_data.first}</a>)
     end + [crumbs.last]
   end
+  
+  def cycle(*values)
+    @cycles ||= {}
+    @cycles[values] ||= -1 # first value returned is 0
+    next_value = @cycles[values] = (@cycles[values] + 1) % values.size
+    values[next_value]
+  end
 end
