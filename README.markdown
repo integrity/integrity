@@ -47,12 +47,17 @@ Discuss!
 Someone is usually around [#integrity][irc-channel] on Freenode, so don't
 hesitate to stop by for ideas, help, patches or something.
 
+Thanks
+======
+
+**Simon Rozet** [http://atonie.org/][sr], for implementation and ideas.
+
 License
 =======
 
 (The MIT License)
 
-Copyright (c) 2008 Nicolás Sanguinetti, [CitrusByte][]
+Copyright (c) 2008 [Nicolás Sanguinetti][foca], [CitrusByte][]
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -82,3 +87,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 [IRC]: http://wikipedia.org/wiki/IRC
 [CitrusByte]: http://citrusbyte.com
 [irc-channel]: irc://irc.freenode.net/integrity
+
+[sr]: http://atonie.org/
+[foca]: http://nicolassanguinetti.info/
