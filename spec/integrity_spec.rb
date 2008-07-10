@@ -12,7 +12,7 @@ describe Integrity do
     end
 
     it 'should load the default configuration file if nothing specified' do
-      YAML.should_receive(:load_file).with(Integrity.root + '/../config.yml').
+      YAML.should_receive(:load_file).with(Integrity.root + '/config/config.yml').
         and_return(@config)
       Integrity.new
     end
