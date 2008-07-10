@@ -5,9 +5,11 @@ require 'spec/interop/test'
 require 'sinatra/test/unit'
 
 describe 'Web UI using Sinatra' do
-  require File.dirname(__FILE__) + '/../../lib/integrity/ui/web'
   
-  before { Integrity.stub!(:new) } # don't connect to the database on UI tests
+  before(:each) do
+    Integrity.stub!(:new) # don't connect to the database on UI tests
+    require File.dirname(__FILE__) + '/../../lib/integrity/ui/web'
+  end
 
   describe "Getting the home page" do
     describe "with no project available" do
