@@ -5,4 +5,8 @@
       Why don't you
       = succeed "?" do
         %a{ :href => "/new" } create your first project
-      
+- else
+  %ul#projects
+    - @projects.each do |project|
+      %li
+        %a{ :href => "/#{project.permalink}" }= project.name

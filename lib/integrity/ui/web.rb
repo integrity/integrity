@@ -2,8 +2,10 @@ set :root,   Integrity.root / "lib/integrity/ui/web"
 set :public, Integrity.root / "lib/integrity/ui/web/public"
 set :views,  Integrity.root / "lib/integrity/ui/web/views"
 
+include Integrity
+
 get "/" do
-  @projects = []
+  @projects = Project.all
   show :home, :title => "projects"
 end
 

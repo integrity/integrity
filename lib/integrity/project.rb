@@ -10,5 +10,9 @@ module Integrity
     property :branch,   String
     property :command,  String
     property :public,   Boolean
+    
+    def permalink
+      @permalink ||= name.downcase.gsub(/\s+/, '_')
+    end
   end
 end
