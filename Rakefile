@@ -30,3 +30,16 @@ namespace :spec do
     end
   end
 end
+
+namespace :db do
+  desc "Setup connection."
+  task :connect do
+    ENV['CONFIG'] ? Integrity.new(ENV['CONFIG']) : Integrity.new
+  end
+  
+  desc "Automigrate the database"
+  task :migrate => :connect do
+    require "project"
+    DataMapper.auto_migrate! 
+  end
+end
