@@ -3,15 +3,15 @@ require File.dirname(__FILE__) + '/../../lib/integrity/scm/git'
 
 describe Integrity::SCM::Git do
   before(:each) do
-    Integrity.stub!(:scm_export_directory).and_return('/foo/bar')
-    @git = mock('grit', :clone => true, :checkout => true, :git_dir => '/foo/bar/foca-integrity')
-    Grit::Git.stub!(:new).and_return(@git)
     @scm = Integrity::SCM::Git.new('git://github.com/foca/integrity.git')
   end
 
-  it 'should initialize Grit with correct git-dir' do
-    Grit::Git.should_receive(:new).with('/foo/bar/foca-integrity')
-    Integrity::SCM::Git.new('git://github.com/foca/integrity.git')
+  it 'should have an empty error' do
+    @scm.error.should be_empty
+  end
+
+  it 'should have an empty output' do
+    @scm.output.should be_empty
   end
 
   it 'should default branch to master' do
@@ -19,15 +19,26 @@ describe Integrity::SCM::Git do
   end
 
   describe 'When checking-out a repository' do
-    it 'should do a shallow clone of the repository into the git-dir specified earlier' do
-      @git.should_receive(:clone).with({:depth => 1},
-        'git://github.com/foca/integrity.git', '/foo/bar/foca-integrity')
-      @scm.checkout
+    it 'should do a shallow clone of the repository into the given directory' do
+      Open4.should_receive(:spawn).
+        with('git clone --depth 1 git://github.com/foca/integrity.git /foo/bar', anything)
+      Open4.stub!(:spawn).with(/checkout/, anything)
+      Open4.stub!(:spawn).with(/pull/, anything)
+      @scm.checkout('/foo/bar')
     end
 
     it 'should switch to the specified branch' do
-      @git.should_receive(:checkout).with('master')
-      @scm.checkout
+      Open4.stub!(:spawn).with(/clone/, anything)
+      Open4.stub!(:spawn).with(/pull/, anything)
+      Open4.should_receive(:spawn).with('git --git-dir=/foo/bar checkout master', anything)
+      @scm.checkout('/foo/bar')
+    end
+
+    it 'should fetch updates' do
+      Open4.stub!(:spawn).with(/clone/, anything)
+      Open4.stub!(:spawn).with(/checkout/, anything)
+      Open4.should_receive(:spawn).with('git --git-dir=/foo/bar pull', anything)
+      @scm.checkout('/foo/bar')
     end
   end
 end

@@ -1,32 +1,35 @@
-require 'grit'
+require 'open4'
 
 module Integrity
   module SCM
     class Git
       def initialize(uri, options={})
+        @uri = uri
         @options = options
-        @uri = uri.is_a?(URI) ? uri : URI.parse(uri)
-        export_directory = Integrity.scm_export_directory / @uri.path.
-          gsub(/^\//, '').gsub('/', '-').gsub('.git', '')
-        @git = Grit::Git.new(export_directory)
       end
 
       def branch
         @options['branch'] || 'master'
       end
 
-      def origin
-        @uri.to_s
+      def error
+        @error ||= ''
       end
 
-      def destination
-        @git.git_dir
+      def output
+        @error ||= ''
       end
 
-      def checkout
-        @git.clone({:depth => 1}, origin, destination)
-        @git.checkout(branch)
+      def checkout(destination)
+        execute "clone --depth 1 #{@uri.to_s} #{destination}"
+        execute "--git-dir=#{destination} checkout #{branch}"
+        execute "--git-dir=#{destination} pull"
       end
+
+      private
+        def execute(command)
+          Open4.spawn "git #{command}", 'stdout' => output, 'stderr' => error
+        end
     end
   end
 end
