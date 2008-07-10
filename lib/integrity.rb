@@ -18,6 +18,7 @@ module Integrity
   end
 
   autoload :Project, 'project'
+  autoload :Build,   'build'
   autoload :Builder, 'builder'
   autoload :SCM,     'scm'
 
