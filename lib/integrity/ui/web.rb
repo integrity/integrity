@@ -27,6 +27,11 @@ post "/" do
   end
 end
 
+get "/:project_id" do
+  @project = Project.get(params[:project_id])
+  show :project, :title => ["projects", @project.name]
+end
+
 get "/integrity.css" do
   header "Content-Type" => "text/css; charset=utf-8"
   sass :integrity

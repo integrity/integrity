@@ -126,6 +126,18 @@ describe 'Web UI using Sinatra' do
     end
   end
   
+  describe "getting a project page" do
+    before do
+      @project = stub("project", :name => "Integrity")
+      Project.stub!(:get).with("1").and_return(@project)
+    end
+    
+    it "should be success" do
+      get_it "/1"
+      @response.should be_ok
+    end
+  end
+  
   describe "getting the site stylesheet" do
     it "should render successfully" do
       get_it "/integrity.css"
