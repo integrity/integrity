@@ -18,10 +18,18 @@ describe Integrity::Project do
     @project.uri = 'git://github.com/foca/integrity.git'
     @project.uri.should == 'git://github.com/foca/integrity.git'
   end
+  
+  it "should have a default project branch" do
+    @project.branch.should == "master"
+  end
 
   it 'should have a project branch' do
     @project.branch = 'development'
     @project.branch.should == 'development'
+  end
+
+  it 'should have a default build command' do
+    @project.command.should == 'rake'
   end
 
   it 'should have a build command' do
@@ -29,9 +37,13 @@ describe Integrity::Project do
     @project.command.should == 'rake spec'
   end
 
+  it 'should have a default visibility of public' do
+    @project.should be_public
+  end
+
   it 'should have a visibility' do
     @project.public = false
-    @project.public.should be_false
+    @project.should_not be_public
   end
   
   describe "calculating the permalink" do

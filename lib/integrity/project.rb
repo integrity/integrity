@@ -7,9 +7,9 @@ module Integrity
     property :id,       Integer,  :serial => true
     property :name,     String
     property :uri,      String
-    property :branch,   String
-    property :command,  String
-    property :public,   Boolean
+    property :branch,   String,   :default => "master"
+    property :command,  String,   :default => "rake"
+    property :public,   Boolean,  :default => true
     
     def permalink
       @permalink ||= name.downcase.gsub(/\s+/, '_')
