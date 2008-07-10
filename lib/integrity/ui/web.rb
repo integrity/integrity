@@ -21,7 +21,7 @@ end
 post "/" do
   @project = Project.new(params)
   if @project.save
-    redirect "/#{@project.permalink}"
+    redirect "/#{@project.id}"
   else
     show :new, :title => ["projects", "new project"]
   end

@@ -50,21 +50,4 @@ describe Integrity::Project do
     @project.public = false
     @project.should_not be_public
   end
-  
-  describe "calculating the permalink" do
-    it "should downcase the name" do
-      @project.name = "Integrity"
-      @project.permalink.should == "integrity"
-    end
-    
-    it "should replace spaces for underscores" do
-      @project.name = "Pure Awesome"
-      @project.permalink.should == "pure_awesome"
-    end
-    
-    it "should replace multiple spaces for underscores" do
-      @project.name = "Pure   Multi Spaced    Awesome"
-      @project.permalink.should == "pure_multi_spaced_awesome"
-    end
-  end
 end

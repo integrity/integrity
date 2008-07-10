@@ -38,8 +38,8 @@ describe 'Web UI using Sinatra' do
     
     describe "with available projects" do
       before(:each) do
-        @project_1 = stub("Project", :name => "The 1st Project", :permalink => "the_1st_project")
-        @project_2 = stub("Project", :name => "The 2nd Project", :permalink => "the_2nd_project")
+        @project_1 = stub("Project", :name => "The 1st Project", :id => 1)
+        @project_2 = stub("Project", :name => "The 2nd Project", :id => 2)
         Project.stub!(:all).and_return([@project_1, @project_2])
       end
       
@@ -60,8 +60,8 @@ describe 'Web UI using Sinatra' do
       
       it "should have a link to both projects" do
         get_it "/"
-        @response.body.should =~ %r(<a href='/the_1st_project'>The 1st Project</a>)
-        @response.body.should =~ %r(<a href='/the_2nd_project'>The 2nd Project</a>)
+        @response.body.should =~ %r(<a href='/1'>The 1st Project</a>)
+        @response.body.should =~ %r(<a href='/2'>The 2nd Project</a>)
       end
 
       it "should have a link to add a new project" do
@@ -103,7 +103,7 @@ describe 'Web UI using Sinatra' do
   
   describe "creating a new project" do
     before do
-      @project = stub("project", :name => nil, :uri => nil, :branch => "master", :command => "rake", :public? => true, :permalink => "test")
+      @project = stub("project", :name => nil, :uri => nil, :branch => "master", :command => "rake", :public? => true, :id => 5)
       Project.stub!(:new).with(an_instance_of(Hash)).and_return(@project)
     end
     
@@ -121,7 +121,7 @@ describe 'Web UI using Sinatra' do
       
       it "should redirect to the new project's page" do
         post_it "/"
-        @response.location.should == "/test"
+        @response.location.should == "/5"
       end
     end
   end
