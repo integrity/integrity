@@ -9,6 +9,7 @@ describe Integrity do
     before(:each) do
       @config = {:database_uri => 'sqlite3:///var/integrity.db'}
       YAML.stub!(:load_file).and_return(@config)
+      DataMapper.stub!(:setup).with(:default, anything)
     end
 
     it 'should load the default configuration file if nothing specified' do
