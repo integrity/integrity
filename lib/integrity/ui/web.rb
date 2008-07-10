@@ -14,11 +14,17 @@ get "/" do
 end
 
 get "/new" do
+  @project = Project.new
   show :new, :title => ["projects", "new project"]
 end
 
 post "/" do
-  redirect "/"
+  @project = Project.new(params)
+  if @project.save
+    redirect "/#{@project.permalink}"
+  else
+    show :new, :title => ["projects", "new project"]
+  end
 end
 
 get "/integrity.css" do

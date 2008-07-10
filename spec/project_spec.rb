@@ -5,7 +5,12 @@ describe Integrity::Project do
     @project = Integrity::Project.new
   end
 
-  it 'should be valid' do
+  it 'should not be valid' do
+    @project.should_not be_valid
+  end
+  
+  it "needs a name, an uri, a branch and a command to be valid" do
+    @project.attributes = { :name => "Integrity", :uri => "git://github.com/foca/integrity.git" }
     @project.should be_valid
   end
 

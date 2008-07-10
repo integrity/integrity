@@ -72,9 +72,18 @@ describe 'Web UI using Sinatra' do
   end
   
   describe "getting the 'new project' form" do
+    before do
+      @project = stub("project", :name => nil, :uri => nil, :branch => "master", :command => "rake", :public? => true)
+    end
+    
     it "should render successfully" do
       get_it "/new"
       @response.should be_ok
+    end
+    
+    it "should initialize a new Project instance" do
+      Project.should_receive(:new).and_return(@project)
+      get_it "/new"
     end
     
     it "should render a form that posts back to '/'" do
@@ -85,17 +94,35 @@ describe 'Web UI using Sinatra' do
     it "should have all the necessary fields" do
       get_it "/new"
       @response.should =~ %r(<input class='text' id='project_name' name='name' type='text' />)
-      @response.should =~ %r(<input class='text' id='project_repository' name='repository' type='text' />)
+      @response.should =~ %r(<input class='text' id='project_repository' name='uri' type='text' />)
       @response.should =~ %r(<input class='text' id='project_branch' name='branch' type='text' value='master' />)
-      @response.should =~ %r(input checked='checked' class='checkbox' id='project_privacy' name='privacy' type='checkbox' />)
-      @response.should =~ %r(<textarea id='project_build_script' name='build_script' rows='1' type='text' value='rake'>rake</textarea>)
+      @response.should =~ %r(input checked='checked' class='checkbox' id='project_privacy' name='public' type='checkbox' />)
+      @response.should =~ %r(<textarea id='project_build_script' name='command' rows='1' type='text'>rake</textarea>)
     end
   end
   
   describe "creating a new project" do
-    it "should redirect to the list of projects" do
-      post_it "/"
-      @response.location.should == "/"
+    before do
+      @project = stub("project", :name => nil, :uri => nil, :branch => "master", :command => "rake", :public? => true, :permalink => "test")
+      Project.stub!(:new).with(an_instance_of(Hash)).and_return(@project)
+    end
+    
+    describe "with invalid attributes" do
+      before { @project.stub!(:save).and_return(false) }
+      
+      it "should re-render the 'new' view" do
+        post_it "/"
+        @response.should be_ok # how do I test I'm rendering a certain view?
+      end
+    end
+    
+    describe "with valid attributes" do
+      before { @project.stub!(:save).and_return(true) }
+      
+      it "should redirect to the new project's page" do
+        post_it "/"
+        @response.location.should == "/test"
+      end
     end
   end
   

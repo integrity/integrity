@@ -5,10 +5,10 @@ module Integrity
     include DataMapper::Resource
 
     property :id,       Integer,  :serial => true
-    property :name,     String
-    property :uri,      String
-    property :branch,   String,   :default => "master"
-    property :command,  String,   :default => "rake"
+    property :name,     String,   :nullable => false
+    property :uri,      String,   :nullable => false
+    property :branch,   String,   :nullable => false, :default => "master"
+    property :command,  String,   :nullable => false, :default => "rake"
     property :public,   Boolean,  :default => true
     
     def permalink
