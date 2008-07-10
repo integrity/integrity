@@ -1,2 +1,3 @@
 log/*.log
 config/config.yml
+coverage
