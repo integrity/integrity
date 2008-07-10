@@ -1,4 +1,5 @@
 require 'dm-validations'
+require 'dm-types'
 
 module Integrity
   class Project
@@ -6,7 +7,7 @@ module Integrity
 
     property :id,       Integer,  :serial => true
     property :name,     String,   :nullable => false
-    property :uri,      String,   :nullable => false
+    property :uri,      URI,      :nullable => false
     property :branch,   String,   :nullable => false, :default => "master"
     property :command,  String,   :nullable => false, :default => "rake"
     property :public,   Boolean,  :default => true

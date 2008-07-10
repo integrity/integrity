@@ -20,8 +20,8 @@ describe Integrity::Project do
   end
 
   it 'should have a repository URI' do
-    @project.uri = 'git://github.com/foca/integrity.git'
-    @project.uri.should == 'git://github.com/foca/integrity.git'
+    @project.uri = Addressable::URI.parse('git://github.com/foca/integrity.git')
+    @project.uri.should be_an_instance_of(Addressable::URI)
   end
   
   it "should have a default project branch" do
