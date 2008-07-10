@@ -17,7 +17,7 @@ module Integrity
     DataMapper.setup(:default, config[:database_uri])
   end
 
-  autoload :Models,  'models'
+  autoload :Project, 'project'
   autoload :Builder, 'builder'
   autoload :SCM,     'scm'
 
