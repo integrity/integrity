@@ -50,4 +50,12 @@ describe Integrity::Build do
     }
     @build.commit[:author].should == 'Simon Rozet <simon@rozet.name>'
   end
+
+  specify 'output should default to ""' do
+    @build.output.should == ''
+  end
+
+  specify 'error should default to ""' do
+    @build.error.should == ''
+  end
 end

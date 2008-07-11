@@ -6,8 +6,8 @@ module Integrity
     include DataMapper::Resource
 
     property :id,       Integer,  :serial => true
-    property :output,   Text,     :nullable => false
-    property :error,    Text,     :nullable => true
+    property :output,   Text,     :nullable => false, :default => ''
+    property :error,    Text,     :nullable => true,  :default => ''
     property :commit,   Yaml,     :nullable => false
     property :result,   Boolean,  :nullable => false, :default => false
 
