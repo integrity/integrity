@@ -11,14 +11,13 @@ module Integrity
 
       def checkout(destination)
         execute "clone --depth 1 #{@uri.to_s} #{destination}"
-        execute "--git-dir=#{destination} checkout #{branch}"
+        execute "--git-dir=#{destination} checkout #{@branch}"
         execute "--git-dir=#{destination} pull"
         true
-      rescue
+      rescue RuntimeError
         false
       end
 
-      private
         def execute(command)
           Open3.popen3 "git #{command}" do |_, stdout, stderr|
             @logger.output << stdout
