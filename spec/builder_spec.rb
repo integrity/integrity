@@ -20,7 +20,7 @@ describe Integrity::Builder do
 
     it "should creates a new SCM object using the scheme of the given URI's and given options \
 and pass it the build" do
-      Integrity::SCM.should_receive(:new).with('git', @uri, 'production', @build)
+      Integrity::SCM.should_receive(:new).with(@uri, 'production', @build)
       Integrity::Builder.new(@uri, 'production', 'rake')
     end
   end

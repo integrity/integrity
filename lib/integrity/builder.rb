@@ -4,7 +4,7 @@ module Integrity
       @uri = uri
       @command = command
       @build = Build.new
-      @scm = SCM.new(@uri.scheme, @uri, branch, @build)
+      @scm = SCM.new(@uri, branch, @build)
     end
 
     def build

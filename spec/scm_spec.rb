@@ -10,7 +10,7 @@ describe Integrity::SCM do
       build = mock('build model')
       Integrity::SCM::Git.should_receive(:new).
         with(@uri, 'master', build)
-      Integrity::SCM.new('git://github.com/foca/integrity.git', 'master', build)
+      Integrity::SCM.new(@uri, 'master', build)
     end
 
     it "should raise an error if the handler isn't defined into the file" do
