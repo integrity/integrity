@@ -9,7 +9,7 @@ describe Integrity::Build do
     @build.should_not be_valid
   end
 
-  it "needs an output, result, and a commit" do
+  it "needs an output, a status, and a commit" do
     @build.attributes = {
       :commit => {
         :author => 'Simon Rozet <simon@rozet.name>',
@@ -17,7 +17,7 @@ describe Integrity::Build do
         :message    => 'started build model'
       },
       :output => 'foo',
-      :result => true
+      :status => true
     }
     @build.should be_valid
   end
@@ -32,8 +32,8 @@ describe Integrity::Build do
     @build.error.should == 'err!'
   end
 
-  it 'should have a result' do
-    @build.result = true
+  it 'should have a status' do
+    @build.status = true
     @build.should be_success
   end
 

@@ -9,10 +9,10 @@ module Integrity
     property :output,   Text,     :nullable => false, :default => ''
     property :error,    Text,     :nullable => true,  :default => ''
     property :commit,   Yaml,     :nullable => false
-    property :result,   Boolean,  :nullable => false, :default => false
+    property :status,   Boolean,  :nullable => false, :default => false
 
     def success?
-      result
+      status
     end
 
     def failure?
