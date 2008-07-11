@@ -6,7 +6,11 @@ module Integrity
     end
 
     def build
-      @scm.checkout(export_directory)
+      result = @scm.checkout(export_directory)
+      build = Build.new
+      build.error = result.error
+      build.output = result.output
+      build.result = result.success?
     end
 
     private
