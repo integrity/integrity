@@ -3,16 +3,13 @@ module Integrity
     def initialize(uri, branch, command)
       @uri = uri
       @command = command
-      @scm = SCM.new(@uri.scheme, branch)
+      @build = Build.new
+      @scm = SCM.new(@uri.scheme, @uri, branch, @build)
     end
 
     def build
       result = @scm.checkout(export_directory)
-      build = Build.new
-      build.error = result.error
-      build.output = result.output
-      build.result = result.success?
-      return false if result.failure?
+      return false unless result
       Dir.chdir(export_directory) do
         Kernel.system(@command)
       end

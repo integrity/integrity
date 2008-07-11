@@ -7,8 +7,19 @@ describe Integrity::Builder do
   end
 
   describe 'When initializing' do
-    it "should creates a new SCM object using the scheme of the given URI's and given options" do
-      Integrity::SCM.should_receive(:new).with('git', 'production')
+    before(:each) do
+      @build = mock('build model')
+      Integrity::Build.stub!(:new).and_return(@build)
+    end
+
+    it 'should instantiate a new Build model' do
+      Integrity::Build.should_receive(:new).and_return(@build)
+      Integrity::Builder.new(@uri, 'foo', 'bar')
+    end
+
+    it "should creates a new SCM object using the scheme of the given URI's and given options \
+and pass it the build" do
+      Integrity::SCM.should_receive(:new).with('git', @uri, 'production', @build)
       Integrity::Builder.new(@uri, 'production', 'rake')
     end
   end
@@ -18,11 +29,8 @@ describe Integrity::Builder do
       @scm = mock('SCM', :checkout => true)
       @build = mock('build model', :output= => true,
         :error= => true, :result= => true)
-      @result = mock('SCM::Result', :output => 'blargh',
-        :error => 'err', :success? => true, :failure? => false)
       Integrity::SCM.stub!(:new).and_return(@scm)
       Integrity::Build.stub!(:new).and_return(@build)
-      @scm.stub!(:checkout).and_return(@result)
       @builder = Integrity::Builder.new(@uri, 'master', 'rake')
       Kernel.stub!(:system)
     end
@@ -34,33 +42,27 @@ describe Integrity::Builder do
       @builder.build
     end
 
-    it 'should instantiate a new Build model' do
-      Dir.stub!(:chdir)
-      Integrity::Build.should_receive(:new).and_return(@build)
-      @builder.build
-    end
-
     it "should set build's output from SCM's output" do
       Dir.stub!(:chdir)
-      @build.should_receive(:output=).with('blargh')
+      @build.should_not_receive(:output=).with('blargh')
       @builder.build
     end
 
     it "should set build's error from SCM's errors" do
       Dir.stub!(:chdir)
-      @build.should_receive(:error=).with('err')
+      @build.should_not_receive(:error=).with('err')
       @builder.build
     end
 
     it "should set build's status from SCM's status" do
       Dir.stub!(:chdir)
-      @build.should_receive(:result=).with(true)
+      @build.should_not_receive(:result=).with(true)
       @builder.build
     end
 
     it "should stop furter processing and return false if repository's checkout failed" do
       Dir.stub!(:chdir)
-      @result.stub!(:failure?).and_return(true)
+      @scm.stub!(:checkout).and_return(false)
       @builder.build.should be_false
     end
 
