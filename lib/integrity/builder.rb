@@ -11,6 +11,7 @@ module Integrity
       build.error = result.error
       build.output = result.output
       build.result = result.success?
+      false if result.failure?
     end
 
     private

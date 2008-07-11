@@ -19,7 +19,7 @@ describe Integrity::Builder do
       @build = mock('build model', :output= => true,
         :error= => true, :result= => true)
       @result = mock('SCM::Result', :output => 'blargh',
-        :error => 'err', :success? => true)
+        :error => 'err', :success? => true, :failure? => false)
       Integrity::SCM.stub!(:new).and_return(@scm)
       Integrity::Build.stub!(:new).and_return(@build)
       @scm.stub!(:checkout).and_return(@result)
@@ -50,6 +50,11 @@ describe Integrity::Builder do
     it "should set build's status from SCM's status" do
       @build.should_receive(:result=).with(true)
       @builder.build
+    end
+
+    it "should stop furter processing and return false if repository's checkout failed" do
+      @result.stub!(:failure?).and_return(true)
+      @builder.build.should be_false
     end
   end
 end
