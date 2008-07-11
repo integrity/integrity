@@ -2,16 +2,6 @@ require 'open4'
 
 module Integrity
   module SCM
-    Result = Struct.new(:output, :error, :status) do
-      %w(success failure).each do |state|
-        define_method("#{state}?") { self.status == state }
-        define_method("#{state}!") do
-          self.status = state
-          self
-        end
-      end
-    end
-
     class Git
       def initialize(uri, options={})
         @uri = uri
