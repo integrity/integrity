@@ -15,7 +15,7 @@ module Integrity
     File.expand_path(File.join(File.dirname(__FILE__), ".."))
   end
 
-  def self.new(configuration_file=self.root + '/config/config.yml')
+  def self.new(configuration_file=self.root + '/config/config.sample.yml')
     config = YAML.load_file(configuration_file)
     DataMapper.setup(:default, config[:database_uri])
   end
