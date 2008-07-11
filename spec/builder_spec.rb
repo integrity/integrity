@@ -25,36 +25,41 @@ describe Integrity::Builder do
       @scm.stub!(:checkout).and_return(@result)
       @builder = Integrity::Builder.new(@uri, 'master', 'rake')
       Kernel.stub!(:system)
-      Dir.stub!(:chdir)
     end
 
     it 'should tell the scm to checkout the project into the export directory' do
+      Dir.stub!(:chdir)
       @scm.should_receive(:checkout).with('/var/integrity/exports/foca-integrity').
         and_return(@result)
       @builder.build
     end
 
     it 'should instantiate a new Build model' do
+      Dir.stub!(:chdir)
       Integrity::Build.should_receive(:new).and_return(@build)
       @builder.build
     end
 
     it "should set build's output from SCM's output" do
+      Dir.stub!(:chdir)
       @build.should_receive(:output=).with('blargh')
       @builder.build
     end
 
     it "should set build's error from SCM's errors" do
+      Dir.stub!(:chdir)
       @build.should_receive(:error=).with('err')
       @builder.build
     end
 
     it "should set build's status from SCM's status" do
+      Dir.stub!(:chdir)
       @build.should_receive(:result=).with(true)
       @builder.build
     end
 
     it "should stop furter processing and return false if repository's checkout failed" do
+      Dir.stub!(:chdir)
       @result.stub!(:failure?).and_return(true)
       @builder.build.should be_false
     end
@@ -65,8 +70,7 @@ describe Integrity::Builder do
     end
 
     it 'should run the command' do
-      pending 'How to spec something that is executed inside of a block?'
-      Dir.should_receive(:chdir).with(anything)
+      @builder.stub!(:export_directory).and_return(File.dirname(__FILE__))
       Kernel.should_receive(:system).with('rake')
       @builder.build
     end
