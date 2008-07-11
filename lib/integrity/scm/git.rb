@@ -4,7 +4,7 @@ module Integrity
   module SCM
     class Git
       def initialize(uri, branch, logger)
-        @uri = uri
+        @uri = uri.to_s
         @logger = logger
         @branch = branch
       end

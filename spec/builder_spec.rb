@@ -10,6 +10,7 @@ describe Integrity::Builder do
     before(:each) do
       @build = mock('build model')
       Integrity::Build.stub!(:new).and_return(@build)
+      Integrity::SCM.stub!(:new)
     end
 
     it 'should instantiate a new Build model' do
