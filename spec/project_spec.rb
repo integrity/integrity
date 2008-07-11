@@ -50,4 +50,28 @@ describe Integrity::Project do
     @project.public = false
     @project.should_not be_public
   end
+
+  describe 'When building it' do
+    before(:each) do
+      @uri = Addressable::URI.parse('git://github.com/foca/integrity.git')
+      @project = Integrity::Project.new(
+        :uri      => @uri,
+        :branch   => 'production',
+        :command  => 'rake spec'
+      )
+      @builder = mock('Builder', :build => true)
+      Integrity::Builder.stub!(:new).and_return(@builder)
+    end
+
+    it 'should instantiate a new Builder with uri, branch and command' do
+      Integrity::Builder.should_receive(:new).
+        with(@uri, 'production', 'rake spec').and_return(@builder)
+      @project.build
+    end
+
+    it 'should call the builder to build it' do
+      @builder.should_receive(:build)
+      @project.build
+    end
+  end
 end

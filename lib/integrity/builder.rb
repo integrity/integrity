@@ -1,7 +1,7 @@
 module Integrity
   class Builder
     def initialize(uri, options={})
-      @uri = Addressable::URI.parse(uri)
+      @uri = uri
       @scm = SCM.new(@uri.scheme, options[:scm])
     end
 
