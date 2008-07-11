@@ -77,5 +77,10 @@ and pass it the build" do
       Kernel.should_receive(:system).with('rake')
       @builder.build
     end
+
+    it 'should return the build' do
+      Dir.stub!(:chdir)
+      @builder.build.should == @build
+    end
   end
 end

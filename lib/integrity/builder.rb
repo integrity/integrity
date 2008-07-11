@@ -13,6 +13,7 @@ module Integrity
       Dir.chdir(export_directory) do
         Kernel.system(@command)
       end
+      @build
     end
 
     private
