@@ -3,12 +3,12 @@ require  File.dirname(__FILE__) + '/spec_helper'
 describe Integrity::Builder do
   before(:each) do
     @uri = Addressable::URI.parse('git://github.com/foca/integrity.git')
+    @build = mock('build model', :output => '', :error => '', :status= => 1)
     Integrity.stub!(:config).and_return(:export_directory => '/var/integrity/exports')
   end
 
   describe 'When initializing' do
     before(:each) do
-      @build = mock('build model')
       Integrity::Build.stub!(:new).and_return(@build)
       Integrity::SCM.stub!(:new)
     end
@@ -28,59 +28,74 @@ and pass it the build" do
   describe 'When building a project' do
     before(:each) do
       @scm = mock('SCM', :checkout => true)
-      @build = mock('build model', :output= => true,
-        :error= => true, :result= => true)
       Integrity::SCM.stub!(:new).and_return(@scm)
       Integrity::Build.stub!(:new).and_return(@build)
       @builder = Integrity::Builder.new(@uri, 'master', 'rake')
       Kernel.stub!(:system)
+      @builder.stub!(:run_command)
     end
 
     it 'should tell the scm to checkout the project into the export directory' do
-      Dir.stub!(:chdir)
       @scm.should_receive(:checkout).with('/var/integrity/exports/foca-integrity').
         and_return(@result)
       @builder.build
     end
 
-    it "should set build's output from SCM's output" do
-      Dir.stub!(:chdir)
-      @build.should_not_receive(:output=).with('blargh')
-      @builder.build
-    end
-
-    it "should set build's error from SCM's errors" do
-      Dir.stub!(:chdir)
-      @build.should_not_receive(:error=).with('err')
-      @builder.build
-    end
-
-    it "should set build's status from SCM's status" do
-      Dir.stub!(:chdir)
-      @build.should_not_receive(:result=).with(true)
-      @builder.build
-    end
-
     it "should stop furter processing and return false if repository's checkout failed" do
-      Dir.stub!(:chdir)
       @scm.stub!(:checkout).and_return(false)
       @builder.build.should be_false
     end
 
-    it 'should change directory to the one where the repository is checked out' do
-      Dir.should_receive(:chdir).with('/var/integrity/exports/foca-integrity')
-      @builder.build
-    end
-
-    it 'should run the command' do
-      @builder.stub!(:export_directory).and_return(File.dirname(__FILE__))
-      Kernel.should_receive(:system).with('rake')
-      @builder.build
-    end
-
     it 'should return the build' do
-      Dir.stub!(:chdir)
       @builder.build.should == @build
+    end
+
+    describe 'When running the command' do
+      before(:each) do
+        @builder = Integrity::Builder.new(@uri, 'master', 'echo rake')
+        @stdout = mock('out', :read => 'out')
+        @stderr = mock('out', :read => 'err')
+        @builder.stub!(:export_directory).and_return(File.dirname(__FILE__))
+        $?.stub!(:success?).and_return(true)
+      end
+
+      it 'should change directory to where the repository was checked out' do
+        Open3.stub!(:popen3)
+        @builder.stub!(:export_directory).and_return('/var/integrity/exports/foca-integrity')
+        Dir.should_receive(:chdir).with('/var/integrity/exports/foca-integrity')
+        @builder.build
+      end
+
+      it 'should run the command' do
+        Open3.should_receive(:popen3).with('echo rake')
+        @builder.build
+      end
+
+      it "should write stdout to build's output" do
+        Open3.stub!(:popen3).and_yield('', @stdout, @stderr)
+        @build.output.should_receive(:<<).with('out')
+        @builder.build
+      end
+
+      it "should write stderr to build's error" do
+        Open3.stub!(:popen3).and_yield('', @stdout, @stderr)
+        @build.error.should_receive(:<<).with('err')
+        @builder.build
+      end
+
+      it "should set build's status to success" do
+        pending "don't know how to spec"
+        $?.stub!(:success?).and_return(true)
+        @build.should_receive(:status=).with(true)
+        @builder.build
+      end
+
+      it "should set build's status to failure" do
+        pending "don't know how to spec"
+        $?.stub!(:success?).and_return(false)
+        @build.should_receive(:status=).with(false)
+        @builder.build
+      end
     end
   end
 end
