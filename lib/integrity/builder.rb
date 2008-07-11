@@ -1,8 +1,9 @@
 module Integrity
   class Builder
-    def initialize(uri, options={})
+    def initialize(uri, branch, command)
       @uri = uri
-      @scm = SCM.new(@uri.scheme, options[:scm])
+      @command = command
+      @scm = SCM.new(@uri.scheme, branch)
     end
 
     def build
@@ -11,7 +12,10 @@ module Integrity
       build.error = result.error
       build.output = result.output
       build.result = result.success?
-      false if result.failure?
+      return false if result.failure?
+      Dir.chdir(export_directory) do
+        Kernel.system(@command)
+      end
     end
 
     private

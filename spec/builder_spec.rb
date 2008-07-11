@@ -8,8 +8,8 @@ describe Integrity::Builder do
 
   describe 'When initializing' do
     it "should creates a new SCM object using the scheme of the given URI's and given options" do
-      Integrity::SCM.should_receive(:new).with('git', :branch => 'production')
-      Integrity::Builder.new(@uri, :scm => {:branch => 'production'})
+      Integrity::SCM.should_receive(:new).with('git', 'production')
+      Integrity::Builder.new(@uri, 'production', 'rake')
     end
   end
 
@@ -23,7 +23,9 @@ describe Integrity::Builder do
       Integrity::SCM.stub!(:new).and_return(@scm)
       Integrity::Build.stub!(:new).and_return(@build)
       @scm.stub!(:checkout).and_return(@result)
-      @builder = Integrity::Builder.new(@uri)
+      @builder = Integrity::Builder.new(@uri, 'master', 'rake')
+      Kernel.stub!(:system)
+      Dir.stub!(:chdir)
     end
 
     it 'should tell the scm to checkout the project into the export directory' do
@@ -55,6 +57,18 @@ describe Integrity::Builder do
     it "should stop furter processing and return false if repository's checkout failed" do
       @result.stub!(:failure?).and_return(true)
       @builder.build.should be_false
+    end
+
+    it 'should change directory to the one where the repository is checked out' do
+      Dir.should_receive(:chdir).with('/var/integrity/exports/foca-integrity')
+      @builder.build
+    end
+
+    it 'should run the command' do
+      pending 'How to spec something that is executed inside of a block?'
+      Dir.should_receive(:chdir).with(anything)
+      Kernel.should_receive(:system).with('rake')
+      @builder.build
     end
   end
 end
