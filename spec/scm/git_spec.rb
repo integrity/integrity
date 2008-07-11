@@ -18,6 +18,8 @@ describe Integrity::SCM::Git do
       @stdout = mock('io', :read => 'out')
       @stderr = mock('io', :read => 'err')
       $?.stub!(:success?).and_return(true)
+      @scm.stub!(:cloned?).and_return(false)
+      @scm.stub!(:on_branch?).and_return(false)
     end
 
     it 'should do a shallow clone of the repository into the given directory' do
@@ -26,9 +28,21 @@ describe Integrity::SCM::Git do
       @scm.checkout('/foo/bar')
     end
 
+    it 'should not clone the repository if it has already been cloned' do
+      @scm.should_receive(:cloned?).and_return(true)
+      Open3.should_not_receive(:popen3).with(/git clone/)
+      @scm.checkout('/foo/bar')
+    end
+
     it 'should switch to the specified branch' do
       Open3.should_receive(:popen3).
         with('git --git-dir=/foo/bar/.git checkout master')
+      @scm.checkout('/foo/bar')
+    end
+
+    it 'should switch not switch of branch if already on it' do
+      @scm.should_receive(:on_branch?).and_return(true)
+      Open3.should_not_receive(:popen3).with(/checkout/)
       @scm.checkout('/foo/bar')
     end
 
