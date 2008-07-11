@@ -18,7 +18,7 @@ module Integrity
 
     private
       def export_directory
-        Integrity.scm_export_directory /
+        Integrity.config[:export_directory] /
           @uri.path[1..-1].sub('/', '-').chomp(@uri.extname)
       end
   end

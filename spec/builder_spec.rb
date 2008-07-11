@@ -3,7 +3,7 @@ require  File.dirname(__FILE__) + '/spec_helper'
 describe Integrity::Builder do
   before(:each) do
     @uri = Addressable::URI.parse('git://github.com/foca/integrity.git')
-    Integrity.stub!(:scm_export_directory).and_return('/var/integrity/exports')
+    Integrity.stub!(:config).and_return(:export_directory => '/var/integrity/exports')
   end
 
   describe 'When initializing' do

@@ -11,14 +11,31 @@ require 'yaml'
 require "core_ext/string"
 
 module Integrity
+  @@root = File.expand_path(File.join(File.dirname(__FILE__), ".."))
+  @@default_configuration_file = @@root / 'config/config.sample.yml'
+  @@default_configuration = {
+    :database_uri => 'sqlite3://memory',
+    :export_directory => @@root / 'exports'
+  }
+
   def self.root
-    File.expand_path(File.join(File.dirname(__FILE__), ".."))
+    @@root
   end
 
-  def self.new(configuration_file=self.root + '/config/config.sample.yml')
-    config = YAML.load_file(configuration_file)
+  def self.default_configuration
+    @@default_configuration
+  end
+
+  def self.config
+    # TODO: @config ||= YAML.load_file(@configuration_file)
+    default_configuration.merge(YAML.load_file(@configuration_file))
+  end
+
+  def self.new(configuration_file=@@default_configuration_file)
+    @configuration_file = configuration_file
     DataMapper.setup(:default, config[:database_uri])
   end
+
 
   autoload :Project, 'project'
   autoload :Build,   'build'

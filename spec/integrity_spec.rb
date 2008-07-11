@@ -5,6 +5,13 @@ describe Integrity do
     Integrity.root.should == File.expand_path(File.join(File.dirname(__FILE__), ".."))
   end
 
+  specify 'default configuration' do
+    Integrity.default_configuration.should == {
+      :database_uri => 'sqlite3://memory',
+      :export_directory => Integrity.root / 'exports'
+    }
+  end
+
   describe 'When initializing' do
     before(:each) do
       @config = {:database_uri => 'sqlite3:///var/integrity.db'}
