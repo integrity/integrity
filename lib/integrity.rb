@@ -4,7 +4,10 @@ $: << "#{__DIR__}/integrity"
 
 require "rubygems"
 require 'dm-core'
+require 'addressable/uri'
+
 require 'yaml'
+
 require "core_ext/string"
 
 module Integrity
