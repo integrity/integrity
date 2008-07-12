@@ -2,11 +2,11 @@ require File.dirname(__FILE__) + '/lib/integrity'
 
 Integrity.new
 
-Integrity::Project.create do |p|
-  p.name = 'Integrity'
-  p.uri = 'git://github.com/foca/integrity.git'
-  p.command = 'git-submodule init && git-submodule update && rake spec'
-end
+Integrity::Project.create(
+  :name    => 'Integrity', 
+  :uri     => 'git://github.com/foca/integrity.git',
+  :command => 'echo `pwd`; git-submodule update --init && rake'
+)
 
 project = Integrity::Project.first(:name => 'Integrity')
 result = project.build
