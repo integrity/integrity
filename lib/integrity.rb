@@ -7,6 +7,7 @@ require 'addressable/uri'
 
 require 'yaml'
 
+require "core_ext/object"
 require "core_ext/string"
 
 module Integrity

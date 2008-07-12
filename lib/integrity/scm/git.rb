@@ -9,21 +9,15 @@ module Integrity
         @branch = branch
       end
 
-      def checkout(destination)
-        execute "clone --depth 1 #{@uri.to_s} #{destination}" unless cloned?(destination)
-        execute "--git-dir=#{destination}/.git checkout #{@branch}" unless on_branch?(destination)
-        execute "--git-dir=#{destination}/.git pull"
+      def checkout_script(destination)
+        [].tap do |script|
+          script << "git clone --depth 1 #{@uri.to_s} #{destination}" unless cloned?(destination)
+          script << "git --git-dir=#{destination}/.git checkout #{@branch}" unless on_branch?(destination)
+          script << "git --git-dir=#{destination}/.git pull"
+        end.compact
       end
 
       private
-        def execute(command)
-          Open3.popen3 "git #{command}" do |_, stdout, stderr|
-            @logger.output << stdout.read
-            @logger.error << stderr.read
-            @logger.status = $?.success?
-          end
-        end
-
         def cloned?(working_directory)
           File.directory?(working_directory / '.git')
         end

@@ -10,9 +10,10 @@ module Integrity
     end
 
     def build
-      @scm.checkout(export_directory)
-      return false if @build.failure?
-      run_command
+      build_script.each do |command|
+        execute command
+        break unless successful_execution?
+      end
       @build
     end
 
@@ -22,18 +23,20 @@ module Integrity
           @uri.path[1..-1].sub('/', '-').chomp(@uri.extname)
       end
 
-      def run_command
-        Dir.chdir(export_directory) do
-          Open3.popen3(@command) do |_, stdout, stderr|
-            @build.output << stdout.read
-            @build.error  << stderr.read
-            @build.status = successful_command?
-          end
+      def execute(command)
+        Open3.popen3 command do |_, stdout, stderr|
+          @build.output << stdout.read
+          @build.error << stderr.read
+          @build.status = successful_execution?
         end
       end
-      
-      def successful_command?
+    
+      def successful_execution?
         $?.success?
+      end
+      
+      def build_script
+        [@scm.checkout_script(export_directory), "cd #{export_directory}", @command].flatten
       end
   end
 end

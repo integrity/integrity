@@ -37,58 +37,36 @@ describe Integrity::SCM::Git do
     end
   end
 
-  describe 'When checking-out a repository' do
+  describe 'When creating the checkout script' do
     before(:each) do
-      @stdout = mock('io', :read => 'out')
-      @stderr = mock('io', :read => 'err')
-      Open3.stub!(:popen3).and_yield('', @stdout, @stderr)
-      $?.stub!(:success?).and_return(true)
       @scm.stub!(:cloned?).and_return(false)
       @scm.stub!(:on_branch?).and_return(false)
     end
 
-    it 'should do a shallow clone of the repository into the given directory' do
-      Open3.should_receive(:popen3).
-        with('git clone --depth 1 git://github.com/foca/integrity.git /foo/bar')
-      @scm.checkout('/foo/bar')
+    it 'should return an enumerable' do
+      @scm.checkout_script('/foo/bar').should respond_to(:each)
     end
 
-    it 'should not clone the repository if it has already been cloned' do
-      @scm.should_receive(:cloned?).and_return(true)
-      Open3.should_not_receive(:popen3).with(/git clone/)
-      @scm.checkout('/foo/bar')
+    it "should clone the repository" do
+      @scm.checkout_script('/foo/bar').should include("git clone --depth 1 git://github.com/foca/integrity.git /foo/bar")
+    end
+    
+    it "should not try to clone if the repo has already been cloned" do
+      @scm.stub!(:cloned?).and_return(true)
+      @scm.checkout_script('/foo/bar').should_not include("git clone --depth 1")
     end
 
     it 'should switch to the specified branch' do
-      Open3.should_receive(:popen3).
-        with('git --git-dir=/foo/bar/.git checkout master')
-      @scm.checkout('/foo/bar')
+      @scm.checkout_script('/foo/bar').should include("git --git-dir=/foo/bar/.git checkout master")
     end
 
     it 'should switch not switch of branch if already on it' do
-      @scm.should_receive(:on_branch?).and_return(true)
-      Open3.should_not_receive(:popen3).with(/checkout/)
-      @scm.checkout('/foo/bar')
+      @scm.stub!(:on_branch?).and_return(true)
+      @scm.checkout_script('/foo/bar').should_not include("git --git-dir=/foo/bar/.git checkout master")
     end
 
     it 'should fetch updates' do
-      Open3.should_receive(:popen3).with('git --git-dir=/foo/bar/.git pull')
-      @scm.checkout('/foo/bar')
-    end
-
-    it "should write stdout to build's output" do
-      @build.output.should_receive(:<<).with('out').exactly(3).times
-      @scm.checkout('/foo/bar')
-    end
-
-    it "should write stderr to build's error" do
-      @build.error.should_receive(:<<).with('err').exactly(3).times
-      @scm.checkout('/foo/bar')
-    end
-
-    it "should set build's status" do
-      @build.should_receive(:status=).with(boolean).exactly(3).times
-      @scm.checkout('/foo/bar')
+      @scm.checkout_script('/foo/bar').should include("git --git-dir=/foo/bar/.git pull")
     end
   end
 end
