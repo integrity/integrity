@@ -1,6 +1,5 @@
 __DIR__ = File.dirname(__FILE__)
-Dir["#{__DIR__}/../vendor/**/lib"].each { |dependency| $: << dependency }
-$: << "#{__DIR__}/integrity"
+$:.unshift "#{__DIR__}/integrity", *Dir["#{__DIR__}/../vendor/**/lib"].to_a
 
 require "rubygems"
 require 'dm-core'
