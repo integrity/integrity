@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/lib/integrity'
 Integrity.new
 project = Integrity::Project.new
 project.name = 'Integrity'
-project.uri = Addressable::URI.parse('git://github.com/foca/integrity.git')
+project.uri = 'git://github.com/foca/integrity.git'
 project.command = 'git-submodule init && git-submodule update && rake spec'
 
 result = project.build
