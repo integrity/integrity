@@ -24,6 +24,18 @@ describe Integrity::SCM::Git do
     end
   end
 
+  describe 'When asking if the repository is already on the right branch' do
+    it 'should be true if .git/HEAD does point to the right branch' do
+      File.should_receive(:read).with('foo/.git/HEAD').and_return("refs/heads/master\n")
+      @scm.send(:on_branch?, 'foo').should be_true
+    end
+
+    it 'should be false if .git/HEAD doesnt point to it' do
+      File.should_receive(:read).with('foo/.git/HEAD').and_return("refs/heads/blargh\n")
+      @scm.send(:on_branch?, 'foo').should be_false
+    end
+  end
+
   describe 'When checking-out a repository' do
     before(:each) do
       Open3.stub!(:popen3)

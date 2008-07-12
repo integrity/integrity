@@ -32,7 +32,7 @@ module Integrity
         end
 
         def on_branch?(working_directory)
-          File.read(working_directory).split('/').last.chomp == @branch
+          File.read(working_directory / '.git/HEAD').split('/').last.chomp == @branch
         end
     end
   end
