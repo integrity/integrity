@@ -58,4 +58,11 @@ describe Integrity::Build do
   specify 'error should default to ""' do
     @build.error.should == ''
   end
+
+  specify '#human_readable_status should return "success" or "fail", depending on status' do
+    @build.stub!(:status).and_return(true)
+    @build.human_readable_status.should == 'Successful'
+    @build.stub!(:status).and_return(false)
+    @build.human_readable_status.should == 'Fail'
+  end
 end

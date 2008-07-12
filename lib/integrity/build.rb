@@ -18,5 +18,9 @@ module Integrity
     def failure?
       !success?
     end
+
+    def human_readable_status
+      success? ? 'Successful' : 'Fail'
+    end
   end
 end
