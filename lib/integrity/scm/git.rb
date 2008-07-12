@@ -28,7 +28,7 @@ module Integrity
         end
 
         def cloned?(working_directory)
-          File.exists?(working_directory / '.git')
+          File.directory?(working_directory / '.git')
         end
 
         def on_branch?(working_directory)

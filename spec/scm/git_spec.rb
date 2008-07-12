@@ -12,6 +12,18 @@ describe Integrity::SCM::Git do
     @scm = Integrity::SCM::Git.new(@uri, 'master', @build)
   end
 
+  describe 'When asking if the repository is already cloned (#cloned?)' do
+    it 'should be false if the repository git dir exists' do
+      File.should_receive(:directory?).with('foo/.git').and_return(true)
+      @scm.send(:cloned?, 'foo').should be_true
+    end
+
+    it 'should be false if the repository git dir doesnt exists' do
+      File.should_receive(:directory?).with('foo/.git').and_return(false)
+      @scm.send(:cloned?, 'foo').should be_false
+    end
+  end
+
   describe 'When checking-out a repository' do
     before(:each) do
       Open3.stub!(:popen3)
