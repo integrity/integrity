@@ -27,9 +27,13 @@ module Integrity
           Open3.popen3(@command) do |_, stdout, stderr|
             @build.output << stdout.read
             @build.error  << stderr.read
-            @build.status = $?.success?
+            @build.status = successful_command?
           end
         end
+      end
+      
+      def successful_command?
+        $?.success?
       end
   end
 end

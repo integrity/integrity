@@ -83,15 +83,13 @@ describe Integrity::Builder do
       end
 
       it "should set build's status to success" do
-        pending "don't know how to spec"
-        $?.stub!(:success?).and_return(true)
+        @builder.stub!(:successful_command?).and_return(true)
         @build.should_receive(:status=).with(true)
         @builder.build
       end
 
       it "should set build's status to failure" do
-        pending "don't know how to spec"
-        $?.stub!(:success?).and_return(false)
+        @builder.stub!(:successful_command?).and_return(false)
         @build.should_receive(:status=).with(false)
         @builder.build
       end
