@@ -8,7 +8,6 @@ describe 'Web UI using Sinatra' do
   
   before(:each) do
     Integrity.stub!(:new) # don't connect to the database on UI tests
-    require File.dirname(__FILE__) + '/../../lib/integrity/ui/web'
   end
 
   describe "Getting the home page" do
