@@ -1,1 +1,2 @@
 :database_uri: sqlite3:///var/integrity.db
+:export_directory: /path/to/scm/exports
