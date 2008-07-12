@@ -40,6 +40,7 @@ namespace :db do
   desc "Automigrate the database"
   task :migrate => :connect do
     require "project"
-    DataMapper.auto_migrate! 
+    require "build"
+    DataMapper.auto_migrate!
   end
 end
