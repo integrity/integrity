@@ -7,9 +7,9 @@ module Integrity
 
     property :id,       Integer,  :serial => true
     property :name,     String,   :nullable => false
-    property :uri,      URI,      :nullable => false
+    property :uri,      URI,      :nullable => false, :length => 255
     property :branch,   String,   :nullable => false, :default => "master"
-    property :command,  String,   :nullable => false, :default => "rake"
+    property :command,  String,   :nullable => false, :length => 255, :default => "rake"
     property :public,   Boolean,  :default => true
 
     def build
