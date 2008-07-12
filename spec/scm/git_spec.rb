@@ -7,7 +7,8 @@ describe Integrity::SCM::Git do
     @build = mock('build model',
       :output => '',
       :error  => '',
-      :status => true
+      :status => true,
+      :status= => 1
     )
     @scm = Integrity::SCM::Git.new(@uri, 'master', @build)
   end
@@ -38,7 +39,6 @@ describe Integrity::SCM::Git do
 
   describe 'When checking-out a repository' do
     before(:each) do
-      Open3.stub!(:popen3)
       @stdout = mock('io', :read => 'out')
       @stderr = mock('io', :read => 'err')
       $?.stub!(:success?).and_return(true)
@@ -47,18 +47,21 @@ describe Integrity::SCM::Git do
     end
 
     it 'should do a shallow clone of the repository into the given directory' do
+      Open3.stub!(:popen3)
       Open3.should_receive(:popen3).
         with('git clone --depth 1 git://github.com/foca/integrity.git /foo/bar')
       @scm.checkout('/foo/bar')
     end
 
     it 'should not clone the repository if it has already been cloned' do
+      Open3.stub!(:popen3)
       @scm.should_receive(:cloned?).and_return(true)
       Open3.should_not_receive(:popen3).with(/git clone/)
       @scm.checkout('/foo/bar')
     end
 
     it 'should switch to the specified branch' do
+      Open3.stub!(:popen3)
       Open3.should_receive(:popen3).
         with('git --git-dir=/foo/bar/.git checkout master')
       @scm.checkout('/foo/bar')
@@ -71,13 +74,9 @@ describe Integrity::SCM::Git do
     end
 
     it 'should fetch updates' do
+      Open3.stub!(:popen3)
       Open3.should_receive(:popen3).with('git --git-dir=/foo/bar/.git pull')
       @scm.checkout('/foo/bar')
-    end
-
-    it 'should return false if one of the command failed' do
-      @scm.stub!(:execute).and_raise(RuntimeError)
-      @scm.checkout('/foo/bar').should be_false
     end
 
     it "should write stdout to build's output" do
@@ -89,6 +88,12 @@ describe Integrity::SCM::Git do
     it "should write stderr to build's error" do
       Open3.stub!(:popen3).and_yield('', @stdout, @stderr)
       @build.error.should_receive(:<<).with('err').exactly(3).times
+      @scm.checkout('/foo/bar')
+    end
+
+    it "should set build's status" do
+      # TODO: $?.stub!(:success?).and_return(true)
+      @build.should_receive(:status=).with(boolean).exactly(3).times
       @scm.checkout('/foo/bar')
     end
   end

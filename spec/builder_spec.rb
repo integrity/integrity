@@ -3,7 +3,7 @@ require  File.dirname(__FILE__) + '/spec_helper'
 describe Integrity::Builder do
   before(:each) do
     @uri = Addressable::URI.parse('git://github.com/foca/integrity.git')
-    @build = mock('build model', :output => '', :error => '', :status= => 1)
+    @build = mock('build model', :output => '', :error => '', :status= => 1, :failure? => false)
     Integrity.stub!(:config).and_return(:export_directory => '/var/integrity/exports')
   end
 
@@ -42,7 +42,7 @@ and pass it the build" do
     end
 
     it "should stop furter processing and return false if repository's checkout failed" do
-      @scm.stub!(:checkout).and_return(false)
+      @build.stub!(:failure?).and_return(true)
       @builder.build.should be_false
     end
 

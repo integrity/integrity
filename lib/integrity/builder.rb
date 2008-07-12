@@ -10,8 +10,8 @@ module Integrity
     end
 
     def build
-      result = @scm.checkout(export_directory)
-      return false unless result
+      @scm.checkout(export_directory)
+      return false if @build.failure?
       run_command
       @build
     end
