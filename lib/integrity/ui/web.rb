@@ -21,14 +21,14 @@ end
 post "/" do
   @project = Project.new(params)
   if @project.save
-    redirect "/#{@project.id}"
+    redirect "/#{@project.permalink}"
   else
     show :new, :title => ["projects", "new project"]
   end
 end
 
-get "/:project_id" do
-  @project = Project.get(params[:project_id])
+get "/:project" do
+  @project = Project.first(:permalink => params[:project])
   show :project, :title => ["projects", @project.name]
 end
 
