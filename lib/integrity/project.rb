@@ -1,6 +1,3 @@
-require 'dm-validations'
-require 'dm-types'
-
 module Integrity
   class Project
     include DataMapper::Resource
@@ -11,6 +8,8 @@ module Integrity
     property :branch,   String,   :nullable => false, :default => "master"
     property :command,  String,   :nullable => false, :length => 255, :default => "rake"
     property :public,   Boolean,  :default => true
+    
+    has n, :builds, :class_name => "Integrity::Build"
 
     def build
       Builder.new(uri, branch, command).build

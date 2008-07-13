@@ -3,7 +3,8 @@ $:.unshift "#{__DIR__}/integrity", *Dir["#{__DIR__}/../vendor/**/lib"].to_a
 
 require "rubygems"
 require 'dm-core'
-require 'addressable/uri'
+require 'dm-validations'
+require 'dm-types'
 
 require 'yaml'
 

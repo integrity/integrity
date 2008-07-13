@@ -1,6 +1,3 @@
-require 'dm-validations'
-require 'dm-types'
-
 module Integrity
   class Build
     include DataMapper::Resource
@@ -10,6 +7,8 @@ module Integrity
     property :error,    Text,     :nullable => true,  :default => ''
     property :commit,   Yaml,     :nullable => false
     property :status,   Boolean,  :nullable => false, :default => false
+    
+    belongs_to :project, :class_name => "Integrity::Project"
 
     def success?
       status
