@@ -12,7 +12,9 @@ module Integrity
     has n, :builds, :class_name => "Integrity::Build"
 
     def build
-      Builder.new(uri, branch, command).build
+      build = Builder.new(uri, branch, command).build
+      build.project = self
+      build.save
     end
   end
 end

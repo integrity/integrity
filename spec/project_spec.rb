@@ -59,7 +59,12 @@ describe Integrity::Project do
         :branch   => 'production',
         :command  => 'rake spec'
       )
-      @builder = mock('Builder', :build => true)
+      @build = Integrity::Build.new(:output => "blah", :error => "blah", :status => true, :commit => {
+        :author => 'Simon Rozet <simon@rozet.name>',
+        :identifier => '712041aa093e4fb0a2cb1886db49d88d78605396',
+        :message    => 'started build model'
+      })
+      @builder = mock('Builder', :build => @build)
       Integrity::Builder.stub!(:new).and_return(@builder)
     end
 
@@ -70,7 +75,17 @@ describe Integrity::Project do
     end
 
     it 'should call the builder to build it' do
-      @builder.should_receive(:build)
+      @builder.should_receive(:build).and_return(@build)
+      @project.build
+    end
+    
+    it "should set itself as the build's project" do
+      @project.build
+      @build.project.should == @project
+    end
+    
+    it "should save the build to the database" do
+      @build.should_receive(:save)
       @project.build
     end
   end
