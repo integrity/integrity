@@ -24,6 +24,8 @@ module Integrity
 
         def on_branch?(working_directory)
           File.read(working_directory / '.git/HEAD').split('/').last.chomp == @branch
+        rescue Errno::ENOENT
+          false
         end
     end
   end

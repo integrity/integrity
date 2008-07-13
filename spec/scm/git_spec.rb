@@ -35,6 +35,11 @@ describe Integrity::SCM::Git do
       File.should_receive(:read).with('foo/.git/HEAD').and_return("refs/heads/blargh\n")
       @scm.send(:on_branch?, 'foo').should be_false
     end
+    
+    it "should be false if there's not .git/HEAD" do
+      File.should_receive(:read).with('foo/.git/HEAD').and_raise(Errno::ENOENT)
+      @scm.send(:on_branch?, 'foo').should be_false
+    end
   end
 
   describe 'When creating the checkout script' do
