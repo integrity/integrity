@@ -9,8 +9,8 @@ describe Integrity::Project do
     @project.should_not be_valid
   end
   
-  it "needs a name, an uri, a branch and a command to be valid" do
-    @project.attributes = { :name => "Integrity", :uri => "git://github.com/foca/integrity.git" }
+  it "needs a name, a permalink, an uri, a branch and a command to be valid" do
+    @project.attributes = { :name => "Integrity", :uri => "git://github.com/foca/integrity.git", :permalink => "integrity" }
     @project.should be_valid
   end
 
@@ -49,6 +49,27 @@ describe Integrity::Project do
   it 'should have a visibility' do
     @project.public = false
     @project.should_not be_public
+  end
+  
+  describe "Setting the permalink" do
+    before do
+      @project = Integrity::Project.new(:name => "Integrity", :uri => "git://github.com/foca/integrity.git")
+    end
+    
+    it "should set the permalink before saving" do
+      @project.permalink.should be_nil
+    end
+    
+    it "should set the permalink on save" do
+      @project.save
+      @project.permalink.should == "integrity"
+    end
+    
+    it "should update the permalink if the name changes" do
+      @project.name = "Foca's Awesome Project & Strange Name"
+      @project.save
+      @project.permalink.should == "focas-awesome-project-and-strange-name"
+    end
   end
 
   describe 'When building it' do
