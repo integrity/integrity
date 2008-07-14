@@ -2,19 +2,20 @@ require 'open3'
 
 module Integrity
   class Builder
-    def initialize(uri, branch, command)
-      @uri = uri
-      @command = command
-      @build = Build.new
-      @scm = SCM.new(@uri, branch, @build)
+    attr_reader :build_script
+    
+    def initialize(project)
+      @uri = project.uri
+      @build_script = project.command
+      @scm = SCM.new(@uri, project.branch, export_directory)
+      @build = Build.new(:project => project)
     end
 
     def build
-      build_script.each do |command|
-        execute command
-        break unless successful_execution?
-      end
-      @build
+      @scm.with_latest_code { run_build_script }
+      @build.tap {|build| build.commit = @scm.head }
+    ensure
+      @build.save
     end
 
     private
@@ -23,20 +24,16 @@ module Integrity
           @uri.path[1..-1].sub('/', '-').chomp(@uri.extname)
       end
 
-      def execute(command)
-        Open3.popen3 command do |_, stdout, stderr|
+      def run_build_script
+        Open3.popen3 build_script do |_, stdout, stderr|
           @build.output << stdout.read
           @build.error << stderr.read
-          @build.status = successful_execution?
+          @build.successful = successful_execution?
         end
       end
     
       def successful_execution?
         $?.success?
-      end
-      
-      def build_script
-        [@scm.checkout_script(export_directory), "cd #{export_directory}", @command].flatten
       end
   end
 end
