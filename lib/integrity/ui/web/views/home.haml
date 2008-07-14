@@ -9,6 +9,6 @@
   %ul#projects
     - @projects.each do |project|
       %li{ :class => cycle("even", "odd") }
-        %a{ :href => "/#{project.permalink}" }= project.name
+        %a{ :href => project_url(project) }= project.name
   %p#new
     %a{ :href => "/new" } Add a new project

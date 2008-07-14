@@ -1,0 +1,18 @@
+- if @project.builds.empty?
+  %form.blank_slate{ :action => project_url(@project, :build), :method => :post }
+    %p No builds for this project, buddy
+    %h1
+      You can request a
+      %button{ :type => :submit } manual build
+- else
+  #last_build{ :class => @project.last_build.status }
+    %h1= @project.last_build.human_readable_status
+    
+  %form{ :action => project_url(@project, :build), :method => :post }
+    %p.submit
+      %button{ :type => :submit } Request Manual Build
+  
+  - unless @project.previous_builds.empty?
+    %ul#previous_builds
+      - @project.previous_builds.each do |build|
+        %li= build.human_readable_status
