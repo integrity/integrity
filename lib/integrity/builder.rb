@@ -13,8 +13,9 @@ module Integrity
 
     def build
       @scm.with_latest_code { run_build_script }
-      @build.tap {|build| build.commit = @scm.head }
+      @build
     ensure
+      @build.commit = @scm.head
       @build.save
     end
 

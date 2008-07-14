@@ -25,11 +25,11 @@ module Integrity
     end
     
     def last_build
-      @last_build ||= builds.first(:order => [:created_at.desc])
+      builds.first(:order => [:created_at.desc])
     end
     
     def previous_builds
-      @previous_builds ||= builds.all(:order => [:created_at.desc], :offset => 1, :limit => builds.count - 1)
+      builds.all(:order => [:created_at.desc], :offset => 1, :limit => builds.count - 1)
     end
     
     private

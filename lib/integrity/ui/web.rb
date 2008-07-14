@@ -21,7 +21,7 @@ end
 post "/" do
   @project = Project.new(params)
   if @project.save
-    redirect "/#{@project.permalink}"
+    redirect project_url(@project)
   else
     show :new, :title => ["projects", "new project"]
   end
@@ -30,6 +30,12 @@ end
 get "/:project" do
   @project = Project.first(:permalink => params[:project])
   show :project, :title => ["projects", @project.name]
+end
+
+post "/:project/build" do
+  @project = Project.first(:permalink => params[:project])
+  @project.build
+  redirect project_url(@project)
 end
 
 get "/integrity.css" do
@@ -59,5 +65,9 @@ helpers do
     @cycles[values] ||= -1 # first value returned is 0
     next_value = @cycles[values] = (@cycles[values] + 1) % values.size
     values[next_value]
+  end
+  
+  def project_url(project, *path)
+    "/" << [project.permalink, *path].join("/")
   end
 end

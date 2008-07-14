@@ -130,13 +130,30 @@ describe 'Web UI using Sinatra' do
   
   describe "getting a project page" do
     before do
-      @project = stub("project", :name => "Integrity")
+      @project = stub("project", :name => "Integrity", :permalink => "integrity", :builds => [])
       Project.stub!(:first).with(:permalink => "integrity").and_return(@project)
     end
     
     it "should be success" do
       get_it "/integrity"
       @response.should be_ok
+    end
+  end
+  
+  describe "manually building a project" do
+    before do
+      @project = stub("project", :permalink => "integrity", :build => true)
+      Project.stub!(:first).with(:permalink => "integrity").and_return(@project)
+    end
+    
+    it "should build the project" do
+      @project.should_receive(:build)
+      post_it "/integrity/build"
+    end
+    
+    it "should redirect back to the project" do
+      post_it "/integrity/build"
+      @response.location.should == "/integrity"
     end
   end
   
@@ -214,6 +231,18 @@ describe 'Web UI using Sinatra' do
         @context.cycle("red", "green", "blue").should == "green"
         @context.cycle("red", "green", "blue").should == "blue"
         @context.cycle("red", "green", "blue").should == "red"
+      end
+    end
+    
+    describe "#project_url" do
+      before { @project = stub("Project", :permalink => "cuack") }
+      
+      it "should receive a project and return a link to it" do
+        @context.project_url(@project).should == "/cuack"
+      end
+      
+      it "should add whatever other arguments are passed as tokens in the path" do
+        @context.project_url(@project, :build, :blah).should == "/cuack/build/blah"
       end
     end
   end

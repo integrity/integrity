@@ -75,39 +75,64 @@ describe Integrity::Project do
   describe 'When building it' do
     before(:each) do
       @uri = Addressable::URI.parse('git://github.com/foca/integrity.git')
-      @project = Integrity::Project.new(
-        :uri      => @uri,
-        :branch   => 'production',
-        :command  => 'rake spec'
-      )
-      @build = Integrity::Build.new(:output => "blah", :error => "blah", :status => true, :commit => {
-        :author => 'Simon Rozet <simon@rozet.name>',
-        :identifier => '712041aa093e4fb0a2cb1886db49d88d78605396',
-        :message    => 'started build model'
-      })
-      @builder = mock('Builder', :build => @build)
+      @project = Integrity::Project.new(:uri => @uri, :branch  => 'production', :command  => 'rake spec')
+      @builder = mock('Builder', :build => true)
       Integrity::Builder.stub!(:new).and_return(@builder)
     end
-
-    it 'should instantiate a new Builder with uri, branch and command' do
-      Integrity::Builder.should_receive(:new).
-        with(@uri, 'production', 'rake spec').and_return(@builder)
+    
+    it "should not build if it's already building" do
+      @project.stub!(:building?).and_return(true)
+      Integrity::Builder.should_not_receive(:new)
       @project.build
     end
 
-    it 'should call the builder to build it' do
-      @builder.should_receive(:build).and_return(@build)
+    it 'should instantiate a new Builder and pass itself to it' do
+      Integrity::Builder.should_receive(:new).with(@project).and_return(@builder)
+      @project.build
+    end
+
+    it 'should tell the builder to ... build!' do
+      @builder.should_receive(:build)
       @project.build
     end
     
-    it "should set itself as the build's project" do
+    it "should set 'building?' to true while building" do
+      @builder.should_receive(:build) do
+        @project.should be_building
+      end
       @project.build
-      @build.project.should == @project
     end
     
-    it "should save the build to the database" do
-      @build.should_receive(:save)
+    it "should set 'building?' to false after a build" do
       @project.build
+      @project.should_not be_building
+    end
+    
+    it "should ensure 'building?' is false even if the build raises an exception" do
+      lambda {
+        @builder.stub!(:build).and_raise(RuntimeError)
+        @project.build
+        @project.should_not be_building
+      }.should raise_error(RuntimeError)      
+    end
+  end
+  
+  describe "When searching for its builds" do
+    it "should find the last build by ordering chronologically" do
+      @project.builds.should_receive(:first).with hash_including(:order => [:created_at.desc])
+      @project.last_build
+    end
+    
+    it "should find the 'tail' of builds by searching for all the builds, with offset 1" do
+      pending "why doesn't this work?"
+      @project.builds.should_receive(:all).with hash_including(:offset => 1)
+      @project.previous_builds
+    end
+    
+    it "should find the 'tail' of builds ordering them chronologically" do
+      pending "why doesn't this work?"
+      @project.builds.should_receive(:all).with hash_including(:order => [:created_at.desc])
+      @project.previous_builds
     end
   end
 end

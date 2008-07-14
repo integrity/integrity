@@ -1,34 +1,51 @@
 require  File.dirname(__FILE__) + '/spec_helper'
 
-describe Integrity::Builder, 'When initializing' do
-  before(:each) do
-    Integrity::Build.stub!(:new).and_return(@build)
-    Integrity::SCM.stub!(:new)
-  end
-
-  it 'should instantiate a new Build model' do
-    Integrity::Build.should_receive(:new).and_return(@build)
-    Integrity::Builder.new(@uri, 'foo', 'bar')
-  end
-
-  it "should creates a new SCM object using the given URI's and given options and pass it the build" do
-    Integrity::SCM.should_receive(:new).with(@uri, 'production', @build)
-    Integrity::Builder.new(@uri, 'production', 'rake')
-  end
-end
-
 describe Integrity::Builder do
-  before(:each) { Integrity::Builder.class_eval { public  :build_script, :execute, :export_directory } }
-  after(:each)  { Integrity::Builder.class_eval { private :build_script, :execute, :export_directory } }
+  def mock_project(messages={})
+    @project ||= begin
+      uri = Addressable::URI.parse("git://github.com/foca/integrity.git")
+      messages = { :uri => uri, :command => "rake", :branch => "master" }.merge(messages)
+      mock("project", messages)
+    end
+  end
+  
+  def mock_build(messages={})
+    @build ||= begin
+      messages = { :project => mock_project, :commit= => {}, :output => "", :error => "", :successful= => true, :save => true }.merge(messages)
+      mock("build", messages)
+    end
+  end
+  
+  def mock_scm(messages={})
+    @scm ||= begin
+      messages = { :with_latest_code => true, :head => Hash.new }.merge(messages)
+      mock("scm", messages)
+    end
+  end
+  
+  before do
+    Integrity.stub!(:config).and_return(:export_directory => "/var/integrity/exports")
+    Integrity::Builder.class_eval { public :export_directory, :run_build_script, :successful_execution? }
+  end
+  
+  describe 'When initializing' do
+    it 'should instantiate a new Build model' do
+      Integrity::SCM.stub!(:new).and_return(mock_scm)
+      Integrity::Build.should_receive(:new).and_return(@build)
+      Integrity::Builder.new(mock_project)
+    end
+
+    it "should creates a new SCM object using the given URI's and given options and pass it the build" do
+      Integrity::Build.stub!(:new).and_return(mock_build)
+      Integrity::SCM.should_receive(:new).with(mock_project.uri, "master", "/var/integrity/exports/foca-integrity")
+      Integrity::Builder.new(mock_project)
+    end
+  end
 
   before(:each) do
-    Integrity.stub!(:config).and_return(:export_directory => '/var/integrity/exports')
-    @uri = Addressable::URI.parse('git://github.com/foca/integrity.git')
-    @build = mock('build model', :output => '', :error => '', :status= => 1, :failure? => false, :execute => nil)
-    @scm = mock('SCM', :checkout_script => ["clone", "checkout", "pull"])
-    Integrity::SCM.stub!(:new).and_return(@scm)
-    Integrity::Build.stub!(:new).and_return(@build)
-    @builder = Integrity::Builder.new(@uri, 'master', 'rake')
+    Integrity::SCM.stub!(:new).and_return(mock_scm)
+    Integrity::Build.stub!(:new).and_return(mock_build)
+    @builder = Integrity::Builder.new(mock_project)
   end
 
   describe "Calculating the export directory" do
@@ -40,90 +57,69 @@ describe Integrity::Builder do
       @builder.export_directory.should =~ %r(foca-integrity$)
     end
   end
-
-  describe "When creating the build script" do
-    before(:each) do
-      @builder.stub!(:export_directory).and_return('/var/integrity/exports/foca-integrity')
-    end
+  
+  describe "When building" do
+    before { @builder.stub!(:run_build_script) }
     
-    it "should return an enumerable" do
-      @builder.build_script.should respond_to(:each)
-    end
-    
-    it "should contain the scm build script" do
-      @builder.build_script.should include(*@scm.checkout_script)
-    end
-    
-    it "should cd into the export directory" do
-      @builder.build_script.should include("cd /var/integrity/exports/foca-integrity")
-    end
-    
-    it "should include the project build command" do
-      @builder.build_script.should include("rake")
-    end
-  end
-
-  describe 'When building a project' do
-    before(:each) do
-      @builder.stub!(:execute).and_return(true)
-      @builder.stub!(:build_script).and_return(["clone", "checkout", "pull", "cd", "rake"])
-      @builder.stub!(:successful_execution?).and_return(true)
-    end
-    
-    it "should run all the commands in the build script" do
-      @builder.should_receive(:execute).exactly(5).times
+    it "should fetch the latest code from the scm and run the build script" do
+      mock_scm.should_receive(:with_latest_code).and_yield do
+        @builder.should_receive(:run_build_script)
+      end
       @builder.build
     end
     
-    it "should stop as soon as one command fails" do
-      @builder.stub!(:successful_execution?).and_return(true, true, false)
-      @builder.should_receive(:execute).exactly(3).times
+    it "should assign the head of the SCM as the commit in the build" do
+      mock_build.should_receive(:commit=).with mock_scm.head
       @builder.build
     end
     
-    it "should return the build" do
-      @builder.build.should == @build
+    it "should save the build to the database" do
+      mock_build.should_receive(:save)
+      @builder.build
     end
     
-    it "should return the build if it fails" do
-      @builder.stub!(:successful_execution?).and_return(false)
-      @builder.build.should == @build
+    it "should save the build even if there's an exception" do
+      lambda {
+        mock_scm.should_receive(:with_latest_code).and_raise(RuntimeError)
+        mock_build.should_receive(:save)
+        @builder.build
+      }.should raise_error(RuntimeError)
     end
   end
   
-  describe 'When running the command' do
-    before(:each) do
-      @stdout = mock('out', :read => 'out')
-      @stderr = mock('out', :read => 'err')
-      Open3.stub!(:popen3).and_yield('', @stdout, @stderr)
+  describe "When running the command" do
+    before do
+      @stdout = mock("stdout", :read => "out")
+      @stderr = mock("stderr", :read => "err")
+      Open3.stub!(:popen3).and_yield("", @stdout, @stderr)
       $?.stub!(:success?).and_return(true)
     end
     
-    it "should execute it" do
-      Open3.should_receive(:popen3).with("blah")
-      @builder.execute("blah")
+    it "should run the build_script" do
+      Open3.should_receive(:popen3).with("rake")
+      @builder.run_build_script
     end
     
-    it "should write stdout to build's output" do
-      @build.output.should_receive(:<<).with('out')
-      @builder.execute("blah")
-    end
-  
-    it "should write stderr to build's error" do
-      @build.error.should_receive(:<<).with('err')
-      @builder.execute("blah")
+    it "should write stdout to the build's output log" do
+      mock_build.output.should_receive(:<<).with("out")
+      @builder.run_build_script
     end
     
-    it "should set build's status to success" do
+    it "should write stderr to the build's error log" do
+      mock_build.error.should_receive(:<<).with("err")
+      @builder.run_build_script
+    end
+    
+    it "should set the build status to 'successful' if the command executes correctly" do
       @builder.stub!(:successful_execution?).and_return(true)
-      @build.should_receive(:status=).with(true)
-      @builder.execute("blah")
+      mock_build.should_receive(:successful=).with(true)
+      @builder.run_build_script
     end
-
-    it "should set build's status to failure" do
+    
+    it "should set the build status to 'failed' if the command fails" do
       @builder.stub!(:successful_execution?).and_return(false)
-      @build.should_receive(:status=).with(false)
-      @builder.execute("blah")
+      mock_build.should_receive(:successful=).with(false)
+      @builder.run_build_script
     end
   end
 end

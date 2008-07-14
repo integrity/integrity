@@ -17,7 +17,7 @@ describe Integrity::Build do
         :message    => 'started build model'
       },
       :output => 'foo',
-      :status => true
+      :successful => true
     }
     @build.should be_valid
   end
@@ -33,13 +33,13 @@ describe Integrity::Build do
   end
 
   it 'should have a status' do
-    @build.status = true
-    @build.should be_success
+    @build.successful = true
+    @build.should be_successful
   end
 
   it 'should default to failure' do
-    @build.should be_failure
-    @build.should_not be_success
+    @build.should be_failed
+    @build.should_not be_successful
   end
 
   it 'should have a commit' do
@@ -51,18 +51,25 @@ describe Integrity::Build do
     @build.commit[:author].should == 'Simon Rozet <simon@rozet.name>'
   end
 
-  specify 'output should default to ""' do
+  it 'output should default to ""' do
     @build.output.should == ''
   end
 
-  specify 'error should default to ""' do
+  it 'error should default to ""' do
     @build.error.should == ''
   end
 
-  specify '#human_readable_status should return "success" or "fail", depending on status' do
-    @build.stub!(:status).and_return(true)
-    @build.human_readable_status.should == 'Successful'
-    @build.stub!(:status).and_return(false)
-    @build.human_readable_status.should == 'Fail'
+  it '#human_readable_status should return "Build successful" or "Build Failed"' do
+    @build.stub!(:successful?).and_return(true)
+    @build.human_readable_status.should == 'Build Successful'
+    @build.stub!(:successful?).and_return(false)
+    @build.human_readable_status.should == 'Build Failed'
+  end
+  
+  it "should return the status as a symbol (for html classes or the like)" do
+    @build.stub!(:successful?).and_return(true)
+    @build.status.should == :success
+    @build.stub!(:successful?).and_return(false)
+    @build.status.should == :failed
   end
 end
