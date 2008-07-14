@@ -1,3 +1,6 @@
 [submodule "vendor/sinatra"]
 	path = vendor/sinatra
 	url = git://github.com/bmizerany/sinatra.git
+[submodule "vendor/ruby-git"]
+	path = vendor/ruby-git
+	url = git://github.com/schacon/ruby-git.git
