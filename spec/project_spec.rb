@@ -5,18 +5,34 @@ describe Integrity::Project do
     @project = Integrity::Project.new
   end
 
+  after(:each) do
+    DataMapper.auto_migrate!
+  end
+
+  def valid_attributes(attributes={})
+    { :name => "Integrity",
+      :uri => "git://github.com/foca/integrity.git",
+      :permalink => "integrity" }.merge(attributes)
+  end
+
   it 'should not be valid' do
     @project.should_not be_valid
   end
   
   it "needs a name, a permalink, an uri, a branch and a command to be valid" do
-    @project.attributes = { :name => "Integrity", :uri => "git://github.com/foca/integrity.git", :permalink => "integrity" }
+    @project.attributes = valid_attributes
     @project.should be_valid
   end
 
   it 'should have a name' do
     @project.name = 'Integrity'
     @project.name.should == 'Integrity'
+  end
+
+  it 'should validates name uniqueness' do
+    Integrity::Project.create(valid_attributes(:name => 'foobar'))
+    p = Integrity::Project.create(valid_attributes(:name => 'foobar'))
+    p.errors.on(:name).should include('Name is already taken')
   end
 
   it 'should have a repository URI' do

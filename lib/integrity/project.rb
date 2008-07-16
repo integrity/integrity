@@ -19,6 +19,8 @@ module Integrity
     before :save, :set_public
     before :destroy, :delete_code
 
+    validates_is_unique :name
+
     def build
       return if building?
       update_attributes(:building => true)

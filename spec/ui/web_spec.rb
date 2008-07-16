@@ -135,6 +135,13 @@ describe 'Web UI using Sinatra' do
       post_it "/"
       location.should == "/integrity"
     end
+
+    it "display error messages" do
+      mock_project.should_receive(:save).and_return(false)
+      mock_project.errors.stub!(:on).with(:name).and_return('Name is already taken')
+      post_it "/"
+      body.should =~ /with_errors/
+    end
   end
   
   describe "getting a project page" do
