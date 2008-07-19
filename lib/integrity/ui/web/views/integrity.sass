@@ -108,6 +108,21 @@ a
       :margin-top .5em
       :width 8em
       :margin-right .75em
+    .with_errors
+      label
+        :background red
+        :color white
+        :position relative
+        :top -.7em
+      &.required
+        label
+          :position static
+          :margin-right .25em
+          :padding 0 .2em
+      input, textarea
+        :border 2px solid #f22
+        :background #fee
+        :color = !text_color - #111
     .required
       label
         :float none

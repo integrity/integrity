@@ -92,4 +92,13 @@ helpers do
     valid = model.properties.collect {|p| p.name.to_s }
     Hash[*params.dup.select {|k,_| valid.include?(k) }.flatten]
   end
+  
+  def errors_on(object, field)
+    return "" unless errors = object.errors.on(field)
+    errors.map {|e| e.gsub(/#{field} /i, "") }.join(", ")
+  end
+  
+  def error_class(object, field)
+    object.errors.on(field).nil? ? "" : "with_errors"
+  end
 end

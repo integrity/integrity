@@ -18,7 +18,8 @@ describe 'Web UI using Sinatra' do
       :builds => [],
       :build => nil,
       :update_attributes => true,
-      :save => true
+      :save => true,
+      :errors => stub("errors", :on => nil)
     }.merge(messages)
     
     @project ||= stub("project", messages)
@@ -188,6 +189,13 @@ describe 'Web UI using Sinatra' do
       put_it "/integrity"
       status.should == 200
     end
+    
+    it "display error messages" do
+      mock_project.should_receive(:update_attributes).and_return(false)
+      mock_project.errors.stub!(:on).with(:name).and_return("Name can't be blank")
+      put_it "/integrity"
+      body.should =~ /with_errors/
+    end
   end
   
   describe "manually building a project" do
@@ -292,14 +300,12 @@ describe 'Web UI using Sinatra' do
     end
     
     describe "#project_url" do
-      before { @project = stub("Project", :permalink => "cuack") }
-      
       it "should receive a project and return a link to it" do
-        @context.project_url(@project).should == "/cuack"
+        @context.project_url(mock_project).should == "/integrity"
       end
       
       it "should add whatever other arguments are passed as tokens in the path" do
-        @context.project_url(@project, :build, :blah).should == "/cuack/build/blah"
+        @context.project_url(mock_project, :build, :blah).should == "/integrity/build/blah"
       end
     end
     
@@ -311,6 +317,30 @@ describe 'Web UI using Sinatra' do
       
       it "should return a hash with only the keys that are properties of the model" do
         @context.filter_attributes_of(@model).should == { "some" => "arguments", "left" => "unspoken" }
+      end
+    end
+    
+    describe "#error_class" do
+      it "should return an empty string when the object doesn't have errors on the attribute" do
+        mock_project.errors.stub!(:on).with(:some_attribute).and_return(nil)
+        @context.error_class(mock_project, :some_attribute).should == ""
+      end
+
+      it "should return 'with_errors' when the object has errors on the attribute" do
+        mock_project.errors.stub!(:on).with(:name).and_return(["Name can't be blank", "Name must be unique"])
+        @context.error_class(mock_project, :name).should == "with_errors"
+      end
+    end
+    
+    describe "#errors_on" do
+      it "should return an empty string if the object doesn't have errors on the attribute" do
+        mock_project.errors.stub!(:on).with(:uri).and_return(nil)
+        @context.errors_on(mock_project, :uri).should == ""
+      end
+      
+      it "should return the errors messages (without the field names) separated with commas when it has errors" do
+        mock_project.errors.stub!(:on).with(:name).and_return(["Name can't be blank", "Name must be unique"])
+        @context.errors_on(mock_project, :name).should == "can't be blank, must be unique"
       end
     end
   end
