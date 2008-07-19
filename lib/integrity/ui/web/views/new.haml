@@ -1,4 +1,8 @@
-%form{ :method => "post", :action => "/" }
+%form{ :method => "post", :action => (@project.new_record? ? "/" : project_url(@project)) }
+  - unless @project.new_record?
+    .hidden
+      %input{ :name => "_method", :type => "hidden", :value => "put" }
+
   %p.required
     %label{ :for => "project_name" } Name:
     %input.text#project_name{ :name => "name", :type => "text", :value => @project.name }
@@ -20,4 +24,4 @@
     %input.checkbox#project_privacy{ :name => "public", :type => "checkbox", :checked => (@project.public? ? "checked" : "") }
 
   %p.submit
-    %button.positive{ :type => "submit" } Create Project
+    %button.positive{ :type => "submit" }= @project.new_record? ? "Create Project" : "Update Project"

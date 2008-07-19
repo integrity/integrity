@@ -6,20 +6,38 @@ require 'sinatra/test/unit'
 
 describe 'Web UI using Sinatra' do
   
-  before(:each) do
+  def mock_project(messages={})
+    messages = {
+      :name => "Integrity", 
+      :permalink => "integrity", 
+      :new_record? => false, 
+      :uri => "git://github.com/foca/integrity.git", 
+      :branch => "master", 
+      :command => "rake", 
+      :public? => true,
+      :builds => [],
+      :build => nil
+    }.merge(messages)
+    
+    @project ||= stub("project", messages)
+  end
+  
+  before do
     Integrity.stub!(:new) # don't connect to the database on UI tests
     require File.dirname(__FILE__) + '/../../lib/integrity/ui/web'
   end
+  
+  after { @project = nil }
 
   describe "Getting the home page" do
     describe "with no project available" do
-      before(:each) do
+      before do
         Project.stub!(:all).and_return([])
       end
 
       it "should be success" do
         get_it "/"
-        @response.should be_ok
+        status.should == 200
       end
       
       it "should look for projects in the db" do
@@ -29,25 +47,25 @@ describe 'Web UI using Sinatra' do
       
       it "should tell you that you have no projects" do
         get_it "/"
-        @response.body.should =~ /None yet, huh?/
+        body.should =~ /None yet, huh?/
       end
       
       it "should have a link to add a new project" do
         get_it "/"
-        @response.body.should =~ %r(<a href='/new'>.*</a>)
+        body.should =~ %r(<a href='/new'>.*</a>)
       end
     end
     
     describe "with available projects" do
-      before(:each) do
-        @project_1 = stub("Project", :name => "The 1st Project", :permalink => "the-1st-project")
-        @project_2 = stub("Project", :name => "The 2nd Project", :permalink => "the-2nd-project")
+      before do
+        @project_1 = stub("project", :name => "The 1st Project", :permalink => "the-1st-project")
+        @project_2 = stub("project", :name => "The 2nd Project", :permalink => "the-2nd-project")
         Project.stub!(:all).and_return([@project_1, @project_2])
       end
       
       it "should be success" do
         get_it "/"
-        @response.should be_ok
+        status.should == 200
       end
       
       it "should load the projects from the db" do
@@ -57,115 +75,144 @@ describe 'Web UI using Sinatra' do
       
       it "should show a list of the projects" do
         get_it "/"
-        @response.body.should =~ /<ul id='projects'>/
+        body.should =~ /<ul id='projects'>/
       end
       
       it "should have a link to both projects" do
         get_it "/"
-        @response.body.should =~ %r(<a href='/the-1st-project'>The 1st Project</a>)
-        @response.body.should =~ %r(<a href='/the-2nd-project'>The 2nd Project</a>)
+        body.should =~ %r(<a href='/the-1st-project'>The 1st Project</a>)
+        body.should =~ %r(<a href='/the-2nd-project'>The 2nd Project</a>)
       end
 
       it "should have a link to add a new project" do
         get_it "/"
-        @response.body.should =~ %r(<a href='/new'>.*</a>)
+        body.should =~ %r(<a href='/new'>.*</a>)
       end
     end
   end
   
   describe "getting the 'new project' form" do
-    before do
-      @project = stub("project", :name => nil, :uri => nil, :branch => "master", :command => "rake", :public? => true)
-    end
-    
     it "should render successfully" do
       get_it "/new"
-      @response.should be_ok
+      status.should == 200
     end
     
     it "should initialize a new Project instance" do
-      Project.should_receive(:new).and_return(@project)
+      Project.should_receive(:new).and_return mock_project(:new_record? => true, :name => nil, :uri => nil)
       get_it "/new"
     end
     
     it "should render a form that posts back to '/'" do
       get_it "/new"
-      @response.should =~ %r(<form action='/' method='post'>)
+      body.should =~ %r(<form action='/' method='post'>)
     end    
     
     it "should have all the necessary fields" do
       get_it "/new"
-      @response.should =~ %r(<input class='text' id='project_name' name='name' type='text' />)
-      @response.should =~ %r(<input class='text' id='project_repository' name='uri' type='text' />)
-      @response.should =~ %r(<input class='text' id='project_branch' name='branch' type='text' value='master' />)
-      @response.should =~ %r(input checked='checked' class='checkbox' id='project_privacy' name='public' type='checkbox' />)
-      @response.should =~ %r(<textarea id='project_build_script' name='command' rows='1' type='text'>rake</textarea>)
+      body.should =~ %r(<input class='text' id='project_name' name='name' type='text' />)
+      body.should =~ %r(<input class='text' id='project_repository' name='uri' type='text' />)
+      body.should =~ %r(<input class='text' id='project_branch' name='branch' type='text' value='master' />)
+      body.should =~ %r(input checked='checked' class='checkbox' id='project_privacy' name='public' type='checkbox' />)
+      body.should =~ %r(<textarea id='project_build_script' name='command' rows='1' type='text'>rake</textarea>)
     end
   end
   
   describe "creating a new project" do
-    before do
-      @project = stub("project", :name => nil, :uri => nil, :branch => "master", :command => "rake", :public? => true, :permalink => "blah")
-      Project.stub!(:new).with(an_instance_of(Hash)).and_return(@project)
+    before { Project.stub!(:new).and_return(mock_project) }
+
+    it "should re-render the 'new' view when the project has invalid attributes" do
+      mock_project.stub!(:save).and_return(false)
+      post_it "/"
+      status.should == 200
     end
     
-    describe "with invalid attributes" do
-      before { @project.stub!(:save).and_return(false) }
-      
-      it "should re-render the 'new' view" do
-        post_it "/"
-        @response.should be_ok # how do I test I'm rendering a certain view?
-      end
-    end
-    
-    describe "with valid attributes" do
-      before { @project.stub!(:save).and_return(true) }
-      
-      it "should redirect to the new project's page" do
-        post_it "/"
-        @response.location.should == "/blah"
-      end
+    it "should redirect to the new project's page when the project has valid attributes" do
+      mock_project.stub!(:save).and_return(true)
+      post_it "/"
+      location.should == "/integrity"
     end
   end
   
   describe "getting a project page" do
-    before do
-      @project = stub("project", :name => "Integrity", :permalink => "integrity", :builds => [])
-      Project.stub!(:first).with(:permalink => "integrity").and_return(@project)
+    it "should be success" do
+      Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
+      get_it "/integrity"
+      status.should == 200
     end
+  end
+  
+  describe "getting a project's edit form" do
+    before { Project.stub!(:first).with(:permalink => "integrity").and_return mock_project }
     
     it "should be success" do
-      get_it "/integrity"
-      @response.should be_ok
+      get_it "/integrity/edit"
+      status.should == 200
+    end
+    
+    it "should render the form pointed at the projects permalink" do
+      get_it "/integrity/edit"
+      body.should =~ %r(form action='/integrity')
+    end
+    
+    it "should use http PUT as the form method" do
+      get_it "/integrity/edit"
+      body.should =~ %r(form.*method='post')
+      body.should =~ %r(input name='_method' type='hidden' value='put')
+    end
+    
+    it "should prepopulate the form with the properties of the project" do
+      get_it "/integrity/edit"
+      body.should =~ %r(<input class='text' id='project_name' name='name' type='text' value='Integrity' />)
+      body.should =~ %r(<input class='text' id='project_repository' name='uri' type='text' value='git://github.com/foca/integrity.git' />)
+      body.should =~ %r(<input class='text' id='project_branch' name='branch' type='text' value='master' />)
+      body.should =~ %r(input checked='checked' class='checkbox' id='project_privacy' name='public' type='checkbox' />)
+      body.should =~ %r(<textarea id='project_build_script' name='command' rows='1' type='text'>rake</textarea>)
+    end
+  end
+  
+  describe "updating a project" do
+    before do
+      Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
+      Rack::Response.class_eval { def filter_params_as_attributes_of(klass); {}; end } # yikes
+    end
+    
+    it "should redirect to the project page if the update is valid" do
+      mock_project.should_receive(:update_attributes).and_return(true)
+      put_it "/integrity"
+      location.should == "/integrity"
+    end
+    
+    it "should re-render the form if the update isn't valid" do
+      mock_project.should_receive(:update_attributes).and_return(false)
+      put_it "/integrity"
+      status.should == 200
     end
   end
   
   describe "manually building a project" do
-    before do
-      @project = stub("project", :permalink => "integrity", :build => true)
-      Project.stub!(:first).with(:permalink => "integrity").and_return(@project)
-    end
-    
     it "should build the project" do
-      @project.should_receive(:build)
+      Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
+      mock_project.should_receive(:build)
       post_it "/integrity/build"
     end
     
     it "should redirect back to the project" do
+      Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
       post_it "/integrity/build"
-      @response.location.should == "/integrity"
+      follow!
+      status.should == 200
     end
   end
   
   describe "getting the site stylesheet" do
     it "should render successfully" do
       get_it "/integrity.css"
-      @response.should be_ok
+      status.should == 200
     end
 
     it "should render with the text/css mime type" do
       get_it "/integrity.css"
-      @response.headers["Content-Type"].should =~ %r(^text/css)
+      headers["Content-Type"].should =~ %r(^text/css)
     end
   end
   
@@ -197,7 +244,11 @@ describe 'Web UI using Sinatra' do
     end
     
     describe "#breadcrumbs" do
-      before { @context.stub!(:pages).and_return([["home", "/"], ["about", "/about"], ["other page", "/other"]]) }
+      before do
+        @project = stub("Project", :permalink => "the-great-project")
+        @context.instance_variable_set(:@project, @project)
+        @context.stub!(:pages).and_return([["home", "/"], ["about", "/about"], ["other page", "/other"]]) 
+      end
       
       it "should, when passed only one argument, return a single element array with the argument untouched" do
         @context.breadcrumbs("test").should == ["test"]
@@ -209,6 +260,11 @@ describe 'Web UI using Sinatra' do
       
       it "should give the arguments in the given order, no matter how they appear on the #pages list" do
         @context.breadcrumbs("about", "home", "other page").should == ['<a href="/about">about</a>', '<a href="/">home</a>', 'other page']
+      end
+      
+      it "should use #project_url if one of the breadcrumbs isn't in the pages array and matches the current project permalink" do
+        @context.should_receive(:project_url).with(@project).and_return("/the-great-project")
+        @context.breadcrumbs("home", "the-great-project", "edit")
       end
     end
     
@@ -243,6 +299,17 @@ describe 'Web UI using Sinatra' do
       
       it "should add whatever other arguments are passed as tokens in the path" do
         @context.project_url(@project, :build, :blah).should == "/cuack/build/blah"
+      end
+    end
+    
+    describe "#filter_attributes_of" do
+      before do
+        @context.stub!(:params).and_return("some" => "arguments", "are" => "better", "left" => "unspoken")
+        @model = stub("a class", :properties => [stub("prop", :name => "some"), stub("prop", :name => "left")])
+      end
+      
+      it "should return a hash with only the keys that are properties of the model" do
+        @context.filter_attributes_of(@model).should == { "some" => "arguments", "left" => "unspoken" }
       end
     end
   end

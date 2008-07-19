@@ -29,7 +29,21 @@ end
 
 get "/:project" do
   @project = Project.first(:permalink => params[:project])
-  show :project, :title => ["projects", @project.name]
+  show :project, :title => ["projects", @project.permalink]
+end
+
+put "/:project" do
+  @project = Project.first(:permalink => params[:project])
+  if @project.update_attributes(filter_params_as_attributes_of(Project))
+    redirect project_url(@project)
+  else
+    show :new, :title => ["projects", @project.permalink, "edit"]
+  end
+end
+
+get "/:project/edit" do
+  @project = Project.first(:permalink => params[:project])
+  show :new, :title => ["projects", @project.permalink, "edit"]
 end
 
 post "/:project/build" do
@@ -50,13 +64,16 @@ helpers do
   end
   
   def pages
-    @pages ||= [["projects", "/"], ["new project", "/new"]]
+    @pages ||= [["projects", "/"], ["new project", "/new"], ["edit", nil]]
   end
   
   def breadcrumbs(*crumbs)
     crumbs[0..-2].map do |crumb|
-      page_data = pages.detect {|c| c.first == crumb }
-      %Q(<a href="#{page_data.last}">#{page_data.first}</a>)
+      if page_data = pages.detect {|c| c.first == crumb }
+        %Q(<a href="#{page_data.last}">#{page_data.first}</a>)
+      elsif @project && @project.permalink == crumb
+        %Q(<a href="#{project_url(@project)}">#{@project.permalink}</a>)
+      end
     end + [crumbs.last]
   end
   
@@ -69,5 +86,10 @@ helpers do
   
   def project_url(project, *path)
     "/" << [project.permalink, *path].join("/")
+  end
+  
+  def filter_attributes_of(model)
+    valid = model.properties.collect {|p| p.name.to_s }
+    Hash[*params.dup.select {|k,_| valid.include?(k) }.flatten]
   end
 end
