@@ -77,6 +77,30 @@ describe Integrity::Project do
       @project.permalink.should == "ends-in-symbols"
     end
   end
+  
+  describe "Ensuring the public/private status" do
+    before do
+      @project = Integrity::Project.new(:name => "Integrity", :uri => "git://github.com/foca/integrity.git")
+    end
+    
+    it "should be public after saving" do
+      @project.public = true
+      @project.save
+      @project.reload.should be_public
+    end
+    
+    it "should not be public if set to false" do
+      @project.public = false
+      @project.save
+      @project.reload.should_not be_public
+    end
+    
+    it "should be public if set to any non-false value" do
+      @project.public = "on"
+      @project.save
+      @project.reload.should be_public
+    end
+  end
 
   describe 'When building it' do
     before(:each) do

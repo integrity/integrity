@@ -15,6 +15,7 @@ module Integrity
     
     has n, :builds, :class_name => "Integrity::Build"
     before :save, :set_permalink
+    before :save, :set_public
 
     def build
       return if building?
@@ -34,6 +35,10 @@ module Integrity
     end
     
     private
+    
+      def set_public
+        self.public = !!(public)
+      end
     
       def set_permalink
         self.permalink = (name || "").downcase.
