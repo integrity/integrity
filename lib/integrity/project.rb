@@ -38,7 +38,8 @@ module Integrity
         self.permalink = (name || "").downcase.
           gsub(/'s/, "s").
           gsub(/&/, "and").
-          gsub(/[^a-z0-9]+/i, "-")
+          gsub(/[^a-z0-9]+/, "-").
+          gsub(/-*$/, "")
       end
   end
 end

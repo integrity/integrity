@@ -70,6 +70,12 @@ describe Integrity::Project do
       @project.save
       @project.permalink.should == "focas-awesome-project-and-strange-name"
     end
+    
+    it "should not end up having dashes at the end" do
+      @project.name = "Ends in symbols!@%^"
+      @project.save
+      @project.permalink.should == "ends-in-symbols"
+    end
   end
 
   describe 'When building it' do
@@ -125,7 +131,8 @@ describe Integrity::Project do
     
     it "should find the 'tail' of builds by searching for all the builds, with offset 1" do
       pending "why doesn't this work?"
-      @project.builds.should_receive(:all).with hash_including(:offset => 1)
+      @project.builds.stub!(:count).and_return(5)
+      @project.builds.should_receive(:all).with hash_including(:offset => 1, :limit => 4)
       @project.previous_builds
     end
     
