@@ -128,5 +128,10 @@ describe Integrity::Builder do
       FileUtils.should_receive(:rm_r).with("/var/integrity/exports/foca-integrity")
       @builder.delete_code
     end
+    
+    it "should not complain if the directory isn't there (e.g, a project with no builds)" do
+      FileUtils.stub!(:rm_r).and_raise(Errno::ENOENT)
+      lambda { @builder.delete_code }.should_not raise_error
+    end
   end
 end

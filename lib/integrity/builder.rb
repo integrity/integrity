@@ -22,6 +22,8 @@ module Integrity
     
     def delete_code
       FileUtils.rm_r export_directory
+    rescue Errno::ENOENT
+      nil
     end
 
     private
