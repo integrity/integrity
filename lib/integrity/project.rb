@@ -14,8 +14,10 @@ module Integrity
     property :updated_at, DateTime
     
     has n, :builds, :class_name => "Integrity::Build"
+
     before :save, :set_permalink
     before :save, :set_public
+    before :destroy, :delete_code
 
     def build
       return if building?
@@ -46,6 +48,11 @@ module Integrity
           gsub(/&/, "and").
           gsub(/[^a-z0-9]+/, "-").
           gsub(/-*$/, "")
+      end
+      
+      def delete_code
+        builds.destroy!
+        Builder.new(self).delete_code
       end
   end
 end

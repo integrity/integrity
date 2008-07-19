@@ -122,4 +122,11 @@ describe Integrity::Builder do
       @builder.run_build_script
     end
   end
+  
+  describe "When deleting the code for a project" do
+    it "should remove the directory from disk" do
+      FileUtils.should_receive(:rm_r).with("/var/integrity/exports/foca-integrity")
+      @builder.delete_code
+    end
+  end
 end

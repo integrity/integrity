@@ -173,4 +173,23 @@ describe Integrity::Project do
       @project.previous_builds.should be_empty
     end
   end
+  
+  describe "Getting destroyed" do
+    before do
+      @builder = mock("Builder", :delete_code => true)
+      Integrity::Builder.stub!(:new).with(@project).and_return(@builder)
+      @project.update_attributes(:name => "Integrity", :uri => "git://github.com/foca/integrity.git")
+      @project.builds.stub!(:destroy!)
+    end
+    
+    it "should delete all the project builds" do
+      @project.builds.should_receive(:destroy!)
+      @project.destroy
+    end
+    
+    it "should tell the builder to delete the code for this project" do
+      @builder.should_receive(:delete_code).and_return(true)
+      @project.destroy
+    end
+  end
 end

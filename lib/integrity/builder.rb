@@ -1,4 +1,5 @@
 require 'open3'
+require 'fileutils'
 
 module Integrity
   class Builder
@@ -17,6 +18,10 @@ module Integrity
     ensure
       @build.commit = @scm.head
       @build.save
+    end
+    
+    def delete_code
+      FileUtils.rm_r export_directory
     end
 
     private
