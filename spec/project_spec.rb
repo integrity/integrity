@@ -124,22 +124,29 @@ describe Integrity::Project do
   end
   
   describe "When searching for its builds" do
+    before do
+      @project.update_attributes(:name => "Integrity", :uri => "git://github.com/foca/integrity.git")
+      commit = { :author => "someguy", :identifier => "commit sha", :date => "yesterday" }
+      5.times {|i| @project.builds.create(:output => "o", :error => "e", :commit => commit) }
+    end
+    
     it "should find the last build by ordering chronologically" do
       @project.builds.should_receive(:first).with hash_including(:order => [:created_at.desc])
       @project.last_build
     end
     
-    it "should find the 'tail' of builds by searching for all the builds, with offset 1" do
-      pending "why doesn't this work?"
-      @project.builds.stub!(:count).and_return(5)
-      @project.builds.should_receive(:all).with hash_including(:offset => 1, :limit => 4)
-      @project.previous_builds
+    it "should have 4 previous builds" do
+      @project.should have(4).previous_builds
     end
     
-    it "should find the 'tail' of builds ordering them chronologically" do
-      pending "why doesn't this work?"
-      @project.builds.should_receive(:all).with hash_including(:order => [:created_at.desc])
-      @project.previous_builds
+    it "should return an empty array if it has only one build" do
+      @project.builds.to_a[1..-1].map {|b| b.destroy }
+      @project.previous_builds.should be_empty
+    end
+    
+    it "should return an empty array if there are no builds" do
+      @project.builds.map {|b| b.destroy }
+      @project.previous_builds.should be_empty
     end
   end
 end
