@@ -41,6 +41,12 @@ put "/:project" do
   end
 end
 
+delete "/:project" do
+  @project = Project.first(:permalink => params[:project])
+  @project.destroy
+  redirect "/"
+end
+
 get "/:project/edit" do
   @project = Project.first(:permalink => params[:project])
   show :new, :title => ["projects", @project.permalink, "edit"]
@@ -58,6 +64,9 @@ get "/integrity.css" do
 end
 
 helpers do
+  include Rack::Utils
+  alias_method :h, :escape_html
+  
   def show(view, options={})
     @title = breadcrumbs(*options[:title])
     haml view
@@ -100,5 +109,9 @@ helpers do
   
   def error_class(object, field)
     object.errors.on(field).nil? ? "" : "with_errors"
+  end
+  
+  def checkbox(name, condition)
+    { :name => name, :type => "checkbox" }.merge(condition ? { :checked => "checked" } : {})
   end
 end

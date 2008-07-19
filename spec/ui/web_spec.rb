@@ -19,6 +19,7 @@ describe 'Web UI using Sinatra' do
       :build => nil,
       :update_attributes => true,
       :save => true,
+      :destroy => nil,
       :errors => stub("errors", :on => nil)
     }.merge(messages)
     
@@ -112,11 +113,11 @@ describe 'Web UI using Sinatra' do
     
     it "should have all the necessary fields" do
       get_it "/new"
-      body.should =~ %r(<input class='text' id='project_name' name='name' type='text' />)
-      body.should =~ %r(<input class='text' id='project_repository' name='uri' type='text' />)
+      body.should =~ %r(<input class='text' id='project_name' name='name' type='text' value='' />)
+      body.should =~ %r(<input class='text' id='project_repository' name='uri' type='text' value='' />)
       body.should =~ %r(<input class='text' id='project_branch' name='branch' type='text' value='master' />)
-      body.should =~ %r(input checked='checked' class='checkbox' id='project_privacy' name='public' type='checkbox' />)
-      body.should =~ %r(<textarea id='project_build_script' name='command' rows='1' type='text'>rake</textarea>)
+      body.should =~ %r(input checked='checked' class='checkbox' id='project_public' name='public' type='checkbox' />)
+      body.should =~ %r(<textarea cols='40' id='project_build_script' name='command' rows='1'>rake</textarea>)
     end
   end
   
@@ -168,8 +169,8 @@ describe 'Web UI using Sinatra' do
       body.should =~ %r(<input class='text' id='project_name' name='name' type='text' value='Integrity' />)
       body.should =~ %r(<input class='text' id='project_repository' name='uri' type='text' value='git://github.com/foca/integrity.git' />)
       body.should =~ %r(<input class='text' id='project_branch' name='branch' type='text' value='master' />)
-      body.should =~ %r(input checked='checked' class='checkbox' id='project_privacy' name='public' type='checkbox' />)
-      body.should =~ %r(<textarea id='project_build_script' name='command' rows='1' type='text'>rake</textarea>)
+      body.should =~ %r(input checked='checked' class='checkbox' id='project_public' name='public' type='checkbox' />)
+      body.should =~ %r(<textarea cols='40' id='project_build_script' name='command' rows='1'>rake</textarea>)
     end
   end
   
@@ -195,6 +196,25 @@ describe 'Web UI using Sinatra' do
       mock_project.errors.stub!(:on).with(:name).and_return("Name can't be blank")
       put_it "/integrity"
       body.should =~ /with_errors/
+    end
+  end
+  
+  describe "deleting a project" do
+    it "should load the project" do
+      Project.should_receive(:first).with(:permalink => "integrity").and_return mock_project
+      delete_it "/integrity"
+    end
+    
+    it "should destroy the project" do
+      Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
+      mock_project.should_receive(:destroy)
+      delete_it "/integrity"
+    end
+    
+    it "should redirect to the home page" do
+      Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
+      delete_it "/integrity"
+      location.should == "/"
     end
   end
   
@@ -341,6 +361,13 @@ describe 'Web UI using Sinatra' do
       it "should return the errors messages (without the field names) separated with commas when it has errors" do
         mock_project.errors.stub!(:on).with(:name).and_return(["Name can't be blank", "Name must be unique"])
         @context.errors_on(mock_project, :name).should == "can't be blank, must be unique"
+      end
+    end
+    
+    describe "#checkbox" do
+      it "should generate the correct attributes for a checkbox" do
+        @context.checkbox(:cuack, true).should == { :name => :cuack, :type => "checkbox", :checked => "checked" }
+        @context.checkbox(:cuack, false).should == { :name => :cuack, :type => "checkbox" }
       end
     end
   end

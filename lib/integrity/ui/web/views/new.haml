@@ -7,29 +7,38 @@
     %label{ :for => "project_name" } 
       Name
       = errors_on @project, :name
-    %input.text#project_name{ :name => "name", :type => "text", :value => @project.name }
+    %input.text#project_name{ :name => "name", :type => "text", :value => h(@project.name) }
     
   %p.required{ :class => error_class(@project, :uri) }
     %label{ :for => "project_repository" } 
       Git repository
       = errors_on @project, :uri
-    %input.text#project_repository{ :name => "uri", :type => "text", :value => @project.uri }
+    %input.text#project_repository{ :name => "uri", :type => "text", :value => h(@project.uri) }
       
   %p.normal{ :class => error_class(@project, :branch) }
     %label{ :for => "project_branch" }
       Branch to track
       = errors_on @project, :branch
-    %input.text#project_branch{ :name => "branch", :type => "text", :value => "master", :value => @project.branch }
+    %input.text#project_branch{ :name => "branch", :type => "text", :value => "master", :value => h(@project.branch) }
   
   %p.normal{ :class => error_class(@project, :command) }
     %label{ :for => "project_build_script" } 
       Build script
       = errors_on @project, :command
-    %textarea#project_build_script{ :name => "command", :type => "text", :rows => 1 }= @project.command.to_s
+    %textarea#project_build_script{ :name => "command", :cols => 40, :rows => 1 }=h @project.command.to_s
 
   %p.normal.checkbox
-    %label{ :for => "project_privacy" } Public project:
-    %input.checkbox#project_privacy{ :name => "public", :type => "checkbox", :checked => (@project.public? ? "checked" : "") }
+    %label{ :for => "project_public" } Public project:
+    %input.checkbox#project_public{ checkbox(:public, @project.public?) }
 
   %p.submit
     %button.positive{ :type => "submit" }= @project.new_record? ? "Create Project" : "Update Project"
+
+- unless @project.new_record?
+  %form{ :method => "post", :action => project_url(@project) }
+    .hidden
+      %input{ :name => "_method", :type => "hidden", :value => "delete" }
+    %h2 Delete this project
+    %p.submit.destroy
+      This will delete the project and all the builds in the system
+      %button.negative{ :type => "submit" } Yes, I'm sure, nuke it
