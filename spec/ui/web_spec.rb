@@ -16,7 +16,9 @@ describe 'Web UI using Sinatra' do
       :command => "rake", 
       :public? => true,
       :builds => [],
-      :build => nil
+      :build => nil,
+      :update_attributes => true,
+      :save => true
     }.merge(messages)
     
     @project ||= stub("project", messages)
@@ -173,7 +175,6 @@ describe 'Web UI using Sinatra' do
   describe "updating a project" do
     before do
       Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
-      Rack::Response.class_eval { def filter_params_as_attributes_of(klass); {}; end } # yikes
     end
     
     it "should redirect to the project page if the update is valid" do

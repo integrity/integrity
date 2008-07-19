@@ -34,7 +34,7 @@ end
 
 put "/:project" do
   @project = Project.first(:permalink => params[:project])
-  if @project.update_attributes(filter_params_as_attributes_of(Project))
+  if @project.update_attributes(filter_attributes_of(Project))
     redirect project_url(@project)
   else
     show :new, :title => ["projects", @project.permalink, "edit"]
