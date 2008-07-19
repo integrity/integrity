@@ -1,16 +1,4 @@
 module Integrity
-  module RubyGit # name collissions! :-\
-    require Integrity.root / "vendor" / "ruby-git" / "lib" / "git"
-    
-    def self.open(*args)
-      Git.open(*args)
-    end
-    
-    def self.clone(*args)
-      Git.clone(*args)
-    end
-  end
-
   module SCM
     class Git
       attr_reader :uri, :branch, :working_directory
@@ -27,31 +15,43 @@ module Integrity
       end
       
       def head
-        if @head
-          @head
-        else
-          commit = repo.object("HEAD")
-          @head = { :author => "#{commit.author.name} <#{commit.author.email}>",
-                    :identifier => repo.revparse("HEAD"),
-                    :message => commit.message }
-        end
+        @head ||= commit_info("HEAD")
       end
       
       private
-
-        def repo
-          @repo ||= RubyGit.open(working_directory)
-        rescue ArgumentError
-          @repo = RubyGit.clone(uri, working_directory)
-        end
         
         def fetch_code
-          repo.checkout(branch) unless repo.branch.name == branch
-          repo.pull
+          clone unless cloned?
+          checkout unless on_branch?
+          pull
         end
-      
+        
         def chdir(&in_working_copy)
-          repo.chdir(&in_working_copy)
+          Dir.chdir(working_directory, &in_working_copy)
+        end
+    
+        def clone
+          system "git clone #{uri} #{working_directory}"
+        end
+        
+        def checkout
+          chdir { system "git checkout -b #{branch} origin/#{branch}" }
+        end
+        
+        def pull
+          chdir { system "git pull" }
+        end
+
+        def commit_info(treeish)
+          chdir { YAML.load(`git show -s --pretty=format:"---%n:identifier: %H%n:author: %an <%ae>%n:message: %s%n" #{treeish}`) }
+        end
+        
+        def cloned?
+          File.directory?(working_directory / ".git")
+        end
+        
+        def on_branch?
+          chdir { File.basename(`git symbolic-ref HEAD`).chomp == branch }
         end
     end
   end

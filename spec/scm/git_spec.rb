@@ -1,12 +1,8 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe Integrity::SCM::Git do
-  def mock_repo
-    @repo ||= mock("ruby-git repo")
-  end
-  
   before do
-    Integrity::SCM::Git.class_eval { public :repo, :fetch_code, :chdir }
+    Integrity::SCM::Git.class_eval { public :fetch_code, :chdir, :clone, :checkout, :pull, :commit_info, :cloned?, :on_branch? }
     @git = Integrity::SCM::Git.new("git://github.com/foca/integrity.git", "master", "/var/integrity/exports/foca-integrity")
   end
   
@@ -22,48 +18,58 @@ describe Integrity::SCM::Git do
     @git.working_directory.should == "/var/integrity/exports/foca-integrity"
   end
   
-  describe "Connecting to the repo" do
-    it "should try to open a local copy of the repository" do
-      Integrity::RubyGit.should_receive(:open).with("/var/integrity/exports/foca-integrity").and_return(mock_repo)
-      @git.repo
+  describe "Determining the state of the code for this project" do
+    it "should know if a project has been cloned or not by looking at the directories" do
+      File.stub!(:directory?).with("/var/integrity/exports/foca-integrity/.git").and_return(true)
+      @git.should be_cloned
     end
     
-    it "should try to clone the repo if there's no local copy" do
-      Integrity::RubyGit.should_receive(:open).and_raise(ArgumentError)
-      Integrity::RubyGit.should_receive(:clone).with(
-        "git://github.com/foca/integrity.git", 
-        "/var/integrity/exports/foca-integrity"
-      )
-      @git.repo
+    it "should know if a checkout is on the current branch by asking git the branch" do
+      @git.stub!(:chdir).and_yield
+      @git.should_receive(:`).with("git symbolic-ref HEAD").and_return("refs/heads/master\n")
+      @git.should be_on_branch
     end
     
-    it "should memoize the repository instead of trying to open it twice" do
-      Integrity::RubyGit.should_receive(:open).exactly(:once).and_return(mock_repo)
-      2.times { @git.repo }
+    it "should tell you if it's not in the desired branch" do
+      @git.stub!(:chdir).and_yield
+      @git.should_receive(:`).with("git symbolic-ref HEAD").and_return("refs/heads/other_branch\n")
+      @git.should_not be_on_branch
     end
   end
   
   describe "Fetching the code from the repo" do
     before do
-      @git.stub!(:repo).and_return(mock_repo)
-      mock_repo.stub!(:branch).and_return stub("branch", :name => "master")
-      mock_repo.stub!(:checkout).with("production")
-      mock_repo.stub!(:pull)
+      @git.stub!(:on_branch?).and_return(true)
+      @git.stub!(:cloned?).and_return(true)
+      @git.stub!(:pull)
+    end
+    
+    it "should clone the repository if it hasn't already" do
+      @git.stub!(:cloned?).and_return(false)
+      @git.should_receive(:clone)
+      @git.fetch_code
+    end
+    
+    it "should not clone the repository if it has done so before" do
+      @git.stub!(:cloned?).and_return(true)
+      @git.should_not_receive(:clone)
+      @git.fetch_code
     end
     
     it "should checkout the branch if it's not on it" do
-      mock_repo.stub!(:branch).and_return stub("branch", :name => "blah")
-      mock_repo.should_receive(:checkout).with("master")
+      @git.stub!(:on_branch?).and_return(false)
+      @git.should_receive(:checkout)
       @git.fetch_code
     end
     
     it "should not checkout the branch if it's already on it" do
-      mock_repo.should_not_receive(:checkout).with("master")
+      @git.stub!(:on_branch?).and_return(true)
+      @git.should_not_receive(:checkout)
       @git.fetch_code
     end
     
     it "should pull the code" do
-      mock_repo.should_receive(:pull)
+      @git.should_receive(:pull)
       @git.fetch_code
     end
   end
@@ -71,12 +77,11 @@ describe Integrity::SCM::Git do
   describe "Changing the current directory to that of the checkout" do
     it "should let ruby-git handle it by forwarding the call" do
       block = lambda { "cuack" }
-      @git.stub!(:repo).and_return(mock_repo)
-      mock_repo.should_receive(:chdir).with(&block).and_yield
+      Dir.should_receive(:chdir).with("/var/integrity/exports/foca-integrity", &block)
       @git.chdir(&block)
     end
   end
-  
+
   describe "Running code in the context of the most recent checkout" do
     before do
       @block = lambda { "cuack" }
@@ -95,47 +100,44 @@ describe Integrity::SCM::Git do
     end
   end
   
-  describe "Getting information about the HEAD" do
+  describe "Getting information about a commit" do
     before do
-      @head = mock("commit", 
-        :message => "blah", 
-        :author => mock("author", 
-          :name => "John Doe", 
-          :email => "john@example.com"
-        )
-      )
-      mock_repo.stub!(:object).with("HEAD").and_return @head
-      mock_repo.stub!(:revparse).with("HEAD").and_return "12a3f45b"
-      @git.stub!(:repo).and_return(mock_repo)
+      @serialized = ["---",
+                     ":identifier: 7e4f36231776ea4401b6e385df5f43c11633d59f",
+                     ":author: Nicolás Sanguinetti <contacto@nicolassanguinetti.info>",
+                     ":message: A beautiful commit"] * "\n"
+      @git.stub!(:chdir).and_yield
+      @git.stub!(:`).and_return @serialized
     end
     
-    it "should get the commit's message" do
-      @git.head[:message].should == "blah"
+    it "should switch to the project's directory" do
+      @git.should_receive(:chdir).and_yield
+      @git.commit_info("HEAD")
     end
     
-    it "should get the commit's author, nicely formatted" do
-      @git.head[:author].should == "John Doe <john@example.com>"
+    it "should ask git for the commit" do
+      @git.should_receive(:`).with(/^git show -s.*HEAD/).and_return(@serialized)
+      @git.commit_info("HEAD")
     end
     
-    it "should get the commit's sha" do
-      @git.head[:identifier].should == "12a3f45b"
+    it "should ask YAML to interpret the serialized info" do
+      YAML.should_receive(:load).with(@serialized).and_return({})
+      @git.commit_info("HEAD")
     end
     
-    it "should memoize the commit's information" do
-      mock_repo.should_receive(:object).with("HEAD").exactly(:once).and_return(@head)
-      2.times { @git.head }
+    it "should return a hash with all the relevant information" do
+      @git.commit_info("HEAD").should == {
+        :identifier => "7e4f36231776ea4401b6e385df5f43c11633d59f",
+        :author => "Nicolás Sanguinetti <contacto@nicolassanguinetti.info>",
+        :message => "A beautiful commit"
+      }
     end
   end
   
-  describe "The namespacing hack to get ruby-git to work with SCM::Git" do
-    it "should forward calls from RubyGit.open to Git.open" do
-      Git.should_receive(:open).with("doesnt", "matter")
-      Integrity::RubyGit.open("doesnt", "matter")
-    end
-    
-    it "should forward calls from RubyGit.clone to Git.clone" do
-      Git.should_receive(:clone).with("doesnt", "matter")
-      Integrity::RubyGit.clone("doesnt", "matter")
+  describe "Getting the HEAD of the repo" do
+    it "should pass down the request to #commit_info" do
+      @git.should_receive(:commit_info).with("HEAD")
+      @git.head
     end
   end
 end
