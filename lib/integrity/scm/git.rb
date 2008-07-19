@@ -27,22 +27,22 @@ module Integrity
       end
       
       def head
-        @head ||= begin
+        if @head
+          @head
+        else
           commit = repo.object("HEAD")
-          { :author => "#{commit.author.name} <#{commit.author.email}>",
-            :identifier => commit.sha,
-            :message => commit.message }
+          @head = { :author => "#{commit.author.name} <#{commit.author.email}>",
+                    :identifier => repo.revparse("HEAD"),
+                    :message => commit.message }
         end
       end
       
       private
 
         def repo
-          @repo ||= begin
-            RubyGit.open(working_directory)
-          rescue ArgumentError
-            RubyGit.clone(uri, working_directory)
-          end
+          @repo ||= RubyGit.open(working_directory)
+        rescue ArgumentError
+          @repo = RubyGit.clone(uri, working_directory)
         end
         
         def fetch_code

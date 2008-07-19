@@ -98,7 +98,6 @@ describe Integrity::SCM::Git do
   describe "Getting information about the HEAD" do
     before do
       @head = mock("commit", 
-        :sha => "HEAD", # what do I do to get the actual SHA?
         :message => "blah", 
         :author => mock("author", 
           :name => "John Doe", 
@@ -106,6 +105,7 @@ describe Integrity::SCM::Git do
         )
       )
       mock_repo.stub!(:object).with("HEAD").and_return @head
+      mock_repo.stub!(:revparse).with("HEAD").and_return "12a3f45b"
       @git.stub!(:repo).and_return(mock_repo)
     end
     
@@ -118,8 +118,7 @@ describe Integrity::SCM::Git do
     end
     
     it "should get the commit's sha" do
-      pending "find out how to get the actual sha instead of 'HEAD'"
-      @git.head[:sha].should == "12a3f45b"
+      @git.head[:identifier].should == "12a3f45b"
     end
     
     it "should memoize the commit's information" do
