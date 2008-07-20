@@ -27,11 +27,6 @@ describe Integrity::Build do
     @build.output.should == 'foo'
   end
 
-  it 'should have error' do
-    @build.error = 'err!'
-    @build.error.should == 'err!'
-  end
-
   it 'should have a status' do
     @build.successful = true
     @build.should be_successful
@@ -53,10 +48,6 @@ describe Integrity::Build do
 
   it 'output should default to ""' do
     @build.output.should == ''
-  end
-
-  it 'error should default to ""' do
-    @build.error.should == ''
   end
 
   it '#human_readable_status should return "Build successful" or "Build Failed"' do

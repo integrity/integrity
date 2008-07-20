@@ -11,7 +11,7 @@ describe Integrity::Builder do
   
   def mock_build(messages={})
     @build ||= begin
-      messages = { :project => mock_project, :commit= => {}, :output => "", :error => "", :successful= => true, :save => true }.merge(messages)
+      messages = { :project => mock_project, :commit= => {}, :output= => nil, :output => "", :error => "", :successful= => true, :save => true }.merge(messages)
       mock("build", messages)
     end
   end
@@ -89,24 +89,18 @@ describe Integrity::Builder do
   
   describe "When running the command" do
     before do
-      @stdout = mock("stdout", :read => "out")
-      @stderr = mock("stderr", :read => "err")
-      Open3.stub!(:popen3).and_yield("", @stdout, @stderr)
+      @pipe = mock("pipe", :read => "output and errors")
+      IO.stub!(:popen).and_yield(@pipe)
       $?.stub!(:success?).and_return(true)
     end
     
     it "should run the build_script" do
-      Open3.should_receive(:popen3).with("rake")
+      IO.should_receive(:popen).with("(rake) 2>&1", "r")
       @builder.run_build_script
     end
     
     it "should write stdout to the build's output log" do
-      mock_build.output.should_receive(:<<).with("out")
-      @builder.run_build_script
-    end
-    
-    it "should write stderr to the build's error log" do
-      mock_build.error.should_receive(:<<).with("err")
+      mock_build.should_receive(:output=).with("output and errors")
       @builder.run_build_script
     end
     

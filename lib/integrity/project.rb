@@ -30,7 +30,7 @@ module Integrity
     end
     
     def last_build
-      builds.first(:order => [:created_at.desc])
+      builds.last
     end
     
     def previous_builds
@@ -40,6 +40,7 @@ module Integrity
     
     private
     
+      # DM refuses to set "on" as true.
       def set_public
         self.public = !!(public)
       end

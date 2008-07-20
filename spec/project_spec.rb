@@ -1,13 +1,8 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 describe Integrity::Project do
-  before(:each) do
-    @project = Integrity::Project.new
-  end
-
-  after(:each) do
-    DataMapper.auto_migrate!
-  end
+  before { @project = Integrity::Project.new }
+  after  { Integrity::Project.all.destroy! }
 
   def valid_attributes(attributes={})
     { :name => "Integrity",
@@ -171,7 +166,7 @@ describe Integrity::Project do
     end
     
     it "should find the last build by ordering chronologically" do
-      @project.builds.should_receive(:first).with hash_including(:order => [:created_at.desc])
+      @project.builds.should_receive(:last)
       @project.last_build
     end
     

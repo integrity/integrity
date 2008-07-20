@@ -1,4 +1,3 @@
-require 'open3'
 require 'fileutils'
 
 module Integrity
@@ -33,9 +32,8 @@ module Integrity
       end
 
       def run_build_script
-        Open3.popen3 build_script do |_, stdout, stderr|
-          @build.output << stdout.read
-          @build.error << stderr.read
+        IO.popen "(#{build_script}) 2>&1", "r" do |pipe|
+          @build.output = pipe.read
           @build.successful = successful_execution?
         end
       end
