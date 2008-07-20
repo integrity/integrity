@@ -25,7 +25,7 @@ describe Integrity::Builder do
   
   before do
     Integrity.stub!(:config).and_return(:export_directory => "/var/integrity/exports")
-    Integrity::Builder.class_eval { public :export_directory, :run_build_script, :successful_execution? }
+    Integrity::Builder.class_eval { public :export_directory, :run_build_script }
   end
   
   describe 'When initializing' do
@@ -113,13 +113,13 @@ describe Integrity::Builder do
     end
     
     it "should set the build status to 'successful' if the command executes correctly" do
-      @builder.stub!(:successful_execution?).and_return(true)
+      $?.should_receive(:success?).and_return(true)
       mock_build.should_receive(:successful=).with(true)
       @builder.run_build_script
     end
     
     it "should set the build status to 'failed' if the command fails" do
-      @builder.stub!(:successful_execution?).and_return(false)
+      $?.should_receive(:success?).and_return(false)
       mock_build.should_receive(:successful=).with(false)
       @builder.run_build_script
     end
