@@ -99,6 +99,35 @@ describe Integrity::SCM::Git do
       @git.with_latest_code(&@block)
     end
   end
+
+  describe 'Running code in the context of a specific revision' do
+    before do
+      @block = proc { 'lambda the ultimate' }
+      @git.stub!(:fetch_code)
+      @git.stub!(:checkout)
+      @git.stub!(:chdir).with(&@block)
+    end
+
+    it 'should fetch the lastest code' do
+      @git.should_receive(:fetch_code)
+      @git.with_revision('4d0cfafd569ef60d0c578bf8a9d51f9582612f03', &@block)
+    end
+
+    it 'should revert the working directory to the given commit' do
+      @git.should_receive(:checkout).with('4d0cfafd569ef60d0c578bf8a9d51f9582612f03')
+      @git.with_revision('4d0cfafd569ef60d0c578bf8a9d51f9582612f03', &@block)
+    end
+
+    it 'should run the block in the working directory' do
+      @git.should_receive(:chdir).with(&@block).and_yield
+      @git.with_revision('4d0cfafd569ef60d0c578bf8a9d51f9582612f03', &@block)
+    end
+
+    it 'should ensure that it checkout origin/HEAD after' do
+      @git.should_receive(:checkout).with('origin/HEAD')
+      @git.with_revision('4d0cfafd569ef60d0c578bf8a9d51f9582612f03', &@block)
+    end
+  end
   
   describe "Getting information about a commit" do
     before do
@@ -161,6 +190,18 @@ describe Integrity::SCM::Git do
       @git.should_receive(:chdir).and_yield
       @git.should_receive(:system).with("git pull")
       @git.pull
+    end
+
+    it 'should checkout the given commit' do
+      @git.should_receive(:chdir).and_yield
+      @git.should_receive(:system).with('git checkout 7e4f36231776ea4401b6e385df5f43c11633d59f')
+      @git.checkout('7e4f36231776ea4401b6e385df5f43c11633d59f')
+    end
+
+    it 'should checkout the given treeish' do
+      @git.should_receive(:chdir).and_yield
+      @git.should_receive(:system).with('git checkout origin/HEAD')
+      @git.checkout('origin/HEAD')
     end
   end
 end

@@ -13,6 +13,14 @@ module Integrity
         fetch_code
         chdir(&block)
       end
+
+      def with_revision(revision, &block)
+        fetch_code
+        checkout(revision)
+        chdir(&block)
+      ensure
+        checkout('origin/HEAD')
+      end
       
       def head
         @head ||= commit_info("HEAD")
@@ -34,8 +42,12 @@ module Integrity
           system "git clone #{uri} #{working_directory}"
         end
         
-        def checkout
-          chdir { system "git checkout -b #{branch} origin/#{branch}" }
+        def checkout(treeish=nil)
+          if treeish
+            chdir { system "git checkout #{treeish}" }
+          else
+            chdir { system "git checkout -b #{branch} origin/#{branch}" }
+          end
         end
         
         def pull
