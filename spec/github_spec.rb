@@ -41,67 +41,63 @@ describe "Sinatra app to handle GitHub's post-receive hooks" do
     EOS
   end
 
-  def do_post
-    post_it '/', :payload => payload
-  end
-
   before(:each) do
-    require File.dirname(__FILE__) + '/../lib/integrity/github'
+    require Integrity.root / "lib" / "integrity" / "github"
     Integrity.stub!(:new)
     @project = mock('project', :build => true)
     Integrity::Project.stub!(:first).and_return(@project)
   end
 
   it 'should be successful' do
-    do_post
-    @response.should be_ok
+    post_it '/github', :payload => payload
+    status.should == 200
   end
 
   it 'should return a confirmation message' do
-    do_post
-    @response.body.should == 'Thanks, build started.'
+    post_it '/github', :payload => payload
+    body.should == 'Thanks, build started.'
   end
 
   it 'should be 422 without payload' do
-    post_it '/'
-    @response.status.should == 422
+    post_it '/github'
+    status.should == 422
   end
 
   it 'should find the Project by its name' do
-    Integrity::Project.should_receive(:first).with(:name => 'github').and_return(@project)
-    do_post
+    Integrity::Project.should_receive(:first).with(:permalink => 'github').and_return(@project)
+    post_it '/github', :payload => payload
   end
 
-  it 'should be 400 if unknown project' do
+  it 'should be 404 if unknown project' do
     Integrity::Project.stub!(:first).and_return(nil)
-    do_post
-    @response.status.should == 400
-    @response.body.should == "Unknown project `github'"
+    post_it '/github', :payload => payload
+    status.should == 404
+    body.should == "Unknown project `github'"
   end
 
   it 'should make a new build for each commit' do
     @project.should_receive(:build).with('41a212ee83ca127e3c8cf465891ab7216a705f59')
     @project.should_receive(:build).with('de8251ff97ee194a289832576287d6f8ad74e3d0')
-    do_post
+    post_it '/github', :payload => payload
   end
-
+  
   describe 'With invalid payload' do
     before(:each) do
       JSON.stub!(:parse).and_raise(JSON::ParserError.new('error message'))
     end
 
     it 'should rescue any JSON parse error and return a 422 status code' do
-      post_it '/'
+      post_it '/github'
       @response.status.should == 422
     end
 
     it 'should rescue any JSON parse error and return the error' do
-      post_it '/'
+      post_it '/github'
       @response.body.should == 'error message'
     end
 
     it 'should return error in plain/text' do
-      post_it '/'
+      post_it '/github'
       @response['Content-Type'].should == 'text/plain'
     end
   end

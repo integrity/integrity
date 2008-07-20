@@ -1,8 +1,6 @@
-require 'rubygems'
-require 'json'
-
 require File.dirname(__FILE__) + '/../integrity'
 require 'sinatra'
+require 'json'
 
 configure do
   Integrity.new
@@ -10,17 +8,27 @@ end
 
 include Integrity
 
-post '/' do
+post '/:project' do
   content_type 'text/plain'
+
+  project = Project.first(:permalink => params[:project])
+  unknown_project! if project.nil?
+  
   begin
-    payload = JSON.parse(params[:payload] || '')
-    unless project = Project.first(:name => payload['repository']['name'])
-      throw :halt, [400, "Unknown project `#{payload['repository']['name']}'"]
-    else
-      payload['commits'].each_key { |commit| project.build(commit) }
-    end
+    payload = JSON.parse(params[:payload] || "")
+    payload['commits'].each_key { |commit| project.build(commit) }
     'Thanks, build started.'
   rescue JSON::ParserError => exception
-    throw :halt, [422, exception.to_s]
+    invalid_payload!(exception.to_s)
+  end
+end
+
+helpers do
+  def unknown_project!
+    throw :halt, [404, "Unknown project `#{params[:project]}'"]
+  end
+  
+  def invalid_payload!(msg=nil)
+    throw :halt, [422, msg || 'No payload given']
   end
 end
