@@ -33,7 +33,7 @@ describe 'Web UI using Sinatra' do
   
   after(:each) { @project = nil }
 
-  describe "Getting the home page" do
+  describe "GET /" do
     describe "with no project available" do
       before do
         Project.stub!(:all).and_return([])
@@ -95,7 +95,7 @@ describe 'Web UI using Sinatra' do
     end
   end
   
-  describe "getting the 'new project' form" do
+  describe "GET /new" do
     it "should render successfully" do
       get_it "/new"
       status.should == 200
@@ -121,7 +121,7 @@ describe 'Web UI using Sinatra' do
     end
   end
   
-  describe "creating a new project" do
+  describe "POST /" do
     before { Project.stub!(:new).and_return(mock_project) }
 
     it "should re-render the 'new' view when the project has invalid attributes" do
@@ -144,7 +144,7 @@ describe 'Web UI using Sinatra' do
     end
   end
   
-  describe "getting a project page" do
+  describe "GET /:project" do
     it "should be success" do
       Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
       get_it "/integrity"
@@ -152,7 +152,7 @@ describe 'Web UI using Sinatra' do
     end
   end
   
-  describe "getting a project's edit form" do
+  describe "GET /:project/edit" do
     before { Project.stub!(:first).with(:permalink => "integrity").and_return mock_project }
     
     it "should be success" do
@@ -181,7 +181,7 @@ describe 'Web UI using Sinatra' do
     end
   end
   
-  describe "updating a project" do
+  describe "PUT /:project" do
     before do
       Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
     end
@@ -206,7 +206,7 @@ describe 'Web UI using Sinatra' do
     end
   end
   
-  describe "deleting a project" do
+  describe "DELETE /:project" do
     it "should load the project" do
       Project.should_receive(:first).with(:permalink => "integrity").and_return mock_project
       delete_it "/integrity"
@@ -225,7 +225,7 @@ describe 'Web UI using Sinatra' do
     end
   end
   
-  describe "manually building a project" do
+  describe "POST /:project/builds" do
     it "should build the project" do
       Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
       mock_project.should_receive(:build)
