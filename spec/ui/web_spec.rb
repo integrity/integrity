@@ -229,12 +229,12 @@ describe 'Web UI using Sinatra' do
     it "should build the project" do
       Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
       mock_project.should_receive(:build)
-      post_it "/integrity/build"
+      post_it "/integrity/builds"
     end
     
     it "should redirect back to the project" do
       Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
-      post_it "/integrity/build"
+      post_it "/integrity/builds"
       follow!
       status.should == 200
     end

@@ -52,7 +52,7 @@ get "/:project/edit" do
   show :new, :title => ["projects", @project.permalink, "edit"]
 end
 
-post "/:project/build" do
+post "/:project/builds" do
   @project = Project.first(:permalink => params[:project])
   @project.build
   redirect project_url(@project)
