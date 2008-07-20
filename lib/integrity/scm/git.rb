@@ -43,7 +43,8 @@ module Integrity
         end
 
         def commit_info(treeish)
-          chdir { YAML.load(`git show -s --pretty=format:"---%n:identifier: %H%n:author: %an <%ae>%n:message: %s%n" #{treeish}`) }
+          format  = "---%n:identifier: %H%n:author: %an <%ae>%n:message: %s%n"
+          chdir { YAML.load(`git show -s --pretty=format:"#{format}" #{treeish}`) }
         end
         
         def cloned?
