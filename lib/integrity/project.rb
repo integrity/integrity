@@ -16,7 +16,6 @@ module Integrity
     has n, :builds, :class_name => "Integrity::Build"
 
     before :save, :set_permalink
-    before :save, :set_public
     before :destroy, :delete_code
 
     validates_is_unique :name
@@ -37,14 +36,12 @@ module Integrity
       return [] if builds.count <= 1
       builds.all(:order => [:created_at.desc], :offset => 1, :limit => builds.count - 1)
     end
+
+    def public=(flag)
+      attribute_set(:public, !!flag)
+    end
     
     private
-    
-      # DM refuses to set "on" as true.
-      def set_public
-        self.public = !!(public)
-      end
-    
       def set_permalink
         self.permalink = (name || "").downcase.
           gsub(/'s/, "s").
