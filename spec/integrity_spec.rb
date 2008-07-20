@@ -20,12 +20,13 @@ describe Integrity do
     end
     
     after(:each) do
-      Integrity.instance_eval { @config = nil }
+      Integrity.instance_variable_set(:@config, nil)
     end
 
     it 'should load the default configuration file if nothing specified' do
       YAML.should_receive(:load_file).with(Integrity.root + '/config/config.yml').
         and_return(@config)
+      Integrity.instance_variable_set(:@config, nil)
       Integrity.new
     end
 

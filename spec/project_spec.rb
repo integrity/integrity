@@ -162,7 +162,7 @@ describe Integrity::Project do
     before do
       @project.update_attributes(:name => "Integrity", :uri => "git://github.com/foca/integrity.git")
       commit = { :author => "someguy", :identifier => "commit sha", :date => "yesterday" }
-      5.times {|i| @project.builds.create(:output => "o", :error => "e", :commit => commit) }
+      5.times {|i| @project.builds.create(:output => "o", :commit => commit) }
     end
     
     it "should find the last build by ordering chronologically" do
