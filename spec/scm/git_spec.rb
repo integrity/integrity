@@ -140,4 +140,27 @@ describe Integrity::SCM::Git do
       @git.head
     end
   end
+  
+  describe "Doing all the low-level operations on the repo" do
+    it "should pass the uri and expected working directory to git-clone when cloning" do
+      @git.should_receive(:system).with("git clone git://github.com/foca/integrity.git /var/integrity/exports/foca-integrity")
+      @git.clone
+    end
+    
+    it "should change dirs to the repo's and checkout the appropiate branch via git-checkout" do
+      @git.should_receive(:chdir).and_yield
+      @git.should_receive(:system).with("git checkout -b master origin/master")
+      @git.checkout
+    end
+    
+    it "should check out a branch that has already been initialized locally without failing" do
+      pending "it only works the first time you change the branch, need to fix"
+    end
+    
+    it "should switch dirs to the repo's and call git-pull when pulling" do
+      @git.should_receive(:chdir).and_yield
+      @git.should_receive(:system).with("git pull")
+      @git.pull
+    end
+  end
 end
