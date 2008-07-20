@@ -2,7 +2,6 @@ require File.dirname(__FILE__) + '/spec_helper'
 
 describe Integrity::Project do
   before { @project = Integrity::Project.new }
-  after  { Integrity::Project.all.destroy! }
 
   def valid_attributes(attributes={})
     { :name => "Integrity",

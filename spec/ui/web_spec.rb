@@ -26,12 +26,12 @@ describe 'Web UI using Sinatra' do
     @project ||= stub("project", messages)
   end
   
-  before do
-    Integrity.stub!(:new) # don't connect to the database on UI tests
+  before(:each) do
+    DataMapper.stub!(:setup)
     require File.dirname(__FILE__) + '/../../lib/integrity/ui/web'
   end
   
-  after { @project = nil }
+  after(:each) { @project = nil }
 
   describe "Getting the home page" do
     describe "with no project available" do
