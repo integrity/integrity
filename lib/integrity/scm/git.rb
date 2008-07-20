@@ -9,11 +9,6 @@ module Integrity
         @working_directory = working_directory
       end
       
-      def with_latest_code(&block)
-        fetch_code
-        chdir(&block)
-      end
-
       def with_revision(revision, &block)
         fetch_code
         checkout(revision)

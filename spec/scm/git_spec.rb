@@ -82,48 +82,30 @@ describe Integrity::SCM::Git do
     end
   end
 
-  describe "Running code in the context of the most recent checkout" do
-    before do
-      @block = lambda { "cuack" }
-      @git.stub!(:fetch_code)
-      @git.stub!(:chdir).with(&@block)
-    end
-    
-    it "should ensure it has the latest code" do
-      @git.should_receive(:fetch_code)
-      @git.with_latest_code(&@block)
-    end
-    
-    it "should run the block in the working copy directory" do
-      @git.should_receive(:chdir).with(&@block).and_yield
-      @git.with_latest_code(&@block)
-    end
-  end
-
-  describe 'Running code in the context of a specific revision' do
-    before do
-      @block = proc { 'lambda the ultimate' }
+  describe 'Running code in a specific context using #with_revision' do
+    before(:each) do
+      @block = lambda { 'lambda the ultimate' }
       @git.stub!(:fetch_code)
       @git.stub!(:checkout)
       @git.stub!(:chdir).with(&@block)
     end
 
-    it 'should fetch the lastest code' do
+    it "should fetch the latest code" do
       @git.should_receive(:fetch_code)
-      @git.with_revision('4d0cfafd569ef60d0c578bf8a9d51f9582612f03', &@block)
+      @git.with_revision('HEAD', &@block)
     end
 
-    it 'should revert the working directory to the given commit' do
+    it 'should checkout the given revision' do
       @git.should_receive(:checkout).with('4d0cfafd569ef60d0c578bf8a9d51f9582612f03')
       @git.with_revision('4d0cfafd569ef60d0c578bf8a9d51f9582612f03', &@block)
     end
 
-    it 'should run the block in the working directory' do
+    it "should run the block in the working copy directory" do
       @git.should_receive(:chdir).with(&@block).and_yield
       @git.with_revision('4d0cfafd569ef60d0c578bf8a9d51f9582612f03', &@block)
     end
 
-    it 'should ensure that it checkout origin/HEAD after' do
+    it 'should ensure it checkout origin/HEAD' do
       @git.should_receive(:checkout).with('origin/HEAD')
       @git.with_revision('4d0cfafd569ef60d0c578bf8a9d51f9582612f03', &@block)
     end

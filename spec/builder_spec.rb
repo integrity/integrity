@@ -18,7 +18,7 @@ describe Integrity::Builder do
   
   def mock_scm(messages={})
     @scm ||= begin
-      messages = { :with_latest_code => true, :head => Hash.new }.merge(messages)
+      messages = { :with_revision => true, :head => Hash.new }.merge(messages)
       mock("scm", messages)
     end
   end
@@ -62,7 +62,7 @@ describe Integrity::Builder do
     before { @builder.stub!(:run_build_script) }
     
     it "should fetch the latest code from the scm and run the build script" do
-      mock_scm.should_receive(:with_latest_code).and_yield do
+      mock_scm.should_receive(:with_revision).with('origin/HEAD').and_yield do
         @builder.should_receive(:run_build_script)
       end
       @builder.build
@@ -88,7 +88,7 @@ describe Integrity::Builder do
     
     it "should save the build even if there's an exception" do
       lambda {
-        mock_scm.should_receive(:with_latest_code).and_raise(RuntimeError)
+        mock_scm.should_receive(:with_revision).and_raise(RuntimeError)
         mock_build.should_receive(:save)
         @builder.build
       }.should raise_error(RuntimeError)
