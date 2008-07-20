@@ -51,12 +51,12 @@ describe 'Web UI using Sinatra' do
       
       it "should tell you that you have no projects" do
         get_it "/"
-        body.should =~ /None yet, huh?/
+        @response.should have_tag(".blank_slate", /none yet/i)
       end
       
       it "should have a link to add a new project" do
         get_it "/"
-        body.should =~ %r(<a href='/new'>.*</a>)
+        @response.should have_tag(".blank_slate a[@href=/new]", /create your first project/i)
       end
     end
     
@@ -79,18 +79,14 @@ describe 'Web UI using Sinatra' do
       
       it "should show a list of the projects" do
         get_it "/"
-        body.should =~ /<ul id='projects'>/
-      end
-      
-      it "should have a link to both projects" do
-        get_it "/"
-        body.should =~ %r(<a href='/the-1st-project'>The 1st Project</a>)
-        body.should =~ %r(<a href='/the-2nd-project'>The 2nd Project</a>)
+        body.should have_tag("ul#projects") do |projects|
+          projects.should have_tag("li > a", /the (1st|2nd) project/i, :count => 2)
+        end
       end
 
       it "should have a link to add a new project" do
         get_it "/"
-        body.should =~ %r(<a href='/new'>.*</a>)
+        body.should have_tag("#new a[@href=/new]", /add a new project/i)
       end
     end
   end
@@ -108,17 +104,14 @@ describe 'Web UI using Sinatra' do
     
     it "should render a form that posts back to '/'" do
       get_it "/new"
-      body.should =~ %r(<form action='/' method='post'>)
+      body.should have_tag("form[@action=/][@method=post]") do |form|
+        form.should have_tag("input.text#project_name[@name=name][@type=text][@value='']")
+        form.should have_tag("input.text#project_repository[@name=uri][@type=text][@value='']")
+        form.should have_tag("input.text#project_branch[@name=branch][@type=text][@value='master']")
+        form.should have_tag("input.checkbox#project_public[@name=public][@type=checkbox][@checked=checked]")
+        form.should have_tag("textarea#project_build_script[@name=command]", /rake/)
+      end
     end    
-    
-    it "should have all the necessary fields" do
-      get_it "/new"
-      body.should =~ %r(<input class='text' id='project_name' name='name' type='text' value='' />)
-      body.should =~ %r(<input class='text' id='project_repository' name='uri' type='text' value='' />)
-      body.should =~ %r(<input class='text' id='project_branch' name='branch' type='text' value='master' />)
-      body.should =~ %r(input checked='checked' class='checkbox' id='project_public' name='public' type='checkbox' />)
-      body.should =~ %r(<textarea cols='40' id='project_build_script' name='command' rows='1'>rake</textarea>)
-    end
   end
   
   describe "POST /" do
@@ -140,7 +133,9 @@ describe 'Web UI using Sinatra' do
       mock_project.should_receive(:save).and_return(false)
       mock_project.errors.stub!(:on).with(:name).and_return('Name is already taken')
       post_it "/"
-      body.should =~ /with_errors/
+      body.should have_tag("p.required.with_errors") do |field|
+        field.should have_tag("label", /is already taken/)
+      end
     end
   end
   
@@ -162,22 +157,15 @@ describe 'Web UI using Sinatra' do
     
     it "should render the form pointed at the projects permalink" do
       get_it "/integrity/edit"
-      body.should =~ %r(form action='/integrity')
-    end
-    
-    it "should use http PUT as the form method" do
-      get_it "/integrity/edit"
-      body.should =~ %r(form.*method='post')
-      body.should =~ %r(input name='_method' type='hidden' value='put')
-    end
-    
-    it "should prepopulate the form with the properties of the project" do
-      get_it "/integrity/edit"
-      body.should =~ %r(<input class='text' id='project_name' name='name' type='text' value='Integrity' />)
-      body.should =~ %r(<input class='text' id='project_repository' name='uri' type='text' value='git://github.com/foca/integrity.git' />)
-      body.should =~ %r(<input class='text' id='project_branch' name='branch' type='text' value='master' />)
-      body.should =~ %r(input checked='checked' class='checkbox' id='project_public' name='public' type='checkbox' />)
-      body.should =~ %r(<textarea cols='40' id='project_build_script' name='command' rows='1'>rake</textarea>)
+      body.should have_tag("form[@action=/integrity][@method=post]") do |form|
+        form.should have_tag("input[@name=_method][@type=hidden][@value=put]")
+        
+        form.should have_tag("input.text#project_name[@name=name][@type=text][@value='Integrity']")
+        form.should have_tag("input.text#project_repository[@name=uri][@type=text][@value='git://github.com/foca/integrity.git']")
+        form.should have_tag("input.text#project_branch[@name=branch][@type=text][@value='master']")
+        form.should have_tag("input.checkbox#project_public[@name=public][@type=checkbox][@checked=checked]")
+        form.should have_tag("textarea#project_build_script[@name=command]", /rake/)
+      end
     end
   end
   
@@ -202,7 +190,9 @@ describe 'Web UI using Sinatra' do
       mock_project.should_receive(:update_attributes).and_return(false)
       mock_project.errors.stub!(:on).with(:name).and_return("Name can't be blank")
       put_it "/integrity"
-      body.should =~ /with_errors/
+      body.should have_tag("p.required.with_errors") do |field|
+        field.should have_tag("label", /can't be blank/)
+      end
     end
   end
   
@@ -235,8 +225,7 @@ describe 'Web UI using Sinatra' do
     it "should redirect back to the project" do
       Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
       post_it "/integrity/builds"
-      follow!
-      status.should == 200
+      location.should == "/integrity"
     end
   end
   
