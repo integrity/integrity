@@ -10,6 +10,9 @@
 - else
   #last_build{ :class => @project.last_build.status }
     %h1= @project.last_build.human_readable_status
+    %pre.output
+      :preserve
+        #{bash_color_codes @project.last_build.output}
     
   %form{ :action => project_url(@project, :build), :method => :post }
     %p.submit

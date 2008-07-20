@@ -377,5 +377,17 @@ describe 'Web UI using Sinatra' do
         @context.checkbox(:cuack, false).should == { :name => :cuack, :type => "checkbox" }
       end
     end
+    
+    describe "#bash_color_codes" do
+      it "should replace [0m for a closing span tag" do
+        @context.bash_color_codes("<span>something[0m").should == '<span>something</span>'
+      end
+      
+      it "should replace [XXm for a span.colorXX, for XX in 31..37" do
+        (31..37).each do |color|
+          @context.bash_color_codes("[#{color}msomething</span>").should == %Q(<span class="color#{color}">something</span>)
+        end
+      end
+    end
   end
 end
