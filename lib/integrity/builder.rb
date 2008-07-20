@@ -38,8 +38,8 @@ module Integrity
       def run_build_script
         IO.popen "(#{build_script}) 2>&1", "r" do |pipe|
           @build.output = pipe.read
-          @build.successful = successful_execution?
         end
+        @build.successful = successful_execution?
       end
     
       def successful_execution?
