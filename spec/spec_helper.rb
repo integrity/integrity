@@ -1,8 +1,13 @@
 require File.dirname(__FILE__) + "/../lib/integrity"
+$:.unshift Integrity.root / "vendor/rspec_hpricot_matchers/lib"
+
 require "rubygems"
 require "spec"
+require "rspec_hpricot_matchers"
 
 Spec::Runner.configure do |config|
+  config.include RspecHpricotMatchers
+  
   config.before(:each) do
     DataMapper.setup(:default, "sqlite3::memory:")
     Integrity::Project.auto_migrate!
