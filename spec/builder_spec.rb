@@ -67,6 +67,14 @@ describe Integrity::Builder do
       end
       @builder.build
     end
+
+    it 'should checkout the given commit from the scm and run the build script' do
+      mock_scm.should_receive(:with_revision).
+        with('6437fa27779daba40dbd130e2937d36253be1d4c').and_yield do
+          @builder.should_receive(:run_build_script)
+        end
+      @builder.build('6437fa27779daba40dbd130e2937d36253be1d4c')
+    end
     
     it "should assign the head of the SCM as the commit in the build" do
       mock_build.should_receive(:commit=).with mock_scm.head

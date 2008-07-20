@@ -11,8 +11,12 @@ module Integrity
       @build = Build.new(:project => project)
     end
 
-    def build
-      @scm.with_latest_code { run_build_script }
+    def build(commit=nil)
+      if commit
+        @scm.with_revision(commit) { run_build_script }
+      else
+        @scm.with_latest_code { run_build_script }
+      end
       @build
     ensure
       @build.commit = @scm.head
