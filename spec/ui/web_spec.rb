@@ -1,7 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe 'Web UI using Sinatra' do
-  
   def mock_project(messages={})
     messages = {
       :name => "Integrity", 
@@ -20,6 +19,20 @@ describe 'Web UI using Sinatra' do
     }.merge(messages)
     
     @project ||= stub("project", messages)
+  end
+
+  def mock_build(messages={})
+    messages = {
+      :status => :success,
+      :output => 'output',
+    }.merge(messages)
+    messages[:human_readable_status] =
+      if messages[:status] == :success
+        'Build Successful'
+      else
+        'Build Failed'
+      end
+    mock('build', messages)
   end
   
   before(:each) do
@@ -167,14 +180,8 @@ describe 'Web UI using Sinatra' do
 
     describe 'with builds' do
       before(:each) do
-        @build_successful = mock('build', :status => :success,
-          :human_readable_status => 'Build Successful',
-          :output => 'output'
-        )
-        @build_failed = mock('build', :status => :failed,
-          :human_redable_status => 'Build Failed',
-          :output => 'output'
-        )
+        @build_successful = mock_build(:status => :success)
+        @build_failed = mock_build(:status => :failed)
         @project = mock_project(
           :last_build => @build_successful,
           :builds     => [@build_successful, @build_failed],
@@ -215,8 +222,8 @@ describe 'Web UI using Sinatra' do
 
       describe 'with previous builds' do
         before(:each) do
-          @previous_build_successful = mock('successful build', :status => :success, :human_readable_status => 'Build Successful')
-          @previous_build_failed = mock('successful build', :status => :fail, :human_readable_status => 'Build Failed')
+          @previous_build_successful = mock_build(:status => :success)
+          @previous_build_failed = mock_build(:status => :fail)
           @project.stub!(:previous_builds).and_return([@previous_build_successful, @previous_build_failed])
         end
 
