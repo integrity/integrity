@@ -25,7 +25,13 @@ describe 'Web UI using Sinatra' do
     messages = {
       :status => :success,
       :output => 'output',
-      :project => @project
+      :project => @project,
+      :commit_identifier => '9f6302002d2259c05a64767e0dedb15d280a4848',
+      :short_commit_identifier => '9f6302',
+      :commit_metadata   => {
+        :author => 'Nicolás Sanguinetti <contacto@nicolassanguinetti.info>',
+        :message => "Add Object#tap for versions of ruby that don't have it"
+      }
     }.merge(messages)
     messages[:human_readable_status] =
       if messages[:status] == :success
@@ -173,7 +179,7 @@ describe 'Web UI using Sinatra' do
 
       it "should have a form to create a new build" do
         get_it "/integrity"
-        body.should have_tag("form.blank_state[@action=/integrity/builds][@method=post]") do |form|
+        body.should have_tag("form.blank_slate[@action=/integrity/builds][@method=post]") do |form|
           form.should have_tag("button[@type=submit]", /manual build/)
         end
       end
@@ -224,9 +230,9 @@ describe 'Web UI using Sinatra' do
       describe 'with previous builds' do
         before(:each) do
           @previous_build_successful = mock_build(:status => :success,
-            :commit => {:identifier => 'e39f64487e8de857e8b00947cf1b5d47a0480062'})
+            :commit_identifier => 'e39f64487e8de857e8b00947cf1b5d47a0480062')
           @previous_build_failed = mock_build(:status => :fail,
-            :commit => {:identifier => 'e63a7711af672b5287cdcbbd47afb36952b88f10'})
+            :commit_identifier => 'e63a7711af672b5287cdcbbd47afb36952b88f10')
           @project.stub!(:previous_builds).and_return([@previous_build_successful, @previous_build_failed])
         end
 
@@ -368,6 +374,86 @@ describe 'Web UI using Sinatra' do
       status.should == 404
     end
   end
+
+  describe 'GET /:project/builds/:build' do
+    def do_get
+      get_it '/integrity/builds/c86755fd7e37718def0f7a8db6ab68afe25b90bf'
+    end
+
+    before(:each) do
+      @build = mock_build
+      @project = mock_project(:builds => mock('builds', :first => @build))
+      Project.stub!(:first).with(:permalink => 'integrity').and_return(@project)
+    end
+
+    it 'should be successful' do
+      do_get
+      status.should == 200
+    end
+
+    it 'should load the project from the database using the permalink' do
+      Project.should_receive(:first).with(:permalink => 'integrity').and_return(@project)
+      do_get
+    end
+
+    it 'should be 404 if unknown project' do
+      Project.stub!(:first).and_return(nil)
+      do_get
+      status.should == 404
+    end
+
+    it 'should load the build from the database using the commit identifier' do
+      @project.builds.should_receive(:first).
+        with(:commit_identifier => 'c86755fd7e37718def0f7a8db6ab68afe25b90bf')
+      do_get
+    end
+
+    it 'should be 404 if unknown build' do
+      @project.builds.stub!(:first).and_return(nil)
+      do_get
+      status.should == 404
+    end
+
+    it 'should not display the status of the build' do
+      @build.should_not_receive(:human_readable_status).and_return('Build Successful')
+      do_get
+      body.should_not have_tag('h1', /Build Successful/)
+    end
+
+    it 'should colorize the status of the build' do
+      @build.should_receive(:status).and_return(:success)
+      do_get
+      body.should have_tag('h1[@class=success]')
+    end
+
+    it 'should display the short commit identifier' do
+      @build.should_receive(:short_commit_identifier).and_return('c86755')
+      do_get
+      body.should have_tag('h1', /c86755/)
+    end
+
+    it 'should display the author of the commit' do
+      @build.commit_metadata.stub!(:[]).with(:message)
+      @build.commit_metadata.stub!(:[]).with(:author).
+        and_return('Nicolás Sanguinetti <contacto@nicolassanguinetti.info>')
+      do_get
+      body.should have_tag('.commit_author', 'Nicolás Sanguinetti <contacto@nicolassanguinetti.info>')
+    end
+
+    it 'should display the commit message' do
+      @build.commit_metadata.stub!(:[]).with(:author)
+      @build.commit_metadata.should_receive(:[]).with(:message).
+        and_return("Add Object#tap for versions of ruby that don't have it")
+      do_get
+      body.should have_tag('blockquote p', "Add Object#tap for versions of ruby that don't have it")
+    end
+
+    it 'should display the output of the build' do
+      @build.should_receive(:output).and_return('lots of err')
+      do_get
+      body.should have_tag('pre.output', /lots of err/)
+    end
+  end
   
   describe "getting the site stylesheet" do
     it "should render successfully" do
@@ -469,7 +555,7 @@ describe 'Web UI using Sinatra' do
       before(:each) do
         @build = mock_build(
           :project => mock_project,
-          :commit => {:identifier => 'd32adaa7e42622f5a2f0526985dc010915fab0bf'}
+          :commit_identifier => 'd32adaa7e42622f5a2f0526985dc010915fab0bf'
         )
       end
 

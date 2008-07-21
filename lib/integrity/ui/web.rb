@@ -69,6 +69,14 @@ post "/:project/builds" do
   redirect project_url(@project)
 end
 
+get '/:project/builds/:build' do
+  @project = Project.first(:permalink => params[:project])
+  raise Sinatra::NotFound unless @project
+  @build = @project.builds.first(:commit_identifier => params[:build])
+  raise Sinatra::NotFound unless @build
+  show :build, :title => 'Some build'
+end
+
 get "/integrity.css" do
   header "Content-Type" => "text/css; charset=utf-8"
   sass :integrity
@@ -109,7 +117,7 @@ helpers do
   end
 
   def build_url(build)
-    "/#{build.project.permalink}/builds/#{build.commit[:identifier]}"
+    "/#{build.project.permalink}/builds/#{build.commit_identifier}"
   end
   
   def filter_attributes_of(model)

@@ -1,0 +1,9 @@
+%h1#build{ :class => @build.status }
+  = @build.short_commit_identifier
+#commit_informations
+  %blockquote
+    %p= h @build.commit_metadata[:message]
+    %p.cite.commit_author= h @build.commit_metadata[:author]
+%pre.output
+  :preserve
+    #{bash_color_codes @build.output}
