@@ -11,7 +11,7 @@ module Integrity
       @build = Build.new(:project => project)
     end
 
-    def build(commit='origin/HEAD')
+    def build(commit='HEAD')
       @scm.with_revision(commit) { run_build_script }
       @build
     ensure

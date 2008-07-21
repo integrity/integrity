@@ -62,7 +62,7 @@ describe Integrity::Builder do
     before { @builder.stub!(:run_build_script) }
     
     it "should fetch the latest code from the scm and run the build script" do
-      mock_scm.should_receive(:with_revision).with('origin/HEAD').and_yield do
+      mock_scm.should_receive(:with_revision).with('HEAD').and_yield do
         @builder.should_receive(:run_build_script)
       end
       @builder.build
