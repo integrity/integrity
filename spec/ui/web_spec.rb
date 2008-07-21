@@ -136,29 +136,98 @@ describe 'Web UI using Sinatra' do
   end
   
   describe "GET /:project" do
-    before { Project.stub!(:first).with(:permalink => "integrity").and_return mock_project }
-    
-    it "should be success" do
-      get_it "/integrity"
-      status.should == 200
-    end
-    
     it "should load the project from the database" do
-      Project.should_receive(:first).with(:permalink => "integrity").and_return mock_project
+      Project.should_receive(:first).with(:permalink => "integrity").and_return(mock_project)
       get_it "/integrity"
-    end
-    
-    it "should have a form to create a new build" do
-      get_it "/integrity"
-      body.should have_tag("form[@action=/integrity/builds][@method=post]") do |form|
-        form.should have_tag("button[@type=submit]", /manual build/)
-      end
     end
 
     it 'should be 404 if unknown project' do
       Project.stub!(:first).and_return(nil)
       get_it '/integrity'
       status.should == 404
+    end
+
+    describe 'without builds' do
+      before(:each) do
+        Project.stub!(:first).with(:permalink => "integrity").and_return(mock_project)
+      end
+
+      it "should be success" do
+        get_it "/integrity"
+        status.should == 200
+      end
+
+      it "should have a form to create a new build" do
+        get_it "/integrity"
+        body.should have_tag("form.blank_state[@action=/integrity/builds][@method=post]") do |form|
+          form.should have_tag("button[@type=submit]", /manual build/)
+        end
+      end
+    end
+
+    describe 'with builds' do
+      before(:each) do
+        @build_successful = mock('build', :status => :success,
+          :human_readable_status => 'Build Successful',
+          :output => 'output'
+        )
+        @build_failed = mock('build', :status => :failed,
+          :human_redable_status => 'Build Failed',
+          :output => 'output'
+        )
+        @project = mock_project(
+          :last_build => @build_successful,
+          :builds     => [@build_successful, @build_failed],
+          :previous_builds => []
+        )
+        Project.stub!(:first).with(:permalink => "integrity").and_return(@project)
+      end
+
+      it "should be success" do
+        get_it "/integrity"
+        status.should == 200
+      end
+
+      it 'should have class "success" if the latest build was successful' do
+        @project.last_build.stub!(:status).and_return(:success)
+        get_it '/integrity'
+        body.should have_tag('#last_build[@class=success]')
+      end
+
+      it 'should have class "failed" if the latest build failed' do
+        @project.last_build.stub!(:status).and_return(:failed)
+        get_it '/integrity'
+        body.should have_tag('#last_build[@class=failed]')
+      end
+
+      it 'should display the output of the latest build' do
+        @project.last_build.should_receive(:output).and_return('blabla')
+        get_it '/integrity'
+        body.should have_tag('pre.output', /^blabla/)
+      end
+
+      it "should have a form to create a new build" do
+        get_it "/integrity"
+        body.should have_tag("form[@action=/integrity/builds][@method=post]") do |form|
+          form.should have_tag("button[@type=submit]", /manual build/i)
+        end
+      end
+
+      describe 'with previous builds' do
+        before(:each) do
+          @previous_build_successful = mock('successful build', :human_readable_status => 'Build Successful')
+          @previous_build_failed = mock('successful build', :human_readable_status => 'Build Failed')
+          @project.stub!(:previous_builds).and_return([@previous_build_successful, @previous_build_failed])
+        end
+
+        it 'should display the status of each previous builds' do
+          get_it '/integrity'
+          body.should have_tag('ul#previous_builds') do |ul|
+            ul.should have_tag('li', 'Build Successful')
+            ul.should have_tag('li', 'Build Failed')
+          end
+        end
+      end
     end
   end
   
