@@ -15,7 +15,7 @@ require "core_ext/string"
 
 module Integrity
   def self.new(configuration_file=root/'config/config.yml')
-    @config ||= default_configuration.merge(YAML.load_file(configuration_file))
+    @config ||= default_configuration.merge load_config_file(configuration_file)
     DataMapper.setup(:default, config[:database_uri])
   end
 
@@ -24,12 +24,18 @@ module Integrity
   end
 
   def self.default_configuration
-    { :database_uri => 'sqlite3://memory',
+    { :database_uri => 'sqlite3::memory:',
       :export_directory => root / 'exports' }
   end
 
   def self.config
     @config
+  end
+  
+  def self.load_config_file(file)
+    YAML.load_file(file)
+  rescue Errno::ENOENT
+    {}
   end
 
   autoload :Project, 'project'

@@ -35,6 +35,11 @@ describe Integrity do
         and_return(@config)
       Integrity.new('/etc/integrity.yml')
     end
+    
+    it "should not blow up if the configuration file isn't present" do
+      YAML.stub!(:load_file).and_raise(Errno::ENOENT)
+      lambda { Integrity.new }.should_not raise_error(Errno::ENOENT)
+    end
 
     it 'should initialize the database connection' do
       DataMapper.should_receive(:setup).with(:default, 'sqlite3:///var/integrity.db')
