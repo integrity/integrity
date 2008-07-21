@@ -5,47 +5,66 @@ Integrity is your friendly automated Continuous Integration server.
 
 It's fully usable from within its web interface (backed by [Sinatra][]), 
 allowing you to add a project, set preferences for it (where's the code 
-repository, is it completely private or public, etc), and run the test suite 
+repository, is it completely private or public, etc), and run the build command
 from there.
 
 It has been designed with ruby projects in mind, but any project that can be
 tested in an unix-y fashion (with a command line tool that returns 0 on success
 and non-zero on failure) works with it.
 
-Integrity works out of the box with [git][] projects, and support for other 
-VCSs like [Subversion][svn] is planned.
-
-Requirements
-============
-
-To be defined.
+Integrity works out of the box with [git][] projects, but support for other 
+SCMs like [Subversion][svn] is planned.
 
 Getting Started
 ===============
 
-There's no gem yet, so for now you have to clone the source:
+Clone the source from our [git repository][repo]:
 
+    sudo gem install dm-core dm-more data_objects do_sqlite3 json 
     git clone git://github.com/foca/integrity.git
     cd integrity
-    git submodule init
-    git submodule update
+    cp config/config.sample.yml config/config.yml
+    vim config/config.yml # or use your editor of choice
+    git submodule update --init
     bin/integrity
 
 Now you can go to http://localhost:4567, add your first project, and enjoy
 safer coding, with integrity.
 
+Configuration
+=============
+
+The `config.yml` only needs two settings:
+
+* `database_uri`: this should be a complete connection string to your database.
+  For example `mysql://user@localhost/integrity` (you need an `integrity` db
+  created in localhost, of course).
+* `export_directory`: This is where your project's code will be checked out to.
+  Make sure it's writable by the user that runs Integrity.
+
+Resources
+========
+
+We have a [Lighthouse account][lighthouse] where you can submit patches or
+feature requests. Also, someone is usually around [#integrity][irc-channel] on
+Freenode, so don't hesitate to stop by for ideas, help, patches or something.
+
 Future plans
 ============
 
-* [GitHub][] post-receive integration
 * [Twitter][]/[Campfire][]/[IRC][] bots
+* More general support for git (only git: urls are supported for now)
 * Other SCMs like Subversion
 
-Discuss!
-========
+Development
+===========
 
-Someone is usually around [#integrity][irc-channel] on Freenode, so don't
-hesitate to stop by for ideas, help, patches or something.
+The code is stored in [GitHub][repo]. Feel free to fork, play with it, and send
+a pull request afterwards. 
+
+In order to run the test suite you'll need a few more gems: [rspec][], [rcov][]
+and [hpricot][]. With that installed running `rake` will run the specs and
+ensure the code coverage stays high.
 
 Thanks
 ======
@@ -81,11 +100,17 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 [Sinatra]: http://sinatrarb.com
 [git]: http://git.or.cz
 [svn]: http://subversion.tigris.org
-[GitHub]: http://github.com
 [Twitter]: http://twitter.com
 [Campfire]: http://campfirenow.com
 [IRC]: http://wikipedia.org/wiki/IRC
 [CitrusByte]: http://citrusbyte.com
+
+[rspec]: http://rspec.info
+[rcov]: http://eigenclass.org/hiki.rb?rcov
+[hpricot]: http://code.whytheluckystiff.net/hpricot
+
+[repo]: http://github.com/foca/integrity
+[lighthouse]: http://integrity.lighthouseapp.com/projects/14308-integrity
 [irc-channel]: irc://irc.freenode.net/integrity
 
 [sr]: http://atonie.org/
