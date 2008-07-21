@@ -11,14 +11,28 @@ describe Integrity::Builder do
   
   def mock_build(messages={})
     @build ||= begin
-      messages = { :project => mock_project, :commit= => {}, :output= => nil, :output => "", :error => "", :successful= => true, :save => true }.merge(messages)
+      messages = {
+        :project => mock_project,
+        :commit_metadata= => {},
+        :commit_identifier= => nil,
+        :output= => nil,
+        :output => "",
+        :error => "",
+        :successful= => true,
+        :save => true
+      }.merge(messages)
       mock("build", messages)
     end
   end
   
   def mock_scm(messages={})
     @scm ||= begin
-      messages = { :with_revision => true, :head => Hash.new }.merge(messages)
+      head = {
+        :identifier => '6eba34d94b74fe68b96e35450fadf241113e44fc',
+        :author => 'Simon Rozet <simon@rozet.name>',
+        :date   => Time.parse('Mon Jul 21 15:24:34 2008 +0200')
+      }
+      messages = { :with_revision => true, :head => head }.merge(messages)
       mock("scm", messages)
     end
   end
@@ -76,8 +90,14 @@ describe Integrity::Builder do
       @builder.build('6437fa27779daba40dbd130e2937d36253be1d4c')
     end
     
-    it "should assign the head of the SCM as the commit in the build" do
-      mock_build.should_receive(:commit=).with mock_scm.head
+    it "should assign the head (minus the identifier) of the SCM as the commit metadata in the build" do
+      head_without_identifier = mock_scm.head.reject{|k,_| k==:identifier}
+      mock_build.should_receive(:commit_metadata=).with(head_without_identifier)
+      @builder.build
+    end
+
+    it "should assign the commit identifier of the SCM's head as the commit identifier in the build" do
+      mock_build.should_receive(:commit_identifier=).with mock_scm.head[:identifier]
       @builder.build
     end
     

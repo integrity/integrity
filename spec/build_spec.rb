@@ -9,12 +9,12 @@ describe Integrity::Build do
     @build.should_not be_valid
   end
 
-  it "needs an output, a status, and a commit" do
+  it "needs an output, a status, a commit_identifier and a commit_metadata" do
     @build.attributes = {
-      :commit => {
-        :author => 'Simon Rozet <simon@rozet.name>',
-        :identifier => '712041aa093e4fb0a2cb1886db49d88d78605396',
-        :message    => 'started build model'
+      :commit_identifier => '0367ee0566843edcf871a86f0eb23d90c4ee1d14',
+      :commit_metadata   => {
+        :author  => 'Simon Rozet <simon@rozet.name>',
+        :message => 'started build model'
       },
       :output => 'foo',
       :successful => true
@@ -37,13 +37,17 @@ describe Integrity::Build do
     @build.should_not be_successful
   end
 
-  it 'should have a commit' do
-    @build.commit = {
-      :author => 'Simon Rozet <simon@rozet.name>',
-      :identifier => '712041aa093e4fb0a2cb1886db49d88d78605396',
-      :message    => 'started build model'
+  it 'should have commit metadata' do
+    @build.commit_metadata = {
+      :author   => 'Simon Rozet <simon@rozet.name>',
+      :message  => 'started build model'
     }
-    @build.commit[:author].should == 'Simon Rozet <simon@rozet.name>'
+    @build.commit_metadata[:author].should == 'Simon Rozet <simon@rozet.name>'
+  end
+
+  it 'should have a commit identifier' do
+    @build.commit_identifier = '0367ee0566843edcf871a86f0eb23d90c4ee1d14'
+    @build.commit_identifier.should == '0367ee0566843edcf871a86f0eb23d90c4ee1d14'
   end
 
   it 'output should default to ""' do

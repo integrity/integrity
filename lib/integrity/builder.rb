@@ -16,7 +16,8 @@ module Integrity
       @scm.with_revision(commit) { run_build_script }
       @build
     ensure
-      @build.commit = @scm.head
+      @build.commit_identifier = @scm.head.delete(:identifier)
+      @build.commit_metadata = @scm.head
       @build.save
     end
     

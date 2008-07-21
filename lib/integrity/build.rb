@@ -4,11 +4,12 @@ module Integrity
 
     property :id,         Integer,  :serial => true
     property :output,     Text,     :nullable => false, :default => ''
-    property :commit,     Yaml,     :nullable => false
     property :successful, Boolean,  :nullable => false, :default => false
     property :created_at, DateTime
     property :updated_at, DateTime
-    
+    property :commit_identifier, String, :nullable => false
+    property :commit_metadata,   Yaml,   :nullable => false
+
     belongs_to :project, :class_name => "Integrity::Project"
 
     def failed?
