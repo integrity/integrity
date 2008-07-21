@@ -37,7 +37,7 @@ describe Integrity::Builder do
 
     it "should creates a new SCM object using the given URI's and given options and pass it the build" do
       Integrity::Build.stub!(:new).and_return(mock_build)
-      Integrity::SCM.should_receive(:new).with(mock_project.uri, "master", "/var/integrity/exports/foca-integrity")
+      Integrity::SCM.should_receive(:new).with(mock_project.uri, "master", "/var/integrity/exports/foca-integrity-master")
       Integrity::Builder.new(mock_project)
     end
   end
@@ -54,7 +54,7 @@ describe Integrity::Builder do
     end
     
     it "should use the path to the repo in this directory, changing slashes for hyphens" do
-      @builder.export_directory.should =~ %r(foca-integrity$)
+      @builder.export_directory.should =~ %r(foca-integrity-master$)
     end
   end
   
@@ -127,7 +127,7 @@ describe Integrity::Builder do
   
   describe "When deleting the code for a project" do
     it "should remove the directory from disk" do
-      FileUtils.should_receive(:rm_r).with("/var/integrity/exports/foca-integrity")
+      FileUtils.should_receive(:rm_r).with("/var/integrity/exports/foca-integrity-master")
       @builder.delete_code
     end
     
