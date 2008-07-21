@@ -1,9 +1,5 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
-require 'sinatra'
-require 'spec/interop/test'
-require 'sinatra/test/unit'
-
 describe "Sinatra app to handle GitHub's post-receive hooks" do
   def payload
     <<-EOS

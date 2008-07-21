@@ -1,8 +1,10 @@
 require File.dirname(__FILE__) + "/../lib/integrity"
 $:.unshift Integrity.root / "vendor/rspec_hpricot_matchers/lib"
 
-require "rubygems"
 require "spec"
+require 'spec/interop/test'
+require 'sinatra'
+require 'sinatra/test/unit'
 require "rspec_hpricot_matchers"
 
 Spec::Runner.configure do |config|

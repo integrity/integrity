@@ -1,9 +1,5 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-require 'sinatra'
-require 'spec/interop/test'
-require 'sinatra/test/unit'
-
 describe 'Web UI using Sinatra' do
   
   def mock_project(messages={})
