@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe Integrity::SCM::Git do
   before do
-    Integrity::SCM::Git.class_eval { public :fetch_code, :chdir, :clone, :checkout, :pull, :commit_info, :cloned?, :on_branch? }
+    Integrity::SCM::Git.class_eval { public :fetch_code, :chdir, :clone, :checkout, :pull, :commit_info, :local_branches, :cloned?, :on_branch? }
     @git = Integrity::SCM::Git.new("git://github.com/foca/integrity.git", "master", "/var/integrity/exports/foca-integrity")
   end
   
@@ -104,11 +104,6 @@ describe Integrity::SCM::Git do
       @git.should_receive(:chdir).with(&@block).and_yield
       @git.with_revision('4d0cfafd569ef60d0c578bf8a9d51f9582612f03', &@block)
     end
-
-    it 'should ensure it checkout origin/HEAD' do
-      @git.should_receive(:checkout).with('origin/HEAD')
-      @git.with_revision('4d0cfafd569ef60d0c578bf8a9d51f9582612f03', &@block)
-    end
   end
   
   describe "Getting information about a commit" do
@@ -168,38 +163,57 @@ describe Integrity::SCM::Git do
     end
   end
   
+  describe "Listing the local branches" do
+    def branches
+      ["* master",
+       "  other",
+       "  yet_another"] * "\n"
+    end
+    
+    it "should return an array of branch names" do
+      @git.stub!(:chdir).and_yield
+      @git.stub!(:`).with("git branch").and_return(branches)
+      @git.local_branches.should == ["master", "other", "yet_another"]
+    end
+  end
+  
   describe "Doing all the low-level operations on the repo" do
     it "should pass the uri and expected working directory to git-clone when cloning" do
-      @git.should_receive(:system).with("git clone git://github.com/foca/integrity.git /var/integrity/exports/foca-integrity")
+      @git.should_receive(:`).with("git clone git://github.com/foca/integrity.git /var/integrity/exports/foca-integrity")
       @git.clone
-    end
-    
-    it "should change dirs to the repo's and checkout the appropiate branch via git-checkout" do
-      @git.should_receive(:chdir).and_yield
-      @git.should_receive(:system).with("git checkout -b master origin/master")
-      @git.checkout
-    end
-    
-    it "should check out a branch that has already been initialized locally without failing" do
-      pending "it only works the first time you change the branch, need to fix"
     end
     
     it "should switch dirs to the repo's and call git-pull when pulling" do
       @git.should_receive(:chdir).and_yield
-      @git.should_receive(:system).with("git pull")
+      @git.should_receive(:`).with("git pull")
       @git.pull
     end
+    
+    describe "(checking out code)" do
+      before { @git.stub!(:chdir).and_yield }
+      
+      it "should check out the branch locally if it's already available" do
+        @git.stub!(:local_branches).and_return(["master"])
+        @git.should_receive(:`).with("git checkout master")
+        @git.checkout
+      end
 
-    it 'should checkout the given commit' do
-      @git.should_receive(:chdir).and_yield
-      @git.should_receive(:system).with('git checkout 7e4f36231776ea4401b6e385df5f43c11633d59f')
-      @git.checkout('7e4f36231776ea4401b6e385df5f43c11633d59f')
-    end
+      it "should create a new branch that tracks an external branch if the branch isn't local" do
+        @git.stub!(:local_branches).and_return(["master"])
+        @git.stub!(:branch).and_return("redux")
+        @git.should_receive(:`).with("git checkout -b redux origin/redux")
+        @git.checkout
+      end
 
-    it 'should checkout the given treeish' do
-      @git.should_receive(:chdir).and_yield
-      @git.should_receive(:system).with('git checkout origin/HEAD')
-      @git.checkout('origin/HEAD')
+      it 'should checkout the given commit' do
+        @git.should_receive(:`).with('git checkout 7e4f36231776ea4401b6e385df5f43c11633d59f')
+        @git.checkout('7e4f36231776ea4401b6e385df5f43c11633d59f')
+      end
+
+      it 'should checkout the given treeish' do
+        @git.should_receive(:`).with('git checkout origin/HEAD')
+        @git.checkout('origin/HEAD')
+      end
     end
   end
 end

@@ -13,8 +13,6 @@ module Integrity
         fetch_code
         checkout(revision)
         chdir(&block)
-      ensure
-        checkout('origin/HEAD')
       end
       
       def head
@@ -34,19 +32,27 @@ module Integrity
         end
     
         def clone
-          system "git clone #{uri} #{working_directory}"
+          `git clone #{uri} #{working_directory}`
         end
         
         def checkout(treeish=nil)
-          if treeish
-            chdir { system "git checkout #{treeish}" }
-          else
-            chdir { system "git checkout -b #{branch} origin/#{branch}" }
+          strategy = case
+            when treeish                         then treeish
+            when local_branches.include?(branch) then branch
+            else                                      "-b #{branch} origin/#{branch}"
           end
+          
+          chdir { `git checkout #{strategy}` }
         end
         
         def pull
-          chdir { system "git pull" }
+          chdir { `git pull` }
+        end
+        
+        def local_branches
+          chdir do
+            `git branch`.split("\n").map {|b| b.delete("*").strip }
+          end
         end
 
         def commit_info(treeish)
