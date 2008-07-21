@@ -154,6 +154,12 @@ describe 'Web UI using Sinatra' do
         form.should have_tag("button[@type=submit]", /manual build/)
       end
     end
+
+    it 'should be 404 if unknown project' do
+      Project.stub!(:first).and_return(nil)
+      get_it '/integrity'
+      status.should == 404
+    end
   end
   
   describe "GET /:project/edit" do
@@ -162,6 +168,12 @@ describe 'Web UI using Sinatra' do
     it "should be success" do
       get_it "/integrity/edit"
       status.should == 200
+    end
+
+    it 'should be 404 if unknown project' do
+      Project.stub!(:first).and_return(nil)
+      get_it '/integrity/edit'
+      status.should == 404
     end
     
     it "should render the form pointed at the projects permalink" do
@@ -203,6 +215,12 @@ describe 'Web UI using Sinatra' do
         field.should have_tag("label", /can't be blank/)
       end
     end
+
+    it 'should be 404 if unknown project' do
+      Project.stub!(:first).and_return(nil)
+      put_it '/integrity'
+      status.should == 404
+    end
   end
   
   describe "DELETE /:project" do
@@ -222,6 +240,12 @@ describe 'Web UI using Sinatra' do
       delete_it "/integrity"
       location.should == "/"
     end
+
+    it 'should be 404 if unknown project' do
+      Project.stub!(:first).and_return(nil)
+      delete_it '/integrity'
+      status.should == 404
+    end
   end
   
   describe "POST /:project/builds" do
@@ -235,6 +259,12 @@ describe 'Web UI using Sinatra' do
       Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
       post_it "/integrity/builds"
       location.should == "/integrity"
+    end
+
+    it 'should be 404 if unknown project' do
+      Project.stub!(:first).and_return(nil)
+      post_it '/integrity/builds'
+      status.should == 404
     end
   end
   

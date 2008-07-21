@@ -6,6 +6,12 @@ configure do
   Integrity.new
 end
 
+not_found do
+  status 404
+  content_type 'text/plain'
+  'Not Found'
+end
+
 include Integrity
 
 get "/" do
@@ -29,11 +35,13 @@ end
 
 get "/:project" do
   @project = Project.first(:permalink => params[:project])
+  raise Sinatra::NotFound unless @project
   show :project, :title => ["projects", @project.permalink]
 end
 
 put "/:project" do
   @project = Project.first(:permalink => params[:project])
+  raise Sinatra::NotFound unless @project
   if @project.update_attributes(filter_attributes_of(Project))
     redirect project_url(@project)
   else
@@ -43,17 +51,20 @@ end
 
 delete "/:project" do
   @project = Project.first(:permalink => params[:project])
+  raise Sinatra::NotFound unless @project
   @project.destroy
   redirect "/"
 end
 
 get "/:project/edit" do
   @project = Project.first(:permalink => params[:project])
+  raise Sinatra::NotFound unless @project
   show :new, :title => ["projects", @project.permalink, "edit"]
 end
 
 post "/:project/builds" do
   @project = Project.first(:permalink => params[:project])
+  raise Sinatra::NotFound unless @project
   @project.build
   redirect project_url(@project)
 end
