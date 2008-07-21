@@ -38,10 +38,10 @@ describe "Sinatra app to handle GitHub's post-receive hooks" do
   end
 
   before(:each) do
-    require Integrity.root / "lib" / "integrity" / "github"
     Integrity.stub!(:new)
     @project = mock('project', :build => true)
     Integrity::Project.stub!(:first).and_return(@project)
+    require Integrity.root / "lib" / "integrity" / "github"
   end
 
   it 'should be successful' do
