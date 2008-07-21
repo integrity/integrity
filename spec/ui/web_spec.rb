@@ -25,6 +25,7 @@ describe 'Web UI using Sinatra' do
     messages = {
       :status => :success,
       :output => 'output',
+      :project => @project
     }.merge(messages)
     messages[:human_readable_status] =
       if messages[:status] == :success
@@ -222,8 +223,10 @@ describe 'Web UI using Sinatra' do
 
       describe 'with previous builds' do
         before(:each) do
-          @previous_build_successful = mock_build(:status => :success)
-          @previous_build_failed = mock_build(:status => :fail)
+          @previous_build_successful = mock_build(:status => :success,
+            :commit => {:identifier => 'e39f64487e8de857e8b00947cf1b5d47a0480062'})
+          @previous_build_failed = mock_build(:status => :fail,
+            :commit => {:identifier => 'e63a7711af672b5287cdcbbd47afb36952b88f10'})
           @project.stub!(:previous_builds).and_return([@previous_build_successful, @previous_build_failed])
         end
 
@@ -236,8 +239,8 @@ describe 'Web UI using Sinatra' do
         it 'should display the status of the previous builds' do
           get_it '/integrity'
           body.should have_tag('ul#previous_builds') do |ul|
-            ul.should have_tag('li', 'Build Successful')
-            ul.should have_tag('li', 'Build Failed')
+            ul.should have_tag('li', /Build Successful/)
+            ul.should have_tag('li', /Build Failed/)
           end
         end
 
@@ -246,6 +249,14 @@ describe 'Web UI using Sinatra' do
           body.should have_tag('ul#previous_builds') do |ul|
             ul.should have_tag('li[@class=success]')
             ul.should have_tag('li[@class=fail]')
+          end
+        end
+
+        it 'should link to the page of each build' do
+          get_it '/integrity'
+          body.should have_tag('ul#previous_builds') do |ul|
+            ul.should have_tag('li a[@href=/integrity/builds/e39f64487e8de857e8b00947cf1b5d47a0480062')
+            ul.should have_tag('li a[@href=/integrity/builds/e63a7711af672b5287cdcbbd47afb36952b88f10')
           end
         end
       end
@@ -451,6 +462,19 @@ describe 'Web UI using Sinatra' do
       
       it "should add whatever other arguments are passed as tokens in the path" do
         @context.project_url(mock_project, :build, :blah).should == "/integrity/build/blah"
+      end
+    end
+
+    describe '#build_url' do
+      before(:each) do
+        @build = mock_build(
+          :project => mock_project,
+          :commit => {:identifier => 'd32adaa7e42622f5a2f0526985dc010915fab0bf'}
+        )
+      end
+
+      it 'should receive a build and return a link to it' do
+        @context.build_url(@build).should == '/integrity/builds/d32adaa7e42622f5a2f0526985dc010915fab0bf'
       end
     end
     

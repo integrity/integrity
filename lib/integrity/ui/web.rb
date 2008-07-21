@@ -107,6 +107,10 @@ helpers do
   def project_url(project, *path)
     "/" << [project.permalink, *path].join("/")
   end
+
+  def build_url(build)
+    "/#{build.project.permalink}/builds/#{build.commit[:identifier]}"
+  end
   
   def filter_attributes_of(model)
     valid = model.properties.collect {|p| p.name.to_s }
