@@ -23,7 +23,7 @@ describe 'Web UI using Sinatra' do
   end
   
   before(:each) do
-    DataMapper.stub!(:setup)
+    Integrity.stub!(:new)
     require File.dirname(__FILE__) + '/../../lib/integrity/ui/web'
   end
   
@@ -136,10 +136,23 @@ describe 'Web UI using Sinatra' do
   end
   
   describe "GET /:project" do
+    before { Project.stub!(:first).with(:permalink => "integrity").and_return mock_project }
+    
     it "should be success" do
-      Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
       get_it "/integrity"
       status.should == 200
+    end
+    
+    it "should load the project from the database" do
+      Project.should_receive(:first).with(:permalink => "integrity").and_return mock_project
+      get_it "/integrity"
+    end
+    
+    it "should have a form to create a new build" do
+      get_it "/integrity"
+      body.should have_tag("form[@action=/integrity/builds][@method=post]") do |form|
+        form.should have_tag("button[@type=submit]", /manual build/)
+      end
     end
   end
   

@@ -2,7 +2,7 @@
   %a{ :href => project_url(@project, :edit) } Edit Project
 
 - if @project.builds.empty?
-  %form.blank_slate{ :action => project_url(@project, :build), :method => :post }
+  %form.blank_slate{ :action => project_url(@project, :builds), :method => :post }
     %p No builds for this project, buddy
     %h1
       You can request a
@@ -14,7 +14,7 @@
       :preserve
         #{bash_color_codes @project.last_build.output}
     
-  %form{ :action => project_url(@project, :build), :method => :post }
+  %form{ :action => project_url(@project, :builds), :method => :post }
     %p.submit
       %button{ :type => :submit } Request Manual Build
   
