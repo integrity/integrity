@@ -215,16 +215,30 @@ describe 'Web UI using Sinatra' do
 
       describe 'with previous builds' do
         before(:each) do
-          @previous_build_successful = mock('successful build', :human_readable_status => 'Build Successful')
-          @previous_build_failed = mock('successful build', :human_readable_status => 'Build Failed')
+          @previous_build_successful = mock('successful build', :status => :success, :human_readable_status => 'Build Successful')
+          @previous_build_failed = mock('successful build', :status => :fail, :human_readable_status => 'Build Failed')
           @project.stub!(:previous_builds).and_return([@previous_build_successful, @previous_build_failed])
         end
 
-        it 'should display the status of each previous builds' do
+        it 'should list every previous builds' do
+          get_it '/integrity'
+          body.should have_tag('h2', 'Previous builds')
+          body.should have_tag('ul#previous_builds > li', :count => 2)
+        end
+
+        it 'should display the status of the previous builds' do
           get_it '/integrity'
           body.should have_tag('ul#previous_builds') do |ul|
             ul.should have_tag('li', 'Build Successful')
             ul.should have_tag('li', 'Build Failed')
+          end
+        end
+
+        it "should use class depending on build on build's status" do
+          get_it '/integrity'
+          body.should have_tag('ul#previous_builds') do |ul|
+            ul.should have_tag('li[@class=success]')
+            ul.should have_tag('li[@class=fail]')
           end
         end
       end

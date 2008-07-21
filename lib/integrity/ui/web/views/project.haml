@@ -19,6 +19,7 @@
       %button{ :type => :submit } Request Manual Build
   
   - unless @project.previous_builds.empty?
+    %h2 Previous builds
     %ul#previous_builds
       - @project.previous_builds.each do |build|
-        %li= build.human_readable_status
+        %li{ :class => build.status}= build.human_readable_status
