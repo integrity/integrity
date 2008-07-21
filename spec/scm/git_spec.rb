@@ -114,9 +114,10 @@ describe Integrity::SCM::Git do
   describe "Getting information about a commit" do
     before do
       @serialized = ["---",
-                     ":identifier: 7e4f36231776ea4401b6e385df5f43c11633d59f",
-                     ":author: Nicolás Sanguinetti <contacto@nicolassanguinetti.info>",
-                     ":message: A beautiful commit"] * "\n"
+                     ':identifier: 7e4f36231776ea4401b6e385df5f43c11633d59f',
+                     ':author: Nicolás Sanguinetti <contacto@nicolassanguinetti.info>',
+                     ':message: >-',
+                     '  A beautiful commit'] * "\n"
       @git.stub!(:chdir).and_yield
       @git.stub!(:`).and_return @serialized
     end
@@ -134,6 +135,21 @@ describe Integrity::SCM::Git do
     it "should ask YAML to interpret the serialized info" do
       YAML.should_receive(:load).with(@serialized).and_return({})
       @git.commit_info("HEAD")
+    end
+    
+    it "should not blow up if the author name has a colon in the middle" do
+      @serialized.gsub! 'Nicolás Sanguinetti', 'the:dude'
+      lambda { @git.commit_info("HEAD") }.should_not raise_error
+    end
+    
+    it "should not blow up if the commit message has a colon in the middle" do
+      @serialized.gsub! 'A beautiful commit', %Q(Beautiful: "A commit" with\n  newlines and 'lots of quoting')
+      lambda { @git.commit_info("HEAD") }.should_not raise_error
+    end
+    
+    it "should have yaml chomp the commit message (and remove any intermediate newlines)" do
+      @serialized.gsub! 'A beautiful commit', %Q(Beautiful: "A commit" with\n  newlines and 'lots of quoting')
+      @git.commit_info("HEAD")[:message].should == %Q(Beautiful: "A commit" with newlines and 'lots of quoting')
     end
     
     it "should return a hash with all the relevant information" do

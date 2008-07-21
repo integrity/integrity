@@ -50,7 +50,7 @@ module Integrity
         end
 
         def commit_info(treeish)
-          format  = "---%n:identifier: %H%n:author: %an <%ae>%n:message: %s%n"
+          format  = %Q(---%n:identifier: %H%n:author: %an <%ae>%n:message: >-%n  %s%n)
           chdir { YAML.load(`git show -s --pretty=format:"#{format}" #{treeish}`) }
         end
         
