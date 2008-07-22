@@ -27,13 +27,16 @@ describe Integrity::Builder do
   
   def mock_scm(messages={})
     @scm ||= begin
-      head = {
-        :identifier => '6eba34d94b74fe68b96e35450fadf241113e44fc',
-        :author => 'Simon Rozet <simon@rozet.name>',
-        :date   => Time.parse('Mon Jul 21 15:24:34 2008 +0200')
-      }
-      messages = { :with_revision => true, :head => head }.merge(messages)
-      mock("scm", messages)
+      scm = mock "scm", { :with_revision => true }.merge(messages)
+
+      scm.stub!(:commit_identifier).with('6eba34d94b74fe68b96e35450fadf241113e44fc').and_return('6eba34d94b74fe68b96e35450fadf241113e44fc')
+      scm.stub!(:commit_metadata).with('6eba34d94b74fe68b96e35450fadf241113e44fc').and_return(
+        :author  => 'Simon Rozet <simon@rozet.name>',
+        :message => 'A commit message',
+        :date    => Time.parse('Mon Jul 21 15:24:34 2008 +0200')
+      )
+      
+      scm
     end
   end
   
@@ -72,46 +75,57 @@ describe Integrity::Builder do
     end
   end
   
-  describe "When building" do
+  describe "When building a specific commit" do
     before { @builder.stub!(:run_build_script) }
     
     it "should fetch the latest code from the scm and run the build script" do
-      mock_scm.should_receive(:with_revision).with('HEAD').and_yield do
-        @builder.should_receive(:run_build_script)
+      mock_scm.should_receive(:with_revision).
+        with('6eba34d94b74fe68b96e35450fadf241113e44fc').and_yield do
+          @builder.should_receive(:run_build_script)
       end
-      @builder.build
+      @builder.build('6eba34d94b74fe68b96e35450fadf241113e44fc')
     end
 
-    it 'should checkout the given commit from the scm and run the build script' do
-      mock_scm.should_receive(:with_revision).
-        with('6437fa27779daba40dbd130e2937d36253be1d4c').and_yield do
-          @builder.should_receive(:run_build_script)
-        end
-      @builder.build('6437fa27779daba40dbd130e2937d36253be1d4c')
-    end
-    
     it "should assign the head (minus the identifier) of the SCM as the commit metadata in the build" do
-      head_without_identifier = mock_scm.head.reject{|k,_| k==:identifier}
-      mock_build.should_receive(:commit_metadata=).with(head_without_identifier)
-      @builder.build
+      metadata = mock_scm.commit_metadata('6eba34d94b74fe68b96e35450fadf241113e44fc')
+      mock_build.should_receive(:commit_metadata=).with(metadata)
+      @builder.build('6eba34d94b74fe68b96e35450fadf241113e44fc')
     end
 
     it "should assign the commit identifier of the SCM's head as the commit identifier in the build" do
-      mock_build.should_receive(:commit_identifier=).with mock_scm.head[:identifier]
-      @builder.build
+      mock_build.should_receive(:commit_identifier=).with '6eba34d94b74fe68b96e35450fadf241113e44fc'
+      @builder.build('6eba34d94b74fe68b96e35450fadf241113e44fc')
     end
     
     it "should save the build to the database" do
       mock_build.should_receive(:save)
-      @builder.build
+      @builder.build('6eba34d94b74fe68b96e35450fadf241113e44fc')
     end
     
-    it "should save the build even if there's an exception" do
-      lambda {
-        mock_scm.should_receive(:with_revision).and_raise(RuntimeError)
-        mock_build.should_receive(:save)
-        @builder.build
-      }.should raise_error(RuntimeError)
+    describe "when there's an error" do
+      before { mock_scm.stub!(:with_revision).and_raise(RuntimeError) }
+      
+      it "should still save the build" do
+        lambda {
+          mock_build.should_receive(:save)
+          @builder.build('6eba34d94b74fe68b96e35450fadf241113e44fc')
+        }.should raise_error(RuntimeError)
+      end
+      
+      it "should still save in what commit this happened" do
+        lambda {
+          mock_build.should_receive(:commit_identifier=).with('6eba34d94b74fe68b96e35450fadf241113e44fc')
+          @builder.build('6eba34d94b74fe68b96e35450fadf241113e44fc')
+        }.should raise_error(RuntimeError)
+      end
+
+      it "should still save the commit metadata" do
+        lambda {
+          metadata = mock_scm.commit_metadata('6eba34d94b74fe68b96e35450fadf241113e44fc')
+          mock_build.should_receive(:commit_metadata=).with(metadata)
+          @builder.build('6eba34d94b74fe68b96e35450fadf241113e44fc')
+        }.should raise_error(RuntimeError)
+      end
     end
   end
   

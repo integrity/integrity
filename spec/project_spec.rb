@@ -131,9 +131,14 @@ describe Integrity::Project do
       @project.build
     end
 
-    it 'should tell the builder to ... build!' do
-      @builder.should_receive(:build)
+    it 'should tell the builder to build the head if no commit id is passed' do
+      @builder.should_receive(:build).with("HEAD")
       @project.build
+    end
+    
+    it "should tell the builder to build a specific commit if an id is passed" do
+      @builder.should_receive(:build).with('6eba34d94b74fe68b96e35450fadf241113e44fc')
+      @project.build('6eba34d94b74fe68b96e35450fadf241113e44fc')
     end
     
     it "should set 'building?' to true while building" do

@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe Integrity::SCM::Git do
   before do
-    Integrity::SCM::Git.class_eval { public :fetch_code, :chdir, :clone, :checkout, :pull, :commit_info, :local_branches, :cloned?, :on_branch? }
+    Integrity::SCM::Git.class_eval { public :fetch_code, :chdir, :clone, :checkout, :pull, :local_branches, :cloned?, :on_branch? }
     @git = Integrity::SCM::Git.new("git://github.com/foca/integrity.git", "master", "/var/integrity/exports/foca-integrity")
   end
   
@@ -89,7 +89,7 @@ describe Integrity::SCM::Git do
       @git.stub!(:checkout)
       @git.stub!(:chdir).with(&@block)
     end
-
+    
     it "should fetch the latest code" do
       @git.should_receive(:fetch_code)
       @git.with_revision('HEAD', &@block)
@@ -109,57 +109,48 @@ describe Integrity::SCM::Git do
   describe "Getting information about a commit" do
     before do
       @serialized = ["---",
-                     ':identifier: 7e4f36231776ea4401b6e385df5f43c11633d59f',
                      ':author: Nicolás Sanguinetti <contacto@nicolassanguinetti.info>',
                      ':message: >-',
                      '  A beautiful commit'] * "\n"
       @git.stub!(:chdir).and_yield
       @git.stub!(:`).and_return @serialized
     end
-    
+
     it "should switch to the project's directory" do
       @git.should_receive(:chdir).and_yield
-      @git.commit_info("HEAD")
+      @git.commit_metadata("HEAD")
     end
     
     it "should ask git for the commit" do
       @git.should_receive(:`).with(/^git show -s.*HEAD/).and_return(@serialized)
-      @git.commit_info("HEAD")
+      @git.commit_metadata("HEAD")
     end
     
     it "should ask YAML to interpret the serialized info" do
       YAML.should_receive(:load).with(@serialized).and_return({})
-      @git.commit_info("HEAD")
+      @git.commit_metadata("HEAD")
     end
     
     it "should not blow up if the author name has a colon in the middle" do
       @serialized.gsub! 'Nicolás Sanguinetti', 'the:dude'
-      lambda { @git.commit_info("HEAD") }.should_not raise_error
+      lambda { @git.commit_metadata("HEAD") }.should_not raise_error
     end
     
     it "should not blow up if the commit message has a colon in the middle" do
       @serialized.gsub! 'A beautiful commit', %Q(Beautiful: "A commit" with\n  newlines and 'lots of quoting')
-      lambda { @git.commit_info("HEAD") }.should_not raise_error
+      lambda { @git.commit_metadata("HEAD") }.should_not raise_error
     end
     
     it "should have yaml chomp the commit message (and remove any intermediate newlines)" do
       @serialized.gsub! 'A beautiful commit', %Q(Beautiful: "A commit" with\n  newlines and 'lots of quoting')
-      @git.commit_info("HEAD")[:message].should == %Q(Beautiful: "A commit" with newlines and 'lots of quoting')
+      @git.commit_metadata("HEAD")[:message].should == %Q(Beautiful: "A commit" with newlines and 'lots of quoting')
     end
     
     it "should return a hash with all the relevant information" do
-      @git.commit_info("HEAD").should == {
-        :identifier => "7e4f36231776ea4401b6e385df5f43c11633d59f",
+      @git.commit_metadata("HEAD").should == {
         :author => "Nicolás Sanguinetti <contacto@nicolassanguinetti.info>",
         :message => "A beautiful commit"
       }
-    end
-  end
-  
-  describe "Getting the HEAD of the repo" do
-    it "should pass down the request to #commit_info" do
-      @git.should_receive(:commit_info).with("HEAD")
-      @git.head
     end
   end
   

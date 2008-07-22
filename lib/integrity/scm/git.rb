@@ -15,8 +15,13 @@ module Integrity
         chdir(&block)
       end
       
-      def head
-        @head ||= commit_info("HEAD")
+      def commit_identifier(sha1)
+        chdir { `git show -s --pretty=format:%H #{sha1}`.chomp }
+      end
+      
+      def commit_metadata(sha1)
+        format  = %Q(---%n:author: %an <%ae>%n:message: >-%n  %s%n)
+        chdir { YAML.load(`git show -s --pretty=format:"#{format}" #{sha1}`) }
       end
       
       private
@@ -55,11 +60,6 @@ module Integrity
           end
         end
 
-        def commit_info(treeish)
-          format  = %Q(---%n:identifier: %H%n:author: %an <%ae>%n:message: >-%n  %s%n)
-          chdir { YAML.load(`git show -s --pretty=format:"#{format}" #{treeish}`) }
-        end
-        
         def cloned?
           File.directory?(working_directory / ".git")
         end

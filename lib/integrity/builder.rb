@@ -12,12 +12,12 @@ module Integrity
       @build = Build.new(:project => project)
     end
 
-    def build(commit='HEAD')
+    def build(commit)
       @scm.with_revision(commit) { run_build_script }
       @build
     ensure
-      @build.commit_identifier = @scm.head.delete(:identifier)
-      @build.commit_metadata = @scm.head
+      @build.commit_identifier = @scm.commit_identifier(commit)
+      @build.commit_metadata = @scm.commit_metadata(commit)
       @build.save
     end
     

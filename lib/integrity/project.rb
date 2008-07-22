@@ -20,10 +20,10 @@ module Integrity
 
     validates_is_unique :name
 
-    def build
+    def build(commit_identifier="HEAD")
       return if building?
       update_attributes(:building => true)
-      Builder.new(self).build
+      Builder.new(self).build(commit_identifier)
     ensure
       update_attributes(:building => false)
     end
