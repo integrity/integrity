@@ -241,6 +241,18 @@ h1#build
     :background-color = !failed_bg
     :color white !important
 
+a
+  &.success
+    :color = !success_bg
+    &:hover
+      :background-color = !success_bg
+      :color white
+  &.failed
+    :color = !failed_bg
+    &:hover
+      :background-color = !failed_bg
+      :color white
+
 #footer
   :padding 1.5em 2.5em
   :border-top 1px solid #ccc 

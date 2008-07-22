@@ -22,5 +22,6 @@
     %h2 Previous builds
     %ul#previous_builds
       - @project.previous_builds.each do |build|
-        %li{ :class => build.status}
-          %a{ :href => build_url(build) }= build.human_readable_status
+        %li
+          %a{ :href => build_url(build), :class => build.status }
+            = build.short_commit_identifier

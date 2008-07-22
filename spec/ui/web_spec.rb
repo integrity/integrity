@@ -27,7 +27,6 @@ describe 'Web UI using Sinatra' do
       :output => 'output',
       :project => @project,
       :commit_identifier => '9f6302002d2259c05a64767e0dedb15d280a4848',
-      :short_commit_identifier => '9f6302',
       :commit_metadata   => {
         :author => 'Nicolás Sanguinetti <contacto@nicolassanguinetti.info>',
         :message => "Add Object#tap for versions of ruby that don't have it"
@@ -39,6 +38,7 @@ describe 'Web UI using Sinatra' do
       else
         'Build Failed'
       end
+    messages[:short_commit_identifier] = messages[:commit_identifier][0..5]
     mock('build', messages)
   end
   
@@ -233,7 +233,8 @@ describe 'Web UI using Sinatra' do
             :commit_identifier => 'e39f64487e8de857e8b00947cf1b5d47a0480062')
           @previous_build_failed = mock_build(:status => :fail,
             :commit_identifier => 'e63a7711af672b5287cdcbbd47afb36952b88f10')
-          @project.stub!(:previous_builds).and_return([@previous_build_successful, @previous_build_failed])
+          @project.stub!(:previous_builds).
+            and_return([@previous_build_successful, @previous_build_failed])
         end
 
         it 'should list every previous builds' do
@@ -242,19 +243,19 @@ describe 'Web UI using Sinatra' do
           body.should have_tag('ul#previous_builds > li', :count => 2)
         end
 
-        it 'should display the status of the previous builds' do
+        it 'should display the short commit identifier of each previous builds' do
           get_it '/integrity'
           body.should have_tag('ul#previous_builds') do |ul|
-            ul.should have_tag('li', /Build Successful/)
-            ul.should have_tag('li', /Build Failed/)
+            ul.should have_tag('li a', /e39f64/)
+            ul.should have_tag('li a', /e63a77/)
           end
         end
 
         it "should use class depending on build on build's status" do
           get_it '/integrity'
           body.should have_tag('ul#previous_builds') do |ul|
-            ul.should have_tag('li[@class=success]')
-            ul.should have_tag('li[@class=fail]')
+            ul.should have_tag('li a[@class=success]')
+            ul.should have_tag('li a[@class=fail]')
           end
         end
 
