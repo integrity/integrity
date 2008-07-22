@@ -30,7 +30,7 @@ module Integrity
 
     private
       def sha1?(string)
-        string =~ /[a-z0-9]{32}/
+        string =~ /^[a-f0-9]{40}$/
       end
   end
 end
