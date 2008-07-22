@@ -23,5 +23,14 @@ module Integrity
     def human_readable_status
       successful? ? 'Build Successful' : 'Build Failed'
     end
+    
+    def short_commit_identifier
+      sha1?(commit_identifier) ? commit_identifier[0..6] : commit_identifier
+    end
+
+    private
+      def sha1?(string)
+        string =~ /[a-z0-9]{32}/
+      end
   end
 end

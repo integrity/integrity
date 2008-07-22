@@ -54,11 +54,21 @@ describe Integrity::Build do
     @build.output.should == ''
   end
 
-  it '#human_readable_status should return "Build successful" or "Build Failed"' do
+  specify '#human_readable_status should return "Build successful" or "Build Failed"' do
     @build.stub!(:successful?).and_return(true)
     @build.human_readable_status.should == 'Build Successful'
     @build.stub!(:successful?).and_return(false)
     @build.human_readable_status.should == 'Build Failed'
+  end
+
+  it 'should return the short version of the commit identifier if it is a sha1' do
+    @build.stub!(:commit_identifier).and_return('0367ee0566843edcf871a86f0eb23d90c4ee1d14')
+    @build.short_commit_identifier.should == '0367ee0'
+  end
+
+  it 'should return the full commit identifier as the short version if it is not a sha1' do
+    @build.stub!(:commit_identifier).and_return('234')
+    @build.short_commit_identifier.should == '234'
   end
   
   it "should return the status as a symbol (for html classes or the like)" do
