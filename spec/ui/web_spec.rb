@@ -43,8 +43,7 @@ describe 'Web UI using Sinatra' do
   end
   
   def provide_valid_credentials!
-    credential = stub("totally insecure, but testable", :== => true)
-    Integrity.stub!(:config).and_return(:admin_username => credential, :admin_password => credential)
+    Integrity.stub!(:config).and_return(:admin_username => "user", :admin_password => "pass", :hash_admin_password => false)
     auth = stub("auth", :provided? => true, :basic? => true, :username => "user", :credentials => ["user", "pass"])
     Rack::Auth::Basic::Request.stub!(:new).and_return(auth)
   end
@@ -95,9 +94,15 @@ describe 'Web UI using Sinatra' do
         status.should == 200
       end
       
-      it "should load the projects from the db" do
-        Project.should_receive(:all).and_return([@project_1, @project_2])
+      it "should load the public projects from the db" do
+        Project.should_receive(:all).with(:public => true).and_return([@project_1, @project_2])
         get_it "/"
+      end
+      
+      it "should load *all* the projects from the db *if the user has authenticated*" do
+        Project.should_receive(:all).with({}).and_return([@project_1, @project_2])
+        provide_valid_credentials!
+        get_it "/", :env => { "REMOTE_USER" => "username" }
       end
       
       it "should show a list of the projects" do
@@ -111,6 +116,25 @@ describe 'Web UI using Sinatra' do
         get_it "/"
         body.should have_tag("#new a[@href=/new]", /add a new project/i)
       end
+    end
+  end
+  
+  describe "GET /login" do
+    it "should require authentication" do
+      get_it "/login"
+      status.should == 401
+    end
+    
+    it "should redirect to '/' on successful auth" do
+      provide_valid_credentials!
+      get_it "/login"
+      location.should == "/"
+    end
+    
+    it "should store the username on the session" do
+      pending "how do I test the session?!"
+      provide_valid_credentials!
+      get_it "/login"
     end
   end
   

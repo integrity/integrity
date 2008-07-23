@@ -4,6 +4,8 @@ set :root,   Integrity.root / "lib/integrity/ui/web"
 set :public, Integrity.root / "lib/integrity/ui/web/public"
 set :views,  Integrity.root / "lib/integrity/ui/web/views"
 
+enable :sessions
+
 include Integrity
 
 configure do
@@ -15,9 +17,22 @@ not_found do
   show :not_found, :title => "lost, are we?"
 end
 
+before do
+  # The browser only sends http auth data for requests that are explicitly
+  # required to do so. This way we get the real values of +#logged_in?+ and
+  # +#current_user+
+  login_required if session[:user]
+end
+
 get "/" do
-  @projects = Project.all
+  @projects = Project.all(logged_in? ? {} : { :public => true })
   show :home, :title => "projects"
+end
+
+get "/login" do
+  login_required
+  session[:user] = current_user
+  redirect "/"
 end
 
 get "/new" do
@@ -39,6 +54,7 @@ post "/" do
 end
 
 get "/:project" do
+  login_required unless current_project.public?
   show :project, :title => ["projects", current_project.permalink]
 end
 
@@ -73,6 +89,8 @@ post "/:project/builds" do
 end
 
 get '/:project/builds/:build' do
+  login_required unless current_project.public?
+
   @build = current_project.builds.first(:commit_identifier => params[:build])
   raise Sinatra::NotFound unless @build
   show :build, :title => 'Some build'
@@ -99,6 +117,11 @@ helpers do
 
     Integrity.config[:admin_username] == user && 
       Integrity.config[:admin_password] == password
+  end
+  
+  def unauthorized!(realm=authorization_realm)
+    header 'WWW-Authenticate' => %(Basic realm="#{realm}")
+    throw :halt, [401, show(:unauthorized, :title => "incorrect credentials")]
   end
   
   def current_project
