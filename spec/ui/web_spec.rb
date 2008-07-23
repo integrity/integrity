@@ -43,7 +43,8 @@ describe 'Web UI using Sinatra' do
   end
   
   def provide_valid_credentials!
-    Sinatra::EventContext.class_eval { def authorize(user, pass); true; end }
+    credential = stub("totally insecure, but testable", :== => true)
+    Integrity.stub!(:config).and_return(:admin_username => credential, :admin_password => credential)
     auth = stub("auth", :provided? => true, :basic? => true, :username => "user", :credentials => ["user", "pass"])
     Rack::Auth::Basic::Request.stub!(:new).and_return(auth)
   end
@@ -690,6 +691,35 @@ describe 'Web UI using Sinatra' do
         (31..37).each do |color|
           @context.bash_color_codes("\e[#{color}msomething</span>").should == %Q(<span class="color#{color}">something</span>)
         end
+      end
+    end
+    
+    describe "#authorize" do
+      before do
+        Integrity.stub!(:config).and_return(
+          :admin_username => "the_user",
+          :admin_password => "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3", # sha1(test)
+          :hash_admin_password => true
+        )
+      end
+      
+      it "should hash the password if the settings say so" do
+        Digest::SHA1.should_receive(:hexdigest).with("test").and_return("a94a8fe5ccb19ba61c4c0873d391e987982fbbd3")
+        @context.authorize("the_user", "test")
+      end
+      
+      it "should not hash the password if the settings do not specify it" do
+        Integrity.config[:hash_admin_password] = false
+        Digest::SHA1.should_not_receive(:hexdigest)
+        @context.authorize("the_user", "test")
+      end
+      
+      it "should authenticate a user with valid username and password (hashed)" do
+        @context.authorize("the_user", "test").should be_true
+      end
+      
+      it "should not authenticate a user with an invalid username" do
+        @context.authorize("1337 h4x0r", "test").should be_false # hah, not so leet, ah?
       end
     end
   end

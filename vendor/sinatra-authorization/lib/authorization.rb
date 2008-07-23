@@ -33,7 +33,7 @@ module Sinatra
 
     # Convenience method to determine if a user is logged in
     def authorized?
-      request.env['REMOTE_USER']
+      !!request.env['REMOTE_USER']
     end
     alias :logged_in? :authorized?
 

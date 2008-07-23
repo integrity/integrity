@@ -9,6 +9,7 @@ require 'dm-timestamps'
 require 'dm-aggregates'
 
 require 'yaml'
+require 'digest/sha1'
 
 require "core_ext/object"
 require "core_ext/string"

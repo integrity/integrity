@@ -1,4 +1,4 @@
-require "ui/web/authorization"
+require "authorization"
 
 set :root,   Integrity.root / "lib/integrity/ui/web"
 set :public, Integrity.root / "lib/integrity/ui/web/public"
@@ -93,7 +93,12 @@ helpers do
   end
   
   def authorize(user, password)
-    user == "foca" && password == "test"
+    if Integrity.config[:hash_admin_password]
+      password = Digest::SHA1.hexdigest(password)
+    end
+
+    Integrity.config[:admin_username] == user && 
+      Integrity.config[:admin_password] == password
   end
   
   def current_project
