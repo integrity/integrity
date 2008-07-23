@@ -8,8 +8,7 @@ end
 
 not_found do
   status 404
-  content_type 'text/plain'
-  'Not Found'
+  show :not_found, :title => "lost, are we?"
 end
 
 include Integrity
@@ -84,7 +83,7 @@ helpers do
   end
   
   def pages
-    @pages ||= [["projects", "/"], ["new project", "/new"], ["edit", nil]]
+    @pages ||= [["projects", "/"], ["new project", "/new"]]
   end
   
   def breadcrumbs(*crumbs)

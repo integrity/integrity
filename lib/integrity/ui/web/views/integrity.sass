@@ -1,4 +1,5 @@
 !default_fonts   = "Helvetica Neue, Helvetica, Arial, sans-serif"
+!nice_fonts      = "Georgia, Times New Roman, serif"
 !monospace_fonts = "Monaco, Deja Vu Sans Mono, Inconsolata, Consolas, monospace"
 
 !page_bg      = #e0e0e0
@@ -159,7 +160,7 @@ a
           :float none
           :display inline
 
-  .blank_slate
+  .blank_slate, .error
     p
       :position relative
       :top .3em
@@ -178,6 +179,17 @@ a
         &:hover
           :background = !link_color
           :color = !link_bg
+
+  .error
+    dt
+      :margin
+        :top 1.4em
+        :bottom .3em
+      :font
+        :size 1.75em
+        :family = !nice_fonts
+    dd
+      :line-height 1.4
   
   #projects
     :margin 1em 0 2em
