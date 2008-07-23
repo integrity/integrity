@@ -34,45 +34,33 @@ post "/" do
 end
 
 get "/:project" do
-  @project = Project.first(:permalink => params[:project])
-  raise Sinatra::NotFound unless @project
-  show :project, :title => ["projects", @project.permalink]
+  show :project, :title => ["projects", current_project.permalink]
 end
 
 put "/:project" do
-  @project = Project.first(:permalink => params[:project])
-  raise Sinatra::NotFound unless @project
-  if @project.update_attributes(filter_attributes_of(Project))
-    redirect project_url(@project)
+  if current_project.update_attributes(filter_attributes_of(Project))
+    redirect project_url(current_project)
   else
-    show :new, :title => ["projects", @project.permalink, "edit"]
+    show :new, :title => ["projects", current_project.permalink, "edit"]
   end
 end
 
 delete "/:project" do
-  @project = Project.first(:permalink => params[:project])
-  raise Sinatra::NotFound unless @project
-  @project.destroy
+  current_project.destroy
   redirect "/"
 end
 
 get "/:project/edit" do
-  @project = Project.first(:permalink => params[:project])
-  raise Sinatra::NotFound unless @project
-  show :new, :title => ["projects", @project.permalink, "edit"]
+  show :new, :title => ["projects", current_project.permalink, "edit"]
 end
 
 post "/:project/builds" do
-  @project = Project.first(:permalink => params[:project])
-  raise Sinatra::NotFound unless @project
-  @project.build
+  current_project.build
   redirect project_url(@project)
 end
 
 get '/:project/builds/:build' do
-  @project = Project.first(:permalink => params[:project])
-  raise Sinatra::NotFound unless @project
-  @build = @project.builds.first(:commit_identifier => params[:build])
+  @build = current_project.builds.first(:commit_identifier => params[:build])
   raise Sinatra::NotFound unless @build
   show :build, :title => 'Some build'
 end
@@ -85,6 +73,10 @@ end
 helpers do
   include Rack::Utils
   alias_method :h, :escape_html
+  
+  def current_project
+    @project ||= Project.first(:permalink => params[:project]) or raise Sinatra::NotFound
+  end
   
   def show(view, options={})
     @title = breadcrumbs(*options[:title])

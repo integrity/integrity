@@ -471,6 +471,25 @@ describe 'Web UI using Sinatra' do
   describe "Helpers" do
     before { @context = Sinatra::EventContext.new(stub("request"), stub("response", :body= => nil), stub("route params")) }
     
+    describe "#current_project" do
+      before { @context.stub!(:params).and_return(:project => "integrity") }
+      
+      it "should return the project" do
+        Project.stub!(:first).with(:permalink => "integrity").and_return(mock_project)
+        @context.current_project.should == mock_project
+      end
+      
+      it "should try to load the project with the permalink provided in the params" do
+        Project.should_receive(:first).with(:permalink => "integrity").and_return(mock_project)
+        @context.current_project
+      end
+      
+      it "should raise NotFound if the project cannot be found" do
+        Project.stub!(:first).and_return(nil)
+        lambda { @context.current_project }.should raise_error(Sinatra::NotFound)
+      end
+    end
+    
     describe "#show" do
       before do
         @context.stub!(:haml)
