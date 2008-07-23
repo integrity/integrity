@@ -42,6 +42,12 @@ describe 'Web UI using Sinatra' do
     mock('build', messages)
   end
   
+  def provide_valid_credentials!
+    Sinatra::EventContext.class_eval { def authorize(user, pass); true; end }
+    auth = stub("auth", :provided? => true, :basic? => true, :username => "user", :credentials => ["user", "pass"])
+    Rack::Auth::Basic::Request.stub!(:new).and_return(auth)
+  end
+  
   before(:each) do
     Integrity.stub!(:new)
     require File.dirname(__FILE__) + '/../../lib/integrity/ui/web'
@@ -109,16 +115,19 @@ describe 'Web UI using Sinatra' do
   
   describe "GET /new" do
     it "should render successfully" do
+      provide_valid_credentials!
       get_it "/new"
       status.should == 200
     end
     
     it "should initialize a new Project instance" do
+      provide_valid_credentials!
       Project.should_receive(:new).and_return mock_project(:new_record? => true, :name => nil, :uri => nil)
       get_it "/new"
     end
     
     it "should render a form that posts back to '/'" do
+      provide_valid_credentials!
       get_it "/new"
       body.should have_tag("form[@action=/][@method=post]") do |form|
         form.should have_tag("input.text#project_name[@name=name][@type=text][@value='']")
@@ -128,6 +137,11 @@ describe 'Web UI using Sinatra' do
         form.should have_tag("textarea#project_build_script[@name=command]", /rake/)
       end
     end    
+    
+    it "should require authentication" do
+      get_it "/new"
+      status.should == 401
+    end
   end
   
   describe "POST /" do
@@ -135,12 +149,14 @@ describe 'Web UI using Sinatra' do
 
     it "should re-render the 'new' view when the project has invalid attributes" do
       mock_project.stub!(:save).and_return(false)
+      provide_valid_credentials!
       post_it "/"
       status.should == 200
     end
     
     it "should redirect to the new project's page when the project has valid attributes" do
       mock_project.stub!(:save).and_return(true)
+      provide_valid_credentials!
       post_it "/"
       location.should == "/integrity"
     end
@@ -148,10 +164,16 @@ describe 'Web UI using Sinatra' do
     it "display error messages" do
       mock_project.should_receive(:save).and_return(false)
       mock_project.errors.stub!(:on).with(:name).and_return('Name is already taken')
+      provide_valid_credentials!
       post_it "/"
       body.should have_tag("p.required.with_errors") do |field|
         field.should have_tag("label", /is already taken/)
       end
+    end
+    
+    it "should require authentication" do
+      post_it "/"
+      status.should == 401
     end
   end
   
@@ -274,17 +296,20 @@ describe 'Web UI using Sinatra' do
     before { Project.stub!(:first).with(:permalink => "integrity").and_return mock_project }
     
     it "should be success" do
+      provide_valid_credentials!
       get_it "/integrity/edit"
       status.should == 200
     end
 
     it 'should be 404 if unknown project' do
       Project.stub!(:first).and_return(nil)
+      provide_valid_credentials!
       get_it '/integrity/edit'
       status.should == 404
     end
     
     it "should render the form pointed at the projects permalink" do
+      provide_valid_credentials!
       get_it "/integrity/edit"
       body.should have_tag("form[@action=/integrity][@method=post]") do |form|
         form.should have_tag("input[@name=_method][@type=hidden][@value=put]")
@@ -296,6 +321,11 @@ describe 'Web UI using Sinatra' do
         form.should have_tag("textarea#project_build_script[@name=command]", /rake/)
       end
     end
+    
+    it "should require authentication" do
+      get_it "/integrity/edit"
+      status.should == 401
+    end
   end
   
   describe "PUT /:project" do
@@ -305,12 +335,14 @@ describe 'Web UI using Sinatra' do
     
     it "should redirect to the project page if the update is valid" do
       mock_project.should_receive(:update_attributes).and_return(true)
+      provide_valid_credentials!
       put_it "/integrity"
       location.should == "/integrity"
     end
     
     it "should re-render the form if the update isn't valid" do
       mock_project.should_receive(:update_attributes).and_return(false)
+      provide_valid_credentials!
       put_it "/integrity"
       status.should == 200
     end
@@ -318,6 +350,7 @@ describe 'Web UI using Sinatra' do
     it "display error messages" do
       mock_project.should_receive(:update_attributes).and_return(false)
       mock_project.errors.stub!(:on).with(:name).and_return("Name can't be blank")
+      provide_valid_credentials!
       put_it "/integrity"
       body.should have_tag("p.required.with_errors") do |field|
         field.should have_tag("label", /can't be blank/)
@@ -326,33 +359,48 @@ describe 'Web UI using Sinatra' do
 
     it 'should be 404 if unknown project' do
       Project.stub!(:first).and_return(nil)
+      provide_valid_credentials!
       put_it '/integrity'
       status.should == 404
+    end
+    
+    it "should require authentication" do
+      put_it "/integrity"
+      status.should == 401
     end
   end
   
   describe "DELETE /:project" do
     it "should load the project" do
       Project.should_receive(:first).with(:permalink => "integrity").and_return mock_project
+      provide_valid_credentials!
       delete_it "/integrity"
     end
     
     it "should destroy the project" do
       Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
       mock_project.should_receive(:destroy)
+      provide_valid_credentials!
       delete_it "/integrity"
     end
     
     it "should redirect to the home page" do
       Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
+      provide_valid_credentials!
       delete_it "/integrity"
       location.should == "/"
     end
 
     it 'should be 404 if unknown project' do
       Project.stub!(:first).and_return(nil)
+      provide_valid_credentials!
       delete_it '/integrity'
       status.should == 404
+    end
+    
+    it "should require authentication" do
+      delete_it "/integrity"
+      status.should == 401
     end
   end
   
@@ -360,19 +408,26 @@ describe 'Web UI using Sinatra' do
     it "should build the project" do
       Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
       mock_project.should_receive(:build)
+      provide_valid_credentials!
       post_it "/integrity/builds"
     end
     
     it "should redirect back to the project" do
       Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
+      provide_valid_credentials!
       post_it "/integrity/builds"
       location.should == "/integrity"
     end
 
     it 'should be 404 if unknown project' do
       Project.stub!(:first).and_return(nil)
+      provide_valid_credentials!
       post_it '/integrity/builds'
       status.should == 404
+    end
+    
+    it "should require authorization" do
+      provide_valid_credentials!
     end
   end
 

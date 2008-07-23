@@ -1,6 +1,10 @@
+require "ui/web/authorization"
+
 set :root,   Integrity.root / "lib/integrity/ui/web"
 set :public, Integrity.root / "lib/integrity/ui/web/public"
 set :views,  Integrity.root / "lib/integrity/ui/web/views"
+
+include Integrity
 
 configure do
   Integrity.new
@@ -11,19 +15,21 @@ not_found do
   show :not_found, :title => "lost, are we?"
 end
 
-include Integrity
-
 get "/" do
   @projects = Project.all
   show :home, :title => "projects"
 end
 
 get "/new" do
+  login_required
+  
   @project = Project.new
   show :new, :title => ["projects", "new project"]
 end
 
 post "/" do
+  login_required
+  
   @project = Project.new(params)
   if @project.save
     redirect project_url(@project)
@@ -37,6 +43,8 @@ get "/:project" do
 end
 
 put "/:project" do
+  login_required
+  
   if current_project.update_attributes(filter_attributes_of(Project))
     redirect project_url(current_project)
   else
@@ -45,15 +53,21 @@ put "/:project" do
 end
 
 delete "/:project" do
+  login_required
+  
   current_project.destroy
   redirect "/"
 end
 
 get "/:project/edit" do
+  login_required
+  
   show :new, :title => ["projects", current_project.permalink, "edit"]
 end
 
 post "/:project/builds" do
+  login_required
+  
   current_project.build
   redirect project_url(@project)
 end
@@ -71,7 +85,16 @@ end
 
 helpers do
   include Rack::Utils
+  include Sinatra::Authorization
   alias_method :h, :escape_html
+  
+  def authorization_realm
+    "Integrity"
+  end
+  
+  def authorize(user, password)
+    user == "foca" && password == "test"
+  end
   
   def current_project
     @project ||= Project.first(:permalink => params[:project]) or raise Sinatra::NotFound

@@ -2,13 +2,13 @@ module Integrity
   class Build
     include DataMapper::Resource
 
-    property :id,         Integer,  :serial => true
-    property :output,     Text,     :nullable => false, :default => ''
-    property :successful, Boolean,  :nullable => false, :default => false
-    property :created_at, DateTime
-    property :updated_at, DateTime
-    property :commit_identifier, String, :nullable => false
-    property :commit_metadata,   Yaml,   :nullable => false
+    property :id,                Integer,  :serial => true
+    property :output,            Text,     :nullable => false, :default => ''
+    property :successful,        Boolean,  :nullable => false, :default => false
+    property :commit_identifier, String,   :nullable => false
+    property :commit_metadata,   Yaml,     :nullable => false
+    property :created_at,        DateTime
+    property :updated_at,        DateTime
 
     belongs_to :project, :class_name => "Integrity::Project"
 
