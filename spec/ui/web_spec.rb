@@ -24,6 +24,7 @@ describe 'Web UI using Sinatra' do
   def mock_build(messages={})
     messages = {
       :status => :success,
+      :successful? => true,
       :output => 'output',
       :project => @project,
       :commit_identifier => '9f6302002d2259c05a64767e0dedb15d280a4848',
@@ -35,12 +36,6 @@ describe 'Web UI using Sinatra' do
       :commited_at => Time.mktime(2008, 7, 24, 17, 15),
       :commit_message => "Add Object#tap for versions of ruby that don't have it"
     }.merge(messages)
-    messages[:human_readable_status] =
-      if messages[:status] == :success
-        'Build Successful'
-      else
-        'Build Failed'
-      end
     messages[:short_commit_identifier] = messages[:commit_identifier][0..5]
     mock('build', messages)
   end
@@ -252,16 +247,16 @@ describe 'Web UI using Sinatra' do
         status.should == 200
       end
 
-      it 'should have class "success" if the latest build was successful' do
+      it 'should have a container with class "success" if the latest build was successful' do
         @project.last_build.stub!(:status).and_return(:success)
         get_it '/integrity'
-        body.should have_tag('#last_build[@class=success]')
+        body.should have_tag('#last_build.success')
       end
 
-      it 'should have class "failed" if the latest build failed' do
+      it 'should have a container with class "failed" if the latest build failed' do
         @project.last_build.stub!(:status).and_return(:failed)
         get_it '/integrity'
-        body.should have_tag('#last_build[@class=failed]')
+        body.should have_tag('#last_build.failed')
       end
 
       it 'should display the output of the latest build' do
@@ -508,7 +503,7 @@ describe 'Web UI using Sinatra' do
     it 'should colorize the status of the build' do
       @build.should_receive(:status).and_return(:success)
       do_get
-      body.should have_tag('h1[@class=success]')
+      body.should have_tag('#build.success')
     end
 
     it 'should display the short commit identifier' do
@@ -518,9 +513,19 @@ describe 'Web UI using Sinatra' do
     end
 
     it 'should display the author of the commit' do
-      @build.commit_author.should_receive(:full).and_return('Nicolás Sanguinetti <contacto@nicolassanguinetti.info>')
       do_get
-      body.should have_tag('.commit_author', 'Nicolás Sanguinetti <contacto@nicolassanguinetti.info>')
+      body.should have_tag('.who', /Nicolás Sanguinetti/)
+    end
+    
+    it 'should display the date of the commit' do
+      do_get
+      body.should have_tag('.when', /(today|yesterday|on July 24th)/)
+    end
+    
+    it 'should display the full commit identifier' do
+      @build.should_receive(:commit_identifier).at_least(:once).and_return('blah blah blah')
+      do_get
+      body.should have_tag('.what', /blah blah blah/)
     end
 
     it 'should display the commit message' do

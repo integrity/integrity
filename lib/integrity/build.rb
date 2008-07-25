@@ -40,7 +40,10 @@ module Integrity
     end
 
     def commited_at
-      commit_metadata[:date]
+      case commit_metadata[:date]
+        when String then Time.parse(commit_metadata[:date])
+        else commit_metadata[:date]
+      end
     end
     
     private

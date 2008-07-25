@@ -2,18 +2,20 @@
 !nice_fonts      = "Georgia, Times New Roman, serif"
 !monospace_fonts = "Monaco, Deja Vu Sans Mono, Inconsolata, Consolas, monospace"
 
-!page_bg      = #e0e0e0
-!content_bg   = #eee
-!header_bg    = #fff
-!text_color   = #333
-!title_color  = #4e4e4e
-!link_color   = #ed1556
-!link_bg      = #fff
-!rule_color   = #c0c0c0
-!watermark    = #ccc
-!quote_bg     = #FFF
-!success_bg   = green
-!failed_bg    = red
+!page_bg       = #e0e0e0
+!content_bg    = #eee
+!header_bg     = #fff
+!text_color    = #333
+!title_color   = #4e4e4e
+!link_color    = #ed1556
+!link_bg       = #fff
+!rule_color    = #c0c0c0
+!watermark     = #ccc
+!quote_bg      = #FFF
+!success_bg    = #bbf8aa
+!success_color = #337022
+!failed_bg     = #fba
+!failed_color  = #f10
 
 html
   :background-color = !page_bg
@@ -205,53 +207,73 @@ a
       :font-weight bold
       :display block
 
-  pre.output
-    :background #111
-    :color #fff
-    :padding .5em
-    :overflow-x auto
-    :overflow-y auto
-    :max-height 50em
-    :font-size .825em
+  #build, #last_build
+    h1, blockquote
+      :border
+        :width 0 1px
+        :style solid
+    h1
+      :border-top-width 1px
+    blockquote
+      :bottom-bottom-width 1px
+      :line-height 1.4
 
-    .color30
-      :color #333
-    .color31
-      :color #e33
-    .color32
-      :color #3e3
-    .color33
-      :color #ee3
-    .color34
-      :color #33e
-    .color35
-      :color #e3e
-    .color36
-      :color #3ee
-    .color37
+    &.success
+      h1, blockquote
+        :background-color = !success_bg
+        :border-color = (!success_bg - #222) (!success_bg + #111) (!success_bg + #111) (!success_bg - #222)
+      h1  
+        :color = !success_color
+      .meta
+        :color = !success_bg - #444
+
+    &.failed
+      h1, blockquote
+        :background-color = !failed_bg
+        :border-color = (!failed_bg - #222) (!failed_bg + #111) (!failed_bg + #111) (!failed_bg - #222)
+      h1  
+        :color = !failed_color
+      .meta
+        :color = !failed_bg - #444
+    
+    h1
+      :margin-top .5em
+      :margin-bottom 0
+      :padding .25em
+      :color = !success_color
+
+    blockquote
+      :padding .75em
+      :margin-bottom 2em
+      .meta
+        :margin-top 1em
+        :display block
+        :font-size .9em
+
+    pre.output
+      :background #111
       :color #fff
+      :padding .5em
+      :overflow auto
+      :max-height 50em
+      :font-size .825em
 
-blockquote
-  :background-color = !quote_bg
-  :padding 1.5em
-  :border = 1px solid !rule_color
-  p
-    &.cite
-      :margin-top 1em
-    &.cite:before
-      :content "— "
-    &.commit_author
-      :font-weight bold
-  margin-bottom: 2em
-
-h1#build
-  padding: 0.25em
-  &.success
-    :background-color = !success_bg
-    :color white !important
-  &.failed
-    :background-color = !failed_bg
-    :color white !important
+      .color30
+        :color #333
+      .color31
+        :color #e33
+      .color32
+        :color #3e3
+      .color33
+        :color #ee3
+      .color34
+        :color #33e
+      .color35
+        :color #e3e
+      .color36
+        :color #3ee
+      .color37
+        :color #fff
 
 a
   &.success
@@ -272,3 +294,5 @@ a
   :width 50em !important
   :color #666
   :text-align right
+  strong
+    :font-weight bold

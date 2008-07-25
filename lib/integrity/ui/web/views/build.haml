@@ -1,9 +1,2 @@
-%h1#build{ :class => @build.status }
-  = @build.short_commit_identifier
-#commit_informations
-  %blockquote
-    %p&= @build.commit_message
-    %p.cite.commit_author&= @build.commit_author.full
-%pre.output
-  :preserve
-    #{bash_color_codes @build.output}
+#build{ :class => @build.status }
+  = haml(:build_info, :layout => false)

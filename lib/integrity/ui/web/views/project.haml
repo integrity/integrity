@@ -8,12 +8,10 @@
       You can request a
       %button{ :type => :submit } manual build
 - else
-  #last_build{ :class => @project.last_build.status }
-    %h1= @project.last_build.human_readable_status
-    %pre.output
-      :preserve
-        #{bash_color_codes @project.last_build.output}
-
+  - @build = @project.last_build
+  #last_build{ :class => @build.status }
+    = haml(:build_info, :layout => false)
+  
   %form{ :action => project_url(@project, :builds), :method => :post }
     %p.submit
       %button{ :type => :submit } Request Manual Build
