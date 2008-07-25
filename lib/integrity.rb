@@ -13,6 +13,7 @@ require 'digest/sha1'
 
 require "core_ext/object"
 require "core_ext/string"
+require "core_ext/time"
 
 module Integrity
   def self.new(configuration_file=root/'config/config.yml')
