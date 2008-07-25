@@ -37,12 +37,21 @@ describe Integrity::Build do
     @build.should_not be_successful
   end
 
-  it 'should have commit metadata' do
-    @build.commit_metadata = {
-      :author   => 'Simon Rozet <simon@rozet.name>',
-      :message  => 'started build model'
-    }
-    @build.commit_metadata[:author].should == 'Simon Rozet <simon@rozet.name>'
+  it 'should have an author' do
+    @build.commit_metadata = { :author => 'Simon Rozet <simon@rozet.name>' }
+    @build.commit_author.name.should == 'Simon Rozet'
+    @build.commit_author.email.should == 'simon@rozet.name'
+    @build.commit_author.full.should == @build.commit_metadata[:author]
+  end
+  
+  it 'should have a commit message' do
+    @build.commit_metadata = { :message => 'The greatest commit ever' }
+    @build.commit_message.should == @build.commit_metadata[:message]
+  end
+  
+  it 'should have a commit date' do
+    @build.commit_metadata = { :date => Time.now }
+    @build.commited_at.should == @build.commit_metadata[:date]
   end
 
   it 'should have a commit identifier' do
@@ -54,7 +63,7 @@ describe Integrity::Build do
     @build.output.should == ''
   end
 
-  specify '#human_readable_status should return "Build successful" or "Build Failed"' do
+  it '#human_readable_status should return "Build successful" or "Build Failed"' do
     @build.stub!(:successful?).and_return(true)
     @build.human_readable_status.should == 'Build Successful'
     @build.stub!(:successful?).and_return(false)

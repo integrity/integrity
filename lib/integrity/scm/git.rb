@@ -20,7 +20,7 @@ module Integrity
       end
       
       def commit_metadata(sha1)
-        format  = %Q(---%n:author: %an <%ae>%n:message: >-%n  %s%n)
+        format  = %Q(---%n:author: %an <%ae>%n:message: >-%n  %s%n:date: %ci%n)
         chdir { YAML.load(`git show -s --pretty=format:"#{format}" #{sha1}`) }
       end
       
