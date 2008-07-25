@@ -206,7 +206,37 @@ a
       :line-height 1.2
       :font-weight bold
       :display block
-
+  
+  #previous_builds
+    li
+      a
+        :display block
+        :padding .25em
+        :margin-bottom .25em
+        :border
+          :width 1px
+          :style solid
+        strong
+          :font-size 1.3em
+        .attribution
+          :font-size .9em
+      &.success a
+        :background-color = !success_bg
+        :border-color = !success_bg - #222
+        :color = !success_color
+        .attribution
+          :color = !success_bg - #444
+        &:hover
+          :background-color = !success_bg + #222
+      &.failed a
+        :background-color = !failed_bg
+        :border-color = !failed_bg - #222
+        :color = !failed_color
+        .attribution
+          :color = !failed_bg - #444
+        &:hover
+          :background-color = !failed_bg + #222
+      
   #build, #last_build
     h1, blockquote
       :border

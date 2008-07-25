@@ -22,9 +22,11 @@
       - @project.previous_builds.each do |build|
         %li{ :class => build.status }
           %a{ :href => build_url(build) }
-            Build
-            &= build.short_commit_identifier
-            %span.author
+            %strong.build
+              Build
+              &= build.short_commit_identifier
+            %span.attribution
               by
-              &= build.commit_author.name
+              = succeed "," do
+                &= build.commit_author.name
               &= pretty_date build.commited_at
