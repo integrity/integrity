@@ -27,10 +27,13 @@ describe 'Web UI using Sinatra' do
       :output => 'output',
       :project => @project,
       :commit_identifier => '9f6302002d2259c05a64767e0dedb15d280a4848',
-      :commit_metadata   => {
-        :author => 'Nicolás Sanguinetti <contacto@nicolassanguinetti.info>',
-        :message => "Add Object#tap for versions of ruby that don't have it"
-      }
+      :commit_author => mock("author", 
+        :name  => 'Nicolás Sanguinetti', 
+        :email => 'contacto@nicolassanguinetti.info',
+        :full  =>'Nicolás Sanguinetti <contacto@nicolassanguinetti.info>'
+      ),
+      :commited_at => Time.mktime(2008, 7, 24, 17, 15),
+      :commit_message => "Add Object#tap for versions of ruby that don't have it"
     }.merge(messages)
     messages[:human_readable_status] =
       if messages[:status] == :success
@@ -299,10 +302,11 @@ describe 'Web UI using Sinatra' do
         end
 
         it "should use class depending on build on build's status" do
+          mock_project.stub!(:public).and_return(true)
           get_it '/integrity'
           body.should have_tag('ul#previous_builds') do |ul|
-            ul.should have_tag('li a[@class=success]')
-            ul.should have_tag('li a[@class=fail]')
+            ul.should have_tag('li.success a')
+            ul.should have_tag('li.fail a')
           end
         end
 
@@ -508,23 +512,19 @@ describe 'Web UI using Sinatra' do
     end
 
     it 'should display the short commit identifier' do
-      @build.should_receive(:short_commit_identifier).and_return('c86755')
+      @build.should_receive(:short_commit_identifier).any_number_of_times.and_return('c86755')
       do_get
       body.should have_tag('h1', /c86755/)
     end
 
     it 'should display the author of the commit' do
-      @build.commit_metadata.stub!(:[]).with(:message)
-      @build.commit_metadata.stub!(:[]).with(:author).
-        and_return('Nicolás Sanguinetti <contacto@nicolassanguinetti.info>')
+      @build.commit_author.should_receive(:full).and_return('Nicolás Sanguinetti <contacto@nicolassanguinetti.info>')
       do_get
       body.should have_tag('.commit_author', 'Nicolás Sanguinetti <contacto@nicolassanguinetti.info>')
     end
 
     it 'should display the commit message' do
-      @build.commit_metadata.stub!(:[]).with(:author)
-      @build.commit_metadata.should_receive(:[]).with(:message).
-        and_return("Add Object#tap for versions of ruby that don't have it")
+      @build.should_receive(:commit_message).and_return("Add Object#tap for versions of ruby that don't have it")
       do_get
       body.should have_tag('blockquote p', "Add Object#tap for versions of ruby that don't have it")
     end
@@ -745,6 +745,21 @@ describe 'Web UI using Sinatra' do
       it "should not authenticate a user with an invalid username" do
         @context.authorize("1337 h4x0r", "test").should be_false # hah, not so leet, ah?
       end
+    end
+    
+    describe "#pretty_date" do
+      before do
+        @yesterday  = Time.mktime(2008, 07, 24, 17, 18)
+        @today      = Time.mktime(2008, 07, 25, 17, 18)
+        @a_week_ago = Time.mktime(2008, 07, 17, 17, 18)
+        Time.stub!(:now).and_return(@today)
+      end
+      
+      it { @context.pretty_date(@today).should == "today" }
+      
+      it { @context.pretty_date(@yesterday).should == "yesterday" }
+      
+      it { @context.pretty_date(@a_week_ago).should == "on Jul 17th"}
     end
   end
 end

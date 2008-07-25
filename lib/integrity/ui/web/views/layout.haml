@@ -16,7 +16,8 @@
     #content= yield
     #footer
       - if logged_in?
-        &== Oh, hello #{current_user}
+        Oh, hello 
+        %strong&= current_user
       - else
         Hey there!
         %a{ :href => "/login" } Log In

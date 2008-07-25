@@ -22,6 +22,11 @@
     %h2 Previous builds
     %ul#previous_builds
       - @project.previous_builds.each do |build|
-        %li
-          %a{ :href => build_url(build), :class => build.status }
-            = build.short_commit_identifier
+        %li{ :class => build.status }
+          %a{ :href => build_url(build) }
+            Build
+            &= build.short_commit_identifier
+            %span.author
+              by
+              &= build.commit_author.name
+              &= pretty_date build.commited_at

@@ -90,10 +90,7 @@ end
 
 get '/:project/builds/:build' do
   login_required unless current_project.public?
-
-  @build = current_project.builds.first(:commit_identifier => params[:build])
-  raise Sinatra::NotFound unless @build
-  show :build, :title => 'Some build'
+  show :build, :title => ["projects", current_project.permalink, current_build.short_commit_identifier]
 end
 
 get "/integrity.css" do
@@ -126,6 +123,10 @@ helpers do
   
   def current_project
     @project ||= Project.first(:permalink => params[:project]) or raise Sinatra::NotFound
+  end
+  
+  def current_build
+    @build ||= current_project.builds.first(:commit_identifier => params[:build]) or raise Sinatra::NotFound
   end
   
   def show(view, options={})
@@ -189,5 +190,16 @@ helpers do
       gsub("\e[35m", '<span class="color35">').
       gsub("\e[36m", '<span class="color36">').
       gsub("\e[37m", '<span class="color37">')
+  end
+  
+  def pretty_date(date_time)
+    today = Date.today
+    if date_time.day == today.day && date_time.month == today.month && date_time.year == today.year
+      "today"
+    elsif date_time.day == today.day - 1 && date_time.month == today.month && date_time.year == today.year
+      "yesterday"
+    else
+      date_time.strftime("on %b %d%o")
+    end
   end
 end
