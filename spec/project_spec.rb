@@ -164,6 +164,7 @@ describe Integrity::Project do
   
   describe "When searching for its builds" do
     before do
+      Integrity::Notifier::Email.stub!(:notify_of_build)
       @project.update_attributes(:name => "Integrity", :uri => "git://github.com/foca/integrity.git")
       5.times do
         @project.builds.create(

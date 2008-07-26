@@ -1,8 +1,22 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 describe Integrity::Build do
+  def valid_attributes
+    {
+      :commit_identifier => '0367ee0566843edcf871a86f0eb23d90c4ee1d14',
+      :commit_metadata   => {
+        :author  => 'Simon Rozet <simon@rozet.name>',
+        :message => 'started build model',
+        :date => '2008-07-21 08:43:05 -0300'
+      },
+      :output => 'foo',
+      :successful => true
+    }
+  end
+  
   before(:each) do
     @build = Integrity::Build.new
+    Integrity::Notifier::Email.stub!(:notify_of_build).with(@build)
   end
 
   it 'should not be valid' do
@@ -10,15 +24,7 @@ describe Integrity::Build do
   end
 
   it "needs an output, a status, a commit_identifier and a commit_metadata" do
-    @build.attributes = {
-      :commit_identifier => '0367ee0566843edcf871a86f0eb23d90c4ee1d14',
-      :commit_metadata   => {
-        :author  => 'Simon Rozet <simon@rozet.name>',
-        :message => 'started build model'
-      },
-      :output => 'foo',
-      :successful => true
-    }
+    @build.attributes = valid_attributes
     @build.should be_valid
   end
 
@@ -85,5 +91,11 @@ describe Integrity::Build do
     @build.status.should == :success
     @build.stub!(:successful?).and_return(false)
     @build.status.should == :failed
+  end
+  
+  it "should send an email after saving with valid data" do
+    @build.attributes = valid_attributes
+    Integrity::Notifier::Email.should_receive(:notify_of_build).with(@build)
+    @build.save
   end
 end
