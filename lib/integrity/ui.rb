@@ -81,6 +81,18 @@ get "/:project/edit" do
   show :new, :title => ["projects", current_project.permalink, "edit"]
 end
 
+post "/:project/push" do
+  content_type 'text/plain'
+
+  begin
+    payload = JSON.parse(params[:payload] || "")
+    payload['commits'].each_key { |commit| current_project.build(commit) }
+    'Thanks, build started.'
+  rescue JSON::ParserError => exception
+    invalid_payload!(exception.to_s)
+  end
+end
+
 post "/:project/builds" do
   login_required
   
@@ -121,6 +133,10 @@ helpers do
     throw :halt, [401, show(:unauthorized, :title => "incorrect credentials")]
   end
   
+  def invalid_payload!(msg=nil)
+    throw :halt, [422, msg || 'No payload given']
+  end
+
   def current_project
     @project ||= Project.first(:permalink => params[:project]) or raise Sinatra::NotFound
   end

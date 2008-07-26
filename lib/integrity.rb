@@ -2,6 +2,7 @@ __DIR__ = File.dirname(__FILE__)
 $:.unshift "#{__DIR__}/integrity", "#{__DIR__}integrity/scm", *Dir["#{__DIR__}/../vendor/**/lib"].to_a
 
 require "rubygems"
+require 'json'
 require 'dm-core'
 require 'dm-validations'
 require 'dm-types'
