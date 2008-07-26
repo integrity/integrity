@@ -4,3 +4,6 @@
 [submodule "vendor/rspec_hpricot_matchers"]
 	path = vendor/rspec_hpricot_matchers
 	url = git://github.com/pd/rspec_hpricot_matchers.git
+[submodule "vendor/sinatra-mailer"]
+	path = vendor/sinatra-mailer
+	url = git://github.com/foca/sinatra-mailer.git
