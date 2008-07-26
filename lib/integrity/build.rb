@@ -9,6 +9,8 @@ module Integrity
     property :commit_metadata,   Yaml,     :nullable => false, :lazy => false
     property :created_at,        DateTime
     property :updated_at,        DateTime
+    
+    after :create, :send_email
 
     belongs_to :project, :class_name => "Integrity::Project"
 
@@ -47,6 +49,10 @@ module Integrity
     end
     
     private
+      def send_email
+        Notifier::Email.notify_of_build(self)
+      end
+    
       def sha1?(string)
         string =~ /^[a-f0-9]{40}$/
       end

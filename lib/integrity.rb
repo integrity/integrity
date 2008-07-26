@@ -41,12 +41,17 @@ module Integrity
     {}
   end
 
-  autoload :Project, 'project'
-  autoload :Build,   'build'
-  autoload :Builder, 'builder'
-  autoload :SCM,     'scm'
+  autoload :Project,  'project'
+  autoload :Build,    'build'
+  autoload :Builder,  'builder'
+  autoload :SCM,      'scm'
+  autoload :Notifier, 'notifier'
 
   module SCM
-    autoload :Git, 'scm/git'
+    autoload :Git,    'scm/git'
+  end
+  
+  module Notifier
+    autoload :Email,  'notifier/email'
   end
 end
