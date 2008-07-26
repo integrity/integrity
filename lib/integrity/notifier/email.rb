@@ -26,16 +26,16 @@ module Integrity
         @email ||= Sinatra::Mailer::Email.new(
           :to => to, 
           :from => from, 
-          :text => email_body, 
-          :subject => email_subject
+          :text => body, 
+          :subject => subject
         )
       end
       
-      def email_subject
+      def subject
         "[Integrity] #{build.project.name} build #{build.short_commit_identifier}: #{build.status.to_s.upcase}"
       end
       
-      def email_body
+      def body
         <<-email
 Build #{build.commit_identifier} #{build.successful? ? "was successful" : "failed"}
 
