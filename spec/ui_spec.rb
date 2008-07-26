@@ -614,7 +614,7 @@ describe 'Web UI' do
     
     it 'should display the date of the commit' do
       do_get
-      body.should have_tag('.when', /(today|yesterday|on July 24th)/)
+      body.should have_tag('.when', /(today|yesterday|on Jul 24th)/)
     end
     
     it 'should display the full commit identifier' do
