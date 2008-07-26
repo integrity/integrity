@@ -1,8 +1,8 @@
 require "authorization"
 
-set :root,   Integrity.root / "lib/integrity/ui/web"
-set :public, Integrity.root / "lib/integrity/ui/web/public"
-set :views,  Integrity.root / "lib/integrity/ui/web/views"
+set :root,   Integrity.root / "lib/integrity/ui"
+set :public, Integrity.root / "lib/integrity/ui/public"
+set :views,  Integrity.root / "lib/integrity/ui/views"
 
 enable :sessions
 

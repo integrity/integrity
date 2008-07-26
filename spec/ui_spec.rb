@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require File.dirname(__FILE__) + '/spec_helper'
 
 describe 'Web UI using Sinatra' do
   def mock_project(messages={})
@@ -48,7 +48,7 @@ describe 'Web UI using Sinatra' do
   
   before(:each) do
     Integrity.stub!(:new)
-    require File.dirname(__FILE__) + '/../../lib/integrity/ui/web'
+    require File.dirname(__FILE__) + '/../lib/integrity/ui'
   end
   
   after(:each) { @project = nil }
