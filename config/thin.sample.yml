@@ -1,0 +1,14 @@
+---
+environment: production
+chdir: /apps/integrity
+address: 127.0.0.1
+user: deploy
+group: deploy
+port: 8910
+pid: /apps/integrity/thin.pid
+rackup: /apps/integrity/config.ru
+log: /apps/integrity/log/thin.log
+max_conns: 1024
+timeout: 30
+max_persistent_conns: 512
+daemonize: true

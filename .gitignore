@@ -1,4 +1,6 @@
 log/*.log
+config/thin.yml
+config/deploy.rb
 config/config.yml
 coverage
 integrity.db
