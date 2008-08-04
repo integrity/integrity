@@ -1,5 +1,5 @@
 __DIR__ = File.dirname(__FILE__)
-$:.unshift "#{__DIR__}/integrity", "#{__DIR__}integrity/scm", *Dir["#{__DIR__}/../vendor/**/lib"].to_a
+$:.unshift "#{__DIR__}/integrity", *Dir["#{__DIR__}/../vendor/**/lib"].to_a
 
 require "rubygems"
 require 'json'
@@ -15,6 +15,8 @@ require 'digest/sha1'
 require "core_ext/object"
 require "core_ext/string"
 require "core_ext/time"
+
+%w(project build builder scm scm/git notifier).each &method(:require)
 
 module Integrity
   def self.new(configuration_file=root/'config/config.yml')
@@ -39,19 +41,5 @@ module Integrity
     YAML.load_file(file)
   rescue Errno::ENOENT
     {}
-  end
-
-  autoload :Project,  'project'
-  autoload :Build,    'build'
-  autoload :Builder,  'builder'
-  autoload :SCM,      'scm'
-  autoload :Notifier, 'notifier'
-
-  module SCM
-    autoload :Git,    'scm/git'
-  end
-
-  module Notifier
-    autoload :Email,  'notifier/email'
   end
 end
