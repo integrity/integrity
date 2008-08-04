@@ -4,18 +4,22 @@ require "mailer"
 module Integrity
   module Notifier
     class Email
-      def self.notify_of_build(build)
-        new(build, Integrity.config[:email]).deliver!
+      def self.notify_of_build(build, config)
+        new(build, config).deliver!
+      end
+      
+      def self.to_haml
+        File.read __FILE__.gsub(/rb$/, "haml")
       end
 
       attr_reader :build, :to, :from
 
-      def initialize(build, options={})
-        Sinatra::Mailer.config = options[:config]
-        Sinatra::Mailer.delivery_method = options[:delivery_method]
-        @to    = options[:to]
-        @from  = options[:from]
-        @build = build
+      def initialize(build, config={})
+        @config = config
+        @to     = config[:to]
+        @from   = config[:from]
+        @build  = build
+        configure_mailer
       end
 
       def deliver!
@@ -49,6 +53,17 @@ Build Output:
 
 #{build.output}
         email
+      end
+      
+      def configure_mailer
+        Sinatra::Mailer.delivery_method = "smtp"
+        Sinatra::Mailer.config = { 
+          :host => @config[:host], 
+          :port => @config[:port], 
+          :user => @config[:user], 
+          :pass => @config[:password], 
+          :auth => @config[:pass].to_sym 
+        }
       end
     end
   end

@@ -28,8 +28,12 @@
     %textarea#project_build_script{ :name => "command", :cols => 40, :rows => 1 }&= @project.command.to_s
 
   %p.normal.checkbox
-    %label{ :for => "project_public" } Public project:
+    %label{ :for => "project_public" } Public project
     %input.checkbox#project_public{ checkbox(:public, @project.public?) }
+  
+  - Integrity::Notifier.constants.each do |notifier|
+    - notifier = Integrity::Notifier.const_get(notifier)
+    = haml(notifier.to_haml, :layout => false)
 
   %p.submit
     %button.positive{ :type => "submit" }= @project.new_record? ? "Create Project" : "Update Project"
