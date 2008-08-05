@@ -11,6 +11,7 @@ describe 'Web UI' do
       :command => "rake",
       :public? => true,
       :builds => [],
+      :config_for => { :from => "blah@blah.com" },
       :build => nil,
       :update_attributes => true,
       :save => true,

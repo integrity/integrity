@@ -29,49 +29,76 @@ describe Integrity::Notifier::Email do
   end
   
   describe "generating a form for configuration" do
-    it "should have a title" do
-      the_form.should have_tag("h2", "Email Notifications")
+    describe "with a field for the destination email address" do
+      it "should have the proper name, id and label" do
+        the_form.should have_textfield("email_notifier_to").named("notifiers[Email][to]").with_label("Send to").with_value(nil)
+      end
+      
+      it "should use the config's 'to' value if available" do
+        the_form(:config => { 'to' => 'test@example.com' }).should have_textfield("email_notifier_to").with_value("test@example.com")
+      end
     end
-    
-    it "should have a text field for the 'to' email addresses" do
-      pending "get the hpricot selector for 'email_notifier[to]' right"
-      the_form.should have_tag("label[@for=email_notifier_to]", "Send to")
-      the_form.should have_tag("input#email_notifier_to[@name='email_notifier[to]']")
+
+    describe "with a field for the sender email address" do
+      it "should have the proper name, id and label" do
+        the_form.should have_textfield("email_notifier_from").named("notifiers[Email][from]").with_label("Send from").with_value(nil)
+      end
+      
+      it "should use the config's 'from' value if available" do
+        the_form(:config => { 'from' => 'test@example.com' }).should have_textfield("email_notifier_from").with_value("test@example.com")
+      end
     end
-    
-    it "should have a text field for the 'from' email address" do
-      pending "get the hpricot selector for 'email_notifier[from]' right"
-      the_form.should have_tag("label[@for=email_notifier_from]", "Send from")
-      the_form.should have_tag("input#email_notifier_from[@name='email_notifier[from]']")
-    end
-    
+        
     it "should have a subtitle 'SMTP Server Configuration'" do
       the_form.should have_tag("h3", "SMTP Server Configuration")
     end
     
-    it "should have two text fields for server host and port together" do
-      pending "get the hpricot selector for 'email_notifier[host]' and 'email_notifier[port]' right"
-      the_form.should have_tag("label[@for=email_notifier_host]", "Host : Port")
-      the_form.should have_tag("input#email_notifier_host[@name='email_notifier[host]']")
-      the_form.should have_tag("input#email_notifier_port[@name='email_notifier[port]'")
+    describe "with the fields for the smtp host and port" do
+      it "should have the proper data for the 'host' field" do
+        the_form.should have_textfield("email_notifier_host").named("notifiers[Email][host]").with_label("Host : Port").with_value(nil)
+      end
+      
+      it "should have the proper data for the 'port' field" do
+        the_form.should have_textfield("email_notifier_port").named("notifiers[Email][port]").without_label.with_value(nil)
+      end
+      
+      it "should use the config's 'host' value if available" do
+        the_form(:config => { 'host' => 'smtp.example.com' }).should have_textfield("email_notifier_host").with_value("smtp.example.com")
+      end
+
+      it "should use the config's 'port' value if available" do
+        the_form(:config => { 'port' => '25' }).should have_textfield("email_notifier_port").without_label.with_value("25")
+      end
     end
     
-    it "should have a text field for the server user" do
-      pending "get the hpricot selector for 'email_notifier[user]' right"
-      the_form.should have_tag("label[@for=email_notifier_user]", "User")
-      the_form.should have_tag("input#email_notifier_user[@name='email_notifier[user]']")
+    describe "with the field for the smtp user" do
+      it "should have the proper name, id and label" do
+        the_form.should have_textfield("email_notifier_user").named("notifiers[Email][user]").with_label("User").with_value(nil)
+      end
+      
+      it "should use the config's 'user' value if available" do
+        the_form(:config => { 'user' => 'auser' }).should have_textfield("email_notifier_user").with_value("auser")
+      end
     end
 
-    it "should have a text field for the server password" do
-      pending "get the hpricot selector for 'email_notifier[password]' right"
-      the_form.should have_tag("label[@for=email_notifier_password]", "Password")
-      the_form.should have_tag("input#email_notifier_password[@name='email_notifier[password]']")
+    describe "with the field for the smtp password" do
+      it "should have the proper name, id and label" do
+        the_form.should have_textfield("email_notifier_pass").named("notifiers[Email][pass]").with_label("Password").with_value(nil)
+      end
+      
+      it "should use the config's 'pass' value if available" do
+        the_form(:config => { 'pass' => '****' }).should have_textfield("email_notifier_pass").with_value("****")
+      end
     end
 
-    it "should have a text field for the server auth type ('plain' by default)" do
-      pending "get the hpricot selector for 'email_notifier[auth]' right"
-      the_form.should have_tag("label[@for=email_notifier_auth]", "Auth type")
-      the_form.should have_tag("input#email_notifier_auth[@name='email_notifier[auth]'][@value='plain']")
+    describe "with the field for the smtp auth type" do
+      it "should have the proper name, id and label" do
+        the_form.should have_textfield("email_notifier_auth").named("notifiers[Email][auth]").with_label("Auth type").with_value("plain")
+      end
+      
+      it "should use the config's 'auth' value if available" do
+        the_form(:config => { 'auth' => 'login' }).should have_textfield("email_notifier_auth").with_value("login")
+      end
     end
   end
   
