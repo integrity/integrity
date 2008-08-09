@@ -59,7 +59,7 @@ describe Integrity::Notifier::Email do
       end
     
       it "should include the commit date" do
-        @mailer.body.should =~ /Commit Date: Fri Jul 25 18:44:00 -0300 2008/
+        @mailer.body.should =~ /Commit Date: Fri Jul 25 18:44:00 [+|-]\d\d\d\d 2008/
       end
       
       it "should include the commit author" do
