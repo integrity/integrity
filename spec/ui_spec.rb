@@ -82,8 +82,8 @@ describe 'Web UI' do
     
     describe "with available projects" do
       before do
-        @project_1 = stub("project", :name => "The 1st Project", :permalink => "the-1st-project")
-        @project_2 = stub("project", :name => "The 2nd Project", :permalink => "the-2nd-project")
+        @project_1 = stub("project", :name => "The 1st Project", :permalink => "the-1st-project", :status => :success)
+        @project_2 = stub("project", :name => "The 2nd Project", :permalink => "the-2nd-project", :status => :failed)
         Project.stub!(:all).and_return([@project_1, @project_2])
       end
       
