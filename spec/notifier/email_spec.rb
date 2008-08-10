@@ -19,7 +19,10 @@ describe Integrity::Notifier::Email do
   before do
     @email = stub("email", :deliver! => true)
     @mail_notifier = @email
-    Integrity.stub!(:config).and_return(:email => {:to => "destination@example.com", :from => "integrity@me.com", :config => {}})
+    Integrity.stub!(:config).and_return({
+      :email => {:to => "destination@example.com", :from => "integrity@me.com", :config => {}},
+      :base_url => 'http://integrityapp.com:7654'
+    })
     Sinatra::Mailer::Email.stub!(:new).and_return(@email)
   end
   
@@ -64,6 +67,10 @@ describe Integrity::Notifier::Email do
       
       it "should include the commit author" do
         @mailer.body.should =~ /Commit Author: Nicolás Sanguinetti/
+      end
+
+      it "should link to the build using the base URL configured in the options" do
+        @mailer.body.should =~ %r|http://integrityapp\.com:7654/integrity/builds/e7e02b|
       end
       
       it "should include the build output" do

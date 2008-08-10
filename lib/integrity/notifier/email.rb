@@ -43,7 +43,7 @@ Commit Message: #{build.commit_message}
 Commit Date: #{build.commited_at}
 Commit Author: #{build.commit_author.name}
 
-Link: http://localhost:4567/#{build.project.permalink}/builds/#{build.commit_identifier}
+Link: #{Integrity.config[:base_url]}/#{build.project.permalink}/builds/#{build.commit_identifier}
           
 Build Output:
 

@@ -28,7 +28,8 @@ module Integrity
 
   def self.default_configuration
     { :database_uri => 'sqlite3::memory:',
-      :export_directory => root / 'exports' }
+      :export_directory => root / 'exports',
+      :base_url => 'http://localhost:4567' }
   end
 
   def self.config
