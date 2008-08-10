@@ -11,7 +11,7 @@ describe Integrity::Notifier::Email do
       :commit_message => "the commit message",
       :commit_author => stub("author", :name => "Nicolás Sanguinetti"),
       :commited_at => Time.mktime(2008, 07, 25, 18, 44),
-      :output => "the output"
+      :output => "the output \e[31mwith color coding\e[0m"
     }.merge(messages)
     @build ||= stub("build", messages)
   end
@@ -68,6 +68,10 @@ describe Integrity::Notifier::Email do
       
       it "should include the build output" do
         @mailer.body.should =~ /the output/
+      end
+
+      it "should strip ANSI color codes from the build output" do
+        @mailer.body.should_not =~ /\e\[31m/
       end
     end
     
