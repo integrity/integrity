@@ -82,8 +82,8 @@ describe 'Web UI' do
     
     describe "with available projects" do
       before do
-        @project_1 = stub("project", :name => "The 1st Project", :permalink => "the-1st-project", :status => :success)
-        @project_2 = stub("project", :name => "The 2nd Project", :permalink => "the-2nd-project", :status => :failed)
+        @project_1 = stub("project", :name => "The 1st Project", :permalink => "the-1st-project", :status => :success, :building? => true)
+        @project_2 = stub("project", :name => "The 2nd Project", :permalink => "the-2nd-project", :status => :failed, :building? => false)
         Project.stub!(:all).and_return([@project_1, @project_2])
       end
       
@@ -108,6 +108,11 @@ describe 'Web UI' do
         body.should have_tag("ul#projects") do |projects|
           projects.should have_tag("li > a", /the (1st|2nd) project/i, :count => 2)
         end
+      end
+
+      it "should mark projects being built as such" do
+        get_it "/"
+        body.should have_tag('#projects li a', /building/, :count => 1)
       end
 
       it "should have a link to add a new project" do
