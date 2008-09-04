@@ -7,3 +7,6 @@
 [submodule "vendor/sinatra-mailer"]
 	path = vendor/sinatra-mailer
 	url = git://github.com/foca/sinatra-mailer.git
+[submodule "vendor/smtp-tls"]
+	path = vendor/smtp-tls
+	url = git://github.com/ambethia/smtp-tls.git
