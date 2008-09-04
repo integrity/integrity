@@ -10,3 +10,6 @@
 [submodule "vendor/smtp-tls"]
 	path = vendor/smtp-tls
 	url = git://github.com/ambethia/smtp-tls.git
+[submodule "vendor/mailfactory"]
+	path = vendor/mailfactory
+	url = git://github.com/tmm1/mailfactory.git
