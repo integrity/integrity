@@ -152,12 +152,12 @@ describe 'Web UI' do
     it "should render a form that posts back to '/'" do
       provide_valid_credentials!
       get_it "/new"
-      body.should have_tag("form[@action=/][@method=post]") do |form|
-        form.should have_tag("input.text#project_name[@name=name][@type=text][@value='']")
-        form.should have_tag("input.text#project_repository[@name=uri][@type=text][@value='']")
-        form.should have_tag("input.text#project_branch[@name=branch][@type=text][@value='master']")
-        form.should have_tag("input.checkbox#project_public[@name=public][@type=checkbox][@checked=checked]")
-        form.should have_tag("textarea#project_build_script[@name=command]", /rake/)
+      body.should have_tag("form[@action='/'],@method='post']") do |form|
+        form.should have_tag("input.text#project_name[@name='name'][@type='text'][@value='']")
+        form.should have_tag("input.text#project_repository[@name='uri'][@type='text'][@value='']")
+        form.should have_tag("input.text#project_branch[@name='branch'][@type='text'][@value='master']")
+        form.should have_tag("input.checkbox#project_public[@name='public'][@type='checkbox'][@checked='checked']")
+        form.should have_tag("textarea#project_build_script[@name='command']", /rake/)
       end
     end    
     
@@ -224,8 +224,8 @@ describe 'Web UI' do
 
       it "should have a form to create a new build" do
         get_it "/integrity"
-        body.should have_tag("form.blank_slate[@action=/integrity/builds][@method=post]") do |form|
-          form.should have_tag("button[@type=submit]", /manual build/)
+        body.should have_tag("form.blank_slate[@action='/integrity/builds'][@method='post']") do |form|
+          form.should have_tag("button[@type='submit']", /manual build/)
         end
       end
     end
@@ -267,8 +267,8 @@ describe 'Web UI' do
 
       it "should have a form to create a new build" do
         get_it "/integrity"
-        body.should have_tag("form[@action=/integrity/builds][@method=post]") do |form|
-          form.should have_tag("button[@type=submit]", /manual build/i)
+        body.should have_tag("form[@action='/integrity/builds'][@method='post']") do |form|
+          form.should have_tag("button[@type='submit']", /manual build/i)
         end
       end
 
@@ -335,14 +335,14 @@ describe 'Web UI' do
     it "should render the form pointed at the projects permalink" do
       provide_valid_credentials!
       get_it "/integrity/edit"
-      body.should have_tag("form[@action=/integrity][@method=post]") do |form|
-        form.should have_tag("input[@name=_method][@type=hidden][@value=put]")
+      body.should have_tag("form[@action='/integrity'][@method='post']") do |form|
+        form.should have_tag("input[@name='_method'][@type='hidden'][@value='put']")
         
-        form.should have_tag("input.text#project_name[@name=name][@type=text][@value='Integrity']")
-        form.should have_tag("input.text#project_repository[@name=uri][@type=text][@value='git://github.com/foca/integrity.git']")
-        form.should have_tag("input.text#project_branch[@name=branch][@type=text][@value='master']")
-        form.should have_tag("input.checkbox#project_public[@name=public][@type=checkbox][@checked=checked]")
-        form.should have_tag("textarea#project_build_script[@name=command]", /rake/)
+        form.should have_tag("input.text#project_name[@name='name'][@type='text'][@value='Integrity']")
+        form.should have_tag("input.text#project_repository[@name='uri'][@type='text'][@value='git://github.com/foca/integrity.git']")
+        form.should have_tag("input.text#project_branch[@name='branch'][@type='text'][@value='master']")
+        form.should have_tag("input.checkbox#project_public[@name='public'][@type='checkbox'][@checked='checked']")
+        form.should have_tag("textarea#project_build_script[@name='command']", /rake/)
       end
     end
     
