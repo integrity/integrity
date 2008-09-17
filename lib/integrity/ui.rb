@@ -86,7 +86,9 @@ post "/:project/push" do
 
   begin
     payload = JSON.parse(params[:payload] || "")
-    payload['commits'].each { |commit| current_project.build(commit['id']) }
+    payload['commits'].each do |commit|
+      current_project.build(commit['id']) if payload['ref'] =~ /#{current_project.branch}/
+    end
     'Thanks, build started.'
   rescue JSON::ParserError => exception
     invalid_payload!(exception.to_s)
