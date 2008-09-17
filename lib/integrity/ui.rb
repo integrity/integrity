@@ -123,9 +123,10 @@ helpers do
     if Integrity.config[:hash_admin_password]
       password = Digest::SHA1.hexdigest(password)
     end
-
-    Integrity.config[:admin_username] == user && 
-      Integrity.config[:admin_password] == password
+    
+    !Integrity.config[:use_basic_auth] ||
+    (Integrity.config[:admin_username] == user && 
+      Integrity.config[:admin_password] == password)
   end
   
   def unauthorized!(realm=authorization_realm)

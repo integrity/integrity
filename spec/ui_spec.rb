@@ -835,6 +835,7 @@ describe 'Web UI' do
     describe "#authorize" do
       before do
         Integrity.stub!(:config).and_return(
+          :use_basic_auth => true,
           :admin_username => "the_user",
           :admin_password => "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3", # sha1(test)
           :hash_admin_password => true
@@ -860,6 +861,21 @@ describe 'Web UI' do
         @context.authorize("1337 h4x0r", "test").should be_false # hah, not so leet, ah?
       end
     end
+
+    describe "#authorize" do
+      before do
+        Integrity.stub!(:config).and_return(
+          :use_basic_auth => false,
+          :admin_username => "the_user",
+          :admin_password => "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3", # sha1(test)
+          :hash_admin_password => true
+        )
+      end
+      it "should authenticate regardless of username if use_basic_auth is false" do
+        @context.authorize("", "").should be_true
+      end
+    end
+
     
     describe "#pretty_date" do
       before do
