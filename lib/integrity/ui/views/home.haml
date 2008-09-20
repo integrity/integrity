@@ -8,7 +8,7 @@
 - else
   %ul#projects
     - @projects.each do |project|
-      %li{ :class => cycle("even", "odd") }
+      %li{ :class => cycle("even", "odd") + (project.building? ? ' building' : '') }
         %a{ :href => project_url(project) }&= project.name
   %p#new
     %a{ :href => "/new" } Add a new project
