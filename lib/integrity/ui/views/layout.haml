@@ -16,7 +16,7 @@
     #content= yield
     - if Integrity.config && Integrity.config[:use_basic_auth]
       #footer
-        - if logged_in?
+        - if authorized?
           Oh, hello
           %strong&= current_user
         - else
