@@ -1,3 +1,5 @@
+require 'ostruct'
+
 module Integrity
   class Build
     include DataMapper::Resource
