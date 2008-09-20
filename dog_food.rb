@@ -7,7 +7,7 @@ project = Project.first(:name => "Integrity") || begin
   Integrity::Project.create(
     :name    => 'Integrity', 
     :uri     => 'git://github.com/foca/integrity.git',
-    :command => 'git-submodule update --init && rake'
+    :command => 'git submodule update --init && rake'
   )
   Project.first(:name => 'Integrity')
 end
