@@ -25,7 +25,7 @@ before do
 end
 
 get "/" do
-  @projects = Project.all(logged_in? ? {} : { :public => true })
+  @projects = Project.all(authorized? ? {} : { :public => true })
   show :home, :title => "projects"
 end
 
@@ -119,6 +119,11 @@ helpers do
     "Integrity"
   end
   
+  def authorized?
+    return true unless Integrity.config[:use_basic_auth]
+    !!request.env['REMOTE_USER']
+  end
+
   def authorize(user, password)
     if Integrity.config[:hash_admin_password]
       password = Digest::SHA1.hexdigest(password)

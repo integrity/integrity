@@ -28,7 +28,7 @@ describe 'Web UI' do
       :output => 'output',
       :project => @project,
       :commit_identifier => '9f6302002d2259c05a64767e0dedb15d280a4848',
-      :commit_author => mock("author", 
+      :commit_author => mock("author",
         :name  => 'Nicolás Sanguinetti', 
         :email => 'contacto@nicolassanguinetti.info',
         :full  =>'Nicolás Sanguinetti <contacto@nicolassanguinetti.info>'
@@ -40,14 +40,17 @@ describe 'Web UI' do
     mock('build', messages)
   end
   
-  def provide_valid_credentials!
-    Integrity.stub!(:config).and_return(:admin_username => "user", :admin_password => "pass", :hash_admin_password => false)
-    auth = stub("auth", :provided? => true, :basic? => true, :username => "user", :credentials => ["user", "pass"])
-    Rack::Auth::Basic::Request.stub!(:new).and_return(auth)
+  def disable_basic_auth!
+    Integrity.stub!(:config).and_return(:use_basic_auth => false)
   end
-  
+
+  def enable_basic_auth!
+    Integrity.stub!(:config).and_return(:use_basic_auth => true, :admin_username => 'user', :admin_password => 'pass')
+  end
+
   before(:each) do
     Integrity.stub!(:new)
+    disable_basic_auth!
     require Integrity.root / "lib" / "integrity" / "ui"
   end
   
@@ -93,14 +96,14 @@ describe 'Web UI' do
       end
       
       it "should load the public projects from the db" do
+        enable_basic_auth!
         Project.should_receive(:all).with(:public => true).and_return([@project_1, @project_2])
         get_it "/"
       end
       
       it "should load *all* the projects from the db *if the user has authenticated*" do
         Project.should_receive(:all).with({}).and_return([@project_1, @project_2])
-        provide_valid_credentials!
-        get_it "/", :env => { "REMOTE_USER" => "username" }
+        get_it "/"
       end
       
       it "should show a list of the projects" do
@@ -124,38 +127,34 @@ describe 'Web UI' do
   
   describe "GET /login" do
     it "should require authentication" do
+      enable_basic_auth!
       get_it "/login"
       status.should == 401
     end
     
     it "should redirect to '/' on successful auth" do
-      provide_valid_credentials!
       get_it "/login"
       location.should == "/"
     end
     
     it "should store the username on the session" do
       pending "how do I test the session?!"
-      provide_valid_credentials!
       get_it "/login"
     end
   end
   
   describe "GET /new" do
     it "should render successfully" do
-      provide_valid_credentials!
       get_it "/new"
       status.should == 200
     end
     
     it "should initialize a new Project instance" do
-      provide_valid_credentials!
       Project.should_receive(:new).and_return mock_project(:new_record? => true, :name => nil, :uri => nil)
       get_it "/new"
     end
     
     it "should render a form that posts back to '/'" do
-      provide_valid_credentials!
       get_it "/new"
       body.should have_tag("form[@action='/'],@method='post']") do |form|
         form.should have_tag("input.text#project_name[@name='name'][@type='text'][@value='']")
@@ -167,6 +166,7 @@ describe 'Web UI' do
     end    
     
     it "should require authentication" do
+      enable_basic_auth!
       get_it "/new"
       status.should == 401
     end
@@ -177,14 +177,12 @@ describe 'Web UI' do
 
     it "should re-render the 'new' view when the project has invalid attributes" do
       mock_project.stub!(:save).and_return(false)
-      provide_valid_credentials!
       post_it "/"
       status.should == 200
     end
     
     it "should redirect to the new project's page when the project has valid attributes" do
       mock_project.stub!(:save).and_return(true)
-      provide_valid_credentials!
       post_it "/"
       location.should == "/integrity"
     end
@@ -192,7 +190,6 @@ describe 'Web UI' do
     it "display error messages" do
       mock_project.should_receive(:save).and_return(false)
       mock_project.errors.stub!(:on).with(:name).and_return('Name is already taken')
-      provide_valid_credentials!
       post_it "/"
       body.should have_tag("p.required.with_errors") do |field|
         field.should have_tag("label", /is already taken/)
@@ -200,6 +197,7 @@ describe 'Web UI' do
     end
     
     it "should require authentication" do
+      enable_basic_auth!
       post_it "/"
       status.should == 401
     end
@@ -325,20 +323,17 @@ describe 'Web UI' do
     before { Project.stub!(:first).with(:permalink => "integrity").and_return mock_project }
     
     it "should be success" do
-      provide_valid_credentials!
       get_it "/integrity/edit"
       status.should == 200
     end
 
     it 'should be 404 if unknown project' do
       Project.stub!(:first).and_return(nil)
-      provide_valid_credentials!
       get_it '/integrity/edit'
       status.should == 404
     end
     
     it "should render the form pointed at the projects permalink" do
-      provide_valid_credentials!
       get_it "/integrity/edit"
       body.should have_tag("form[@action='/integrity'][@method='post']") do |form|
         form.should have_tag("input[@name='_method'][@type='hidden'][@value='put']")
@@ -352,6 +347,7 @@ describe 'Web UI' do
     end
     
     it "should require authentication" do
+      enable_basic_auth!
       get_it "/integrity/edit"
       status.should == 401
     end
@@ -364,14 +360,12 @@ describe 'Web UI' do
     
     it "should redirect to the project page if the update is valid" do
       mock_project.should_receive(:update_attributes).and_return(true)
-      provide_valid_credentials!
       put_it "/integrity"
       location.should == "/integrity"
     end
     
     it "should re-render the form if the update isn't valid" do
       mock_project.should_receive(:update_attributes).and_return(false)
-      provide_valid_credentials!
       put_it "/integrity"
       status.should == 200
     end
@@ -379,7 +373,6 @@ describe 'Web UI' do
     it "display error messages" do
       mock_project.should_receive(:update_attributes).and_return(false)
       mock_project.errors.stub!(:on).with(:name).and_return("Name can't be blank")
-      provide_valid_credentials!
       put_it "/integrity"
       body.should have_tag("p.required.with_errors") do |field|
         field.should have_tag("label", /can't be blank/)
@@ -388,12 +381,12 @@ describe 'Web UI' do
 
     it 'should be 404 if unknown project' do
       Project.stub!(:first).and_return(nil)
-      provide_valid_credentials!
       put_it '/integrity'
       status.should == 404
     end
     
     it "should require authentication" do
+      enable_basic_auth!
       put_it "/integrity"
       status.should == 401
     end
@@ -402,32 +395,29 @@ describe 'Web UI' do
   describe "DELETE /:project" do
     it "should load the project" do
       Project.should_receive(:first).with(:permalink => "integrity").and_return mock_project
-      provide_valid_credentials!
       delete_it "/integrity"
     end
     
     it "should destroy the project" do
       Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
       mock_project.should_receive(:destroy)
-      provide_valid_credentials!
       delete_it "/integrity"
     end
     
     it "should redirect to the home page" do
       Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
-      provide_valid_credentials!
       delete_it "/integrity"
       location.should == "/"
     end
 
     it 'should be 404 if unknown project' do
       Project.stub!(:first).and_return(nil)
-      provide_valid_credentials!
       delete_it '/integrity'
       status.should == 404
     end
     
     it "should require authentication" do
+      enable_basic_auth!
       delete_it "/integrity"
       status.should == 401
     end
@@ -541,26 +531,22 @@ describe 'Web UI' do
     it "should build the project" do
       Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
       mock_project.should_receive(:build)
-      provide_valid_credentials!
       post_it "/integrity/builds"
     end
     
     it "should redirect back to the project" do
       Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
-      provide_valid_credentials!
       post_it "/integrity/builds"
       location.should == "/integrity"
     end
 
     it 'should be 404 if unknown project' do
       Project.stub!(:first).and_return(nil)
-      provide_valid_credentials!
       post_it '/integrity/builds'
       status.should == 404
     end
     
     it "should require authorization" do
-      provide_valid_credentials!
     end
   end
 
