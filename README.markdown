@@ -23,9 +23,10 @@ Clone the source from our [git repository][repo]:
     sudo gem install dm-core dm-more data_objects do_sqlite3 json 
     git clone git://github.com/foca/integrity.git
     cd integrity
-    cp config/config.sample.yml config/config.yml
-    vim config/config.yml # or use your editor of choice
     git submodule update --init
+    cp config/config.sample.yml config/config.yml
+    $EDITOR config/config.yml
+    rake db:migrate
     bin/integrity
 
 Now you can go to http://localhost:4567, add your first project, and enjoy
