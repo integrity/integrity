@@ -8,7 +8,7 @@
 :email:
   :to: someone@server.com, other@server.com, yet_another@server.com
   :from: integrity@integrityapp.com
-  :config: 
+  :config:
     :host: smtp.host.com
     :port: 25
     :user: user

@@ -3,7 +3,7 @@ require 'fileutils'
 module Integrity
   class Builder
     attr_reader :build_script
-    
+
     def initialize(project)
       @uri = project.uri
       @build_script = project.command
@@ -20,7 +20,7 @@ module Integrity
       @build.commit_metadata = @scm.commit_metadata(commit)
       @build.save
     end
-    
+
     def delete_code
       FileUtils.rm_r export_directory
     rescue Errno::ENOENT

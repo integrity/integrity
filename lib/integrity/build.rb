@@ -11,7 +11,7 @@ module Integrity
     property :commit_metadata,   Yaml,     :nullable => false, :lazy => false
     property :created_at,        DateTime
     property :updated_at,        DateTime
-    
+
     after :create, :send_email
 
     belongs_to :project, :class_name => "Integrity::Project"
@@ -19,7 +19,7 @@ module Integrity
     def failed?
       !successful?
     end
-    
+
     def status
       successful? ? :success : :failed
     end
@@ -27,18 +27,18 @@ module Integrity
     def human_readable_status
       successful? ? 'Build Successful' : 'Build Failed'
     end
-    
+
     def short_commit_identifier
       sha1?(commit_identifier) ? commit_identifier[0..6] : commit_identifier
     end
-    
+
     def commit_author
       @author ||= begin
         commit_metadata[:author] =~ /^(.*) <(.*)>$/
         OpenStruct.new(:name => $1.strip, :email => $2.strip, :full => commit_metadata[:author])
       end
     end
-    
+
     def commit_message
       commit_metadata[:message]
     end
@@ -49,12 +49,12 @@ module Integrity
         else commit_metadata[:date]
       end
     end
-    
+
     private
       def send_email
         Notifier::Email.notify_of_build(self)
       end
-    
+
       def sha1?(string)
         string =~ /^[a-f0-9]{40}$/
       end

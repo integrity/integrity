@@ -3,12 +3,12 @@ require File.dirname(__FILE__) + '/spec_helper'
 describe 'Web UI' do
   def mock_project(messages={})
     messages = {
-      :name => "Integrity", 
-      :permalink => "integrity", 
-      :new_record? => false, 
-      :uri => "git://github.com/foca/integrity.git", 
-      :branch => "master", 
-      :command => "rake", 
+      :name => "Integrity",
+      :permalink => "integrity",
+      :new_record? => false,
+      :uri => "git://github.com/foca/integrity.git",
+      :branch => "master",
+      :command => "rake",
       :public? => true,
       :builds => [],
       :build => nil,
@@ -17,7 +17,7 @@ describe 'Web UI' do
       :destroy => nil,
       :errors => stub("errors", :on => nil)
     }.merge(messages)
-    
+
     @project ||= stub("project", messages)
   end
 
@@ -29,7 +29,7 @@ describe 'Web UI' do
       :project => @project,
       :commit_identifier => '9f6302002d2259c05a64767e0dedb15d280a4848',
       :commit_author => mock("author",
-        :name  => 'Nicolás Sanguinetti', 
+        :name  => 'Nicolás Sanguinetti',
         :email => 'contacto@nicolassanguinetti.info',
         :full  =>'Nicolás Sanguinetti <contacto@nicolassanguinetti.info>'
       ),
@@ -39,7 +39,7 @@ describe 'Web UI' do
     messages[:short_commit_identifier] = messages[:commit_identifier][0..5]
     mock('build', messages)
   end
-  
+
   def disable_basic_auth!
     Integrity.stub!(:config).and_return(:use_basic_auth => false)
   end
@@ -53,7 +53,7 @@ describe 'Web UI' do
     disable_basic_auth!
     require Integrity.root / "lib" / "integrity" / "ui"
   end
-  
+
   after(:each) { @project = nil }
 
   describe 'In general' do
@@ -99,46 +99,46 @@ describe 'Web UI' do
         get_it "/"
         status.should == 200
       end
-      
+
       it "should look for projects in the db" do
         Project.should_receive(:all).and_return([])
         get_it "/"
       end
-      
+
       it "should tell you that you have no projects" do
         get_it "/"
         @response.should have_tag(".blank_slate", /none yet/i)
       end
-      
+
       it "should have a link to add a new project" do
         get_it "/"
         @response.should have_tag(".blank_slate a[@href=/new]", /create your first project/i)
       end
     end
-    
+
     describe "with available projects" do
       before do
         @project_1 = stub("project", :name => "The 1st Project", :permalink => "the-1st-project", :building? => true)
         @project_2 = stub("project", :name => "The 2nd Project", :permalink => "the-2nd-project", :building? => false)
         Project.stub!(:all).and_return([@project_1, @project_2])
       end
-      
+
       it "should be success" do
         get_it "/"
         status.should == 200
       end
-      
+
       it "should load the public projects from the db" do
         enable_basic_auth!
         Project.should_receive(:all).with(:public => true).and_return([@project_1, @project_2])
         get_it "/"
       end
-      
+
       it "should load *all* the projects from the db *if the user has authenticated*" do
         Project.should_receive(:all).with({}).and_return([@project_1, @project_2])
         get_it "/"
       end
-      
+
       it "should show a list of the projects" do
         get_it "/"
         body.should have_tag("ul#projects") do |projects|
@@ -157,36 +157,36 @@ describe 'Web UI' do
       end
     end
   end
-  
+
   describe "GET /login" do
     it "should require authentication" do
       enable_basic_auth!
       get_it "/login"
       status.should == 401
     end
-    
+
     it "should redirect to '/' on successful auth" do
       get_it "/login"
       location.should == "/"
     end
-    
+
     it "should store the username on the session" do
       pending "how do I test the session?!"
       get_it "/login"
     end
   end
-  
+
   describe "GET /new" do
     it "should render successfully" do
       get_it "/new"
       status.should == 200
     end
-    
+
     it "should initialize a new Project instance" do
       Project.should_receive(:new).and_return mock_project(:new_record? => true, :name => nil, :uri => nil)
       get_it "/new"
     end
-    
+
     it "should render a form that posts back to '/'" do
       get_it "/new"
       body.should have_tag("form[@action='/'],@method='post']") do |form|
@@ -196,15 +196,15 @@ describe 'Web UI' do
         form.should have_tag("input.checkbox#project_public[@name='public'][@type='checkbox'][@checked='checked']")
         form.should have_tag("textarea#project_build_script[@name='command']", /rake/)
       end
-    end    
-    
+    end
+
     it "should require authentication" do
       enable_basic_auth!
       get_it "/new"
       status.should == 401
     end
   end
-  
+
   describe "POST /" do
     before { Project.stub!(:new).and_return(mock_project) }
 
@@ -213,7 +213,7 @@ describe 'Web UI' do
       post_it "/"
       status.should == 200
     end
-    
+
     it "should redirect to the new project's page when the project has valid attributes" do
       mock_project.stub!(:save).and_return(true)
       post_it "/"
@@ -228,14 +228,14 @@ describe 'Web UI' do
         field.should have_tag("label", /is already taken/)
       end
     end
-    
+
     it "should require authentication" do
       enable_basic_auth!
       post_it "/"
       status.should == 401
     end
   end
-  
+
   describe "GET /:project" do
     it "should load the project from the database" do
       Project.should_receive(:first).with(:permalink => "integrity").and_return(mock_project)
@@ -351,10 +351,10 @@ describe 'Web UI' do
       end
     end
   end
-  
+
   describe "GET /:project/edit" do
     before { Project.stub!(:first).with(:permalink => "integrity").and_return mock_project }
-    
+
     it "should be success" do
       get_it "/integrity/edit"
       status.should == 200
@@ -365,12 +365,12 @@ describe 'Web UI' do
       get_it '/integrity/edit'
       status.should == 404
     end
-    
+
     it "should render the form pointed at the projects permalink" do
       get_it "/integrity/edit"
       body.should have_tag("form[@action='/integrity'][@method='post']") do |form|
         form.should have_tag("input[@name='_method'][@type='hidden'][@value='put']")
-        
+
         form.should have_tag("input.text#project_name[@name='name'][@type='text'][@value='Integrity']")
         form.should have_tag("input.text#project_repository[@name='uri'][@type='text'][@value='git://github.com/foca/integrity.git']")
         form.should have_tag("input.text#project_branch[@name='branch'][@type='text'][@value='master']")
@@ -378,31 +378,31 @@ describe 'Web UI' do
         form.should have_tag("textarea#project_build_script[@name='command']", /rake/)
       end
     end
-    
+
     it "should require authentication" do
       enable_basic_auth!
       get_it "/integrity/edit"
       status.should == 401
     end
   end
-  
+
   describe "PUT /:project" do
     before do
       Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
     end
-    
+
     it "should redirect to the project page if the update is valid" do
       mock_project.should_receive(:update_attributes).and_return(true)
       put_it "/integrity"
       location.should == "/integrity"
     end
-    
+
     it "should re-render the form if the update isn't valid" do
       mock_project.should_receive(:update_attributes).and_return(false)
       put_it "/integrity"
       status.should == 200
     end
-    
+
     it "display error messages" do
       mock_project.should_receive(:update_attributes).and_return(false)
       mock_project.errors.stub!(:on).with(:name).and_return("Name can't be blank")
@@ -417,26 +417,26 @@ describe 'Web UI' do
       put_it '/integrity'
       status.should == 404
     end
-    
+
     it "should require authentication" do
       enable_basic_auth!
       put_it "/integrity"
       status.should == 401
     end
   end
-  
+
   describe "DELETE /:project" do
     it "should load the project" do
       Project.should_receive(:first).with(:permalink => "integrity").and_return mock_project
       delete_it "/integrity"
     end
-    
+
     it "should destroy the project" do
       Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
       mock_project.should_receive(:destroy)
       delete_it "/integrity"
     end
-    
+
     it "should redirect to the home page" do
       Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
       delete_it "/integrity"
@@ -448,18 +448,18 @@ describe 'Web UI' do
       delete_it '/integrity'
       status.should == 404
     end
-    
+
     it "should require authentication" do
       enable_basic_auth!
       delete_it "/integrity"
       status.should == 401
     end
   end
-  
+
   describe "POST /:project/push" do
     def payload
       <<-EOS
-      { 
+      {
         "before": "5aef35982fb2d34e9d9d4502f6ede1072793222d",
         "repository": {
           "url": "http://github.com/defunkt/github",
@@ -470,7 +470,7 @@ describe 'Web UI' do
           "private": 1,
           "owner": {
             "email": "chris@ozmm.org",
-            "name": "defunkt" 
+            "name": "defunkt"
           }
         },
         "commits": [
@@ -479,7 +479,7 @@ describe 'Web UI' do
             "url": "http://github.com/defunkt/github/commit/41a212ee83ca127e3c8cf465891ab7216a705f59",
             "author": {
               "email": "chris@ozmm.org",
-              "name": "Chris Wanstrath" 
+              "name": "Chris Wanstrath"
             },
             "message": "okay i give in",
             "timestamp": "2008-02-15T14:57:17-08:00",
@@ -490,18 +490,18 @@ describe 'Web UI' do
             "url": "http://github.com/defunkt/github/commit/de8251ff97ee194a289832576287d6f8ad74e3d0",
             "author": {
               "email": "chris@ozmm.org",
-              "name": "Chris Wanstrath" 
+              "name": "Chris Wanstrath"
             },
             "message": "update pricing a tad",
-            "timestamp": "2008-02-15T14:36:34-08:00" 
+            "timestamp": "2008-02-15T14:36:34-08:00"
           }
         ],
         "after": "de8251ff97ee194a289832576287d6f8ad74e3d0",
-        "ref": "refs/heads/master" 
+        "ref": "refs/heads/master"
       }
       EOS
     end
-    
+
     before do
       Project.stub!(:first).with(:permalink => "github").and_return mock_project
     end
@@ -559,14 +559,14 @@ describe 'Web UI' do
       end
     end
   end
-  
+
   describe "POST /:project/builds" do
     it "should build the project" do
       Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
       mock_project.should_receive(:build)
       post_it "/integrity/builds"
     end
-    
+
     it "should redirect back to the project" do
       Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
       post_it "/integrity/builds"
@@ -578,7 +578,7 @@ describe 'Web UI' do
       post_it '/integrity/builds'
       status.should == 404
     end
-    
+
     it "should require authorization" do
     end
   end
@@ -644,12 +644,12 @@ describe 'Web UI' do
       do_get
       body.should have_tag('.who', /Nicolás Sanguinetti/)
     end
-    
+
     it 'should display the date of the commit' do
       do_get
       body.should have_tag('.when', /(today|yesterday|on Jul 24th)/)
     end
-    
+
     it 'should display the full commit identifier' do
       @build.should_receive(:commit_identifier).at_least(:once).and_return('blah blah blah')
       do_get
@@ -668,7 +668,7 @@ describe 'Web UI' do
       body.should have_tag('pre.output', /lots of err/)
     end
   end
-  
+
   describe "getting the site stylesheet" do
     it "should render successfully" do
       get_it "/integrity.css"
@@ -680,92 +680,92 @@ describe 'Web UI' do
       headers["Content-Type"].should =~ %r(^text/css)
     end
   end
-  
+
   describe "Helpers" do
     before { @context = Sinatra::EventContext.new(stub("request"), stub("response", :body= => nil), stub("route params")) }
-    
+
     describe "#current_project" do
       before { @context.stub!(:params).and_return(:project => "integrity") }
-      
+
       it "should return the project" do
         Project.stub!(:first).with(:permalink => "integrity").and_return(mock_project)
         @context.current_project.should == mock_project
       end
-      
+
       it "should try to load the project with the permalink provided in the params" do
         Project.should_receive(:first).with(:permalink => "integrity").and_return(mock_project)
         @context.current_project
       end
-      
+
       it "should raise NotFound if the project cannot be found" do
         Project.stub!(:first).and_return(nil)
         lambda { @context.current_project }.should raise_error(Sinatra::NotFound)
       end
     end
-    
+
     describe "#show" do
       before do
         @context.stub!(:haml)
         @context.stub!(:breadcrumbs).and_return(['<a href="/">home</a>', 'test'])
       end
       after { @context.instance_variable_set(:@title, nil) }
-      
+
       it "should receive a haml view" do
         @context.should_receive(:haml).with(:home)
         @context.show(:home)
       end
-      
+
       it "should accept an optional 'title' setting" do
         @context.show(:home, :title => ["home", "test"])
         @context.instance_variable_get(:@title).should == ['<a href="/">home</a>', 'test']
       end
     end
-    
+
     describe "#pages" do
       it "should list a series of pairs [title, url]" do
         @context.pages.all? {|p| p.should respond_to(:first, :last) }
       end
     end
-    
+
     describe "#breadcrumbs" do
       before do
         @project = stub("Project", :permalink => "the-great-project")
         @context.instance_variable_set(:@project, @project)
-        @context.stub!(:pages).and_return([["home", "/"], ["about", "/about"], ["other page", "/other"]]) 
+        @context.stub!(:pages).and_return([["home", "/"], ["about", "/about"], ["other page", "/other"]])
       end
-      
+
       it "should, when passed only one argument, return a single element array with the argument untouched" do
         @context.breadcrumbs("test").should == ["test"]
       end
-      
+
       it "should, when passed a multi-element array, search for all except the last one in the pages list" do
         @context.breadcrumbs("home", "other page", "test").should == ['<a href="/">home</a>', '<a href="/other">other page</a>', 'test']
       end
-      
+
       it "should give the arguments in the given order, no matter how they appear on the #pages list" do
         @context.breadcrumbs("about", "home", "other page").should == ['<a href="/about">about</a>', '<a href="/">home</a>', 'other page']
       end
-      
+
       it "should use #project_url if one of the breadcrumbs isn't in the pages array and matches the current project permalink" do
         @context.should_receive(:project_url).with(@project).and_return("/the-great-project")
         @context.breadcrumbs("home", "the-great-project", "edit")
       end
     end
-    
+
     describe "#cycle" do
       after do
         @context.instance_eval { @cycles = nil }
       end
-      
+
       it "should return the first value the first time" do
         @context.cycle("even", "odd").should == "even"
       end
-      
+
       it "should not mix two different cycles" do
         @context.cycle("even", "odd").should == "even"
         @context.cycle("red", "green", "blue").should == "red"
       end
-      
+
       it "should return a cycling element each time its called with the same set of arguments" do
         @context.cycle("red", "green", "blue").should == "red"
         @context.cycle("red", "green", "blue").should == "green"
@@ -773,12 +773,12 @@ describe 'Web UI' do
         @context.cycle("red", "green", "blue").should == "red"
       end
     end
-    
+
     describe "#project_url" do
       it "should receive a project and return a link to it" do
         @context.project_url(mock_project).should == "/integrity"
       end
-      
+
       it "should add whatever other arguments are passed as tokens in the path" do
         @context.project_url(mock_project, :build, :blah).should == "/integrity/build/blah"
       end
@@ -796,18 +796,18 @@ describe 'Web UI' do
         @context.build_url(@build).should == '/integrity/builds/d32adaa7e42622f5a2f0526985dc010915fab0bf'
       end
     end
-    
+
     describe "#filter_attributes_of" do
       before do
         @context.stub!(:params).and_return("some" => "arguments", "are" => "better", "left" => "unspoken")
         @model = stub("a class", :properties => [stub("prop", :name => "some"), stub("prop", :name => "left")])
       end
-      
+
       it "should return a hash with only the keys that are properties of the model" do
         @context.filter_attributes_of(@model).should == { "some" => "arguments", "left" => "unspoken" }
       end
     end
-    
+
     describe "#error_class" do
       it "should return an empty string when the object doesn't have errors on the attribute" do
         mock_project.errors.stub!(:on).with(:some_attribute).and_return(nil)
@@ -819,38 +819,38 @@ describe 'Web UI' do
         @context.error_class(mock_project, :name).should == "with_errors"
       end
     end
-    
+
     describe "#errors_on" do
       it "should return an empty string if the object doesn't have errors on the attribute" do
         mock_project.errors.stub!(:on).with(:uri).and_return(nil)
         @context.errors_on(mock_project, :uri).should == ""
       end
-      
+
       it "should return the errors messages (without the field names) separated with commas when it has errors" do
         mock_project.errors.stub!(:on).with(:name).and_return(["Name can't be blank", "Name must be unique"])
         @context.errors_on(mock_project, :name).should == "can't be blank, must be unique"
       end
     end
-    
+
     describe "#checkbox" do
       it "should generate the correct attributes for a checkbox" do
         @context.checkbox(:cuack, true).should == { :name => :cuack, :type => "checkbox", :checked => "checked" }
         @context.checkbox(:cuack, false).should == { :name => :cuack, :type => "checkbox" }
       end
     end
-    
+
     describe "#bash_color_codes" do
       it "should replace [0m for a closing span tag" do
         @context.bash_color_codes("<span>something\e[0m").should == '<span>something</span>'
       end
-      
+
       it "should replace [XXm for a span.colorXX, for XX in 31..37" do
         (31..37).each do |color|
           @context.bash_color_codes("\e[#{color}msomething</span>").should == %Q(<span class="color#{color}">something</span>)
         end
       end
     end
-    
+
     describe "#authorize" do
       before do
         Integrity.stub!(:config).and_return(
@@ -860,22 +860,22 @@ describe 'Web UI' do
           :hash_admin_password => true
         )
       end
-      
+
       it "should hash the password if the settings say so" do
         Digest::SHA1.should_receive(:hexdigest).with("test").and_return("a94a8fe5ccb19ba61c4c0873d391e987982fbbd3")
         @context.authorize("the_user", "test")
       end
-      
+
       it "should not hash the password if the settings do not specify it" do
         Integrity.config[:hash_admin_password] = false
         Digest::SHA1.should_not_receive(:hexdigest)
         @context.authorize("the_user", "test")
       end
-      
+
       it "should authenticate a user with valid username and password (hashed)" do
         @context.authorize("the_user", "test").should be_true
       end
-      
+
       it "should not authenticate a user with an invalid username" do
         @context.authorize("1337 h4x0r", "test").should be_false # hah, not so leet, ah?
       end
@@ -893,11 +893,11 @@ describe 'Web UI' do
         @a_week_ago = Time.mktime(2008, 07, 17, 17, 18)
         Time.stub!(:now).and_return(@today)
       end
-      
+
       it { @context.pretty_date(@today).should == "today" }
-      
+
       it { @context.pretty_date(@yesterday).should == "yesterday" }
-      
+
       it { @context.pretty_date(@a_week_ago).should == "on Jul 17th"}
     end
   end

@@ -9,7 +9,7 @@ require "rspec_hpricot_matchers"
 
 Spec::Runner.configure do |config|
   config.include RspecHpricotMatchers
-  
+
   config.before(:each) do
     DataMapper.setup(:default, "sqlite3::memory:")
     Integrity::Project.auto_migrate!

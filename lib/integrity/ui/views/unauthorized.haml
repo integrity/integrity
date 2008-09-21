@@ -1,24 +1,24 @@
 .error
-  %h1 
+  %h1
     So... you don't know the password? Hmm... You can
     %a{ :href => "/login" } try again
-    or 
+    or
     = succeed "." do
       %a{ :href => "/", :rel => "home" } go back
 
   %dl
     %dt Er... So... I'm trying to login without a password...
-    %dd 
+    %dd
       Hey pal, sorry, but I can't let in anyone that isn't
       = succeed "." do
         %strong on the list
-      I could lose my job you know? You'll have to come up with 
+      I could lose my job you know? You'll have to come up with
       a valid password :-(
 
     %dt What can I do?
     %dd
-      This just means that you can't access some part of this Integrity 
-      server, but that shouldn't let you out of some of the 
+      This just means that you can't access some part of this Integrity
+      server, but that shouldn't let you out of some of the
       %a{ :href => "/" } awesome projects
       hosted here. If this was just a misunderstanding and you
       %strong do

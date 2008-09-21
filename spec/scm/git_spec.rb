@@ -5,75 +5,75 @@ describe Integrity::SCM::Git do
     Integrity::SCM::Git.class_eval { public :fetch_code, :chdir, :clone, :checkout, :pull, :local_branches, :cloned?, :on_branch? }
     @git = Integrity::SCM::Git.new("git://github.com/foca/integrity.git", "master", "/var/integrity/exports/foca-integrity")
   end
-  
+
   it "should point to the correct repository" do
     @git.uri.should == "git://github.com/foca/integrity.git"
   end
-  
+
   it "should track the correct branch" do
     @git.branch.should == "master"
   end
-  
+
   it "should point to the correct working directory" do
     @git.working_directory.should == "/var/integrity/exports/foca-integrity"
   end
-  
+
   describe "Determining the state of the code for this project" do
     it "should know if a project has been cloned or not by looking at the directories" do
       File.stub!(:directory?).with("/var/integrity/exports/foca-integrity/.git").and_return(true)
       @git.should be_cloned
     end
-    
+
     it "should know if a checkout is on the current branch by asking git the branch" do
       @git.stub!(:chdir).and_yield
       @git.should_receive(:`).with("git symbolic-ref HEAD").and_return("refs/heads/master\n")
       @git.should be_on_branch
     end
-    
+
     it "should tell you if it's not in the desired branch" do
       @git.stub!(:chdir).and_yield
       @git.should_receive(:`).with("git symbolic-ref HEAD").and_return("refs/heads/other_branch\n")
       @git.should_not be_on_branch
     end
   end
-  
+
   describe "Fetching the code from the repo" do
     before do
       @git.stub!(:on_branch?).and_return(true)
       @git.stub!(:cloned?).and_return(true)
       @git.stub!(:pull)
     end
-    
+
     it "should clone the repository if it hasn't already" do
       @git.stub!(:cloned?).and_return(false)
       @git.should_receive(:clone)
       @git.fetch_code
     end
-    
+
     it "should not clone the repository if it has done so before" do
       @git.stub!(:cloned?).and_return(true)
       @git.should_not_receive(:clone)
       @git.fetch_code
     end
-    
+
     it "should checkout the branch if it's not on it" do
       @git.stub!(:on_branch?).and_return(false)
       @git.should_receive(:checkout)
       @git.fetch_code
     end
-    
+
     it "should not checkout the branch if it's already on it" do
       @git.stub!(:on_branch?).and_return(true)
       @git.should_not_receive(:checkout)
       @git.fetch_code
     end
-    
+
     it "should pull the code" do
       @git.should_receive(:pull)
       @git.fetch_code
     end
   end
-  
+
   describe "Changing the current directory to that of the checkout" do
     it "should let ruby-git handle it by forwarding the call" do
       block = lambda { "cuack" }
@@ -89,7 +89,7 @@ describe Integrity::SCM::Git do
       @git.stub!(:checkout)
       @git.stub!(:chdir).with(&@block)
     end
-    
+
     it "should fetch the latest code" do
       @git.should_receive(:fetch_code)
       @git.with_revision('HEAD', &@block)
@@ -105,7 +105,7 @@ describe Integrity::SCM::Git do
       @git.with_revision('4d0cfafd569ef60d0c578bf8a9d51f9582612f03', &@block)
     end
   end
-  
+
   describe "Getting information about a commit" do
     before do
       @serialized = ["---",
@@ -120,32 +120,32 @@ describe Integrity::SCM::Git do
       @git.should_receive(:chdir).and_yield
       @git.commit_metadata("HEAD")
     end
-    
+
     it "should ask git for the commit" do
       @git.should_receive(:`).with(/^git show -s.*HEAD/).and_return(@serialized)
       @git.commit_metadata("HEAD")
     end
-    
+
     it "should ask YAML to interpret the serialized info" do
       YAML.should_receive(:load).with(@serialized).and_return({})
       @git.commit_metadata("HEAD")
     end
-    
+
     it "should not blow up if the author name has a colon in the middle" do
       @serialized.gsub! 'Nicolás Sanguinetti', 'the:dude'
       lambda { @git.commit_metadata("HEAD") }.should_not raise_error
     end
-    
+
     it "should not blow up if the commit message has a colon in the middle" do
       @serialized.gsub! 'A beautiful commit', %Q(Beautiful: "A commit" with\n  newlines and 'lots of quoting')
       lambda { @git.commit_metadata("HEAD") }.should_not raise_error
     end
-    
+
     it "should have yaml chomp the commit message (and remove any intermediate newlines)" do
       @serialized.gsub! 'A beautiful commit', %Q(Beautiful: "A commit" with\n  newlines and 'lots of quoting')
       @git.commit_metadata("HEAD")[:message].should == %Q(Beautiful: "A commit" with newlines and 'lots of quoting')
     end
-    
+
     it "should return a hash with all the relevant information" do
       @git.commit_metadata("HEAD").should == {
         :author => "Nicolás Sanguinetti <contacto@nicolassanguinetti.info>",
@@ -153,36 +153,36 @@ describe Integrity::SCM::Git do
       }
     end
   end
-  
+
   describe "Listing the local branches" do
     def branches
       ["* master",
        "  other",
        "  yet_another"] * "\n"
     end
-    
+
     it "should return an array of branch names" do
       @git.stub!(:chdir).and_yield
       @git.stub!(:`).with("git branch").and_return(branches)
       @git.local_branches.should == ["master", "other", "yet_another"]
     end
   end
-  
+
   describe "Doing all the low-level operations on the repo" do
     it "should pass the uri and expected working directory to git-clone when cloning" do
       @git.should_receive(:`).with("git clone git://github.com/foca/integrity.git /var/integrity/exports/foca-integrity")
       @git.clone
     end
-    
+
     it "should switch dirs to the repo's and call git-pull when pulling" do
       @git.should_receive(:chdir).and_yield
       @git.should_receive(:`).with("git pull")
       @git.pull
     end
-    
+
     describe "(checking out code)" do
       before { @git.stub!(:chdir).and_yield }
-      
+
       it "should check out the branch locally if it's already available" do
         @git.stub!(:local_branches).and_return(["master"])
         @git.should_receive(:`).with("git checkout master")

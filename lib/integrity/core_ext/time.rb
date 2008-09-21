@@ -7,7 +7,7 @@ class Time
       when 3, 23     then "rd"
       else                "th"
     end
-    
+
     strftime_without_ordinals(format_string)
   end
 end

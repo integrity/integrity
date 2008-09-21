@@ -34,7 +34,7 @@ module Integrity
   def self.config
     @config
   end
-  
+
   def self.load_config_file(file)
     YAML.load_file(file)
   rescue Errno::ENOENT
@@ -50,7 +50,7 @@ module Integrity
   module SCM
     autoload :Git,    'scm/git'
   end
-  
+
   module Notifier
     autoload :Email,  'notifier/email'
   end

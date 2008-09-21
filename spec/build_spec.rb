@@ -13,7 +13,7 @@ describe Integrity::Build do
       :successful => true
     }
   end
-  
+
   before(:each) do
     @build = Integrity::Build.new
     Integrity::Notifier::Email.stub!(:notify_of_build).with(@build)
@@ -49,12 +49,12 @@ describe Integrity::Build do
     @build.commit_author.email.should == 'simon@rozet.name'
     @build.commit_author.full.should == @build.commit_metadata[:author]
   end
-  
+
   it 'should have a commit message' do
     @build.commit_metadata = { :message => 'The greatest commit ever' }
     @build.commit_message.should == @build.commit_metadata[:message]
   end
-  
+
   it 'should have a commit date' do
     @build.commit_metadata = { :date => Time.now }
     @build.commited_at.should == @build.commit_metadata[:date]
@@ -85,14 +85,14 @@ describe Integrity::Build do
     @build.stub!(:commit_identifier).and_return('234')
     @build.short_commit_identifier.should == '234'
   end
-  
+
   it "should return the status as a symbol (for html classes or the like)" do
     @build.stub!(:successful?).and_return(true)
     @build.status.should == :success
     @build.stub!(:successful?).and_return(false)
     @build.status.should == :failed
   end
-  
+
   it "should send an email after saving with valid data" do
     @build.attributes = valid_attributes
     Integrity::Notifier::Email.should_receive(:notify_of_build).with(@build)

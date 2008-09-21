@@ -11,11 +11,11 @@
   - @build = @project.last_build
   #last_build{ :class => @build.status }
     = haml(:build_info, :layout => false)
-  
+
   %form{ :action => project_url(@project, :builds), :method => :post }
     %p.submit
       %button{ :type => :submit } Request Manual Build
-  
+
   - unless @project.previous_builds.empty?
     %h2 Previous builds
     %ul#previous_builds

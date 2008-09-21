@@ -22,7 +22,7 @@ namespace :spec do
     t.rcov = true
     t.rcov_opts = ['--exclude-only', '".*"', '--include-file', '^lib']
   end
-  
+
   namespace :coverage do
     RCov::VerifyTask.new(:verify) do |t|
       t.threshold = 100
@@ -36,7 +36,7 @@ namespace :db do
   task :connect do
     ENV['CONFIG'] ? Integrity.new(ENV['CONFIG']) : Integrity.new
   end
-  
+
   desc "Automigrate the database"
   task :migrate => :connect do
     require "project"
