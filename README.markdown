@@ -32,6 +32,13 @@ Clone the source from our [git repository][repo]:
 Now you can go to http://localhost:4567, add your first project, and enjoy
 safer coding, with integrity.
 
+If you want automatic commit processing, you currently need to be using
+[GitHub](http://GitHub.com/ "GitHub - git repository hosting"). Click the edit
+link on your GitHub project, and add an integrity link that looks like the
+following to the `Post-Receive URL` field:
+
+    http://integrity.domain.tld/projectname/push
+
 Configuration
 =============
 
