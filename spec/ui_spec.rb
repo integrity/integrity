@@ -189,7 +189,7 @@ describe 'Web UI' do
 
     it "should render a form that posts back to '/'" do
       get_it "/new"
-      body.should have_tag("form[@action='/'],@method='post']") do |form|
+      body.should have_tag("form[@action='/'][@method='post']") do |form|
         form.should have_tag("input.text#project_name[@name='name'][@type='text'][@value='']")
         form.should have_tag("input.text#project_repository[@name='uri'][@type='text'][@value='']")
         form.should have_tag("input.text#project_branch[@name='branch'][@type='text'][@value='master']")
