@@ -11,12 +11,14 @@ describe 'Web UI' do
       :command => "rake",
       :public? => true,
       :builds => [],
-      :config_for => { :from => "blah@blah.com" },
+      :config_for => {},
       :build => nil,
       :update_attributes => true,
       :save => true,
       :destroy => nil,
-      :errors => stub("errors", :on => nil)
+      :errors => stub("errors", :on => nil),
+      :notifies? => false,
+      :setup_notifiers => nil
     }.merge(messages)
 
     @project ||= stub("project", messages)
@@ -191,11 +193,11 @@ describe 'Web UI' do
     it "should render a form that posts back to '/'" do
       get_it "/new"
       body.should have_tag("form[@action='/'][@method='post']") do |form|
-        form.should have_tag("input.text#project_name[@name='name'][@type='text'][@value='']")
-        form.should have_tag("input.text#project_repository[@name='uri'][@type='text'][@value='']")
-        form.should have_tag("input.text#project_branch[@name='branch'][@type='text'][@value='master']")
-        form.should have_tag("input.checkbox#project_public[@name='public'][@type='checkbox'][@checked='checked']")
-        form.should have_tag("textarea#project_build_script[@name='command']", /rake/)
+        form.should have_textfield("project_name").named("project_data[name]").with_value("")
+        form.should have_textfield("project_repository").named("project_data[uri]").with_value("")
+        form.should have_textfield("project_branch").named("project_data[branch]").with_value("master")
+        form.should have_checkbox("project_public").named("project_data[public]").checked
+        form.should have_textarea("project_build_script").named("project_data[command]").with_value(/rake/)
       end
     end
 
@@ -220,8 +222,14 @@ describe 'Web UI' do
       post_it "/"
       location.should == "/integrity"
     end
+    
+    it "should setup the notifiers" do
+      mock_project.stub!(:save).and_return(true)
+      mock_project.should_receive(:setup_notifiers)
+      post_it "/"
+    end
 
-    it "display error messages" do
+    it "should display error messages" do
       mock_project.should_receive(:save).and_return(false)
       mock_project.errors.stub!(:on).with(:name).and_return('Name is already taken')
       post_it "/"
@@ -371,12 +379,12 @@ describe 'Web UI' do
       get_it "/integrity/edit"
       body.should have_tag("form[@action='/integrity'][@method='post']") do |form|
         form.should have_tag("input[@name='_method'][@type='hidden'][@value='put']")
-
-        form.should have_tag("input.text#project_name[@name='name'][@type='text'][@value='Integrity']")
-        form.should have_tag("input.text#project_repository[@name='uri'][@type='text'][@value='git://github.com/foca/integrity.git']")
-        form.should have_tag("input.text#project_branch[@name='branch'][@type='text'][@value='master']")
-        form.should have_tag("input.checkbox#project_public[@name='public'][@type='checkbox'][@checked='checked']")
-        form.should have_tag("textarea#project_build_script[@name='command']", /rake/)
+        
+        form.should have_textfield("project_name").named("project_data[name]").with_value("Integrity")
+        form.should have_textfield("project_repository").named("project_data[uri]").with_value("git://github.com/foca/integrity.git")
+        form.should have_textfield("project_branch").named("project_data[branch]").with_value("master")
+        form.should have_checkbox("project_public").named("project_data[public]").checked
+        form.should have_textarea("project_build_script").named("project_data[command]").with_value(/rake/)
       end
     end
 
@@ -404,6 +412,12 @@ describe 'Web UI' do
       status.should == 200
     end
 
+    it "should setup the notifiers" do
+      mock_project.stub!(:update_attributes).and_return(true)
+      mock_project.should_receive(:setup_notifiers)
+      put_it "/integrity"
+    end
+    
     it "display error messages" do
       mock_project.should_receive(:update_attributes).and_return(false)
       mock_project.errors.stub!(:on).with(:name).and_return("Name can't be blank")
@@ -842,6 +856,10 @@ describe 'Web UI' do
       it "should generate the correct attributes for a checkbox" do
         @context.checkbox(:cuack, true).should == { :name => :cuack, :type => "checkbox", :checked => "checked" }
         @context.checkbox(:cuack, false).should == { :name => :cuack, :type => "checkbox" }
+      end
+      
+      it "should add whatever other fields are passed as a hash" do
+        @context.checkbox(:cuack, false, :value => 1).should == { :name => :cuack, :type => "checkbox", :value => 1 }
       end
     end
 

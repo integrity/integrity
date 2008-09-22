@@ -1,4 +1,5 @@
 require "authorization"
+require "hacks"
 
 set :root,   Integrity.root / "lib/integrity/ui"
 set :public, Integrity.root / "lib/integrity/ui/public"
@@ -44,9 +45,10 @@ end
 
 post "/" do
   login_required
-
-  @project = Project.new(params)
+  
+  @project = Project.new(params[:project_data])
   if @project.save
+    @project.setup_notifiers(params["enabled_notifiers[]"], params["notifiers"])
     redirect project_url(@project)
   else
     show :new, :title => ["projects", "new project"]
@@ -60,8 +62,9 @@ end
 
 put "/:project" do
   login_required
-
-  if current_project.update_attributes(filter_attributes_of(Project))
+  
+  if current_project.update_attributes(params[:project_data])
+    current_project.setup_notifiers(params["enabled_notifiers[]"], params["notifiers"])
     redirect project_url(current_project)
   else
     show :new, :title => ["projects", current_project.permalink, "edit"]
@@ -200,9 +203,10 @@ helpers do
   def error_class(object, field)
     object.errors.on(field).nil? ? "" : "with_errors"
   end
-
-  def checkbox(name, condition)
-    { :name => name, :type => "checkbox" }.merge(condition ? { :checked => "checked" } : {})
+  
+  def checkbox(name, condition, extras={})
+    attrs = { :name => name, :type => "checkbox" }.merge(condition ? { :checked => "checked" } : {})
+    attrs.merge(extras)
   end
 
   def bash_color_codes(string)
@@ -225,5 +229,13 @@ helpers do
     else
       date_time.strftime("on %b %d%o")
     end
+  end
+  
+  def notifier_form(notifier)
+    haml(notifier.to_haml, :layout => :notifier, :locals => { 
+      :config => current_project.config_for(notifier), 
+      :notifier => "#{notifier.to_s.split(/::/).last}", 
+      :enabled => current_project.notifies?(notifier) 
+    })
   end
 end
