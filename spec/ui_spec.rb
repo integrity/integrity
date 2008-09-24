@@ -538,6 +538,11 @@ describe 'Web UI' do
       post_it '/github/push', :payload => payload
     end
 
+    it "should not build the project if the commit isn't to the branch we're monitoring" do
+      @project.should_not_receive(:build)
+      post_it '/github/push', :payload => payload.sub('refs/heads/master', 'refs/heads/unstable')
+    end
+
     describe 'With invalid payload' do
       before(:each) do
         JSON.stub!(:parse).and_raise(JSON::ParserError.new('error message'))
