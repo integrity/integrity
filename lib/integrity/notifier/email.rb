@@ -2,7 +2,7 @@ require "smtp-tls"
 require "mailer"
 
 module Integrity
-  module Notifier
+  class Notifier
     class Email
       def self.notify_of_build(build, config)
         new(build, config).deliver!
@@ -15,9 +15,9 @@ module Integrity
       attr_reader :build, :to, :from
 
       def initialize(build, config={})
+        @to     = config.delete("to")
+        @from   = config.delete("from")
         @config = config
-        @to     = config[:to]
-        @from   = config[:from]
         @build  = build
         configure_mailer
       end
@@ -40,7 +40,7 @@ module Integrity
       end
 
       def body
-        <<-email
+        <<-EOM
 Build #{build.commit_identifier} #{build.successful? ? "was successful" : "failed"}
 
 Commit Message: #{build.commit_message}
@@ -52,17 +52,17 @@ Link: http://localhost:4567/#{build.project.permalink}/builds/#{build.commit_ide
 Build Output:
 
 #{build.output}
-        email
+EOM
       end
       
       def configure_mailer
-        Sinatra::Mailer.delivery_method = "smtp"
-        Sinatra::Mailer.config = { 
-          :host => @config[:host], 
-          :port => @config[:port], 
-          :user => @config[:user], 
-          :pass => @config[:password], 
-          :auth => @config[:pass].to_sym 
+        Sinatra::Mailer.delivery_method = "net_smtp"
+        Sinatra::Mailer.config = {
+          :host => @config["host"],
+          :port => @config["port"],
+          :user => @config["user"],
+          :pass => @config["pass"],
+          :auth => @config["auth"]
         }
       end
     end

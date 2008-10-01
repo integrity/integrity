@@ -14,6 +14,7 @@ module Integrity
     property :updated_at, DateTime
 
     has n, :builds, :class_name => "Integrity::Build"
+    has n, :notifiers, :class_name => "Integrity::Notifier"
 
     before :save, :set_permalink
     before :destroy, :delete_code
@@ -27,6 +28,7 @@ module Integrity
     ensure
       update_attributes(:building => false)
     end
+    after :build, :send_notifications
 
     def last_build
       builds.last
@@ -40,7 +42,16 @@ module Integrity
     def public=(flag)
       attribute_set(:public, !!flag)
     end
-
+    
+    def config_for(notifier)
+      notifier = notifiers.first(:name => notifier.to_s.split(/::/).last)
+      notifier.blank? ? {} : notifier.config
+    end
+    
+    def notifies?(notifier)
+      !notifiers.first(:name => notifier.to_s.split(/::/).last).blank?
+    end
+    
     private
       def set_permalink
         self.permalink = (name || "").downcase.
@@ -53,6 +64,12 @@ module Integrity
       def delete_code
         builds.destroy!
         Builder.new(self).delete_code
+      end
+      
+      def send_notifications
+        notifiers.each do |notifier|
+          notifier.notify_of_build last_build
+        end
       end
   end
 end

@@ -164,7 +164,6 @@ describe Integrity::Project do
 
   describe "When searching for its builds" do
     before do
-      Integrity::Notifier::Email.stub!(:notify_of_build)
       @project.update_attributes(:name => "Integrity", :uri => "git://github.com/foca/integrity.git")
       5.times do
         @project.builds.create(
@@ -211,6 +210,24 @@ describe Integrity::Project do
     it "should tell the builder to delete the code for this project" do
       @builder.should_receive(:delete_code).and_return(true)
       @project.destroy
+    end
+  end
+  
+  describe "Getting the config for a Notifier" do
+    before do
+      @project.update_attributes(:name => "Integrity", :uri => "git://github.com/foca/integrity.git")
+      @project.notifiers.create(:name => "Email", :config => { 
+        :to => "to@example.com", :from => "from@example.com" 
+      })
+    end
+    
+    it "should return the correct configuration if the notifier was registered for the project" do
+      @project.config_for(Integrity::Notifier::Email).should == { :to => "to@example.com", :from => "from@example.com" }
+    end
+    
+    it "should return an empty hash if the notifier was not registered for the project" do
+      class Integrity::Notifier::Twitter; end # we don't care if the class actually exists or does anything
+      @project.config_for(Integrity::Notifier::Twitter).should == {}
     end
   end
 end

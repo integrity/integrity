@@ -6,12 +6,13 @@
 !content_bg    = #eee
 !header_bg     = #fff
 !text_color    = #333
+!light_color   = #999
 !title_color   = #4e4e4e
 !link_color    = #ed1556
 !link_bg       = #fff
 !rule_color    = #c0c0c0
 !watermark     = #ccc
-!quote_bg      = #FFF
+!quote_bg      = #fff
 !success_bg    = #bbf8aa
 !success_color = #337022
 !failed_bg     = #fba
@@ -147,6 +148,26 @@ a
         :font-weight bold
     .normal
       :margin-top 2em
+    h2.notifier label
+      :float none
+      :width auto
+      :margin-right 0
+      .warning
+        :font-size .5em
+        :font-weight normal
+        :color = !light_color
+    fieldset
+      :padding-bottom 1em
+      :margin-left 1.35em
+      :border-bottom = 1px solid !rule_color
+      :margin-bottom 1em
+      h3
+        :margin-top 1em
+        :margin-bottom 0
+      p.normal
+        :margin-top 1em
+      p label
+        :width 6.7em
     p.submit
       :margin-top 2em
       &:after

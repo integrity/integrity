@@ -16,7 +16,6 @@ describe Integrity::Build do
 
   before(:each) do
     @build = Integrity::Build.new
-    Integrity::Notifier::Email.stub!(:notify_of_build).with(@build)
   end
 
   it 'should not be valid' do
@@ -91,11 +90,5 @@ describe Integrity::Build do
     @build.status.should == :success
     @build.stub!(:successful?).and_return(false)
     @build.status.should == :failed
-  end
-
-  it "should send an email after saving with valid data" do
-    @build.attributes = valid_attributes
-    Integrity::Notifier::Email.should_receive(:notify_of_build).with(@build)
-    @build.save
   end
 end

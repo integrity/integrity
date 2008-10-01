@@ -3,14 +3,4 @@
 :hash_admin_password: true
 :use_basic_auth: true
 :admin_username: username
-:admin_password: a94a8fe5ccb19ba61c4c0873d391e987982fbbd3 # sha1
-
-:email:
-  :to: someone@server.com, other@server.com, yet_another@server.com
-  :from: integrity@integrityapp.com
-  :config:
-    :host: smtp.host.com
-    :port: 25
-    :user: user
-    :pass: pass
-    :auth: :plain
+:admin_password: a94a8fe5ccb19ba61c4c0873d391e987982fbbd3

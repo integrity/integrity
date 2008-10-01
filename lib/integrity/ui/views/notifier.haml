@@ -1,0 +1,7 @@
+%h2.notifier
+  %label
+    %input.checkbox{ checkbox("enabled_notifiers[]", enabled, :value => notifier) }
+    == #{notifier} Notifications
+    %span.warning be aware that no validation will be made on these fields
+%fieldset{ :id => "#{notifier.downcase}_config" }
+  = yield
