@@ -1,5 +1,4 @@
 require 'xmpp4r-simple'
-require 'ruby-debug'
 
 module Integrity
   class Notifier
