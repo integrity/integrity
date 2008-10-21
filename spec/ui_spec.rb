@@ -18,7 +18,7 @@ describe 'Web UI' do
       :destroy => nil,
       :errors => stub("errors", :on => nil),
       :notifies? => false,
-      :setup_notifiers => nil
+      :enable_notifiers => nil
     }.merge(messages)
 
     @project ||= stub("project", messages)
@@ -223,9 +223,9 @@ describe 'Web UI' do
       location.should == "/integrity"
     end
     
-    it "should setup the notifiers" do
+    it "should enable the notifiers" do
       mock_project.stub!(:save).and_return(true)
-      mock_project.should_receive(:setup_notifiers)
+      mock_project.should_receive(:enable_notifiers)
       post_it "/"
     end
 
@@ -412,9 +412,9 @@ describe 'Web UI' do
       status.should == 200
     end
 
-    it "should setup the notifiers" do
+    it "should enable the notifiers" do
       mock_project.stub!(:update_attributes).and_return(true)
-      mock_project.should_receive(:setup_notifiers)
+      mock_project.should_receive(:enable_notifiers)
       put_it "/integrity"
     end
     

@@ -17,17 +17,10 @@ module Integrity
       end
     end
     
-    def setup(list, config)
+    def self.enable_notifiers(project, enabled, config={})
       all.destroy!
-      
-      list = case list
-        when Array then list
-        when NilClass then []
-        else [list]
-      end
-      
-      list.each do |name|
-        create! :name => name, :config => config[name]
+      list_of_enabled_notifiers(enabled).each do |name|
+        create! :project_id => project, :name => name, :config => config[name]
       end
     end
     
@@ -39,6 +32,14 @@ module Integrity
       
       def to_const
         self.class.module_eval(name)
+      end
+      
+      def self.list_of_enabled_notifiers(names)
+        case names
+          when Array then names
+          when NilClass then []
+          else [names]
+        end
       end
   end
 end

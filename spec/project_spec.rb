@@ -115,7 +115,7 @@ describe Integrity::Project do
   describe 'When building it' do
     before(:each) do
       @uri = Addressable::URI.parse('git://github.com/foca/integrity.git')
-      @project = Integrity::Project.new(:uri => @uri, :branch  => 'production', :command  => 'rake spec')
+      @project = Integrity::Project.new(:uri => @uri, :branch  => 'production', :command  => 'rake spec', :send_notifications => nil)
       @builder = mock('Builder', :build => true)
       Integrity::Builder.stub!(:new).and_return(@builder)
     end
@@ -159,6 +159,11 @@ describe Integrity::Project do
         @project.build
         @project.should_not be_building
       }.should raise_error(RuntimeError)
+    end
+    
+    it "should deliver the corresponding notifications after building" do
+      @project.should_receive(:send_notifications)
+      @project.build
     end
   end
 
@@ -228,6 +233,30 @@ describe Integrity::Project do
     it "should return an empty hash if the notifier was not registered for the project" do
       class Integrity::Notifier::Twitter; end # we don't care if the class actually exists or does anything
       @project.config_for(Integrity::Notifier::Twitter).should == {}
+    end
+  end
+  
+  describe "Sending notifications" do
+    def mock_build
+      @build ||= mock("build")
+    end
+    
+    before do
+      @project.update_attributes(:name => "Integrity", :uri => "git://github.com/foca/integrity.git")
+      @email_notifier = @project.notifiers.create(:name => "Email")
+      @email_notifier.stub!(:notify_of_build)
+      @project.stub!(:notifiers).and_return([@email_notifier])
+    end
+    
+    it "should iterate over the list of notifiers" do
+      @project.notifiers.should_receive(:each)
+      @project.send(:send_notifications)
+    end
+    
+    it "should call #notify_of_build on each notifier" do
+      @project.stub!(:last_build).and_return(mock_build)
+      @email_notifier.should_receive(:notify_of_build).with(mock_build)
+      @project.send(:send_notifications)
     end
   end
 end

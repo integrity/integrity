@@ -3,14 +3,17 @@ require File.dirname(__FILE__) + "/spec_helper"
 describe Integrity::Notifier do
   def valid_attributes(attributes={})
     { :name => "Email",
-      :project_id => 1,
       :config => { :to => "to@example.com", :from => "from@example.com",
                    :host => "smtp.example.com" } 
       }.merge(attributes)
   end
   
   def sample_notifier(attributes={})
-    @notifier ||= Integrity::Notifier.new valid_attributes(attributes)
+    @notifier ||= sample_project.notifiers.create(valid_attributes(attributes))
+  end
+  
+  def sample_project
+    @project ||= Integrity::Project.create(:name => "Blah", :uri => "blah.blah")
   end
   
   describe "configuring a notifier" do
@@ -24,6 +27,38 @@ describe Integrity::Notifier do
   end
   
   describe "getting the list of existent notifiers" do
-    #Integrity::Notifier.stub!(:constants).and_return []
+    it "should list the Email notifier" do
+      Integrity::Notifier.available.should include(Integrity::Notifier::Email)
+    end
+  end
+  
+  describe "setting up a list of notifiers for a project" do
+    it "should create a notifier per item passed" do
+      lambda {
+        sample_project.enable_notifiers(["Cuack", "Test"], "Cuack" => { "foo" => "bar"},
+                                                           "Test" => { "bar" => "baz "},
+                                                           "Unavailable" => { "baz" => "quux" })
+      }.should change(Integrity::Notifier, :count).by(2)
+    end
+    
+    it "should do nothing if passing nil as the list of enabled notifiers" do
+      lambda {
+        sample_project.enable_notifiers(nil, {})
+      }.should_not change(Integrity::Notifier, :count)
+    end
+    
+    it "should assume you're passing the notifier name if it's not an array or nil" do
+      lambda {
+        sample_project.enable_notifiers("Blah", "Blah" => { "foo" => "bar" })
+      }.should change(Integrity::Notifier, :count).by(1)
+    end
+  end
+  
+  describe "Notifying the world of a build" do
+    it "should delegate to the notifier class" do
+      build = mock("build")
+      Integrity::Notifier::Email.should_receive(:notify_of_build).with(build, sample_notifier.config)
+      sample_notifier.notify_of_build(build)
+    end
   end
 end

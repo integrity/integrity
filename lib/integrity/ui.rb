@@ -48,7 +48,7 @@ post "/" do
   
   @project = Project.new(params[:project_data])
   if @project.save
-    @project.notifiers.setup(params["enabled_notifiers[]"], params["notifiers"])
+    @project.enable_notifiers(params["enabled_notifiers[]"], params["notifiers"])
     redirect project_url(@project)
   else
     show :new, :title => ["projects", "new project"]
@@ -64,7 +64,7 @@ put "/:project" do
   login_required
   
   if current_project.update_attributes(params[:project_data])
-    current_project.notifiers.setup(params["enabled_notifiers[]"], params["notifiers"])
+    current_project.enable_notifiers(params["enabled_notifiers[]"], params["notifiers"])
     redirect project_url(current_project)
   else
     show :new, :title => ["projects", current_project.permalink, "edit"]

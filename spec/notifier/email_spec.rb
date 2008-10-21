@@ -105,13 +105,13 @@ describe Integrity::Notifier::Email do
   describe "building the email" do
     def notifier_config
       @config ||= {
-        :to => "destination@example.com", 
-        :from => "integrity@me.com", 
-        :host => "smtp.example.com", 
-        :port => "25", 
-        :user => "blah", 
-        :pass => "blah", 
-        :auth => "plain"
+        "to" => "destination@example.com", 
+        "from" => "integrity@me.com", 
+        "host" => "smtp.example.com", 
+        "port" => "25", 
+        "user" => "blah", 
+        "pass" => "blah", 
+        "auth" => "plain"
       }
     end
     

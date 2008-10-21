@@ -27,8 +27,8 @@ module Integrity
       Builder.new(self).build(commit_identifier)
     ensure
       update_attributes(:building => false)
+      send_notifications
     end
-    after :build, :send_notifications
 
     def last_build
       builds.last
@@ -50,6 +50,10 @@ module Integrity
     
     def notifies?(notifier)
       !notifiers.first(:name => notifier.to_s.split(/::/).last).blank?
+    end
+    
+    def enable_notifiers(*args)
+      Notifier.enable_notifiers(id, *args)
     end
     
     private
