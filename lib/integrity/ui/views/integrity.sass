@@ -229,8 +229,11 @@ a
       :line-height 1.2
       :font-weight bold
       :display block
-
-
+      &.success
+        :color = !success_color
+      &.failed
+        :color = !failed_color
+  
   #previous_builds
     li
       a

@@ -39,6 +39,10 @@ module Integrity
       builds.all(:order => [:created_at.desc], :offset => 1, :limit => builds.count - 1)
     end
 
+    def status
+      last_build && last_build.status
+    end
+
     def public=(flag)
       attribute_set(:public, !!flag)
     end

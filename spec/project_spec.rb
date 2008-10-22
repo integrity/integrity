@@ -199,6 +199,19 @@ describe Integrity::Project do
     end
   end
 
+  describe "Determining its status" do
+    it "should return the status of its last build" do
+      build = mock('build', :status => :success)
+      @project.stub!(:last_build).and_return(build)
+      @project.status.should == :success
+    end
+
+    it "should return nil if it has never been built" do
+      @project.stub!(:last_build).and_return(nil)
+      @project.status.should be_nil
+    end
+  end
+  
   describe "Getting destroyed" do
     before do
       @builder = mock("Builder", :delete_code => true)

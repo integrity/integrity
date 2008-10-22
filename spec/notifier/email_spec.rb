@@ -8,7 +8,7 @@ describe Integrity::Notifier::Email do
   def klass
     Integrity::Notifier::Email
   end
-  
+
   describe "notifying the world of a build" do
     before { klass.stub!(:new).and_return(notifier) }
     
@@ -118,6 +118,7 @@ describe Integrity::Notifier::Email do
     before do
       @email = stub("email", :deliver! => true)
       @mailer = Integrity::Notifier::Email.new(mock_build, notifier_config)
+      Integrity.stub!(:config).and_return(:base_url => 'http://integrityapp.com:7654')
       Sinatra::Mailer::Email.stub!(:new).and_return(@email)
     end
     
@@ -150,8 +151,16 @@ describe Integrity::Notifier::Email do
         @mailer.body.should =~ /Commit Author: Nicolás Sanguinetti/
       end
 
+      it "should link to the build using the base URL configured in the options" do
+        @mailer.body.should =~ %r|http://integrityapp\.com:7654/integrity/builds/e7e02b|
+      end
+      
       it "should include the build output" do
         @mailer.body.should =~ /the output/
+      end
+
+      it "should strip ANSI color codes from the build output" do
+        @mailer.body.should_not =~ /\e\[31m/
       end
     end
 
