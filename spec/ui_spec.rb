@@ -151,7 +151,7 @@ describe 'Web UI' do
 
       it "should mark projects being built as such" do
         get_it "/"
-        body.should have_tag('#projects li a', /building/, :count => 1)
+        body.should have_tag('#projects li.building a', :count => 1)
       end
 
       it "should have a link to add a new project" do
