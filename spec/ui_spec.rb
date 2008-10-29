@@ -59,36 +59,30 @@ describe 'Web UI' do
 
   after(:each) { @project = nil }
 
-  describe 'In general' do
-    before do
-      @context = Sinatra::EventContext.new(stub("request"), stub("response", :body= => nil), stub("route params"))
+  describe 'With basic auth enabled' do
+    before(:each) do
+      enable_basic_auth!
     end
 
-    describe 'With basic auth enabled' do
-      before(:each) do
-        enable_basic_auth!
-      end
-
-      it 'should propose to login if not logged in' do
-        get_it '/'
-        @response.should have_tag('#footer a[@href="/login"]', 'Log In')
-      end
-
-      it 'should say hello to the logged in user' do
-        get_it '/', :env => {'REMOTE_USER' => 'user'}
-        @response.should have_tag('strong', 'user')
-      end
+    it 'should propose to login if not logged in' do
+      get_it '/'
+      @response.should have_tag('#footer a[@href="/login"]', 'Log In')
     end
 
-    describe 'With basic auth disabled' do
-      before(:each) do
-        disable_basic_auth!
-      end
+    it 'should say hello to the logged in user' do
+      get_it '/', :env => {'REMOTE_USER' => 'user'}
+      @response.should have_tag('strong', 'user')
+    end
+  end
 
-      it 'should not display anything related to auth' do
-        get_it '/'
-        @response.should_not have_tag('#footer')
-      end
+  describe 'With basic auth disabled' do
+    before(:each) do
+      disable_basic_auth!
+    end
+
+    it 'should not display anything related to auth' do
+      get_it '/'
+      @response.should_not have_tag('#footer')
     end
   end
 
