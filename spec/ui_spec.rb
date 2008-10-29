@@ -369,6 +369,12 @@ describe 'Web UI' do
       status.should == 200
     end
 
+    it "should require authentication" do
+      enable_basic_auth!
+      get_it "/integrity/edit"
+      status.should == 401
+    end
+
     it 'should be 404 if unknown project' do
       Project.stub!(:first).and_return(nil)
       get_it '/integrity/edit'
@@ -388,10 +394,10 @@ describe 'Web UI' do
       end
     end
 
-    it "should require authentication" do
-      enable_basic_auth!
-      get_it "/integrity/edit"
-      status.should == 401
+    it 'should display the push URL' do
+      get_it '/integrity/edit'
+      body.should have_tag('h2', 'Push URL')
+      body.should have_tag('input#push_url[@value="/integrity/push"]')
     end
   end
 
