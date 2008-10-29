@@ -203,7 +203,10 @@ describe 'Web UI' do
   end
 
   describe "POST /" do
-    before { Project.stub!(:new).and_return(mock_project) }
+    before do
+      Integrity.stub!(:config).and_return(:base_uri => 'http://foo.org')
+      Project.stub!(:new).and_return(mock_project)
+    end
 
     it "should re-render the 'new' view when the project has invalid attributes" do
       mock_project.stub!(:save).and_return(false)
@@ -356,7 +359,10 @@ describe 'Web UI' do
   end
 
   describe "GET /:project/edit" do
-    before { Project.stub!(:first).with(:permalink => "integrity").and_return mock_project }
+    before do
+      Integrity.stub!(:config).and_return(:base_uri => 'http://foo.org')
+      Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
+    end
 
     it "should be success" do
       get_it "/integrity/edit"
@@ -391,12 +397,13 @@ describe 'Web UI' do
     it 'should display the push URL' do
       get_it '/integrity/edit'
       body.should have_tag('h2', 'Push URL')
-      body.should have_tag('input#push_url[@value="/integrity/push"]')
+      body.should have_tag('input#push_url[@value="http://foo.org/integrity/push"]')
     end
   end
 
   describe "PUT /:project" do
     before do
+      Integrity.stub!(:config).and_return(:base_uri => 'http://foo.org')
       Project.stub!(:first).with(:permalink => "integrity").and_return mock_project
     end
 
@@ -801,6 +808,13 @@ describe 'Web UI' do
 
       it "should add whatever other arguments are passed as tokens in the path" do
         @context.project_url(mock_project, :build, :blah).should == "/integrity/build/blah"
+      end
+    end
+
+    describe '#push_url_for' do
+      it 'should receive a project and return its github push url using :base_uri option' do
+        Integrity.config.should_receive(:[]).with(:base_uri).and_return('http://foo.org')
+        @context.push_url_for(mock_project).should == 'http://foo.org/integrity/push'
       end
     end
 

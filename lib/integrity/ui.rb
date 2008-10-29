@@ -186,6 +186,10 @@ helpers do
     "/" << [project.permalink, *path].join("/")
   end
 
+  def push_url_for(project)
+    Addressable::URI.parse(Integrity.config[:base_uri]).join("#{project_url(project)}/push").to_s
+  end
+
   def build_url(build)
     "/#{build.project.permalink}/builds/#{build.commit_identifier}"
   end
