@@ -115,7 +115,7 @@ describe Integrity::Project do
   describe 'When building it' do
     before(:each) do
       @uri = Addressable::URI.parse('git://github.com/foca/integrity.git')
-      @project = Integrity::Project.new(:uri => @uri, :branch  => 'production', :command  => 'rake spec', :send_notifications => nil)
+      @project = Integrity::Project.new(:uri => @uri, :branch  => 'production', :command  => 'rake spec')
       @builder = mock('Builder', :build => true)
       Integrity::Builder.stub!(:new).and_return(@builder)
     end
