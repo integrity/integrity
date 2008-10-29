@@ -40,8 +40,9 @@
 - unless @project.new_record?
   %h2 Push URL
   %p
-    You can use this Push URL with your GitHub project to enable automated continuous integration
-  %input.text#push_url{ :name => "push_url", :type => "text", :value => push_url_for(@project), :disabled => :disabled }
+    You can use this Push URL with your GitHub project to enable automated continuous integration.
+  %p
+    %code#push_url= push_url_for(@project)
 
   %form{ :method => "post", :action => project_url(@project) }
     .hidden

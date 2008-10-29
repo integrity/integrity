@@ -397,7 +397,7 @@ describe 'Web UI' do
     it 'should display the push URL' do
       get_it '/integrity/edit'
       body.should have_tag('h2', 'Push URL')
-      body.should have_tag('input#push_url[@value="http://foo.org/integrity/push"]')
+      body.should have_tag('code#push_url', 'http://foo.org/integrity/push')
     end
   end
 
