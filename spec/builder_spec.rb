@@ -134,6 +134,7 @@ describe Integrity::Builder do
       @pipe = mock("pipe", :read => "output and errors")
       IO.stub!(:popen).and_yield(@pipe)
       $?.stub!(:success?).and_return(true)
+      allow_message_expectations_on_nil
     end
 
     it "should run the build_script" do
