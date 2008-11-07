@@ -180,6 +180,13 @@ describe Integrity::SCM::Git do
         @git.checkout('origin/HEAD')
       end
     end
+    
+    describe "Getting the commit identifier from a given treeish" do
+      it "should ask git about it" do
+        @git.should_receive(:`).with('cd /var/integrity/exports/foca-integrity && git show -s --pretty=format:%H 7e4f3623').and_return("7e4f36231776ea4401b6e385df5f43c11633d59f\n")
+        @git.commit_identifier('7e4f3623')
+      end
+    end
   end
   
   describe "mapping a repo url to a working tree path (from the git url)" do
@@ -187,5 +194,5 @@ describe Integrity::SCM::Git do
       Integrity::SCM::Git::URI.should_receive(:new).with("git://foo.git").and_return(stub("blah", :working_tree_path => nil))
       Integrity::SCM::Git.working_tree_path("git://foo.git")
     end
-  end
+  end  
 end
