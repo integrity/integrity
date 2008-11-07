@@ -10,3 +10,6 @@
 [submodule "vendor/mailfactory"]
 	path = vendor/mailfactory
 	url = git://github.com/tmm1/mailfactory.git
+[submodule "vendor/xmpp4r-simple"]
+	path = vendor/xmpp4r-simple
+	url = git://github.com/blaine/xmpp4r-simple.git
