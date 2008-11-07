@@ -33,7 +33,7 @@ module Integrity
       end
 
       def run_build_script
-        IO.popen "(#{build_script}) 2>&1", "r" do |pipe|
+        IO.popen "(cd #{@scm.working_directory} && #{build_script}) 2>&1", "r" do |pipe|
           @build.output = pipe.read
         end
         @build.successful = $?.success?

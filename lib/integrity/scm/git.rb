@@ -14,20 +14,20 @@ module Integrity
         @branch = branch.to_s
         @working_directory = working_directory
       end
-
-      def with_revision(revision, &block)
+      
+      def with_revision(revision)
         fetch_code
         checkout(revision)
-        chdir(&block)
+        yield
       end
 
       def commit_identifier(sha1)
-        chdir { `git show -s --pretty=format:%H #{sha1}`.chomp }
+        `cd #{working_directory} && git show -s --pretty=format:%H #{sha1}`.chomp
       end
 
       def commit_metadata(sha1)
         format  = %Q(---%n:author: %an <%ae>%n:message: >-%n  %s%n:date: %ci%n)
-        chdir { YAML.load(`git show -s --pretty=format:"#{format}" #{sha1}`) }
+        YAML.load(`cd #{working_directory} && git show -s --pretty=format:"#{format}" #{sha1}`)
       end
       
       private
@@ -37,11 +37,7 @@ module Integrity
           checkout unless on_branch?
           pull
         end
-
-        def chdir(&in_working_copy)
-          Dir.chdir(working_directory, &in_working_copy)
-        end
-
+    
         def clone
           `git clone #{uri} #{working_directory}`
         end
@@ -52,18 +48,16 @@ module Integrity
             when local_branches.include?(branch) then branch
             else                                      "-b #{branch} origin/#{branch}"
           end
-
-          chdir { `git checkout #{strategy}` }
+          
+          `cd #{working_directory} && git checkout #{strategy}`
         end
 
         def pull
-          chdir { `git pull` }
+          `cd #{working_directory} && git pull`
         end
 
         def local_branches
-          chdir do
-            `git branch`.split("\n").map {|b| b.delete("*").strip }
-          end
+          `cd #{working_directory} && git branch`.split("\n").map {|b| b.delete("*").strip }
         end
 
         def cloned?
@@ -71,7 +65,7 @@ module Integrity
         end
 
         def on_branch?
-          chdir { File.basename(`git symbolic-ref HEAD`).chomp == branch }
+          File.basename(`cd #{working_directory} && git symbolic-ref HEAD`).chomp == branch
         end
     end
   end

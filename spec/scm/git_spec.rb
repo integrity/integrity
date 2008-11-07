@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe Integrity::SCM::Git do
   before do
-    Integrity::SCM::Git.class_eval { public :fetch_code, :chdir, :clone, :checkout, :pull, :local_branches, :cloned?, :on_branch? }
+    Integrity::SCM::Git.class_eval { public :fetch_code, :clone, :checkout, :pull, :local_branches, :cloned?, :on_branch? }
     @git = Integrity::SCM::Git.new("git://github.com/foca/integrity.git", "master", "/var/integrity/exports/foca-integrity")
   end
 
@@ -25,14 +25,12 @@ describe Integrity::SCM::Git do
     end
 
     it "should know if a checkout is on the current branch by asking git the branch" do
-      @git.stub!(:chdir).and_yield
-      @git.should_receive(:`).with("git symbolic-ref HEAD").and_return("refs/heads/master\n")
+      @git.should_receive(:`).with("cd /var/integrity/exports/foca-integrity && git symbolic-ref HEAD").and_return("refs/heads/master\n")
       @git.should be_on_branch
     end
 
     it "should tell you if it's not in the desired branch" do
-      @git.stub!(:chdir).and_yield
-      @git.should_receive(:`).with("git symbolic-ref HEAD").and_return("refs/heads/other_branch\n")
+      @git.should_receive(:`).with("cd /var/integrity/exports/foca-integrity && git symbolic-ref HEAD").and_return("refs/heads/other_branch\n")
       @git.should_not be_on_branch
     end
   end
@@ -73,21 +71,12 @@ describe Integrity::SCM::Git do
       @git.fetch_code
     end
   end
-
-  describe "Changing the current directory to that of the checkout" do
-    it "should let ruby-git handle it by forwarding the call" do
-      block = lambda { "cuack" }
-      Dir.should_receive(:chdir).with("/var/integrity/exports/foca-integrity", &block)
-      @git.chdir(&block)
-    end
-  end
-
+  
   describe 'Running code in a specific context using #with_revision' do
     before(:each) do
       @block = lambda { 'lambda the ultimate' }
       @git.stub!(:fetch_code)
       @git.stub!(:checkout)
-      @git.stub!(:chdir).with(&@block)
     end
 
     it "should fetch the latest code" do
@@ -99,11 +88,6 @@ describe Integrity::SCM::Git do
       @git.should_receive(:checkout).with('4d0cfafd569ef60d0c578bf8a9d51f9582612f03')
       @git.with_revision('4d0cfafd569ef60d0c578bf8a9d51f9582612f03', &@block)
     end
-
-    it "should run the block in the working copy directory" do
-      @git.should_receive(:chdir).with(&@block).and_yield
-      @git.with_revision('4d0cfafd569ef60d0c578bf8a9d51f9582612f03', &@block)
-    end
   end
 
   describe "Getting information about a commit" do
@@ -112,17 +96,11 @@ describe Integrity::SCM::Git do
                      ':author: Nicolás Sanguinetti <contacto@nicolassanguinetti.info>',
                      ':message: >-',
                      '  A beautiful commit'] * "\n"
-      @git.stub!(:chdir).and_yield
       @git.stub!(:`).and_return @serialized
     end
 
-    it "should switch to the project's directory" do
-      @git.should_receive(:chdir).and_yield
-      @git.commit_metadata("HEAD")
-    end
-
     it "should ask git for the commit" do
-      @git.should_receive(:`).with(/^git show -s.*HEAD/).and_return(@serialized)
+      @git.should_receive(:`).with(/^cd \/var\/integrity\/exports\/foca-integrity && git show -s.*HEAD/).and_return(@serialized)
       @git.commit_metadata("HEAD")
     end
 
@@ -162,8 +140,7 @@ describe Integrity::SCM::Git do
     end
 
     it "should return an array of branch names" do
-      @git.stub!(:chdir).and_yield
-      @git.stub!(:`).with("git branch").and_return(branches)
+      @git.stub!(:`).with("cd /var/integrity/exports/foca-integrity && git branch").and_return(branches)
       @git.local_branches.should == ["master", "other", "yet_another"]
     end
   end
@@ -175,34 +152,31 @@ describe Integrity::SCM::Git do
     end
 
     it "should switch dirs to the repo's and call git-pull when pulling" do
-      @git.should_receive(:chdir).and_yield
-      @git.should_receive(:`).with("git pull")
+      @git.should_receive(:`).with("cd /var/integrity/exports/foca-integrity && git pull")
       @git.pull
     end
 
     describe "(checking out code)" do
-      before { @git.stub!(:chdir).and_yield }
-
       it "should check out the branch locally if it's already available" do
         @git.stub!(:local_branches).and_return(["master"])
-        @git.should_receive(:`).with("git checkout master")
+        @git.should_receive(:`).with("cd /var/integrity/exports/foca-integrity && git checkout master")
         @git.checkout
       end
 
       it "should create a new branch that tracks an external branch if the branch isn't local" do
         @git.stub!(:local_branches).and_return(["master"])
         @git.stub!(:branch).and_return("redux")
-        @git.should_receive(:`).with("git checkout -b redux origin/redux")
+        @git.should_receive(:`).with("cd /var/integrity/exports/foca-integrity && git checkout -b redux origin/redux")
         @git.checkout
       end
 
       it 'should checkout the given commit' do
-        @git.should_receive(:`).with('git checkout 7e4f36231776ea4401b6e385df5f43c11633d59f')
+        @git.should_receive(:`).with('cd /var/integrity/exports/foca-integrity && git checkout 7e4f36231776ea4401b6e385df5f43c11633d59f')
         @git.checkout('7e4f36231776ea4401b6e385df5f43c11633d59f')
       end
 
       it 'should checkout the given treeish' do
-        @git.should_receive(:`).with('git checkout origin/HEAD')
+        @git.should_receive(:`).with('cd /var/integrity/exports/foca-integrity && git checkout origin/HEAD')
         @git.checkout('origin/HEAD')
       end
     end

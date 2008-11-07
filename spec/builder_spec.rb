@@ -35,6 +35,7 @@ describe Integrity::Builder do
         :message => 'A commit message',
         :date    => Time.parse('Mon Jul 21 15:24:34 2008 +0200')
       )
+      scm.stub!(:working_directory).and_return('/var/integrity/exports/foca-integrity')
 
       scm
     end
@@ -139,7 +140,7 @@ describe Integrity::Builder do
     end
 
     it "should run the build_script" do
-      IO.should_receive(:popen).with("(rake) 2>&1", "r")
+      IO.should_receive(:popen).with("(cd /var/integrity/exports/foca-integrity && rake) 2>&1", "r")
       @builder.run_build_script
     end
 
