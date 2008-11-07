@@ -1,4 +1,5 @@
 require File.dirname(__FILE__) + "/../lib/integrity"
+$:.unshift Integrity.root / "vendor/rspec/lib"
 $:.unshift Integrity.root / "vendor/rspec_hpricot_matchers/lib"
 
 require 'spec'
