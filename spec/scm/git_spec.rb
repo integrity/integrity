@@ -207,4 +207,11 @@ describe Integrity::SCM::Git do
       end
     end
   end
+  
+  describe "mapping a repo url to a working tree path (from the git url)" do
+    it "should delegate to Git::URI" do
+      Integrity::SCM::Git::URI.should_receive(:new).with("git://foo.git").and_return(stub("blah", :working_tree_path => nil))
+      Integrity::SCM::Git.working_tree_path("git://foo.git")
+    end
+  end
 end

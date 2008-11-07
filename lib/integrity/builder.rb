@@ -29,8 +29,7 @@ module Integrity
 
     private
       def export_directory
-        Integrity.config[:export_directory] /
-          @uri.path[1..-1].sub('/', '-').chomp(@uri.extname) + "-#{@branch}"
+        Integrity.config[:export_directory] / "#{SCM.working_tree_path(@uri)}-#{@branch}"
       end
 
       def run_build_script

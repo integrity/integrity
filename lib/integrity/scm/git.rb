@@ -1,7 +1,13 @@
 module Integrity
   module SCM
     class Git
+      require File.dirname(__FILE__) / "git/uri"
+
       attr_reader :uri, :branch, :working_directory
+
+      def self.working_tree_path(uri)
+        Git::URI.new(uri).working_tree_path
+      end
 
       def initialize(uri, branch, working_directory)
         @uri = uri.to_s
@@ -23,7 +29,7 @@ module Integrity
         format  = %Q(---%n:author: %an <%ae>%n:message: >-%n  %s%n:date: %ci%n)
         chdir { YAML.load(`git show -s --pretty=format:"#{format}" #{sha1}`) }
       end
-
+      
       private
 
         def fetch_code
