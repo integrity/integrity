@@ -31,34 +31,41 @@ describe Integrity::Notifier::Jabber do
   describe "generating a form for configuration" do
     describe "with a field for the recipients" do
       it "should have the proper name, id and label" do
+        pending
         the_form.should have_textfield("jabber_notifier_recipients").named("notifiers[Jabber][recipients]").with_label("Recipients").with_value(nil)
       end
       
       it "should use the config's 'to' value if available" do
+        pending
         the_form(:config => { 'recipients' => 'test@example.com' }).should have_textfield("jabber_notifier_recipients").with_value("test@example.com")
       end
     end
     
     it "should have a subtitle 'Jabber Server Configuration'" do
+      pending
       the_form.should have_tag("h3", "Jabber Server Configuration")
     end
     
     describe "with a field for the user" do
       it "should have the proper name, id and label" do
+        pending
         the_form.should have_textfield("jabber_notifier_user").named("notifiers[Jabber][user]").with_label("User").with_value(nil)
       end
 
       it "should use the config's 'to' value if available" do
+        pending
         the_form(:config => { 'user' => 'test@morejabber.com' }).should have_textfield("jabber_notifier_user").with_value("test@morejabber.com")
       end
     end
 
     describe "with a field for the pass" do
       it "should have the proper name, id and label" do
+        pending
         the_form.should have_textfield("jabber_notifier_pass").named("notifiers[Jabber][pass]").with_label("Pass").with_value(nil)
       end
 
       it "should use the config's 'to' value if available" do
+        pending
         the_form(:config => { 'pass' => '42' }).should have_textfield("jabber_notifier_pass").with_value("42")
       end
     end
