@@ -1,9 +1,6 @@
 [submodule "vendor/rspec_hpricot_matchers"]
 	path = vendor/rspec_hpricot_matchers
 	url = git://github.com/pd/rspec_hpricot_matchers.git
-[submodule "vendor/sinatra-mailer"]
-	path = vendor/sinatra-mailer
-	url = git://github.com/foca/sinatra-mailer.git
 [submodule "vendor/smtp-tls"]
 	path = vendor/smtp-tls
 	url = git://github.com/ambethia/smtp-tls.git
@@ -13,3 +10,6 @@
 [submodule "vendor/xmpp4r-simple"]
 	path = vendor/xmpp4r-simple
 	url = git://github.com/blaine/xmpp4r-simple.git
+[submodule "vendor/sinatra-diddies"]
+	path = vendor/sinatra-diddies
+	url = git://github.com/foca/sinatra-diddies.git

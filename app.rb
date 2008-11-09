@@ -1,7 +1,7 @@
-require File.dirname(__FILE__) + "/lib/integrity"
-require "sinatra"
-require "authorization"
-require "hacks"
+require File.dirname(__FILE__) + '/lib/integrity'
+require 'sinatra'
+require 'diddies/authorization'
+require 'hacks'
 
 set :root,   Integrity.root
 set :public, Integrity.root / "public"

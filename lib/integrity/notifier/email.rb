@@ -1,5 +1,5 @@
-require "smtp-tls"
-require "mailer"
+require 'smtp-tls'
+require 'diddies/mailer'
 
 module Integrity
   class Notifier
