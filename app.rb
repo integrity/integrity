@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/lib/integrity'
 require 'sinatra'
-require 'diddies/authorization'
+require 'diddies'
 require 'hacks'
 
 set :root,   Integrity.root

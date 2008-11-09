@@ -20,7 +20,7 @@ Getting Started
 
 Clone the source from our [git repository][repo]:
 
-    sudo gem install dm-core dm-more data_objects do_sqlite3 sinatra json haml
+    gem install dm-core dm-more data_objects do_sqlite3 sinatra json haml sr-sinatra-diddies
     git clone git://github.com/foca/integrity.git
     cd integrity
     git submodule update --init
