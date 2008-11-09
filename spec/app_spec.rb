@@ -1,60 +1,16 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
-describe 'Web UI' do
-  def mock_project(messages={})
-    messages = {
-      :name => "Integrity",
-      :permalink => "integrity",
-      :new_record? => false,
-      :uri => "git://github.com/foca/integrity.git",
-      :branch => "master",
-      :command => "rake",
-      :public? => true,
-      :builds => [],
-      :config_for => {},
-      :build => nil,
-      :update_attributes => true,
-      :save => true,
-      :destroy => nil,
-      :errors => stub("errors", :on => nil),
-      :notifies? => false,
-      :enable_notifiers => nil
-    }.merge(messages)
+require 'sinatra'
+require 'sinatra/test/rspec'
+require Integrity.root / 'app'
 
-    @project ||= stub("project", messages)
-  end
 
-  def mock_build(messages={})
-    messages = {
-      :status => :success,
-      :successful? => true,
-      :output => 'output',
-      :project => @project,
-      :commit_identifier => '9f6302002d2259c05a64767e0dedb15d280a4848',
-      :commit_author => mock("author",
-        :name  => 'Nicolás Sanguinetti',
-        :email => 'contacto@nicolassanguinetti.info',
-        :full  =>'Nicolás Sanguinetti <contacto@nicolassanguinetti.info>'
-      ),
-      :commited_at => Time.mktime(2008, 7, 24, 17, 15),
-      :commit_message => "Add Object#tap for versions of ruby that don't have it"
-    }.merge(messages)
-    messages[:short_commit_identifier] = messages[:commit_identifier][0..5]
-    mock('build', messages)
-  end
-
-  def disable_basic_auth!
-    Integrity.stub!(:config).and_return(:use_basic_auth => false)
-  end
-
-  def enable_basic_auth!
-    Integrity.stub!(:config).and_return(:use_basic_auth => true, :admin_username => 'user', :admin_password => 'pass')
-  end
+describe 'Web App' do
+  include AppSpecHelper
 
   before(:each) do
     Integrity.stub!(:new)
     disable_basic_auth!
-    require Integrity.root / "app"
   end
 
   after(:each) { @project = nil }

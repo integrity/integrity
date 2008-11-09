@@ -1,6 +1,9 @@
 require File.dirname(__FILE__) + "/spec_helper"
 
 describe Integrity::Notifier do
+  include DatabaseSpecHelper
+  include NotifierSpecHelper
+
   def valid_attributes(attributes={})
     { :name => "Email",
       :config => { :to => "to@example.com", :from => "from@example.com",

@@ -1,6 +1,8 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 describe Integrity::Build do
+  include DatabaseSpecHelper
+
   def valid_attributes
     {
       :commit_identifier => '0367ee0566843edcf871a86f0eb23d90c4ee1d14',

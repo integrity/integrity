@@ -1,6 +1,8 @@
 require File.dirname(__FILE__) + "/../spec_helper"
 
 describe Integrity::Notifier::Email do
+  # order matters!
+  include AppSpecHelper
   include NotifierSpecHelper
   
   it_should_behave_like "A notifier"
@@ -13,7 +15,7 @@ describe Integrity::Notifier::Email do
     before { klass.stub!(:new).and_return(notifier) }
     
     it "should instantiate a notifier with the given build and config" do
-      klass.should_receive(:new).with(mock_build, anything).and_return(notifier)
+      klass.should_receive(:new).with(mock_build, {}).and_return(notifier)
       klass.notify_of_build(mock_build, notifier_config)
     end
   

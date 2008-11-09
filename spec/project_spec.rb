@@ -1,6 +1,8 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 describe Integrity::Project do
+  include DatabaseSpecHelper
+
   before { @project = Integrity::Project.new }
 
   def valid_attributes(attributes={})
