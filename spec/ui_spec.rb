@@ -54,7 +54,7 @@ describe 'Web UI' do
   before(:each) do
     Integrity.stub!(:new)
     disable_basic_auth!
-    require Integrity.root / "lib" / "integrity" / "ui"
+    require Integrity.root / "integrity"
   end
 
   after(:each) { @project = nil }

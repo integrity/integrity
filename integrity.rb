@@ -1,9 +1,11 @@
+require File.dirname(__FILE__) + "/lib/integrity"
+require "sinatra"
 require "authorization"
 require "hacks"
 
-set :root,   Integrity.root / "lib/integrity/ui"
-set :public, Integrity.root / "lib/integrity/ui/public"
-set :views,  Integrity.root / "lib/integrity/ui/views"
+set :root,   Integrity.root
+set :public, Integrity.root / "public"
+set :views,  Integrity.root / "views"
 
 enable :sessions
 
