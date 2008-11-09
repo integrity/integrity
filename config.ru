@@ -8,5 +8,5 @@ Sinatra::Application.default_options.merge!(
   :env  => :production
 )
  
-require File.dirname(__FILE__) / "integrity"
+require File.dirname(__FILE__) / "app"
 run Sinatra.application
