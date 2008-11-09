@@ -6,7 +6,7 @@ task :default => ["spec:coverage", "spec:coverage:verify"]
 
 # shared options between the spec and the spec:coverage tasks
 shared_spec_opts = lambda do |t|
-  t.spec_opts = ["--color", "--format", "specdoc"]
+  t.spec_opts = ["--color", "--format", "progress"]
   t.spec_files = Dir['spec/**/*_spec.rb'].sort
   t.libs = ['lib']
 end
