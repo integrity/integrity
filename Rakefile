@@ -47,6 +47,10 @@ end
 namespace :gem do  
   desc "Generate the gemspec at the root dir"
   task :gemspec do
+    files = `git ls-files`.split("\n").
+      reject {|f| f =~ %r(^spec) || f =~ %r(^vendor/rspec) || f =~ /^\.git/ }.
+      join("\n" + " " * 26)
+    
     gemspec = <<-GEM
 Gem::Specification.new do |s|
   s.name              = 'integrity'
@@ -60,14 +64,7 @@ Gem::Specification.new do |s|
   s.authors           = ['Nicolás Sanguinetti', 'Simon Rozet']
   s.has_rdoc          = false
   s.files             = %w(
-                          README.markdown
-                          Rakefile
-                          config.ru 
-                          config/config.sample.yml 
-                          config/thin.sample.yml
-                          app.rb
-                          log
-                          #{Dir.glob("{public,views,lib,vendor}/**/*").to_a.join("\n" + " " * 26)}
+                          #{files}
                         )
 
   s.add_dependency 'sinatra', ['>= 0.3.2']
@@ -79,7 +76,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'data_objects', ['>= 0.9.5']
   s.add_dependency 'do_sqlite3', ['>= 0.9.5']        
   s.add_dependency 'json'
-  s.add_dependency 'foca-sinatra-diddies'
+  s.add_dependency 'foca-sinatra-diddies', ['>= 0.0.2']
 end
     GEM
     
