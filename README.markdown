@@ -76,7 +76,23 @@ ensure the code coverage stays high.
 Thanks
 ======
 
-**Simon Rozet** [http://atonie.org/][sr], for implementation and ideas.
+Thanks to the fellowing people for theire feedbacks, ideas and patches :
+
+* [James Adam][james]
+* [Elliott Cable][ec]
+* [Corey Donohoe][atmos]
+* [Kyle Hargraves][kyle]
+* [Pier-Hugues Pellerin][ph]
+* [Simon Rozet][sr]
+* [Scott Taylor][scott]
+
+[james]: http://github.com/lazyatom
+[ec]: http://github.com/elliotcabble
+[atmos]: http://github.com/atmos
+[kyle]: http://github.com/pd
+[ph]: http://github.com/ph
+[sr]: http://purl.org/net/sr/
+[scott]: http://github.com/smtlaissezfaire
 
 License
 =======
