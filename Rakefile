@@ -70,20 +70,16 @@ Gem::Specification.new do |s|
                           #{Dir.glob("{public,views,lib,vendor}/**/*").to_a.join("\n" + " " * 26)}
                         )
 
-  s.add_runtime_dependency 'sinatra', ['>= 0.3.2']
-  s.add_runtime_dependency 'dm-core', ['>= 0.9.5']
-  s.add_runtime_dependency 'dm-validations', ['>= 0.9.5']
-  s.add_runtime_dependency 'dm-types', ['>= 0.9.5']
-  s.add_runtime_dependency 'dm-timestamps', ['>= 0.9.5']
-  s.add_runtime_dependency 'dm-aggregates', ['>= 0.9.5']
-  s.add_runtime_dependency 'data_objects', ['>= 0.9.5']
-  s.add_runtime_dependency 'do_sqlite3', ['>= 0.9.5']        
-  s.add_runtime_dependency 'json'
-  s.add_runtime_dependency 'foca-sinatra-diddies'
-  
-  s.add_development_dependency 'rspec', ['= 1.1.8']
-  s.add_development_dependency 'rcov'
-  s.add_development_dependency 'hpricot' # for html-related rspec matchers
+  s.add_dependency 'sinatra', ['>= 0.3.2']
+  s.add_dependency 'dm-core', ['>= 0.9.5']
+  s.add_dependency 'dm-validations', ['>= 0.9.5']
+  s.add_dependency 'dm-types', ['>= 0.9.5']
+  s.add_dependency 'dm-timestamps', ['>= 0.9.5']
+  s.add_dependency 'dm-aggregates', ['>= 0.9.5']
+  s.add_dependency 'data_objects', ['>= 0.9.5']
+  s.add_dependency 'do_sqlite3', ['>= 0.9.5']        
+  s.add_dependency 'json'
+  s.add_dependency 'foca-sinatra-diddies'
 end
     GEM
     
