@@ -20,14 +20,14 @@ Getting Started
 
 Clone the source from our [git repository][repo]:
 
-    gem install dm-core dm-more data_objects do_sqlite3 sinatra json haml xmpp4r-simple rcov hoe sr-sinatra-diddies
+    gem install dm-core dm-more data_objects do_sqlite3 bcrypt-ruby sinatra json haml xmpp4r-simple rcov hoe sr-sinatra-diddies --source=http://gems.github.com
     git clone git://github.com/foca/integrity.git
     cd integrity
     git submodule update --init
     cp config/config.sample.yml config/config.yml
     $EDITOR config/config.yml
     rake db:migrate
-    bin/integrity
+    ruby app.rb
 
 Now you can go to http://localhost:4567, add your first project, and enjoy
 safer coding, with integrity.
