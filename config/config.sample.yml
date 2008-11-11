@@ -1,4 +1,4 @@
-:base_url: http://localhost:4567
+:base_uri: http://localhost:4567
 :database_uri: sqlite3:///var/integrity.db
 :export_directory: /path/to/scm/exports
 :hash_admin_password: true
