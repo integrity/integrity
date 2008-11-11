@@ -3,7 +3,7 @@ require 'spec'
 
 module NotifierSpecHelper
   def self.included(mod)
-    mod.before(:each) { Integrity.stub!(:config).and_return(:base_url => "http://localhost:4567") }
+    mod.before(:each) { Integrity.stub!(:config).and_return(:base_uri => "http://localhost:4567") }
   end
   
   def mock_build(messages={})

@@ -119,7 +119,7 @@ describe Integrity::Notifier::Email do
     before do
       @email = stub("email", :deliver! => true)
       @mailer = Integrity::Notifier::Email.new(mock_build, notifier_config)
-      Integrity.stub!(:config).and_return(:base_url => 'http://integrityapp.com:7654')
+      Integrity.stub!(:config).and_return(:base_uri => 'http://integrityapp.com:7654')
       Sinatra::Mailer::Email.stub!(:new).and_return(@email)
     end
     

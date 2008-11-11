@@ -42,6 +42,7 @@ EOM
       end
       
       def build_url
+        raise if Integrity.config[:base_uri].nil?
         Integrity.config[:base_uri] / build.project.permalink / "builds" / build.commit_identifier
       end
 
