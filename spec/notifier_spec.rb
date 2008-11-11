@@ -30,6 +30,10 @@ describe Integrity::Notifier do
   end
   
   describe "getting the list of existent notifiers" do
+    it "should not list the Base notifier" do
+      Integrity::Notifier.available.should_not include(Integrity::Notifier::Base)
+    end
+    
     it "should list the Email notifier" do
       Integrity::Notifier.available.should include(Integrity::Notifier::Email)
     end

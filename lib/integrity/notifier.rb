@@ -12,9 +12,9 @@ module Integrity
     validates_present :project_id
     
     def self.available
-      constants.map {|name| const_get(name) }.select do |notifier|
+      @available ||= constants.map {|name| const_get(name) }.select do |notifier|
         notifier.respond_to?(:to_haml) && notifier.respond_to?(:notify_of_build)
-      end
+      end - [Notifier::Base]
     end
     
     def self.enable_notifiers(project, enabled, config={})
