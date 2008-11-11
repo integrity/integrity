@@ -44,4 +44,6 @@ module Integrity
   end
 end
 
+require File.dirname(__FILE__) / 'notifier' / 'base'
+
 Dir["#{File.dirname(__FILE__)}/notifier/*.rb"].each &method(:require)
