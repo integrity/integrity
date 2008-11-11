@@ -42,7 +42,7 @@ EOM
       end
       
       def build_url
-        Integrity.config[:base_url] / build.project.permalink / "builds" / build.commit_identifier
+        Integrity.config[:base_uri] / build.project.permalink / "builds" / build.commit_identifier
       end
 
       private
