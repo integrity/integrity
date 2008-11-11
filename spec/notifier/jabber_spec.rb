@@ -87,11 +87,11 @@ describe Integrity::Notifier::Jabber do
 
     describe 'the content of the message' do
      it "should include the commit message" do
-       @jabber_notifier.message.should =~ /Commit Message: the commit message/
+       @jabber_notifier.message.should =~ /Commit Message: 'the commit message'/
      end
 
      it "should include the commit date" do
-       @jabber_notifier.message.should =~ /commited at Fri Jul 25 18:44:00 [+|-]\d\d\d\d 2008/
+       @jabber_notifier.message.should =~ /at Fri Jul 25 18:44:00 [+|-]\d\d\d\d 2008/
      end
 
      it "should include the commit author" do

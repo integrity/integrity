@@ -1,7 +1,6 @@
 require File.dirname(__FILE__) + "/../spec_helper"
 
 describe Integrity::Notifier::Email do
-  # order matters!
   include AppSpecHelper
   include NotifierSpecHelper
   
@@ -133,7 +132,7 @@ describe Integrity::Notifier::Email do
     end
 
     it "should have a descriptive subject" do
-      @mailer.subject.should == "[Integrity] Integrity build e7e02b: SUCCESS"
+      @mailer.subject.should == "[Integrity] Integrity: Build e7e02b was successful"
     end
 
     it "should include the full commit identifier along with the status in the body" do
