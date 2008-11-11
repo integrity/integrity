@@ -5,7 +5,7 @@ describe Integrity::Notifier::Jabber do
   include NotifierSpecHelper
   
   it_should_behave_like "A notifier"
-  
+
   def klass
     Integrity::Notifier::Jabber
   end
