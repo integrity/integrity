@@ -59,8 +59,7 @@ Freenode, so don't hesitate to stop by for ideas, help, patches or something.
 Future plans
 ============
 
-* [Twitter][]/[Campfire][]/[IRC][] bots
-* More general support for git (only git: urls are supported for now)
+* [Twitter][]/[IRC][]/etc bots
 * Other SCMs like Subversion
 
 Development
@@ -99,7 +98,7 @@ License
 
 (The MIT License)
 
-Copyright (c) 2008 [Nicolás Sanguinetti][foca], [CitrusByte][]
+Copyright (c) 2008 [Nicolás Sanguinetti][foca], [entp][]
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -124,9 +123,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 [git]: http://git.or.cz
 [svn]: http://subversion.tigris.org
 [Twitter]: http://twitter.com
-[Campfire]: http://campfirenow.com
 [IRC]: http://wikipedia.org/wiki/IRC
-[CitrusByte]: http://citrusbyte.com
+[entp]: http://entp.com
 [GitHub]: http://github.com
 
 [rspec]: http://rspec.info
