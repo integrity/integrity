@@ -1,9 +1,3 @@
 [submodule "vendor/rspec_hpricot_matchers"]
 	path = vendor/rspec_hpricot_matchers
 	url = git://github.com/pd/rspec_hpricot_matchers.git
-[submodule "vendor/smtp-tls"]
-	path = vendor/smtp-tls
-	url = git://github.com/ambethia/smtp-tls.git
-[submodule "vendor/xmpp4r-simple"]
-	path = vendor/xmpp4r-simple
-	url = git://github.com/blaine/xmpp4r-simple.git
