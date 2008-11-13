@@ -64,7 +64,7 @@ describe Integrity::Notifier::Base do
     end
     
     it "should show the commit date on the full_message" do
-      @notifier.full_message.should =~ /Commit Date: Fri Jul 25 18:44:00 -0300 2008/
+      @notifier.full_message.should =~ /Commit Date: Fri Jul 25 18:44:00 [+|-]{1}\d{4} 2008/
     end
 
     it "should show the commit author on the full_message" do
