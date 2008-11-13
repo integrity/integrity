@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name              = 'integrity'
   s.version           = '0.1.0'
-  s.date              = '2008-11-10'
+  s.date              = '2008-11-13'
   s.summary           = 'The easy and fun Continuous Integration server'
   s.description       = 'Your Friendly Continuous Integration server. Easy, fun and painless!'
   s.homepage          = 'http://integrityapp.com'
@@ -48,6 +48,8 @@ Gem::Specification.new do |s|
                           views/notifier.haml
                           views/project.haml
                           views/unauthorized.haml
+                          spec/spec_helper.rb
+                          spec/form_field_matchers.rb
                         )
 
   s.add_dependency 'sinatra', ['>= 0.3.2']
@@ -60,4 +62,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'do_sqlite3', ['>= 0.9.5']        
   s.add_dependency 'json'
   s.add_dependency 'foca-sinatra-diddies', ['>= 0.0.2']
+  s.add_dependency 'rspec_hpricot_matchers'
 end

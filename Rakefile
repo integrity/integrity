@@ -47,9 +47,8 @@ end
 namespace :gem do  
   desc "Generate the gemspec at the root dir"
   task :gemspec do
-    files = `git ls-files`.split("\n").
-      reject {|f| f =~ %r(^spec) || f =~ %r(^vendor/rspec) || f =~ /^\.git/ }.
-      join("\n" + " " * 26)
+    files  = `git ls-files`.split("\n").reject {|f| f =~ %r(^spec) || f =~ %r(^vendor/rspec) || f =~ /^\.git/ } 
+    files += %w(spec/spec_helper.rb spec/form_field_matchers.rb)
     
     gemspec = <<-GEM
 Gem::Specification.new do |s|
@@ -64,7 +63,7 @@ Gem::Specification.new do |s|
   s.authors           = ['Nicolás Sanguinetti', 'Simon Rozet']
   s.has_rdoc          = false
   s.files             = %w(
-                          #{files}
+                          #{files.join("\n" + " " * 26)}
                         )
 
   s.add_dependency 'sinatra', ['>= 0.3.2']
@@ -77,6 +76,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'do_sqlite3', ['>= 0.9.5']        
   s.add_dependency 'json'
   s.add_dependency 'foca-sinatra-diddies', ['>= 0.0.2']
+  s.add_dependency 'rspec_hpricot_matchers'
 end
     GEM
     
