@@ -3,12 +3,9 @@ require File.dirname(__FILE__) + "/spec_helper"
 describe Integrity::Notifier do
   include DatabaseSpecHelper
   include NotifierSpecHelper
-
+  
   def valid_attributes(attributes={})
-    { :name => "Email",
-      :config => { :to => "to@example.com", :from => "from@example.com",
-                   :host => "smtp.example.com" } 
-      }.merge(attributes)
+    { :name => "Stub", :config => { :a => 1 } }.merge(attributes)
   end
   
   def sample_notifier(attributes={})
@@ -32,10 +29,6 @@ describe Integrity::Notifier do
   describe "getting the list of existent notifiers" do
     it "should not list the Base notifier" do
       Integrity::Notifier.available.should_not include(Integrity::Notifier::Base)
-    end
-    
-    it "should list the Email notifier" do
-      Integrity::Notifier.available.should include(Integrity::Notifier::Email)
     end
   end
   
@@ -61,10 +54,10 @@ describe Integrity::Notifier do
     end
   end
   
-  describe "Notifying the world of a build" do
+  describe "Notifying the world of a build" do    
     it "should delegate to the notifier class" do
       build = mock("build")
-      Integrity::Notifier::Email.should_receive(:notify_of_build).with(build, sample_notifier.config)
+      Integrity::Notifier::Stub.should_receive(:notify_of_build).with(build, sample_notifier.config)
       sample_notifier.notify_of_build(build)
     end
   end

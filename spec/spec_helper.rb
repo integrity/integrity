@@ -6,6 +6,16 @@ module NotifierSpecHelper
     mod.before(:each) { Integrity.stub!(:config).and_return(:base_uri => "http://localhost:4567") }
   end
   
+  class Integrity::Notifier::Stub < Integrity::Notifier::Base
+    def self.to_haml
+      ""
+    end
+    
+    def deliver!
+      nil
+    end
+  end
+
   def mock_build(messages={})
     messages = {
       :project => stub("project", :name => "Integrity", :permalink => "integrity"),
