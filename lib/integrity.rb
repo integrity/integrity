@@ -19,8 +19,7 @@ require "core_ext/time"
 %w(project build builder scm scm/git notifier version).each &method(:require)
 
 module Integrity
-  def self.new(configuration_file=root/'config/config.yml')
-    @config ||= default_configuration.merge load_config_file(configuration_file)
+  def self.new
     DataMapper.setup(:default, config[:database_uri])
   end
 
@@ -29,17 +28,19 @@ module Integrity
   end
 
   def self.default_configuration
-    { :database_uri => 'sqlite3::memory:',
-      :export_directory => root / 'exports',
-      :base_uri => 'http://localhost:4567' }
+    @defaults ||= { :database_uri => 'sqlite3::memory:',
+                    :export_directory => root / 'exports',
+                    :base_uri => 'http://localhost:4567',
+                    :use_basic_auth => false,
+                    :port => 9876 }
   end
 
   def self.config
-    @config
+    @config ||= default_configuration
   end
 
-  def self.load_config_file(file)
-    YAML.load_file(file)
+  def self.config=(file)
+    @config = default_configuration.merge(YAML.load_file(file))
   rescue Errno::ENOENT
     {}
   end

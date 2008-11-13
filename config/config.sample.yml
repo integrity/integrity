@@ -1,7 +1,8 @@
-:base_uri: http://localhost:4567
+:base_uri: http://integrity.domain.tld
 :database_uri: sqlite3:///var/integrity.db
 :export_directory: /path/to/scm/exports
 :hash_admin_password: true
 :use_basic_auth: true
 :admin_username: username
 :admin_password: a94a8fe5ccb19ba61c4c0873d391e987982fbbd3
+:port: 4567
