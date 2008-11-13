@@ -25,10 +25,6 @@ Gem::Specification.new do |s|
                           lib/integrity/core_ext/time.rb
                           lib/integrity/notifier.rb
                           lib/integrity/notifier/base.rb
-                          lib/integrity/notifier/email.haml
-                          lib/integrity/notifier/email.rb
-                          lib/integrity/notifier/jabber.haml
-                          lib/integrity/notifier/jabber.rb
                           lib/integrity/project.rb
                           lib/integrity/scm.rb
                           lib/integrity/scm/git.rb
