@@ -1,0 +1,60 @@
+#!/usr/bin/env ruby
+
+require "rubygems"
+require "integrity"
+require "thor"
+
+class WithIntegrity < Thor
+  include FileUtils
+
+  desc "Install integrity at PATH", 
+       "Copy template files at PATH. After this, edit the files to your convenience"
+  def install(path)
+    @root = File.expand_path(path)
+    
+    create_dir_structure
+    copy_template_files
+    edit_template_files
+    after_setup_message
+  end
+  
+  private
+    attr_reader :root
+    
+    def create_dir_structure
+      mkdir_p root
+      mkdir_p root / "builds"
+      mkdir_p root / "log"
+    end
+    
+    def copy_template_files
+      cp Integrity.root / "config" / "config.sample.ru",  root / "config.ru"
+      cp Integrity.root / "config" / "config.sample.yml", root / "config.yml"
+      cp Integrity.root / "config" / "thin.sample.yml",   root / "thin.yml"
+    end
+    
+    def edit_template_files
+      config = File.read(root / "config.yml")
+      config.gsub!(%r(sqlite3:///var/integrity.db), "sqlite3://#{root}/integrity.db")
+      config.gsub!(%r(/path/to/scm/exports),        "#{root}/builds")
+      File.open(root / "config.yml", "w") {|f| f.puts config }
+    end
+  
+    def after_setup_message
+      puts
+      puts %Q(Awesome! Integrity was installed successfully!)
+      puts
+      puts %Q(If you want to enable notifiers, install the gems and then require them)
+      puts %Q(in #{root}/config.ru)
+      puts
+      puts %Q(For example:)
+      puts
+      puts %Q(  sudo gem install -s http://gems.github.com foca-integrity-email)
+      puts
+      puts %Q(And then in #{root}/config.ru add:)
+      puts
+      puts %Q(  require "notifier/email")
+    end
+end
+
+WithIntegrity.start
