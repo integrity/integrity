@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
 require "rubygems"
-require "integrity"
 require "thor"
+require "integrity"
 
 class WithIntegrity < Thor
   include FileUtils
@@ -15,7 +15,18 @@ class WithIntegrity < Thor
     create_dir_structure
     copy_template_files
     edit_template_files
+    create_db(root / 'config.yml')
     after_setup_message
+  end
+
+  desc "Create databases for CONFIG",
+       "Create the database necessary to run Integrity"
+  def create_db(config)
+    Integrity.config = config
+    Integrity.new
+    Integrity::Project.auto_migrate!
+    Integrity::Build.auto_migrate!
+    Integrity::Notifier.auto_migrate!
   end
   
   private
@@ -34,10 +45,21 @@ class WithIntegrity < Thor
     end
     
     def edit_template_files
+      edit_integrity_configuration
+      edit_thin_configuration
+    end
+
+    def edit_integrity_configuration
       config = File.read(root / "config.yml")
       config.gsub!(%r(sqlite3:///var/integrity.db), "sqlite3://#{root}/integrity.db")
       config.gsub!(%r(/path/to/scm/exports),        "#{root}/builds")
       File.open(root / "config.yml", "w") {|f| f.puts config }
+    end
+
+    def edit_thin_configuration
+      config = File.read(root / 'thin.yml')
+      config.gsub!(%r(/apps/integrity), root)
+      File.open(root / 'thin.yml', 'w') { |f| f.puts config }
     end
   
     def after_setup_message

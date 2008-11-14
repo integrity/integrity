@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
-require "lib/integrity"
-require "sinatra"
+require 'rubygems'
+require 'integrity'
 
 # If you want to add any notifiers, install the gems and then require them here
 # For example, to enable the Email notifier: install the gem (from github: 
@@ -12,19 +12,19 @@ require "sinatra"
 # require "notifier/email"
 
 # Load integrity's configuration.
-Integrity.config = File.expand_path("./config.yml")
+Integrity.config = File.expand_path('./config.yml')
 
 #######################################################################
 ##                                                                   ##
 ## == DON'T EDIT ANYTHING BELOW UNLESS YOU KNOW WHAT YOU'RE DOING == ##
 ##                                                                   ##
 #######################################################################
+require Integrity.root / 'app'
 
-Sinatra::Application.default_options.merge!(
-  :run  => false,
-  :port => Integrity.config[:port],
-  :env  => :production
-)
- 
-require "app"
+set     :public,  Integrity.root / 'public'
+set     :views,   Integrity.root / 'views'
+set     :port,    Integrity.config[:port]
+set     :env,     :production
+disable :run,     :reload
+
 run Sinatra.application
