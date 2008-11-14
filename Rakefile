@@ -62,6 +62,7 @@ Gem::Specification.new do |s|
   s.email             = 'contacto@nicolassanguinetti.info'
   s.authors           = ['Nicolás Sanguinetti', 'Simon Rozet']
   s.has_rdoc          = false
+  s.executables       = ['integrity']
   s.files             = %w(
                           #{files.join("\n" + " " * 26)}
                         )
@@ -77,6 +78,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'json'
   s.add_dependency 'foca-sinatra-diddies', ['>= 0.0.2']
   s.add_dependency 'rspec_hpricot_matchers'
+  s.add_dependency 'thor'
 end
     GEM
     

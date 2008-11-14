@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name              = 'integrity'
   s.version           = '0.1.0'
-  s.date              = '2008-11-13'
+  s.date              = '2008-11-14'
   s.summary           = 'The easy and fun Continuous Integration server'
   s.description       = 'Your Friendly Continuous Integration server. Easy, fun and painless!'
   s.homepage          = 'http://integrityapp.com'
@@ -9,11 +9,13 @@ Gem::Specification.new do |s|
   s.email             = 'contacto@nicolassanguinetti.info'
   s.authors           = ['Nicolás Sanguinetti', 'Simon Rozet']
   s.has_rdoc          = false
+  s.executables       = ['integrity']
   s.files             = %w(
                           README.markdown
                           Rakefile
                           app.rb
-                          config.ru
+                          bin/integrity
+                          config/config.sample.ru
                           config/config.sample.yml
                           config/thin.sample.yml
                           integrity.gemspec
@@ -59,4 +61,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'json'
   s.add_dependency 'foca-sinatra-diddies', ['>= 0.0.2']
   s.add_dependency 'rspec_hpricot_matchers'
+  s.add_dependency 'thor'
 end
