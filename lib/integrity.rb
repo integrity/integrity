@@ -41,7 +41,5 @@ module Integrity
 
   def self.config=(file)
     @config = default_configuration.merge(YAML.load_file(file))
-  rescue Errno::ENOENT
-    {}
   end
 end
