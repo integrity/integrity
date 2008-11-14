@@ -24,9 +24,7 @@ class WithIntegrity < Thor
   def create_db(config)
     Integrity.config = config
     Integrity.new
-    Integrity::Project.auto_migrate!
-    Integrity::Build.auto_migrate!
-    Integrity::Notifier.auto_migrate!
+    DataMapper.auto_migrate!
   end
   
   private

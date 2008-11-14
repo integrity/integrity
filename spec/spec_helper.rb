@@ -63,9 +63,7 @@ module DatabaseSpecHelper
 
   def setup_database!
     DataMapper.setup(:default, 'sqlite3::memory:')
-    Integrity::Project.auto_migrate!
-    Integrity::Build.auto_migrate!
-    Integrity::Notifier.auto_migrate!
+    DataMapper.auto_migrate!
   end
 end
 
