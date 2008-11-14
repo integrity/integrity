@@ -8,9 +8,9 @@ describe Integrity do
   specify 'default configuration' do
     Integrity.default_configuration.should == { :database_uri => 'sqlite3::memory:',
       :export_directory => Integrity.root / 'exports',
-      :base_uri => 'http://localhost:4567',
+      :base_uri => 'http://localhost:8910',
       :use_basic_auth => false,
-      :port => 9876 
+      :port => 8910
     }
   end
 
