@@ -28,11 +28,11 @@ namespace :spec do
   end
 end
 
-
 namespace :db do
   desc "Setup connection."
   task :connect do
-    ENV['CONFIG'] ? Integrity.new(ENV['CONFIG']) : Integrity.new
+    Integrity.config = File.expand_path(ENV['CONFIG']) if ENV['CONFIG']
+    Integrity.new
   end
 
   desc "Automigrate the database"
