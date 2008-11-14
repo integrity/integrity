@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
-
 require "rubygems"
 require "thor"
-require "integrity"
+
+require File.dirname(__FILE__) + "/../lib/integrity"
 
 class WithIntegrity < Thor
   include FileUtils
