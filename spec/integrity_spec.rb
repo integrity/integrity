@@ -10,7 +10,6 @@ describe Integrity do
       :export_directory => Integrity.root / 'exports',
       :base_uri => 'http://localhost:8910',
       :use_basic_auth => false,
-      :port => 8910
     }
   end
 
