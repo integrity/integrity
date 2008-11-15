@@ -218,21 +218,36 @@ a
     :margin 1em 0 2em
     :border-top = 1px solid !rule_color
     li
+      :position relative
       :border-bottom = 1px solid !rule_color
       &.odd
         :background = !content_bg - #080808
       &.building
         :background transparent url(/spinner.gif) no-repeat scroll right
-    a
-      :font-size 2em
-      :padding .25em
-      :line-height 1.2
-      :font-weight bold
-      :display block
-      &.success
+      a
+        :font-size 2em
+        :padding .25em
+        :line-height 1.2
+        :font-weight bold
+        :display block
+        &.success
+          :color = !success_color
+        &.failed
+          :color = !failed_color
+      .meta
+        :position absolute
+        :right .6em
+        :top 1.5em
+        :font-size 0.8em
+        :color = !light_color
+        :text-align right
+      &.building .meta
+        :right 1.6em
+      &.success .meta
         :color = !success_color
-      &.failed
+      &.failed .meta
         :color = !failed_color
+      
   
   #previous_builds
     li
@@ -247,6 +262,9 @@ a
           :font-size 1.3em
         .attribution
           :font-size .9em
+
+  #projects, #previous_builds
+    li
       &.success a
         :background-color = !success_bg
         :border-color = !success_bg - #222
@@ -263,6 +281,7 @@ a
           :color = !failed_bg - #444
         &:hover
           :background-color = !failed_bg + #222
+  
 
   #build, #last_build
     h1, blockquote
