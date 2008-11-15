@@ -35,9 +35,8 @@ describe Integrity::Notifier::Base do
   end
   
   describe "generating the config form" do
-    it "should return the path to the file" do
-      File.stub!(:read).with("#{Integrity.root}/lib/integrity/notifier/base.haml").and_return("haml file")
-      klass.to_haml.should == "haml file"
+    it "should raise on #to_haml unless redefined on the inherited class" do
+      lambda { klass.to_haml }.should raise_error(NoMethodError, /you need to implement this method in your notifier/)
     end
   end
   
