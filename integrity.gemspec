@@ -10,6 +10,7 @@ Gem::Specification.new do |s|
   s.authors           = ['Nicolás Sanguinetti', 'Simon Rozet']
   s.has_rdoc          = false
   s.executables       = ['integrity']
+  s.post_install_message = 'Run `integrity help` for information on how to setup Integrity.'
   s.files             = %w(
                           README.markdown
                           Rakefile
