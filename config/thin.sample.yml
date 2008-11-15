@@ -4,7 +4,7 @@ chdir: /apps/integrity
 address: 127.0.0.1
 user: deploy
 group: deploy
-port: 4567
+port: 8910
 pid: /apps/integrity/thin.pid
 rackup: /apps/integrity/config.ru
 log: /apps/integrity/log/thin.log
