@@ -6,8 +6,7 @@ module Integrity
       end
 
       def self.to_haml
-        filename = name.split("::").last.downcase
-        File.read File.join(Integrity.root / "lib" / "integrity" / "notifier" / "#{filename}.haml")
+        raise NoMethodError, "you need to implement this method in your notifier"
       end
       
       attr_reader :build
