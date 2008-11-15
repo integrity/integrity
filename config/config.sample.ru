@@ -23,7 +23,7 @@ require Integrity.root / 'app'
 
 set     :public,  Integrity.root / 'public'
 set     :views,   Integrity.root / 'views'
-set     :port,    4567
+set     :port,    8910
 set     :env,     :production
 disable :run,     :reload
 
