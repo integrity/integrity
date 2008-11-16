@@ -12,25 +12,28 @@ It has been designed with ruby projects in mind, but any project that can be
 tested in an unix-y fashion (with a command line tool that returns 0 on success
 and non-zero on failure) works with it.
 
-Integrity works out of the box with [git][] projects, but support for other 
-SCMs like [Subversion][svn] is planned.
-
 Getting Started
 ===============
 
-Clone the source from our [git repository][repo]:
+Install the `integrity` gem from GitHub:
 
-    gem install dm-core dm-more data_objects do_sqlite3 bcrypt-ruby sinatra json haml xmpp4r-simple rcov hoe sr-sinatra-diddies --source=http://gems.github.com
-    git clone git://github.com/foca/integrity.git
-    cd integrity
-    git submodule update --init
-    cp config/config.sample.yml config/config.yml
-    $EDITOR config/config.yml
-    rake db:migrate
-    ruby app.rb
+    gem sources add http://gems.github.com
+    sudo gem install foca-integrity
 
-Now you can go to http://localhost:4567, add your first project, and enjoy
-safer coding, with integrity.
+In order to setup Integrity, run the following command:
+
+    integrity install /path/to/my/app
+
+Then browse to /path/to/my/app and edit the config files at your convenience.
+The default configuration should be "good enough" in most cases, so you should
+be pretty much ready to rock.
+
+For deployment, we recommend [Thin][]. Provided with Integrity comes a thin.yml
+file, so all you need to do after running `integrity install` should be
+
+    thin -C /path/to/my/app/thin.yml -R /path/to/my/app/config.ru start
+    
+And you should be up and running.
 
 If you want automatic commit processing, you currently need to be using
 [GitHub][]. Click the edit link on your GitHub project, and add an integrity
@@ -38,16 +41,19 @@ link that looks like the following to the `Post-Receive URL` field:
 
     http://integrity.domain.tld/projectname/push
 
-Configuration
-=============
+Receiving Notifications
+=======================
 
-The `config.yml` only needs two settings:
+If you want to be notified after each build, you need to install our notifiers.
+For example, in order to receive an email after each build, install:
 
-* `database_uri`: this should be a complete connection string to your database.
-  For example `mysql://user@localhost/integrity` (you need an `integrity` db
-  created in localhost, of course).
-* `export_directory`: This is where your project's code will be checked out to.
-  Make sure it's writable by the user that runs Integrity.
+    sudo gem install foca-integrity-email
+
+And then edit `/path/to/my/app/config.ru` and add:
+
+    require "notifier/email"
+
+After all the `require` lines.
 
 Resources
 ========
@@ -60,7 +66,8 @@ Future plans
 ============
 
 * [Twitter][]/[IRC][]/etc bots
-* Other SCMs like Subversion
+* A sample generic post-receive-hook so you can run this from any git repo
+* Better integration with GitHub
 
 Development
 ===========
@@ -126,6 +133,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 [IRC]: http://wikipedia.org/wiki/IRC
 [entp]: http://entp.com
 [GitHub]: http://github.com
+[Thin]: http://code.macournoyer.com/thin/
 
 [rspec]: http://rspec.info
 [rcov]: http://eigenclass.org/hiki.rb?rcov
@@ -135,5 +143,4 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 [lighthouse]: http://integrity.lighthouseapp.com/projects/14308-integrity
 [irc-channel]: irc://irc.freenode.net/integrity
 
-[sr]: http://atonie.org/
 [foca]: http://nicolassanguinetti.info/
