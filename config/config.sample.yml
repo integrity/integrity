@@ -1,7 +1,31 @@
+# Domain where integrity will be running from. This is used to have
+# nice URLs in your notifications.
+# For example:
+#   http://builder.integrityapp.com
 :base_uri: http://integrity.domain.tld
+
+# This should be a complete connection string to your database. For example 
+# `mysql://user@localhost/integrity` (you need an `integrity` db created in 
+# localhost, of course).
 :database_uri: sqlite3:///var/integrity.db
+
+# This is where your project's code will be checked out to. Make sure it's 
+# writable by the user that runs Integrity.
 :export_directory: /path/to/scm/exports
-:hash_admin_password: true
+
+# Enable or disable HTTP authentication for the app. BE AWARE that if you 
+# disable this anyone can delete and alter projects, so do it only if your 
+# app is running in a controlled environment (ie, behind your company's
+# firewall.)
 :use_basic_auth: true
+
+# When `use_basic_auth` is true, the admin's username for HTTP authentication.
 :admin_username: username
+
+# When `use_basic_auth` is true, the admin's password. Usually saved as a 
+# SHA1 hash. See the next option.
 :admin_password: a94a8fe5ccb19ba61c4c0873d391e987982fbbd3
+
+# If this is true, then whenever we authenticate the admin user, will hash 
+# it using SHA1. If not, we'll assume the provided password is in plain text.
+:hash_admin_password: true
