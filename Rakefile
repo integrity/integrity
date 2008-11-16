@@ -31,7 +31,9 @@ end
 namespace :db do
   desc "Setup connection."
   task :connect do
-    Integrity.config = File.expand_path(ENV['CONFIG']) if ENV['CONFIG']
+    config = File.expand_path(ENV['CONFIG']) if ENV['CONFIG']
+    config = Integrity.root / 'config.yml' if File.exists?(Integrity.root / 'config.yml')
+    Integrity.config = config if config
     Integrity.new
   end
 
