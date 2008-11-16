@@ -93,7 +93,7 @@ post "/:project/push" do
 
   begin
     payload = JSON.parse(params[:payload] || "")
-    payload['commits'].each do |commit|
+    payload['commits'].reverse.each do |commit|
       current_project.build(commit['id']) if payload['ref'] =~ /#{current_project.branch}/
     end
     'Thanks, build started.'
