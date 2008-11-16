@@ -71,8 +71,8 @@ describe 'Web App' do
 
     describe "with available projects" do
       before do
-        @project_1 = stub("project", :name => "The 1st Project", :permalink => "the-1st-project", :status => :success, :building? => true)
-        @project_2 = stub("project", :name => "The 2nd Project", :permalink => "the-2nd-project", :status => :failed, :building? => false)
+        @project_1 = stub("project", :name => "The 1st Project", :permalink => "the-1st-project", :status => :success, :building? => true, :last_build => mock_build)
+        @project_2 = stub("project", :name => "The 2nd Project", :permalink => "the-2nd-project", :status => :failed, :building? => false, :last_build => mock_build)
         Project.stub!(:all).and_return([@project_1, @project_2])
       end
 
