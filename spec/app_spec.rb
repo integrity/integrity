@@ -209,6 +209,24 @@ describe 'Web App' do
       get_it '/integrity'
       status.should == 404
     end
+    
+    describe "displaying a 'building' throbber" do
+      before do
+        Project.stub!(:first).with(:permalink => "integrity").and_return(mock_project)
+      end
+
+      it "should display the throbber when building" do
+        mock_project.stub!(:building?).and_return(true)
+        get_it '/integrity'
+        body.should have_tag("#building_marker", /building/i)
+      end
+      
+      it "should not display the throbber when not building" do
+        mock_project.stub!(:building?).and_return(false)
+        get_it '/integrity'
+        body.should_not have_tag("#building_marker")
+      end
+    end
 
     describe 'without builds' do
       before(:each) do

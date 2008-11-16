@@ -24,10 +24,14 @@ module Integrity
     def build(commit_identifier="HEAD")
       return if building?
       update_attributes(:building => true)
-      Builder.new(self).build(commit_identifier)
-    ensure
-      update_attributes(:building => false)
-      send_notifications
+      Thread.new(self) do |project|
+        begin
+          Builder.new(project).build(commit_identifier)
+        ensure
+          project.update_attributes(:building => false)
+          project.send_notifications
+        end
+      end
     end
 
     def last_build
@@ -59,6 +63,12 @@ module Integrity
     def enable_notifiers(*args)
       Notifier.enable_notifiers(id, *args)
     end
+      
+    def send_notifications
+      notifiers.each do |notifier|
+        notifier.notify_of_build last_build
+      end
+    end
     
     private
       def set_permalink
@@ -72,12 +82,6 @@ module Integrity
       def delete_code
         builds.destroy!
         Builder.new(self).delete_code
-      end
-      
-      def send_notifications
-        notifiers.each do |notifier|
-          notifier.notify_of_build last_build
-        end
       end
   end
 end
