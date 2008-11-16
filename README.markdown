@@ -55,6 +55,13 @@ And then edit `/path/to/my/app/config.ru` and add:
 
 After all the `require` lines.
 
+Available notifiers
+-------------------
+
+* [Mail](http://github.com/foca/integrity-email)
+* [Jabber](http://github.com/ph/integrity-jabber)
+* [Campfire](http://github.com/defunkt/integrity-campfire)
+
 Resources
 ========
 
