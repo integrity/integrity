@@ -12,6 +12,8 @@ enable :sessions
 include Integrity
 
 configure do
+  config = Integrity.root / "config.yml"
+  Integrity.config = config if File.exists? config
   Integrity.new
 end
 
