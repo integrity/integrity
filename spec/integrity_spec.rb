@@ -27,15 +27,23 @@ describe Integrity do
       DataMapper.should_receive(:setup).with(:default, 'sqlite3::memory:')
       Integrity.new
     end
+  end
 
-    it 'should load the specified configuration file' do
-      YAML.should_receive(:load_file).with('/etc/integrity.yml').
-        and_return({ :blah => 1 })
-      Integrity.config = '/etc/integrity.yml'
+  describe 'Configuration' do
+    it 'should default to default configuration' do
+      Integrity.config.should == Integrity.default_configuration
     end
+
+    describe 'When setting the configuration' do
+      it 'should load the specified configuration file' do
+        YAML.should_receive(:load_file).with('/etc/integrity.yml').
+          and_return({ :blah => 1 })
+        Integrity.config = '/etc/integrity.yml'
+      end
     
-    it "should error out if there's no config file" do
-      lambda { Integrity.config = "i_dont_exist.yml" }.should raise_error(Errno::ENOENT)
+      it "should error out if there's no config file" do
+        lambda { Integrity.config = "i_dont_exist.yml" }.should raise_error(Errno::ENOENT)
+      end
     end
   end
 end
