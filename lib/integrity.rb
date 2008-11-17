@@ -16,7 +16,7 @@ require "core_ext/object"
 require "core_ext/string"
 require "core_ext/time"
 
-%w(project build builder scm scm/git notifier version).each &method(:require)
+%w(project build builder scm scm/git notifier).each &method(:require)
 
 module Integrity
   def self.new
