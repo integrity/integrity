@@ -46,44 +46,34 @@ namespace :db do
   end
 end
 
-namespace :gem do  
-  desc "Generate the gemspec at the root dir"
-  task :gemspec do
+begin
+  require 'jeweler'
+  Jeweler::Tasks.new do |s|
     files  = `git ls-files`.split("\n").reject {|f| f =~ %r(^spec) || f =~ %r(^vendor/rspec) || f =~ /^\.git/ } 
     files += %w(spec/spec_helper.rb spec/form_field_matchers.rb)
-    
-    gemspec = <<-GEM
-Gem::Specification.new do |s|
-  s.name              = 'integrity'
-  s.version           = '#{Integrity::VERSION}'
-  s.date              = '#{Date.today.to_s}'
-  s.summary           = 'The easy and fun Continuous Integration server'
-  s.description       = 'Your Friendly Continuous Integration server. Easy, fun and painless!'
-  s.homepage          = 'http://integrityapp.com'
-  s.rubyforge_project = 'integrity'
-  s.email             = 'contacto@nicolassanguinetti.info'
-  s.authors           = ['Nicolás Sanguinetti', 'Simon Rozet']
-  s.has_rdoc          = false
-  s.executables       = ['integrity']
-  s.files             = %w(
-                          #{files.join("\n" + " " * 26)}
-                        )
 
-  s.add_dependency 'sinatra', ['>= 0.3.2']
-  s.add_dependency 'dm-core', ['>= 0.9.5']
-  s.add_dependency 'dm-validations', ['>= 0.9.5']
-  s.add_dependency 'dm-types', ['>= 0.9.5']
-  s.add_dependency 'dm-timestamps', ['>= 0.9.5']
-  s.add_dependency 'dm-aggregates', ['>= 0.9.5']
-  s.add_dependency 'data_objects', ['>= 0.9.5']
-  s.add_dependency 'do_sqlite3', ['>= 0.9.5']        
-  s.add_dependency 'json'
-  s.add_dependency 'foca-sinatra-diddies', ['>= 0.0.2']
-  s.add_dependency 'rspec_hpricot_matchers'
-  s.add_dependency 'thor'
-end
-    GEM
-    
-    File.open(Integrity.root / "integrity.gemspec", "w") {|f| f.puts gemspec }
+    s.name              = 'integrity'
+    s.summary           = 'The easy and fun Continuous Integration server'
+    s.description       = 'Your Friendly Continuous Integration server. Easy, fun and painless!'
+    s.homepage          = 'http://integrityapp.com'
+    s.rubyforge_project = 'integrity'
+    s.email             = 'contacto@nicolassanguinetti.info'
+    s.authors           = ['Nicolás Sanguinetti', 'Simon Rozet']
+    s.files             = files
+
+    s.add_dependency 'sinatra', ['>= 0.3.2']
+    s.add_dependency 'dm-core', ['>= 0.9.5']
+    s.add_dependency 'dm-validations', ['>= 0.9.5']
+    s.add_dependency 'dm-types', ['>= 0.9.5']
+    s.add_dependency 'dm-timestamps', ['>= 0.9.5']
+    s.add_dependency 'dm-aggregates', ['>= 0.9.5']
+    s.add_dependency 'data_objects', ['>= 0.9.5']
+    s.add_dependency 'do_sqlite3', ['>= 0.9.5']        
+    s.add_dependency 'json'
+    s.add_dependency 'foca-sinatra-diddies', ['>= 0.0.2']
+    s.add_dependency 'rspec_hpricot_matchers'
+    s.add_dependency 'thor'
   end
+rescue LoadError
 end
+
