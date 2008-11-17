@@ -17,7 +17,7 @@
 # disable this anyone can delete and alter projects, so do it only if your 
 # app is running in a controlled environment (ie, behind your company's
 # firewall.)
-:use_basic_auth: true
+:use_basic_auth: false
 
 # When `use_basic_auth` is true, the admin's username for HTTP authentication.
 :admin_username: username
