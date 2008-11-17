@@ -13,6 +13,7 @@ module Integrity
     end
 
     def build(commit)
+      Integrity.logger.info "Building #{commit} (#{@branch}) of #{@build.project.name} in #{export_directory} using #{scm_name}"
       @scm.with_revision(commit) { run_build_script }
       @build
     ensure
@@ -30,6 +31,10 @@ module Integrity
     private
       def export_directory
         Integrity.config[:export_directory] / "#{SCM.working_tree_path(@uri)}-#{@branch}"
+      end
+
+      def scm_name
+        @scm.name.split("::").last
       end
 
       def run_build_script

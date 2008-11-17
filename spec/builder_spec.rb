@@ -4,7 +4,7 @@ describe Integrity::Builder do
   def mock_project(messages={})
     @project ||= begin
       uri = Addressable::URI.parse("git://github.com/foca/integrity.git")
-      messages = { :uri => uri, :command => "rake", :branch => "master" }.merge(messages)
+      messages = { :uri => uri, :command => "rake", :branch => "master", :name => "Integrity" }.merge(messages)
       mock("project", messages)
     end
   end
@@ -26,9 +26,7 @@ describe Integrity::Builder do
   end
 
   def mock_scm(messages={})
-    @scm ||= begin
-      scm = mock "scm", { :with_revision => true }.merge(messages)
-
+    @scm ||= mock("scm", {:with_revision => true}.merge(messages)).tap do |scm|
       scm.stub!(:commit_identifier).with('6eba34d94b74fe68b96e35450fadf241113e44fc').and_return('6eba34d94b74fe68b96e35450fadf241113e44fc')
       scm.stub!(:commit_metadata).with('6eba34d94b74fe68b96e35450fadf241113e44fc').and_return(
         :author  => 'Simon Rozet <simon@rozet.name>',
@@ -36,14 +34,13 @@ describe Integrity::Builder do
         :date    => Time.parse('Mon Jul 21 15:24:34 2008 +0200')
       )
       scm.stub!(:working_directory).and_return('/var/integrity/exports/foca-integrity')
-
-      scm
+      scm.stub!(:name).and_return("Integrity::SCM::Git")
     end
   end
 
   before do
     Integrity.stub!(:config).and_return(:export_directory => "/var/integrity/exports")
-    Integrity::Builder.class_eval { public :export_directory, :run_build_script }
+    Integrity::Builder.class_eval { public :export_directory, :run_build_script, :scm_name }
     Integrity::SCM.stub!(:working_tree_path).and_return("foca-integrity")
   end
 
@@ -67,6 +64,10 @@ describe Integrity::Builder do
     @builder = Integrity::Builder.new(mock_project)
   end
 
+  specify "#scm_name should give the name of the SCM being used" do
+    @builder.scm_name.should == "Git"
+  end
+
   describe "Calculating the export directory" do
     it "should start with the base export directory set in the global options" do
       @builder.export_directory.should =~ %r(^/var/integrity/exports)
@@ -79,6 +80,12 @@ describe Integrity::Builder do
 
   describe "When building a specific commit" do
     before { @builder.stub!(:run_build_script) }
+
+    it "should log the build" do
+      Integrity.logger.should_receive(:info).
+        with("Building 6eba34d94b74fe68b96e35450fadf241113e44fc (master) of Integrity in /var/integrity/exports/foca-integrity-master using Git")
+      @builder.build('6eba34d94b74fe68b96e35450fadf241113e44fc')
+    end
 
     it "should fetch the latest code from the scm and run the build script" do
       mock_scm.should_receive(:with_revision).
