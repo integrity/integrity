@@ -8,6 +8,7 @@ describe Integrity do
   specify 'default configuration' do
     Integrity.default_configuration.should == { :database_uri => 'sqlite3::memory:',
       :export_directory => Integrity.root / 'exports',
+      :log      => STDOUT,
       :base_uri => 'http://localhost:8910',
       :use_basic_auth => false
     }
@@ -44,6 +45,24 @@ describe Integrity do
       it "should error out if there's no config file" do
         lambda { Integrity.config = "i_dont_exist.yml" }.should raise_error(Errno::ENOENT)
       end
+    end
+  end
+
+  describe "Logging" do
+    before(:each) { Integrity.instance_variable_set(:@logger, nil) }
+
+    it "should use Logger" do
+      Integrity.logger.should be_an_instance_of(Logger)
+    end
+
+    it "should log to STDOUT by default" do
+      Logger.should_receive(:new).with(STDOUT)
+      Integrity.logger
+    end
+
+    specify "Setting the log file create a new Logger logging to given file" do
+      Logger.should_receive(:new).with("/var/log/integrity.log")
+      Integrity.logger = "/var/log/integrity.log"
     end
   end
 end
