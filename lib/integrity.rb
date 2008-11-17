@@ -10,6 +10,7 @@ require 'dm-timestamps'
 require 'dm-aggregates'
 
 require 'yaml'
+require 'logger'
 require 'digest/sha1'
 
 require "core_ext/object"
@@ -28,8 +29,9 @@ module Integrity
   end
 
   def self.default_configuration
-    @defaults ||= { :database_uri => 'sqlite3::memory:',
+    @defaults ||= { :database_uri     => 'sqlite3::memory:',
                     :export_directory => root / 'exports',
+                    :log      => STDOUT,
                     :base_uri => 'http://localhost:8910',
                     :use_basic_auth => false }
   end
@@ -40,5 +42,13 @@ module Integrity
 
   def self.config=(file)
     @config = default_configuration.merge(YAML.load_file(file))
+  end
+
+  def self.logger
+    @logger ||= Logger.new(config[:log])
+  end
+
+  def self.logger=(file)
+    @logger = Logger.new(file)
   end
 end
