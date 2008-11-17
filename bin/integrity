@@ -74,6 +74,8 @@ class WithIntegrity < Thor
       puts %Q(And then in #{root}/config.ru add:)
       puts
       puts %Q(  require "notifier/email")
+      puts
+      puts %Q(Don't forget to tweak #{root / "config.yml"} to your needs.)
     end
 end
 
