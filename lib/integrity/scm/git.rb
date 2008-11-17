@@ -14,7 +14,7 @@ module Integrity
         @branch = branch.to_s
         @working_directory = working_directory
       end
-      
+
       def with_revision(revision)
         fetch_code
         checkout(revision)
