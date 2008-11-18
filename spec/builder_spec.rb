@@ -146,6 +146,11 @@ describe Integrity::Builder do
       allow_message_expectations_on_nil
     end
 
+    it "should log the command and the directory" do
+      Integrity.logger.should_receive(:info).with("Running `rake` in /var/integrity/exports/foca-integrity")
+      @builder.run_build_script
+    end
+
     it "should run the build_script" do
       IO.should_receive(:popen).with("(cd /var/integrity/exports/foca-integrity && rake) 2>&1", "r")
       @builder.run_build_script
