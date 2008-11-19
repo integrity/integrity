@@ -34,7 +34,7 @@ describe Integrity::Builder do
         :date    => Time.parse('Mon Jul 21 15:24:34 2008 +0200')
       )
       scm.stub!(:working_directory).and_return('/var/integrity/exports/foca-integrity')
-      scm.stub!(:name).and_return("Integrity::SCM::Git")
+      scm.stub!(:name).and_return("Git")
     end
   end
 

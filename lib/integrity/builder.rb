@@ -34,7 +34,7 @@ module Integrity
       end
 
       def scm_name
-        @scm.name.split("::").last
+        @scm.name
       end
 
       def run_build_script
