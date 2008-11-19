@@ -30,6 +30,10 @@ module Integrity
         YAML.load(`cd #{working_directory} && git show -s --pretty=format:"#{format}" #{sha1}`)
       end
       
+      def name
+        self.class.name.split("::").last
+      end
+
       private
 
         def fetch_code

@@ -18,6 +18,10 @@ describe Integrity::SCM::Git do
     @git.working_directory.should == "/var/integrity/exports/foca-integrity"
   end
 
+  it "should give the name of the SCM being used" do
+    @git.name.should == "Git"
+  end
+
   describe "Determining the state of the code for this project" do
     it "should know if a project has been cloned or not by looking at the directories" do
       File.stub!(:directory?).with("/var/integrity/exports/foca-integrity/.git").and_return(true)
