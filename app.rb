@@ -92,6 +92,8 @@ get "/:project/edit" do
 end
 
 post "/:project/push" do
+  login_required
+  
   content_type 'text/plain'
 
   begin
