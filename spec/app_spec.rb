@@ -502,6 +502,12 @@ describe 'Web App' do
       Project.stub!(:first).with(:permalink => "github").and_return mock_project
     end
 
+    it "should require authentication" do
+      enable_basic_auth!
+      post_it '/github/push', :payload => payload
+      status.should == 401
+    end
+
     it 'should be successful' do
       post_it '/github/push', :payload => payload
       status.should == 200
