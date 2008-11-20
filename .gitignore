@@ -5,3 +5,5 @@ config/config.yml
 coverage
 integrity.db
 exports
+*.gem
+*.swp
