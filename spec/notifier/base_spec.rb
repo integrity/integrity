@@ -32,12 +32,6 @@ describe Integrity::Notifier::Base do
       notifier.should_receive(:deliver!)
       klass.notify_of_build(mock_build, notifier_config)
     end
-
-    it "should protect itself from timeout" do
-      lambda do
-        notifier.stub!(:deliver!).and_raise(Timeout::Error)
-      end.should_not raise_error
-    end
   end
   
   describe "generating the config form" do
