@@ -22,8 +22,7 @@ class WithIntegrity < Thor
   desc "Create database based on the config file at CONFIG",
        "Checks the `database_uri` in CONFIG and creates and bootstraps a database for integrity"
   def create_db(config)
-    Integrity.config = config
-    Integrity.new
+    Integrity.new(config)
     DataMapper.auto_migrate!
   end
   

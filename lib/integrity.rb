@@ -20,7 +20,8 @@ require "core_ext/time"
 %w(project build builder scm scm/git notifier).each &method(:require)
 
 module Integrity
-  def self.new
+  def self.new(config_file = nil)
+    self.config = config_file unless config_file.nil?
     DataMapper.setup(:default, config[:database_uri])
   end
 
