@@ -51,14 +51,16 @@ begin
     files  = `git ls-files`.split("\n").reject {|f| f =~ %r(^spec) || f =~ %r(^vendor/rspec) || f =~ /^\.git/ } 
     files += %w(spec/spec_helper.rb spec/form_field_matchers.rb)
 
-    s.name              = 'integrity'
-    s.summary           = 'The easy and fun Continuous Integration server'
-    s.description       = 'Your Friendly Continuous Integration server. Easy, fun and painless!'
-    s.homepage          = 'http://integrityapp.com'
-    s.rubyforge_project = 'integrity'
-    s.email             = 'contacto@nicolassanguinetti.info'
-    s.authors           = ['Nicolás Sanguinetti', 'Simon Rozet']
-    s.files             = files
+    s.name                 = 'integrity'
+    s.summary              = 'The easy and fun Continuous Integration server'
+    s.description          = 'Your Friendly Continuous Integration server. Easy, fun and painless!'
+    s.homepage             = 'http://integrityapp.com'
+    s.rubyforge_project    = 'integrity'
+    s.email                = 'contacto@nicolassanguinetti.info'
+    s.authors              = ['Nicolás Sanguinetti', 'Simon Rozet']
+    s.files                = files
+    s.executables          = ['integrity']
+    s.post_install_message = 'Run `integrity help` for information on how to setup Integrity.'
 
     s.add_dependency 'sinatra', ['>= 0.3.2']
     s.add_dependency 'dm-core', ['>= 0.9.5']
