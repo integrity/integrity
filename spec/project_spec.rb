@@ -120,12 +120,6 @@ describe Integrity::Project do
       @project = Integrity::Project.new(:uri => @uri, :branch  => 'production', :command  => 'rake spec')
       @builder = mock('Builder', :build => true)
       Integrity::Builder.stub!(:new).and_return(@builder)
-      Thread.stub!(:new).with(@project).and_yield(@project)
-    end
-    
-    it "should offload the building to a new thread" do
-      Thread.should_receive(:new).with(@project).and_yield(@project)
-      @project.build
     end
 
     it "should not build if it's already building" do

@@ -1,10 +1,6 @@
 #administrative
   %a{ :href => project_url(@project, :edit) } Edit Project
 
-- if @project.building?
-  #building_marker
-    Building...
-
 - if @project.builds.empty?
   %form.blank_slate{ :action => project_url(@project, :builds), :method => :post }
     %p No builds for this project, buddy
