@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
 
     if current_version >= 3 then
       s.add_runtime_dependency(%q<sinatra>, [">= 0.3.2"])
+      s.add_runtime_dependency(%q<haml>, [">= 0"])
       s.add_runtime_dependency(%q<dm-core>, [">= 0.9.5"])
       s.add_runtime_dependency(%q<dm-validations>, [">= 0.9.5"])
       s.add_runtime_dependency(%q<dm-types>, [">= 0.9.5"])
@@ -36,6 +37,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<thor>, [">= 0"])
     else
       s.add_dependency(%q<sinatra>, [">= 0.3.2"])
+      s.add_dependency(%q<haml>, [">= 0"])
       s.add_dependency(%q<dm-core>, [">= 0.9.5"])
       s.add_dependency(%q<dm-validations>, [">= 0.9.5"])
       s.add_dependency(%q<dm-types>, [">= 0.9.5"])
@@ -50,6 +52,7 @@ Gem::Specification.new do |s|
     end
   else
     s.add_dependency(%q<sinatra>, [">= 0.3.2"])
+    s.add_dependency(%q<haml>, [">= 0"])
     s.add_dependency(%q<dm-core>, [">= 0.9.5"])
     s.add_dependency(%q<dm-validations>, [">= 0.9.5"])
     s.add_dependency(%q<dm-types>, [">= 0.9.5"])
