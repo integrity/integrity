@@ -35,8 +35,9 @@ module Integrity
     end
 
     def previous_builds
-      return [] if builds.size <= 1
-      builds.all(:order => [:created_at.desc], :offset => 1, :limit => builds.size - 1)
+      builds.all(:order => [:created_at.desc]).tap do |builds|
+        builds.shift
+      end
     end
 
     def status
