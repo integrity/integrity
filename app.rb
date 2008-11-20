@@ -25,6 +25,12 @@ not_found do
   show :not_found, :title => "lost, are we?"
 end
 
+error do
+  @error = request.env['sinatra.error']
+  status 500
+  show :error, :title => "something has gone terribly wrong"
+end
+
 before do
   # The browser only sends http auth data for requests that are explicitly
   # required to do so. This way we get the real values of +#logged_in?+ and
