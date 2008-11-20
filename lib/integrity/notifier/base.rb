@@ -2,7 +2,9 @@ module Integrity
   class Notifier
     class Base
       def self.notify_of_build(build, config)
-        new(build, config).deliver!
+        Timeout.timeout(6) do
+          new(build, config).deliver!
+        end
       end
 
       def self.to_haml
