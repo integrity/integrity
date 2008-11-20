@@ -7,11 +7,11 @@ require File.dirname(__FILE__) + "/../lib/integrity"
 class WithIntegrity < Thor
   include FileUtils
 
-  desc "Install integrity at PATH", 
-       "Copy template files at PATH. After this, edit the files to your convenience"
+  desc "install [PATH]",
+       "Copy template files to PATH. Next, go there and edit them."
   def install(path)
     @root = File.expand_path(path)
-    
+
     create_dir_structure
     copy_template_files
     edit_template_files
@@ -19,28 +19,28 @@ class WithIntegrity < Thor
     after_setup_message
   end
 
-  desc "Create database based on the config file at CONFIG",
+  desc "create_db [CONFIG]",
        "Checks the `database_uri` in CONFIG and creates and bootstraps a database for integrity"
   def create_db(config)
     Integrity.new(config)
     DataMapper.auto_migrate!
   end
-  
+
   private
     attr_reader :root
-    
+
     def create_dir_structure
       mkdir_p root
       mkdir_p root / "builds"
       mkdir_p root / "log"
     end
-    
+
     def copy_template_files
       cp Integrity.root / "config" / "config.sample.ru",  root / "config.ru"
       cp Integrity.root / "config" / "config.sample.yml", root / "config.yml"
       cp Integrity.root / "config" / "thin.sample.yml",   root / "thin.yml"
     end
-    
+
     def edit_template_files
       edit_integrity_configuration
       edit_thin_configuration
@@ -58,7 +58,7 @@ class WithIntegrity < Thor
       config.gsub!(%r(/apps/integrity), root)
       File.open(root / 'thin.yml', 'w') { |f| f.puts config }
     end
-  
+
     def after_setup_message
       puts
       puts %Q(Awesome! Integrity was installed successfully!)
