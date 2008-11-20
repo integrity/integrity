@@ -35,8 +35,8 @@ module Integrity
     end
 
     def previous_builds
-      return [] if builds.count <= 1
-      builds.all(:order => [:created_at.desc], :offset => 1, :limit => builds.count - 1)
+      return [] if builds.size <= 1
+      builds.all(:order => [:created_at.desc], :offset => 1, :limit => builds.size - 1)
     end
 
     def status
