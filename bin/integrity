@@ -19,8 +19,8 @@ class WithIntegrity < Thor
     after_setup_message
   end
 
-  desc "Create databases for CONFIG",
-       "Create the database necessary to run Integrity"
+  desc "Create database based on the config file at CONFIG",
+       "Checks the `database_uri` in CONFIG and creates and bootstraps a database for integrity"
   def create_db(config)
     Integrity.config = config
     Integrity.new
