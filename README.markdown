@@ -3,8 +3,8 @@ Integrity
 
 Integrity is your friendly automated Continuous Integration server.
 
-It's fully usable from within its web interface (backed by [Sinatra][]), 
-allowing you to add a project, set preferences for it (where's the code 
+It's fully usable from within its web interface (backed by [Sinatra][]),
+allowing you to add a project, set preferences for it (where's the code
 repository, is it completely private or public, etc), and run the build command
 from there.
 
@@ -32,7 +32,7 @@ For deployment, we recommend [Thin][]. Provided with Integrity comes a thin.yml
 file, so all you need to do after running `integrity install` should be
 
     thin -C /path/to/my/app/thin.yml -R /path/to/my/app/config.ru start
-    
+
 And you should be up and running.
 
 If you want automatic commit processing, you currently need to be using
