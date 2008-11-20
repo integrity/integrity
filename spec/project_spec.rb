@@ -271,5 +271,12 @@ describe Integrity::Project do
       @email_notifier.should_receive(:notify_of_build).with(mock_build)
       @project.send(:send_notifications)
     end
+
+    it "should protect itself from eventual timeout error" do
+      @email_notifier.stub!(:notify_of_build).and_raise(Timeout::Error)
+      lambda do
+        @project.send(:send_notifications)
+      end.should_not raise_error
+    end
   end
 end

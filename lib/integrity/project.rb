@@ -76,7 +76,11 @@ module Integrity
       
       def send_notifications
         notifiers.each do |notifier|
-          notifier.notify_of_build last_build
+          begin
+            notifier.notify_of_build last_build
+          rescue Timeout::Error
+            next
+          end
         end
       end
   end
