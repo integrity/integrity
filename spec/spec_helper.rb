@@ -94,8 +94,7 @@ module AppSpecHelper
       :destroy => nil,
       :errors => stub("errors", :on => nil),
       :notifies? => false,
-      :enable_notifiers => nil,
-      :building? => true
+      :enable_notifiers => nil
     }.merge(messages)
 
     @project ||= stub("project", messages)
