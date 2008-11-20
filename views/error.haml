@@ -1,0 +1,29 @@
+.error
+  %h1
+    Whatever you do, DON'T PANIC!
+
+  %dl
+    %dt This is what happened:
+    %dd
+      %strong&= @error.message
+      %pre.backtrace= @error.backtrace.join("\n")
+
+    %dt What can I do?
+    %dd
+      Is your 
+      %a{ :href => "http://integrityapp.com/configure" } config 
+      ok? If not, try restarting integrity. If you think everything is fine,
+      then drop by our irc channel:
+      %a{ :href => "irc://irc.freenode.org:6667/integrity" } #integrity
+      on freenode, and we'll try to help.
+
+    %dt
+      What the hell is
+      = succeed "?" do
+        %strong Integrity
+    %dd
+      Integrity is your friendly
+      %a{ :href => "http://en.wikipedia.org/wiki/Continuous_integration" } Continuous Integration
+      server. If you want to know more about us, check our website at
+      = succeed "." do
+        %a{ :href => "http://integrityapp.com" } integrityapp.com
