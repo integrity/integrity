@@ -33,8 +33,7 @@ namespace :db do
   task :connect do
     config = File.expand_path(ENV['CONFIG']) if ENV['CONFIG']
     config = Integrity.root / 'config.yml' if File.exists?(Integrity.root / 'config.yml')
-    Integrity.config = config if config
-    Integrity.new
+    Integrity.new(config)
   end
 
   desc "Automigrate the database"
