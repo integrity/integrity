@@ -13,6 +13,8 @@ Gem::Specification.new do |s|
   s.rubyforge_project = %q{integrity}
   s.rubygems_version = %q{1.2.0}
   s.summary = %q{The easy and fun Continuous Integration server}
+  s.executables          = ['integrity']
+  s.post_install_message = %q{Run `integrity help` for information on how to setup Integrity.}
 
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
