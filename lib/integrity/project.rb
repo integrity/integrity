@@ -80,6 +80,7 @@ module Integrity
           begin
             notifier.notify_of_build last_build
           rescue Timeout::Error
+            Integrity.logger.info "#{notifier.name} notifier timed out"
             next
           end
         end
