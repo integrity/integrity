@@ -50,6 +50,7 @@ class WithIntegrity < Thor
       config = File.read(root / "config.yml")
       config.gsub!(%r(sqlite3:///var/integrity.db), "sqlite3://#{root}/integrity.db")
       config.gsub!(%r(/path/to/scm/exports),        "#{root}/builds")
+      config.gsub!(%r(/var/log),        "#{root}/log")
       File.open(root / "config.yml", "w") {|f| f.puts config }
     end
 
