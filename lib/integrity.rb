@@ -1,5 +1,6 @@
-__DIR__ = File.dirname(__FILE__)
-$:.unshift "#{__DIR__}/integrity", *Dir["#{__DIR__}/../vendor/**/lib"].to_a
+current_dir = File.expand_path(File.dirname(__FILE__))
+vendor_lib_directories = Dir[File.join(current_dir, '..', 'vendor/**/lib')]
+$:.unshift File.join(current_dir, 'integrity'), *vendor_lib_directories
 
 require 'rubygems'
 require 'json'
@@ -17,7 +18,12 @@ require "core_ext/object"
 require "core_ext/string"
 require "core_ext/time"
 
-%w(project build builder scm scm/git notifier).each &method(:require)
+require 'project'
+require 'build'
+require 'builder'
+require 'scm'
+require 'scm/git'
+require 'notifier'
 
 module Integrity
   def self.new(config_file = nil)
