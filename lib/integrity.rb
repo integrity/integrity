@@ -1,6 +1,5 @@
-current_dir = File.expand_path(File.dirname(__FILE__))
-vendor_lib_directories = Dir[File.join(current_dir, '..', 'vendor/**/lib')]
-$:.unshift File.join(current_dir, 'integrity'), *vendor_lib_directories
+__DIR__ = File.dirname(__FILE__)
+$:.unshift "#{__DIR__}/integrity", *Dir["#{__DIR__}/../vendor/**/lib"].to_a
 
 require 'rubygems'
 require 'json'
@@ -38,9 +37,9 @@ module Integrity
   def self.default_configuration
     @defaults ||= { :database_uri     => 'sqlite3::memory:',
                     :export_directory => root / 'exports',
-                    :log      => STDOUT,
-                    :base_uri => 'http://localhost:8910',
-                    :use_basic_auth => false }
+                    :log              => STDOUT,
+                    :base_uri         => 'http://localhost:8910',
+                    :use_basic_auth   => false }
   end
 
   def self.config
