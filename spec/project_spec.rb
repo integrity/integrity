@@ -273,10 +273,17 @@ describe Integrity::Project do
     end
 
     it "should protect itself from eventual timeout error" do
+      Integrity.logger.stub!(:info)
       @email_notifier.stub!(:notify_of_build).and_raise(Timeout::Error)
       lambda do
         @project.send(:send_notifications)
       end.should_not raise_error
+    end
+
+    it "should log timeout" do
+      @email_notifier.stub!(:notify_of_build).and_raise(Timeout::Error)
+      Integrity.logger.should_receive(:info).with("Email notifier timed out")
+      @project.send(:send_notifications)
     end
   end
 end
