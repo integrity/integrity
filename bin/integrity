@@ -48,15 +48,15 @@ class WithIntegrity < Thor
 
     def edit_integrity_configuration
       config = File.read(root / "config.yml")
-      config.gsub!(%r(sqlite3:///var/integrity.db), "sqlite3://#{root}/integrity.db")
-      config.gsub!(%r(/path/to/scm/exports),        "#{root}/builds")
-      config.gsub!(%r(/var/log),        "#{root}/log")
-      File.open(root / "config.yml", "w") {|f| f.puts config }
+      config.gsub! %r(sqlite3:///var/integrity.db), "sqlite3://#{root}/integrity.db"
+      config.gsub! %r(/path/to/scm/exports),        "#{root}/builds"
+      config.gsub! %r(/var/log),                    "#{root}/log"
+      File.open(root / "config.yml", "w") { |f| f.puts config }
     end
 
     def edit_thin_configuration
       config = File.read(root / 'thin.yml')
-      config.gsub!(%r(/apps/integrity), root)
+      config.gsub! %r(/apps/integrity), root
       File.open(root / 'thin.yml', 'w') { |f| f.puts config }
     end
 
