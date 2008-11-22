@@ -78,6 +78,7 @@ module Integrity
       def send_notifications
         notifiers.each do |notifier|
           begin
+            Integrity.log "Notifying of build #{last_build.short_commit_identifier} using the #{notifier.name} notifier"
             notifier.notify_of_build last_build
           rescue Timeout::Error
             Integrity.log "#{notifier.name} notifier timed out"
