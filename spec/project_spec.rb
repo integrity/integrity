@@ -251,7 +251,7 @@ describe Integrity::Project do
   
   describe "Sending notifications" do
     def mock_build
-      @build ||= mock("build")
+      @build ||= mock("build", :short_commit_identifier => "7be5d6d" )
     end
     
     before do
@@ -259,6 +259,8 @@ describe Integrity::Project do
       @email_notifier = @project.notifiers.create(:name => "Email")
       @email_notifier.stub!(:notify_of_build)
       @project.stub!(:notifiers).and_return([@email_notifier])
+      @project.stub!(:last_build).and_return(mock_build)
+      Integrity.logger.stub!(:info)
     end
     
     it "should iterate over the list of notifiers" do
@@ -267,13 +269,11 @@ describe Integrity::Project do
     end
     
     it "should call #notify_of_build on each notifier" do
-      @project.stub!(:last_build).and_return(mock_build)
       @email_notifier.should_receive(:notify_of_build).with(mock_build)
       @project.send(:send_notifications)
     end
 
     it "should protect itself from eventual timeout error" do
-      Integrity.logger.stub!(:info)
       @email_notifier.stub!(:notify_of_build).and_raise(Timeout::Error)
       lambda do
         @project.send(:send_notifications)
@@ -283,6 +283,11 @@ describe Integrity::Project do
     it "should log timeout" do
       @email_notifier.stub!(:notify_of_build).and_raise(Timeout::Error)
       Integrity.logger.should_receive(:info).with("Email notifier timed out")
+      @project.send(:send_notifications)
+    end
+
+    it "should log notifications it sends" do
+      Integrity.logger.should_receive(:info).with("Notifying of build 7be5d6d using the Email notifier")
       @project.send(:send_notifications)
     end
   end
