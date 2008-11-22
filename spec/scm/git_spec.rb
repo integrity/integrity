@@ -22,6 +22,12 @@ describe Integrity::SCM::Git do
     @git.name.should == "Git"
   end
 
+  specify "#log should delegate to Integrity#log with 'Git' as progname" do
+    message = lambda { "message" }
+    Integrity.logger.should_receive(:info).with("Git") { message }
+    @git.send(:log, "message")
+  end
+
   describe "Determining the state of the code for this project" do
     it "should know if a project has been cloned or not by looking at the directories" do
       File.stub!(:directory?).with("/var/integrity/exports/foca-integrity/.git").and_return(true)
@@ -36,6 +42,29 @@ describe Integrity::SCM::Git do
     it "should tell you if it's not in the desired branch" do
       @git.should_receive(:`).with("cd /var/integrity/exports/foca-integrity && git symbolic-ref HEAD").and_return("refs/heads/other_branch\n")
       @git.should_not be_on_branch
+    end
+  end
+
+  describe "Logging of operations" do
+    before do
+      @git.stub!(:`)
+      Integrity.stub!(:logger).and_return(mock("logger", :info => ""))
+    end
+
+    it "should log clone" do
+      @git.should_receive(:log).
+        with("Cloning git://github.com/foca/integrity.git to /var/integrity/exports/foca-integrity")
+      @git.clone
+    end
+
+    it "should log checkout" do
+      @git.should_receive(:log).with("Checking-out HEAD")
+      @git.checkout('HEAD')
+    end
+
+    it "should log pull" do
+      @git.should_receive(:log).with("Pull-ing in /var/integrity/exports/foca-integrity")
+      @git.pull
     end
   end
 
