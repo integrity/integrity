@@ -43,6 +43,7 @@ module Integrity
         end
     
         def clone
+          log "Cloning #{uri} to #{working_directory}"
           `git clone #{uri} #{working_directory}`
         end
 
@@ -52,11 +53,13 @@ module Integrity
             when local_branches.include?(branch) then branch
             else                                      "-b #{branch} origin/#{branch}"
           end
-          
+
+          log "Checking-out #{strategy}"
           `cd #{working_directory} && git checkout #{strategy}`
         end
 
         def pull
+          log "Pull-ing in #{working_directory}"
           `cd #{working_directory} && git pull`
         end
 
@@ -70,6 +73,10 @@ module Integrity
 
         def on_branch?
           File.basename(`cd #{working_directory} && git symbolic-ref HEAD`).chomp == branch
+        end
+
+        def log(message)
+          Integrity.logger.info("Git") { message }
         end
     end
   end
