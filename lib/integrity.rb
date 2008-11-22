@@ -13,9 +13,9 @@ require 'yaml'
 require 'logger'
 require 'digest/sha1'
 
-require "core_ext/object"
-require "core_ext/string"
-require "core_ext/time"
+require 'core_ext/object'
+require 'core_ext/string'
+require 'core_ext/time'
 
 require 'project'
 require 'build'
@@ -49,12 +49,12 @@ module Integrity
   def self.config=(file)
     @config = default_configuration.merge(YAML.load_file(file))
   end
+  
+  def self.log(message)
+    logger.info(message)
+  end
 
   def self.logger
     @logger ||= Logger.new(config[:log])
-  end
-
-  def self.logger=(file)
-    @logger = Logger.new(file)
   end
 end

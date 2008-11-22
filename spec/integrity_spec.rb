@@ -59,10 +59,5 @@ describe Integrity do
       Logger.should_receive(:new).with(STDOUT)
       Integrity.logger
     end
-
-    specify "Setting the log file create a new Logger logging to given file" do
-      Logger.should_receive(:new).with("/var/log/integrity.log")
-      Integrity.logger = "/var/log/integrity.log"
-    end
   end
 end
