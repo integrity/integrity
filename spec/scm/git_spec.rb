@@ -179,6 +179,8 @@ describe Integrity::SCM::Git do
   end
 
   describe "Doing all the low-level operations on the repo" do
+    before { @git.stub!(:log).and_return(true) }
+
     it "should pass the uri and expected working directory to git-clone when cloning" do
       @git.should_receive(:`).with("git clone git://github.com/foca/integrity.git /var/integrity/exports/foca-integrity")
       @git.clone
