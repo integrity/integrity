@@ -76,7 +76,7 @@ module Integrity
         end
 
         def log(message)
-          Integrity.logger.info("Git") { message }
+          Integrity.log("Git") { message }
         end
     end
   end

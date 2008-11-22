@@ -13,7 +13,7 @@ module Integrity
     end
 
     def build(commit)
-      Integrity.logger.info "Building #{commit} (#{@branch}) of #{@build.project.name} in #{export_directory} using #{scm_name}"
+      Integrity.log "Building #{commit} (#{@branch}) of #{@build.project.name} in #{export_directory} using #{scm_name}"
       @scm.with_revision(commit) { run_build_script }
       @build
     ensure
@@ -38,7 +38,7 @@ module Integrity
       end
 
       def run_build_script
-        Integrity.logger.info "Running `#{build_script}` in #{@scm.working_directory}"
+        Integrity.log "Running `#{build_script}` in #{@scm.working_directory}"
 
         IO.popen "(cd #{@scm.working_directory} && #{build_script}) 2>&1", "r" do |pipe|
           @build.output = pipe.read
