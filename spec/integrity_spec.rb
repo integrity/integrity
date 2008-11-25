@@ -49,15 +49,23 @@ describe Integrity do
   end
 
   describe "Logging" do
-    before(:each) { Integrity.instance_variable_set(:@logger, nil) }
-
-    it "should use Logger" do
-      Integrity.logger.should be_an_instance_of(Logger)
+    before do
+      Integrity.config[:log] = Integrity.root / "log" / "test.log"
+      Integrity.instance_variable_set(:@logger, nil)
+    end
+    
+    after do
+      FileUtils.rm(Integrity.config[:log])
     end
 
-    it "should log to STDOUT by default" do
-      Logger.should_receive(:new).with(STDOUT)
-      Integrity.logger
+    it "should understand info" do
+      Integrity.logger.should respond_to(:info)
+    end
+
+    it "should format the log messages nicely" do
+      Time.stub!(:now).and_return Time.mktime(2008, 11, 22, 18, 13, 30)
+      Integrity.log "hello world"
+      File.readlines(Integrity.root / "log" / "test.log").last.should == "[18:13:30] hello world\n"
     end
   end
 end
