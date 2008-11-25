@@ -50,11 +50,21 @@ module Integrity
     @config = default_configuration.merge(YAML.load_file(file))
   end
   
-  def self.log(message)
-    logger.info(message)
+  def self.log(message, &block)
+    logger.info(message, &block)
   end
 
   def self.logger
-    @logger ||= Logger.new(config[:log])
+    @logger ||= Logger.new(config[:log], "daily").tap do |logger|
+      logger.formatter = LogFormatter.new
+    end
   end
+  
+  private
+  
+    class LogFormatter < Logger::Formatter
+      def call(severity, time, progname, msg)
+        time.strftime("[%H:%M:%S] ") + msg2str(msg) + "\n"
+      end
+    end
 end
