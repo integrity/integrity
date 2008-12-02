@@ -15,7 +15,7 @@ class WithIntegrity < Thor
     create_dir_structure
     copy_template_files
     edit_template_files
-    create_db(root / 'config.yml')
+    create_db(root / "config.yml")
     after_setup_message
   end
 
@@ -55,9 +55,9 @@ class WithIntegrity < Thor
     end
 
     def edit_thin_configuration
-      config = File.read(root / 'thin.yml')
+      config = File.read(root / "thin.yml")
       config.gsub! %r(/apps/integrity), root
-      File.open(root / 'thin.yml', 'w') { |f| f.puts config }
+      File.open(root / "thin.yml", 'w') { |f| f.puts config }
     end
 
     def after_setup_message
