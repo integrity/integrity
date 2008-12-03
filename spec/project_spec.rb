@@ -3,7 +3,11 @@ require File.dirname(__FILE__) + '/spec_helper'
 describe Integrity::Project do
   include DatabaseSpecHelper
 
-  before { @project = Integrity::Project.new }
+  def klass
+    Integrity::Project
+  end
+
+  before { @project = Integrity::Project.generate }
 
   def valid_attributes(attributes={})
     { :name => "Integrity",
@@ -11,13 +15,36 @@ describe Integrity::Project do
       :permalink => "integrity" }.merge(attributes)
   end
 
-  it 'should not be valid' do
-    @project.should_not be_valid
+  specify "fixture should be valid" do
+    klass.make.should be_valid
   end
 
-  it "needs a name, a permalink, an uri, a branch and a command to be valid" do
-    @project.attributes = valid_attributes
-    @project.should be_valid
+  it 'should not be valid' do
+    klass.new.should_not be_valid
+  end
+
+  it "requires a name" do
+    klass.make(:name => nil).should_not be_valid
+  end
+
+  it "requires a permalink" do
+    klass.new(:permalink => nil).should_not be_valid
+  end
+
+  it "requires an URI" do
+    klass.make(:uri => nil).should_not be_valid
+  end
+
+  it "requires a build command" do
+    klass.make(:command => nil).should_not be_valid
+  end
+
+  it "requires a branch" do
+    klass.make(:branch => nil).should_not be_valid
+  end
+
+  it 'should validates name uniqueness' do
+    klass.generate(:name => @project.name).errors.on(:name).should include('Name is already taken')
   end
 
   it 'should have a name' do
@@ -25,28 +52,18 @@ describe Integrity::Project do
     @project.name.should == 'Integrity'
   end
 
-  it 'should validates name uniqueness' do
-    Integrity::Project.create(valid_attributes(:name => 'foobar'))
-    p = Integrity::Project.create(valid_attributes(:name => 'foobar'))
-    p.errors.on(:name).should include('Name is already taken')
-  end
-
   it 'should have a repository URI' do
     @project.uri = Addressable::URI.parse('git://github.com/foca/integrity.git')
     @project.uri.should be_an_instance_of(Addressable::URI)
   end
 
-  it "should have a default project branch" do
-    @project.branch.should == "master"
-  end
-
-  it 'should have a project branch' do
+  it 'should have a repository branch' do
     @project.branch = 'development'
     @project.branch.should == 'development'
   end
 
-  it 'should have a default build command' do
-    @project.command.should == 'rake'
+  it "should have a default project branch of 'master'" do
+    klass.new.branch.should == "master"
   end
 
   it 'should have a build command' do
@@ -54,13 +71,17 @@ describe Integrity::Project do
     @project.command.should == 'rake spec'
   end
 
-  it 'should have a default visibility of public' do
-    @project.should be_public
+  it 'should have a default build command' do
+    klass.new.command.should == 'rake'
   end
 
   it 'should have a visibility' do
     @project.public = false
     @project.should_not be_public
+  end
+
+  it 'should be puublic by default' do
+    @project.should be_public
   end
 
   describe "Setting the permalink" do
