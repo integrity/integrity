@@ -106,7 +106,7 @@ post "/:project/push" do
     payload = JSON.parse(params[:payload] || "")
 
     if Integrity.config[:build_all_commits]
-      payload['commits'].reverse.each do |commit|
+      payload['commits'].sort_by { |commit| Time.parse(commit['timestamp']) }.each do |commit|
         current_project.build(commit['id']) if payload['ref'] =~ /#{current_project.branch}/
       end
     else
