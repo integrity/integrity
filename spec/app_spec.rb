@@ -482,6 +482,7 @@ describe 'Web App' do
 
     before do
       Project.stub!(:first).with(:permalink => "github").and_return mock_project
+      Integrity.config[:build_all_commits] = true
     end
 
     it "should require authentication" do
@@ -525,6 +526,18 @@ describe 'Web App' do
     it "should not build the project if the commit isn't to the branch we're monitoring" do
       @project.should_not_receive(:build)
       post_it '/github/push', :payload => payload.sub('refs/heads/master', 'refs/heads/unstable')
+    end
+
+    describe 'When build_all_commits is false' do
+      before(:each) { Integrity.config[:build_all_commits] = false }
+
+      it 'should only build the after sha1' do
+        @project.should_receive(:build).with('41a212ee83ca127e3c8cf465891ab7216a705f59').never
+        @project.should_receive(:build).with('de8251ff97ee194a289832576287d6f8ad74e3d0')
+        post_it '/github/push', :payload => payload
+      end
+
+      after(:each) { Integrity.config[:build_all_commits] = true }
     end
 
     describe 'With invalid payload' do
