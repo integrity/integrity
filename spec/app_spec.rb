@@ -517,9 +517,9 @@ describe 'Web App' do
       status.should == 404
     end
 
-    it 'should make a new build for each commit' do
-      @project.should_receive(:build).with('41a212ee83ca127e3c8cf465891ab7216a705f59')
-      @project.should_receive(:build).with('de8251ff97ee194a289832576287d6f8ad74e3d0')
+    it 'should make a new build for each commit in ascending order of their dates' do
+      @project.should_receive(:build).with('de8251ff97ee194a289832576287d6f8ad74e3d0').ordered
+      @project.should_receive(:build).with('41a212ee83ca127e3c8cf465891ab7216a705f59').ordered
       post_it '/github/push', :payload => payload
     end
 
