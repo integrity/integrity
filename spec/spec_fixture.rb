@@ -1,22 +1,26 @@
 require 'rubygems'
 require 'dm-sweatshop'
 
+include DataMapper::Sweatshop::Unique
+
 class Array
-  def one_of
+  def pick
     self[rand(self.length)]
   end
 end
 
-Integrity::Project.fixture {{
-  :name       => (name = /\w+/.gen),
-  :permalink  => name,
-  :uri        => "git://github.com/#{/\w+/.gen}/#{name}",
-  :branch     => %(master bug_4567 build-in-badground).one_of,
-  :command    => "rake master",
-  :public     => true,
-  :building   => false,
-  :builds     => (1..30).of { Integrity::Build.gen }
-}}
+Integrity::Project.fixture {
+  name = /\w+/.gen
+
+  { :name       => unique { name.capitalize },
+    :permalink  => name,
+    :uri        => "git://github.com/#{/\w+/.gen}/#{name}",
+    :branch     => %w[master bug_4567 build-in-badground].pick,
+    :command    => "rake master",
+    :public     => true,
+    :building   => false,
+    :builds     => (1..30).of { Integrity::Build.gen }}
+}
 
 Integrity::Build.fixture {{
   :output     => /[:paragraph:]/.gen,
