@@ -80,14 +80,11 @@ describe Integrity::Project do
 
   describe "Setting the permalink" do
     before do
-      @project = Integrity::Project.new(:name => "Integrity", :uri => "git://github.com/foca/integrity.git")
-    end
-
-    it "should set the permalink before saving" do
-      @project.permalink.should be_nil
+      @project = klass.make(:name => "Integrity")
     end
 
     it "should set the permalink on save" do
+      @project.permalink.should be_nil
       @project.save
       @project.permalink.should == "integrity"
     end
@@ -98,7 +95,7 @@ describe Integrity::Project do
       @project.permalink.should == "focas-awesome-project-and-strange-name"
     end
 
-    it "should not end up having dashes at the end" do
+    it "should not ends up having dashes at the end" do
       @project.name = "Ends in symbols!@%^"
       @project.save
       @project.permalink.should == "ends-in-symbols"
