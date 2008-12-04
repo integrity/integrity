@@ -246,44 +246,37 @@ describe Integrity::Project do
     end
   end
   
-  describe "Sending notifications" do
-    def mock_build
-      @build ||= mock("build", :short_commit_identifier => "7be5d6d" )
-    end
-    
+  describe "When sending notifications" do
     before do
-      @email_notifier = @project.notifiers.create(:name => "Email")
-      @email_notifier.stub!(:notify_of_build)
-      @project.stub!(:notifiers).and_return([@email_notifier])
-      @project.stub!(:last_build).and_return(mock_build)
+      @notifier = Integrity::Notifier.make(:irc)
+      @project  = klass.gen(:builds => (5..10).of {Integrity::Build.make}, :notifiers => [@notifier])
       Integrity.logger.stub!(:info)
     end
     
     it "should iterate over the list of notifiers" do
+      pending
       @project.notifiers.should_receive(:each)
       @project.send(:send_notifications)
     end
     
-    it "should call #notify_of_build on each notifier" do
-      @email_notifier.should_receive(:notify_of_build).with(mock_build)
+    it "should call #notify_of_build on each notifier for its last build" do
+      @notifier.should_receive(:notify_of_build).with(@project.last_build)
       @project.send(:send_notifications)
     end
 
     it "should protect itself from eventual timeout error" do
-      @email_notifier.stub!(:notify_of_build).and_raise(Timeout::Error)
-      lambda do
-        @project.send(:send_notifications)
-      end.should_not raise_error
+      @notifier.stub!(:notify_of_build).and_raise(Timeout::Error)
+      lambda { @project.send(:send_notifications) }.should_not raise_error
     end
 
-    it "should log timeout" do
-      @email_notifier.stub!(:notify_of_build).and_raise(Timeout::Error)
-      Integrity.logger.should_receive(:info).with("Email notifier timed out")
+    it "should log timeout error" do
+      @notifier.stub!(:notify_of_build).and_raise(Timeout::Error)
+      Integrity.logger.should_receive(:info).with("IRC notifier timed out")
       @project.send(:send_notifications)
     end
 
     it "should log notifications it sends" do
-      Integrity.logger.should_receive(:info).with("Notifying of build 7be5d6d using the Email notifier")
+      Integrity.logger.should_receive(:info).with(/^Notifying of build (.*?) using the IRC notifier$/)
       @project.send(:send_notifications)
     end
   end
