@@ -176,18 +176,7 @@ describe Integrity::Project do
     end
   end
 
-  describe "When searching for its builds" do
-    before do
-      @project.update_attributes(:name => "Integrity", :uri => "git://github.com/foca/integrity.git")
-      5.times do
-        @project.builds.create(
-          :commit_identifier => 'commit sha1',
-          :commit_metadata => {:author => "someguy", :date => "yesterday"},
-          :output => "o"
-        )
-      end
-    end
-
+  describe "When searching for its previous builds, given it has 5 builds" do
     it "should find the last build by ordering chronologically" do
       @project.builds.should_receive(:last)
       @project.last_build
