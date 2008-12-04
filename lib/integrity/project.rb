@@ -35,9 +35,7 @@ module Integrity
     end
 
     def previous_builds
-      builds.all(:order => [:created_at.desc]).tap do |builds|
-        builds.shift
-      end
+      builds.all(:order => [:created_at.desc]).tap { |builds| builds.shift }
     end
 
     def status
