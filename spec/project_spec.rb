@@ -118,7 +118,7 @@ describe Integrity::Project do
     end
 
     it "should be public if set to any non-false value" do
-      @project.public = "on"
+      @project.public = "false"
       @project.save
       @project.reload.should be_public
     end
