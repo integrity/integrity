@@ -124,10 +124,9 @@ describe Integrity::Project do
     end
   end
 
-  describe 'When building it' do
-    before(:each) do
-      @uri = Addressable::URI.parse('git://github.com/foca/integrity.git')
-      @project = Integrity::Project.new(:uri => @uri, :branch  => 'production', :command  => 'rake spec')
+  describe "Building itself" do
+    before do
+      @project = klass.generate
       @builder = mock('Builder', :build => true)
       Integrity::Builder.stub!(:new).and_return(@builder)
     end
@@ -154,9 +153,7 @@ describe Integrity::Project do
     end
 
     it "should set 'building?' to true while building" do
-      @builder.should_receive(:build) do
-        @project.should be_building
-      end
+      @builder.should_receive(:build) { @project.should be_building }
       @project.build
     end
 
@@ -166,11 +163,11 @@ describe Integrity::Project do
     end
 
     it "should ensure 'building?' is false even if the build raises an exception" do
-      lambda {
+      lambda do
         @builder.stub!(:build).and_raise(RuntimeError)
         @project.build
         @project.should_not be_building
-      }.should raise_error(RuntimeError)
+      end.should raise_error(RuntimeError)
     end
     
     it "should deliver the corresponding notifications after building" do
