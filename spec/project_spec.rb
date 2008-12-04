@@ -209,7 +209,7 @@ describe Integrity::Project do
     end
 
     it "should be 'failed' given its last build failed" do
-      klass.gen(:builds => 1.of {Integrity::Build.make(:failed)}).status.should == :failed
+      klass.gen(:builds => 1.of {Integrity::Build.make(:successful => false)}).status.should == :failed
     end
 
     it "should return nil if it has never been built" do
