@@ -1,4 +1,5 @@
 require File.dirname(__FILE__) + '/../lib/integrity'
+require File.dirname(__FILE__) + '/spec_fixture'
 require 'spec'
 
 module NotifierSpecHelper
