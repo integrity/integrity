@@ -35,11 +35,7 @@ module Integrity
       end
       
       def self.list_of_enabled_notifiers(names)
-        case names
-          when Array then names
-          when NilClass then []
-          else [names]
-        end
+        [*names].reject { |n| n.nil? }
       end
   end
 end
