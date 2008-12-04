@@ -9,79 +9,81 @@ describe Integrity::Project do
 
   before(:each) { @project = klass.generate }
 
-  specify "fixture should be valid" do
-    klass.gen.should be_valid
-  end
-
-  it 'should not be valid' do
-    klass.new.should_not be_valid
-  end
-
-  it "requires a name" do
-    klass.make(:name => nil).should_not be_valid
-  end
-
-  it "requires a permalink" do
-    klass.new(:permalink => nil).should_not be_valid
-  end
-
-  it "requires an URI" do
-    klass.make(:uri => nil).should_not be_valid
-  end
-
-  it "requires a build command" do
-    klass.make(:command => nil).should_not be_valid
-  end
-
-  it "requires a branch" do
-    klass.make(:branch => nil).should_not be_valid
-  end
-
-  it 'should validates name uniqueness' do
-    klass.generate(:name => @project.name).errors.on(:name).should include('Name is already taken')
-  end
-
-  it 'should have a name' do
-    @project.name = 'Integrity'
-    @project.name.should == 'Integrity'
-  end
-
-  it 'should have a repository URI' do
-    @project.uri = Addressable::URI.parse('git://github.com/foca/integrity.git')
-    @project.uri.should be_an_instance_of(Addressable::URI)
-  end
-
-  it 'should have a repository branch' do
-    @project.branch = 'development'
-    @project.branch.should == 'development'
-  end
-
-  it "should have a default project branch of 'master'" do
-    klass.new.branch.should == "master"
-  end
-
-  it 'should have a build command' do
-    @project.command = 'rake spec'
-    @project.command.should == 'rake spec'
-  end
-
-  it 'should have a default build command' do
-    klass.new.command.should == 'rake'
-  end
-
-  it 'should have a visibility' do
-    @project.public = false
-    @project.should_not be_public
-  end
-
-  it 'should be puublic by default' do
-    @project.should be_public
-  end
-
-  describe "Setting the permalink" do
-    before do
-      @project = klass.make(:name => "Integrity")
+  describe "Validation" do
+    specify "fixture should be valid" do
+      klass.gen.should be_valid
     end
+
+    specify "a blank new project should not be valid" do
+      klass.new.should_not be_valid
+    end
+
+    it "requires a name" do
+      klass.make(:name => nil).should_not be_valid
+    end
+
+    it "requires a permalink" do
+      klass.new(:permalink => nil).should_not be_valid
+    end
+
+    it "requires an URI" do
+      klass.make(:uri => nil).should_not be_valid
+    end
+
+    it "requires a build command" do
+      klass.make(:command => nil).should_not be_valid
+    end
+
+    it "requires a branch" do
+      klass.make(:branch => nil).should_not be_valid
+    end
+
+    it 'should validates name uniqueness' do
+      klass.generate(:name => @project.name).errors.on(:name).should include('Name is already taken')
+    end
+  end
+
+  describe "Properties" do
+    it 'should have a name' do
+      @project.name = 'Integrity'
+      @project.name.should == 'Integrity'
+    end
+
+    it 'should have a repository URI' do
+      @project.uri = Addressable::URI.parse('git://github.com/foca/integrity.git')
+      @project.uri.should be_an_instance_of(Addressable::URI)
+    end
+
+    it 'should have a repository branch' do
+      @project.branch = 'development'
+      @project.branch.should == 'development'
+    end
+
+    it "should have a default project branch of 'master'" do
+      klass.new.branch.should == "master"
+    end
+
+    it 'should have a build command' do
+      @project.command = 'rake spec'
+      @project.command.should == 'rake spec'
+    end
+
+    it 'should have a default build command' do
+      klass.new.command.should == 'rake'
+    end
+
+    it 'should have a visibility' do
+      @project.public = false
+      @project.should_not be_public
+    end
+
+    it 'should be public by default' do
+      @project.should be_public
+    end
+  end
+
+  describe "When setting the permalink" do
+    before { @project = klass.make(:name => "Integrity") }
 
     it "should set the permalink on save" do
       @project.permalink.should be_nil
@@ -102,7 +104,7 @@ describe Integrity::Project do
     end
   end
 
-  describe "Ensuring the public/private status" do
+  describe "When setting its visibility (public/private)" do
     before { @project = klass.make }
 
     it "should be public after saving" do
@@ -124,14 +126,14 @@ describe Integrity::Project do
     end
   end
 
-  describe "Building itself" do
+  describe "When building itself" do
     before do
       @project = klass.generate
       @builder = mock('Builder', :build => true)
       Integrity::Builder.stub!(:new).and_return(@builder)
     end
 
-    it "should not build if it's already building" do
+    it "should not build if it already is building" do
       @project.stub!(:building?).and_return(true)
       Integrity::Builder.should_not_receive(:new)
       @project.build
