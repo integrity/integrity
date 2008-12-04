@@ -34,3 +34,10 @@ Integrity::Build.fixture do
     :commit_identifier => Digest::SHA1.hexdigest(/[:paragraph:]/.gen),
     :commit_metadata   => commit_metadata }
 end
+
+Integrity::Build.fixture(:failed) do
+  { :output     => /[:paragraph:]/.gen,
+    :successful => false,
+    :commit_identifier => Digest::SHA1.hexdigest(/[:paragraph:]/.gen),
+    :commit_metadata   => commit_metadata }
+end

@@ -203,9 +203,13 @@ describe Integrity::Project do
     end
   end
 
-  describe "Determining its status" do
-    it "should return the status of its last build" do
-      @project.status.should == :success
+  describe "When determining its status" do
+    it "should be 'success' given its last build was successful" do
+      klass.gen(:builds => 1.of {Integrity::Build.make}).status.should == :success
+    end
+
+    it "should be 'failed' given its last build failed" do
+      klass.gen(:builds => 1.of {Integrity::Build.make(:failed)}).status.should == :failed
     end
 
     it "should return nil if it has never been built" do
