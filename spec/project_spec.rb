@@ -7,16 +7,10 @@ describe Integrity::Project do
     Integrity::Project
   end
 
-  before { @project = Integrity::Project.generate }
-
-  def valid_attributes(attributes={})
-    { :name => "Integrity",
-      :uri => "git://github.com/foca/integrity.git",
-      :permalink => "integrity" }.merge(attributes)
-  end
+  before(:each) { @project = klass.generate }
 
   specify "fixture should be valid" do
-    klass.make.should be_valid
+    klass.gen.should be_valid
   end
 
   it 'should not be valid' do
