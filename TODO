@@ -1,0 +1,2 @@
+- Integrity::SCM should recognize uri that start with git:// too (not just /\.git$/)
+- Rename commit_metadata to commit_meta_data
