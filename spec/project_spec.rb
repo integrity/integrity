@@ -187,13 +187,11 @@ describe Integrity::Project do
     end
 
     it "should return an empty array if it has only one build" do
-      @project.builds.to_a[1..-1].map {|b| b.destroy }
-      @project.previous_builds.should be_empty
+      klass.generate(:builds => 1.of { Integrity::Build.make }).previous_builds.should be_empty
     end
 
     it "should return an empty array if there are no builds" do
-      @project.builds.map {|b| b.destroy }
-      @project.previous_builds.should be_empty
+      klass.generate(:builds => []).previous_builds.should be_empty
     end
   end
 
