@@ -25,8 +25,7 @@ Integrity::Project.fixture do
     :branch     => %w[master bug_4567 build-in-badground].pick,
     :command    => "rake master",
     :public     => true,
-    :building   => false,
-    :builds     => 5.of { Integrity::Build.make } }
+    :building   => false }
 end
 
 Integrity::Build.fixture do

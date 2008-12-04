@@ -178,7 +178,13 @@ describe Integrity::Project do
     end
   end
 
-  describe "When searching for its previous builds, given it has 5 builds" do
+  describe "When finding its previous builds, given it has 5 builds" do
+    before { @project = klass.generate(:builds => 5.of {Integrity::Build.make}) }
+
+    it "should have 5 builds" do
+      @project.should have(5).builds
+    end
+
     it "should find the last build by ordering chronologically" do
       @project.builds.should_receive(:last)
       @project.last_build
