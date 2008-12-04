@@ -235,18 +235,14 @@ describe Integrity::Project do
   end
   
   describe "Getting the config for a Notifier" do
-    before do
-      @project.update_attributes(:name => "Integrity", :uri => "git://github.com/foca/integrity.git")
-      @project.notifiers.create(:name => "Stub", :config => { :a => 1 })
-    end
-    
     it "should return the correct configuration if the notifier was registered for the project" do
-      @project.config_for(Integrity::Notifier::Stub).should == { :a => 1 }
+      notifier = Integrity::Notifier.make(:irc)
+      project = klass.generate(:notifiers => [notifier])
+      project.config_for(Integrity::Notifier::IRC).should == notifier.config
     end
     
     it "should return an empty hash if the notifier was not registered for the project" do
-      class Integrity::Notifier::Twitter; end # we don't care if the class actually exists or does anything
-      @project.config_for(Integrity::Notifier::Twitter).should == {}
+      klass.gen.config_for(Integrity::Notifier::IRC).should == {}
     end
   end
   
@@ -256,7 +252,6 @@ describe Integrity::Project do
     end
     
     before do
-      @project.update_attributes(:name => "Integrity", :uri => "git://github.com/foca/integrity.git")
       @email_notifier = @project.notifiers.create(:name => "Email")
       @email_notifier.stub!(:notify_of_build)
       @project.stub!(:notifiers).and_return([@email_notifier])

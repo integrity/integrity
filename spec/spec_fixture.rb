@@ -19,6 +19,12 @@ def commit_metadata
 EOS
 end
 
+def notifier_config
+  {}.tap do |config|
+    5.times { config[/\w+/.gen] = /\w+/.gen }
+  end
+end
+
 Integrity::Project.fixture do
   { :name       => (name = unique { /\w+/.gen }),
     :uri        => "git://github.com/#{/\w+/.gen}/integrity.git",
@@ -33,4 +39,9 @@ Integrity::Build.fixture do
     :successful => true,
     :commit_identifier => Digest::SHA1.hexdigest(/[:paragraph:]/.gen),
     :commit_metadata   => commit_metadata }
+end
+
+Integrity::Notifier.fixture(:irc) do
+  class Integrity::Notifier::IRC < Integrity::Notifier::Base;end
+  { :name => "IRC", :config => notifier_config }
 end
