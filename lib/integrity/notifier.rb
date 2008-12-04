@@ -12,9 +12,7 @@ module Integrity
     validates_present :project_id
     
     def self.available
-      @available ||= constants.map {|name| const_get(name) }.select do |notifier|
-        notifier.respond_to?(:to_haml) && notifier.respond_to?(:notify_of_build)
-      end - [Notifier::Base]
+      @available ||= constants.map { |name| const_get(name) }.select { |notifier| valid_notifier?(notifier) }
     end
     
     def self.enable_notifiers(project, enabled, config={})
@@ -22,6 +20,7 @@ module Integrity
       list_of_enabled_notifiers(enabled).each do |name|
         create! :project_id => project, :name => name, :config => config[name]
       end
+      
     end
     
     def notify_of_build(build)
@@ -37,6 +36,12 @@ module Integrity
       def self.list_of_enabled_notifiers(names)
         [*names].reject { |n| n.nil? }
       end
+      private_class_method :list_of_enabled_notifiers
+
+      def self.valid_notifier?(notifier)
+        notifier.respond_to?(:to_haml) && notifier.respond_to?(:notify_of_build) && notifier != Notifier::Base
+      end
+      private_class_method :valid_notifier?
   end
 end
 
