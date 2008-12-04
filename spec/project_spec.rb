@@ -103,9 +103,7 @@ describe Integrity::Project do
   end
 
   describe "Ensuring the public/private status" do
-    before do
-      @project = Integrity::Project.new(:name => "Integrity", :uri => "git://github.com/foca/integrity.git")
-    end
+    before { @project = klass.make }
 
     it "should be public after saving" do
       @project.public = true
