@@ -42,6 +42,10 @@ Integrity::Build.fixture do
 end
 
 Integrity::Notifier.fixture(:irc) do
-  class Integrity::Notifier::IRC < Integrity::Notifier::Base;end
+  class Integrity::Notifier::IRC < Integrity::Notifier::Base
+    def self.to_haml; ""; end
+    def deliver!; nil; end
+  end
+
   { :name => "IRC", :config => notifier_config }
 end
