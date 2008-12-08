@@ -1,12 +1,10 @@
-# -*- encoding: utf-8 -*-
-
 Gem::Specification.new do |s|
   s.name = %q{integrity}
   s.version = "0.1.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Nicol\303\241s Sanguinetti", "Simon Rozet"]
-  s.date = %q{2008-11-22}
+  s.date = %q{2008-12-08}
   s.default_executable = %q{integrity}
   s.description = %q{Your Friendly Continuous Integration server. Easy, fun and painless!}
   s.email = %q{contacto@nicolassanguinetti.info}
@@ -16,14 +14,14 @@ Gem::Specification.new do |s|
   s.post_install_message = %q{Run `integrity help` for information on how to setup Integrity.}
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{integrity}
-  s.rubygems_version = %q{1.3.1}
+  s.rubygems_version = %q{1.2.0}
   s.summary = %q{The easy and fun Continuous Integration server}
 
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 2
 
-    if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
+    if current_version >= 3 then
       s.add_runtime_dependency(%q<sinatra>, [">= 0.3.2"])
       s.add_runtime_dependency(%q<haml>, [">= 0"])
       s.add_runtime_dependency(%q<dm-core>, [">= 0.9.5"])
@@ -37,6 +35,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<foca-sinatra-diddies>, [">= 0.0.2"])
       s.add_runtime_dependency(%q<rspec_hpricot_matchers>, [">= 0"])
       s.add_runtime_dependency(%q<thor>, [">= 0"])
+      s.add_runtime_dependency(%q<bcrypt-ruby>, [">= 0"])
     else
       s.add_dependency(%q<sinatra>, [">= 0.3.2"])
       s.add_dependency(%q<haml>, [">= 0"])
@@ -51,6 +50,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<foca-sinatra-diddies>, [">= 0.0.2"])
       s.add_dependency(%q<rspec_hpricot_matchers>, [">= 0"])
       s.add_dependency(%q<thor>, [">= 0"])
+      s.add_dependency(%q<bcrypt-ruby>, [">= 0"])
     end
   else
     s.add_dependency(%q<sinatra>, [">= 0.3.2"])
@@ -66,5 +66,6 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<foca-sinatra-diddies>, [">= 0.0.2"])
     s.add_dependency(%q<rspec_hpricot_matchers>, [">= 0"])
     s.add_dependency(%q<thor>, [">= 0"])
+    s.add_dependency(%q<bcrypt-ruby>, [">= 0"])
   end
 end
