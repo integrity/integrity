@@ -129,7 +129,7 @@ describe Integrity::Project do
   describe "When building itself" do
     before do
       @project = klass.generate
-      @builder = mock('Builder', :build => true)
+      @builder = mock('ProjectBuilder', :build => true)
       Integrity::ProjectBuilder.stub!(:new).and_return(@builder)
     end
 
