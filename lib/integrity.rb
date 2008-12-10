@@ -22,7 +22,7 @@ require "core_ext/time"
 
 require "project"
 require "build"
-require "builder"
+require "project_builder"
 require "scm"
 require "scm/git"
 require "notifier"

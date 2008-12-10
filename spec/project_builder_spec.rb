@@ -1,6 +1,6 @@
 require  File.dirname(__FILE__) + '/spec_helper'
 
-describe Integrity::Builder do
+describe Integrity::ProjectBuilder do
   def mock_project(messages={})
     @project ||= begin
       uri = Addressable::URI.parse("git://github.com/foca/integrity.git")
@@ -40,7 +40,7 @@ describe Integrity::Builder do
 
   before do
     Integrity.stub!(:config).and_return(:export_directory => "/var/integrity/exports")
-    Integrity::Builder.class_eval { public :export_directory, :run_build_script, :scm_name }
+    Integrity::ProjectBuilder.class_eval { public :export_directory, :run_build_script, :scm_name }
     Integrity::SCM.stub!(:working_tree_path).and_return("foca-integrity")
   end
 
@@ -48,20 +48,20 @@ describe Integrity::Builder do
     it 'should instantiate a new Build model' do
       Integrity::SCM.stub!(:new).and_return(mock_scm)
       Integrity::Build.should_receive(:new).and_return(@build)
-      Integrity::Builder.new(mock_project)
+      Integrity::ProjectBuilder.new(mock_project)
     end
 
     it "should creates a new SCM object using the given URI's and given options and pass it the build" do
       Integrity::Build.stub!(:new).and_return(mock_build)
       Integrity::SCM.should_receive(:new).with(mock_project.uri, "master", "/var/integrity/exports/foca-integrity-master")
-      Integrity::Builder.new(mock_project)
+      Integrity::ProjectBuilder.new(mock_project)
     end
   end
 
   before(:each) do
     Integrity::SCM.stub!(:new).and_return(mock_scm)
     Integrity::Build.stub!(:new).and_return(mock_build)
-    @builder = Integrity::Builder.new(mock_project)
+    @builder = Integrity::ProjectBuilder.new(mock_project)
   end
 
   specify "#scm_name should give the name of the SCM being used" do

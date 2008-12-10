@@ -24,7 +24,7 @@ module Integrity
     def build(commit_identifier="HEAD")
       return if building?
       update_attributes(:building => true)
-      Builder.new(self).build(commit_identifier)
+      ProjectBuilder.new(self).build(commit_identifier)
     ensure
       update_attributes(:building => false)
       send_notifications
@@ -70,7 +70,7 @@ module Integrity
 
       def delete_code
         builds.destroy!
-        Builder.new(self).delete_code
+        ProjectBuilder.new(self).delete_code
       end
       
       def send_notifications
