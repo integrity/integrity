@@ -8,7 +8,7 @@
     %link{ :media => "screen", :type => "text/css", :href => "/buttons.css", :rel => "stylesheet" }
     %link{ :media => "screen", :type => "text/css", :href => "/integrity.css", :rel => "stylesheet" }
     - unless @project.nil?
-      %link{ :rel => "alternate", :type => "application/rss+xml", :title => "Build history RSS", :href => "#{project_url(@project)}.xml"}
+      %link{ :rel => "alternate", :type => "application/rss+xml", :title => "Build history RSS", :href => "#{project_path(@project)}.xml"}
     
   %body
     #header

@@ -42,7 +42,7 @@
   %p
     You can use this Push URL with your GitHub project to enable automated continuous integration.
   %p
-    %code#push_url= push_url_for(@project)
+    %code#push_path= push_path_for(@project)
 
   %form{ :method => "post", :action => project_path(@project) }
     .hidden
