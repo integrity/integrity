@@ -9,7 +9,7 @@
   %ul#projects
     - @projects.each do |project|
       %li{ :class => cycle("even", "odd") + (project.building? ? ' building' : '') + (project.last_build ? (project.last_build.successful? ? ' success' : ' failed') : '') }
-        %a{ :href => project_url(project) }&= project.name
+        %a{ :href => project_path(project) }&= project.name
         .meta
           - if project.building?
             Building!

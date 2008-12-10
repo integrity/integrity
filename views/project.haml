@@ -1,8 +1,8 @@
 #administrative
-  %a{ :href => project_url(@project, :edit) } Edit Project
+  %a{ :href => project_path(@project, :edit) } Edit Project
 
 - if @project.builds.empty?
-  %form.blank_slate{ :action => project_url(@project, :builds), :method => :post }
+  %form.blank_slate{ :action => project_path(@project, :builds), :method => :post }
     %p No builds for this project, buddy
     %h1
       You can request a
@@ -12,7 +12,7 @@
   #last_build{ :class => @build.status }
     = haml(:build_info, :layout => false)
 
-  %form{ :action => project_url(@project, :builds), :method => :post }
+  %form{ :action => project_path(@project, :builds), :method => :post }
     %p.submit
       %button{ :type => :submit } Request Manual Build
 
@@ -21,7 +21,7 @@
     %ul#previous_builds
       - @project.previous_builds.each do |build|
         %li{ :class => build.status }
-          %a{ :href => build_url(build) }
+          %a{ :href => build_path(build) }
             %strong.build
               Build
               &= build.short_commit_identifier
