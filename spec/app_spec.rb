@@ -22,12 +22,12 @@ describe 'Web App' do
 
     it 'should propose to login if not logged in' do
       get_it '/'
-      @response.should have_tag('#footer a[@href="/login"]', 'Log In')
+      body.should have_tag('#footer a[@href="/login"]', 'Log In')
     end
 
     it 'should say hello to the logged in user' do
       get_it '/', :env => {'REMOTE_USER' => 'user'}
-      @response.should have_tag('strong', 'user')
+      body.should have_tag('strong', 'user')
     end
   end
 
@@ -38,7 +38,7 @@ describe 'Web App' do
 
     it 'should not display anything related to auth' do
       get_it '/'
-      @response.should_not have_tag('#footer')
+      body.should_not have_tag('#footer')
     end
   end
 
@@ -60,12 +60,12 @@ describe 'Web App' do
 
       it "should tell you that you have no projects" do
         get_it "/"
-        @response.should have_tag(".blank_slate", /none yet/i)
+        body.should have_tag(".blank_slate", /none yet/i)
       end
 
       it "should have a link to add a new project" do
         get_it "/"
-        @response.should have_tag(".blank_slate a[@href=/new]", /create your first project/i)
+        body.should have_tag(".blank_slate a[@href=/new]", /create your first project/i)
       end
     end
 
