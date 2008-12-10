@@ -1,5 +1,5 @@
 module Integrity
-  class Builder
+  class ProjectBuilder
     attr_reader :build_script
 
     def initialize(project)

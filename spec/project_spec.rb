@@ -130,17 +130,17 @@ describe Integrity::Project do
     before do
       @project = klass.generate
       @builder = mock('Builder', :build => true)
-      Integrity::Builder.stub!(:new).and_return(@builder)
+      Integrity::ProjectBuilder.stub!(:new).and_return(@builder)
     end
 
     it "should not build if it already is building" do
       @project.stub!(:building?).and_return(true)
-      Integrity::Builder.should_not_receive(:new)
+      Integrity::ProjectBuilder.should_not_receive(:new)
       @project.build
     end
 
-    it 'should instantiate a new Builder and pass itself to it' do
-      Integrity::Builder.should_receive(:new).with(@project).and_return(@builder)
+    it 'should instantiate a new ProjectBuilder and pass itself to it' do
+      Integrity::ProjectBuilder.should_receive(:new).with(@project).and_return(@builder)
       @project.build
     end
 
