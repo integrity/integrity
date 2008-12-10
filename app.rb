@@ -62,7 +62,7 @@ post "/" do
   @project = Project.new(params[:project_data])
   if @project.save
     @project.enable_notifiers(params["enabled_notifiers[]"], params["notifiers"])
-    redirect project_url(@project)
+    redirect project_path(@project)
   else
     show :new, :title => ["projects", "new project"]
   end
@@ -202,17 +202,29 @@ helpers do
     next_value = @cycles[values] = (@cycles[values] + 1) % values.size
     values[next_value]
   end
-
-  def project_url(project, *path)
+  
+  def integrity_domain
+    Addressable::URI.parse(Integrity.config[:base_uri]).to_s
+  end
+  
+  def project_path(project, *path)
     "/" << [project.permalink, *path].join("/")
   end
 
+  def project_url(project, *path)
+    "#{integrity_domain}#{project_path(project, *path)}"
+  end
+
   def push_url_for(project)
-    Addressable::URI.parse(Integrity.config[:base_uri]).join("#{project_url(project)}/push").to_s
+    "#{project_url(project)}/push"
+  end
+  
+  def build_path(build)
+    "/#{build.project.permalink}/builds/#{build.commit_identifier}"
   end
 
   def build_url(build)
-    "/#{build.project.permalink}/builds/#{build.commit_identifier}"
+    "#{integrity_domain}#{build_path(build)}"
   end
 
   def filter_attributes_of(model)

@@ -366,7 +366,7 @@ describe 'Web App' do
     it "should redirect to the project page if the update is valid" do
       mock_project.should_receive(:update_attributes).and_return(true)
       put_it "/integrity"
-      location.should == "/integrity"
+      location.should == "http://foo.org/integrity"
     end
 
     it "should re-render the form if the update isn't valid" do
@@ -684,7 +684,10 @@ describe 'Web App' do
   end
 
   describe "Helpers" do
-    before { @context = Sinatra::EventContext.new(stub("request"), stub("response", :body= => nil), stub("route params")) }
+    before do
+      @context = Sinatra::EventContext.new(stub("request"), stub("response", :body= => nil), stub("route params"))
+      Integrity.config.stub!(:[]).with(:base_uri).and_return('http://foo.org')
+    end
 
     describe "#current_project" do
       before { @context.stub!(:params).and_return(:project => "integrity") }
@@ -775,20 +778,26 @@ describe 'Web App' do
         @context.cycle("red", "green", "blue").should == "red"
       end
     end
+    
+    describe "#integrity_domain" do
+      it "should be the domain from the config" do
+        @context.integrity_domain.should == "http://foo.org"
+      end
+    end
 
     describe "#project_url" do
       it "should receive a project and return a link to it" do
-        @context.project_url(mock_project).should == "/integrity"
+        @context.project_url(mock_project).should == "http://foo.org/integrity"
       end
 
       it "should add whatever other arguments are passed as tokens in the path" do
-        @context.project_url(mock_project, :build, :blah).should == "/integrity/build/blah"
+        @context.project_url(mock_project, :build, :blah).should == "http://foo.org/integrity/build/blah"
       end
     end
 
     describe '#push_url_for' do
       it 'should receive a project and return its github push url using :base_uri option' do
-        Integrity.config.should_receive(:[]).with(:base_uri).and_return('http://foo.org')
+        Integrity.config.should_receive(:[]).with(:base_uri)
         @context.push_url_for(mock_project).should == 'http://foo.org/integrity/push'
       end
     end
@@ -802,7 +811,7 @@ describe 'Web App' do
       end
 
       it 'should receive a build and return a link to it' do
-        @context.build_url(@build).should == '/integrity/builds/d32adaa7e42622f5a2f0526985dc010915fab0bf'
+        @context.build_url(@build).should == 'http://foo.org/integrity/builds/d32adaa7e42622f5a2f0526985dc010915fab0bf'
       end
     end
 
