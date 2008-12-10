@@ -1,4 +1,4 @@
-%form{ :method => "post", :action => (@project.new_record? ? "/" : project_url(@project)) }
+%form{ :method => "post", :action => (@project.new_record? ? "/" : project_path(@project)) }
   - unless @project.new_record?
     .hidden
       %input{ :name => "_method", :type => "hidden", :value => "put" }
@@ -44,7 +44,7 @@
   %p
     %code#push_url= push_url_for(@project)
 
-  %form{ :method => "post", :action => project_url(@project) }
+  %form{ :method => "post", :action => project_path(@project) }
     .hidden
       %input{ :name => "_method", :type => "hidden", :value => "delete" }
     %h2 Delete this project
