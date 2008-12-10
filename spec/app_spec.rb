@@ -313,6 +313,79 @@ describe 'Web App' do
       end
     end
   end
+  
+  describe "GET /:project.rss" do
+    it "should load the project from the database" do
+      Project.should_receive(:first).with(:permalink => "integrity").and_return(mock_project)
+      get_it "/integrity.rss"
+    end
+    
+    it "should have a header for RSS" do
+      get_it "/integrity.rss"
+      headers['Content-Type'].should == 'application/rss+xml; charset=utf-8'
+    end
+    
+    it 'should be 404 if unknown project' do
+      Project.stub!(:first).and_return(nil)
+      get_it '/integrity.rss'
+      status.should == 404
+    end
+    
+    describe 'without builds' do
+      before(:each) do        
+        @project = mock_project(:builds => [])
+        Project.stub!(:first).with(:permalink => "integrity").and_return(mock_project)
+      end
+
+      it "should be success" do
+        get_it "/integrity.rss"
+        status.should == 200
+      end
+
+      it "should have no <item>s" do
+        get_it "/integrity.rss"
+        body.should_not have_tag("item")
+      end
+    end
+
+    describe 'with builds' do
+      before(:each) do
+        @build_successful = mock_build(:successful? => true)
+        @build_failed = mock_build(:successful? => false)
+        @project = mock_project(
+          :builds     => [@build_successful, @build_failed]
+        )
+        
+        @project.builds.map {|build| build.stub!(:project).and_return(@project) }
+        
+        Project.stub!(:first).with(:permalink => "integrity").and_return(@project)
+      end
+
+      it "should be success" do
+        get_it "/integrity.rss"
+        status.should == 200
+      end
+      
+      it "should have two <item> tags" do
+        get_it '/integrity.rss'
+        body.should have_tag("item", :count => 2)
+      end
+
+      it 'should have an <item> with a successful build title' do
+        @build_successful.stub!(:short_commit_identifier).and_return("SUCCESSFULL_BUILD")
+        
+        get_it '/integrity.rss'
+        body.should have_tag("item > title", "Build SUCCESSFULL_BUILD succeeded")
+      end
+
+      it 'should have an <item> with a failed build title' do
+        @build_failed.stub!(:short_commit_identifier).and_return("FAILING_BUILD")
+        
+        get_it '/integrity.rss'
+        body.should have_tag("item > title", "Build FAILING_BUILD failed")
+      end
+    end
+  end
 
   describe "GET /:project/edit" do
     before do
