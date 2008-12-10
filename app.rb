@@ -73,6 +73,12 @@ get "/:project" do
   show :project, :title => ["projects", current_project.permalink]
 end
 
+get "/:project.rss" do
+  header "Content-Type" => "application/rss+xml; charset=utf-8"
+  login_required unless current_project.public? 
+  builder :project
+end
+
 put "/:project" do
   login_required
   
