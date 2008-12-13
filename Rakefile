@@ -1,8 +1,37 @@
 require File.dirname(__FILE__) + "/lib/integrity"
+require "rake/testtask"
+require "rcov/rcovtask"
 require 'spec/rake/spectask'
 require 'spec/rake/verify_rcov'
 
-task :default => ["spec:coverage", "spec:coverage:verify"]
+desc "Run all tests and check test coverage"
+task :default => "test:coverage:verify"
+
+Rake::TestTask.new
+
+namespace :test do
+  desc "Measure test coverage"
+  Rcov::RcovTask.new(:coverage) do |rcov|
+    rcov.pattern   = "test/**/*_test.rb"
+    rcov.rcov_opts = %w(--html)
+  end
+  
+  namespace :coverage do
+    desc "Verify coverage is at 100%"
+    task :verify => "test:coverage" do
+      File.read("coverage/index.html") =~ /<tt class='coverage_total'>\s*(\d+\.\d+)%\s*<\/tt>/
+      coverage = $1.to_f
+      
+      puts
+      if coverage == 100
+        puts "\e\[1;32m100% coverage! Awesome!\e\[0;0m"
+      else
+        puts "\e\[1;31mOnly #{coverage}% You can do better ;)\e\[0;0m"
+        exit 1
+      end
+    end
+  end
+end
 
 Spec::Rake::SpecTask.new(:spec) do |t|
   t.spec_opts = ["--color", "--format", "progress"]
