@@ -1,5 +1,5 @@
 require File.dirname(__FILE__) + "/../lib/integrity"
-require File.dirname(__FILE__) + "/test_fixtures"
+$LOAD_PATH << File.dirname(__FILE__) + "/helpers"
 
 require "ruby-debug"
 require "test/unit"
@@ -7,6 +7,8 @@ require "redgreen"
 require "context"
 require "matchy"
 require "rr"
+require "test_fixtures"
+require "expectations"
 
 class Test::Unit::TestCase
   class << self
