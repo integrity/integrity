@@ -7,7 +7,9 @@ require 'spec/rake/verify_rcov'
 desc "Run all tests and check test coverage"
 task :default => "test:coverage:verify"
 
-Rake::TestTask.new
+Rake::TestTask.new do |t|
+  t.test_files = FileList["test/*_test.rb"]
+end
 
 namespace :test do
   desc "Measure test coverage"
