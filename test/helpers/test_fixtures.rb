@@ -26,10 +26,10 @@ def notifier_config
 end
 
 Integrity::Project.fixture do
-  { :name       => (name = unique { /\w+/.gen }),
-    :uri        => "git://github.com/#{/\w+/.gen}/integrity.git",
-    :branch     => %w[master bug_4567 build-in-badground].pick,
-    :command    => "rake master",
+  { :name       => "Integrity",
+    :uri        => "git://github.com/foca/integrity.git",
+    :branch     => "master",
+    :command    => "rake",
     :public     => true,
     :building   => false }
 end
