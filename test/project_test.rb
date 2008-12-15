@@ -27,6 +27,11 @@ describe "Project" do
 
     it "has a permalink" do
       @project.permalink.should == "integrity"
+
+      @project.tap do |project|
+        project.name = "foo's bar and BACON?!"
+        project.save
+      end.permalink.should == "foos-bar-and-bacon"
     end
 
     it "has an URI" do
@@ -58,14 +63,17 @@ describe "Project" do
       Project.new.should_not be_building
     end
 
-    it "has a public flag" do
+    it "knows it's visibility" do
       # TODO: rename Project#public property to visibility
       # TODO: and have utility method to query its state instead
-      @project.should be_public
-    end
 
-    specify "public flag default to true" do
       Project.new.should be_public
+
+      @project.should be_public
+
+      Project.gen(:public => "false").should be_public
+      Project.gen(:public => false).should_not be_public
+      Project.gen(:public => nil).should_not be_public
     end
 
     it "has a created_at" do
@@ -108,56 +116,6 @@ describe "Project" do
       lambda do
         Project.gen(:name => "Integrity").should_not be_valid
       end.should_not change(Project, :count)
-    end
-  end
-
-  describe "Permalink" do
-    it "is downcased" do
-      Project.gen(:name => "EEEK").permalink.should == "eeek"
-    end
-
-    it "replaces ''s' with 's'" do
-      Project.gen(:name => "foca's").permalink.should == "focas"
-    end
-
-    it "replaces '&' by 'and'" do
-      Project.gen(:name => "foca&sr").permalink.should == "focaandsr"
-    end
-
-    it "replaces non alphanumeric characters by '-'" do
-      Project.gen(:name => "foo bar").permalink.should == "foo-bar"
-    end
-
-    it "ensures it don't ends up with multiple dashes" do
-      Project.gen(:name => "foca! & sr").permalink.should == "foca-and-sr"
-    end
-
-    it "ensures it has no dash at the end" do
-      Project.gen(:name => "foo bar!!?").permalink.should == "foo-bar"
-    end
-
-    it "updates the permalink when the name changes" do
-      Project.gen.tap do |project|
-        project.permalink.should == "integrity"
-        project.name = "some project"
-        project.save
-        project.permalink.should == "some-project"
-      end
-    end
-  end
-
-  describe "Visibility" do
-    it "is public for any non false value" do
-      Project.gen(:public => "false").should be_public
-      Project.gen(:public => "nil").should be_public
-    end
-
-    it "is not public when set to false" do
-      Project.gen(:public => false).should_not be_public
-    end
-
-    it "is not public when set to nil" do
-      Project.gen(:public => nil).should_not be_public
     end
   end
 
