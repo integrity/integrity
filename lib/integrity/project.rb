@@ -31,7 +31,7 @@ module Integrity
     end
 
     def last_build
-      builds.last
+      builds.first(:order => [:created_at.desc])
     end
 
     def previous_builds
