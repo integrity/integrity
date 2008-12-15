@@ -26,10 +26,9 @@ namespace :test do
       
       puts
       if coverage == 100
-        puts "\e\[1;32m100% coverage! Awesome!\e\[0;0m"
+        puts "\e[1;32m100% coverage! Awesome!\e[0;0m"
       else
-        puts "\e\[1;31mOnly #{coverage}% You can do better ;)\e\[0;0m"
-        exit 1 unless coverage < 95
+        puts "\e[1;31mOnly #{coverage}% You can do better ;)\e[0;0m"
       end
     end
   end
