@@ -39,8 +39,18 @@ describe "Build" do
       @build.status.should be(:failed)
     end
     
+    it "has an human readable status" do
+      Build.gen(:successful => true).human_readable_status.should == "Build Successful"
+      Build.gen(:successful => false).human_readable_status.should == "Build Failed"
+    end
+
     it "has a commit identifier" do
       @build.commit_identifier.should be("658ba96cb0235e82ee720510c049883955200fa9")
+    end
+
+    it "has a short commit identifier" do
+      @build.short_commit_identifier.should == "658ba96"
+      Build.gen(:commit_identifier => "402").short_commit_identifier.should == "402"
     end
   end
 end
