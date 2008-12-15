@@ -167,23 +167,13 @@ describe "Project" do
       @project = Project.generate(:builds => @builds)
     end
 
-    it "has 5 builds" do
-      # TODO: write a matcher for this
-      @project.builds.count.should == 5
-    end
-
     it "has 4 previous builds" do
-      # TODO: write a matcher for this
-      @project.previous_builds.count.should == 4
+      @project.should have(4).previous_builds
     end
 
     it "returns the builds ordered chronogicaly (desc) by creation date" do
-      # TODO: not sure I am doing it right here...
-      @builds.sort_by { |build| build.created_at }
-      @builds.shift
-      @builds.each_with_index do |build, index|
-        @project.previous_builds[index].should == build
-      end
+      builds_sorted_by_creation_date = @builds.sort_by {|build| build.created_at }.reverse
+      @project.previous_builds.should == builds_sorted_by_creation_date[1..-1]
     end
 
     it "excludes the last build" do
@@ -192,11 +182,13 @@ describe "Project" do
     end
 
     it "returns an empty array if it has only one build" do
-      Project.gen(:builds => 1.of { Integrity::Build.make }).previous_builds.should be_empty
+      project = Project.gen(:builds => 1.of { Integrity::Build.make })
+      project.should have(:no).previous_builds
     end
 
     it "returns an empty array if there are no builds" do
-      Project.gen(:builds => []).previous_builds.should be_empty
+      project = Project.gen(:builds => [])
+      project.should have(:no).previous_builds
     end
   end
 end
