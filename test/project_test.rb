@@ -177,8 +177,7 @@ describe "Project" do
     end
 
     it "excludes the last build" do
-      # TODO: uh?
-      #@project.previous_builds.should_not include(@project.last_build)
+      @project.previous_builds.should_not include(@project.last_build)
     end
 
     it "returns an empty array if it has only one build" do
