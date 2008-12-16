@@ -5,6 +5,7 @@ describe "Project" do
 
   before(:each) do
     setup_and_reset_database!
+    ignore_logs!
   end
 
   specify "fixture is valid and can be saved" do
