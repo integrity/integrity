@@ -178,8 +178,9 @@ describe "Project" do
       @project = Project.generate(:builds => @builds)
     end
 
-    it "destroys itself" do
+    it "destroys itself and tell Builder to delete the code from disk" do
       lambda do
+        stub.instance_of(Integrity::Builder).delete_code
         @project.destroy
       end.should change(Project, :count).by(-1)
     end
@@ -188,11 +189,6 @@ describe "Project" do
       lambda do
         @project.destroy
       end.should change(Integrity::Build, :count).by(-@builds.length)
-    end
-
-    it "tells Builder to delete the code from disk" do
-      # TODO: pending. err
-      assert true
     end
   end
 
