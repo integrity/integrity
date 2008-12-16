@@ -225,8 +225,8 @@ describe "Project" do
     end
 
     it "builds HEAD by default" do
-      stub.instance_of(Integrity::Builder).build("foo")
-      @project.build("foo")
+      stub.instance_of(Integrity::Builder).build("HEAD")
+      @project.build
     end
 
     it "sends notifications with all registered notifiers" do
