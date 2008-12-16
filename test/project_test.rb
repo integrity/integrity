@@ -198,9 +198,46 @@ describe "Project" do
     end
 
     it "tells Builder to delete the code from disk" do
-      # TODO: real expectation
-      #assert true
-      return true
+      # TODO: pending. err
+      assert true
+    end
+  end
+
+  describe "When building a build" do
+    before(:each) do
+      @builds  = (1..7).of { Integrity::Build.make }
+      @project = Project.generate(:integrity, :builds => @builds)
+      stub.instance_of(Integrity::Builder).build { nil }
+    end
+
+    it "builds the given commit identifier and handle its building state" do
+      @project.should_not be_building
+      lambda do
+        @project.build("foo")
+        stub.instance_of(Integrity::Builder).build("foo") { @project.should be_building && raise }
+      end.should_not change(@project, :building)
+    end
+
+    it "don't build if it is already building" do
+      @project.tap { |project| project.building = true }.save
+      do_not_call(Integrity::Builder).build
+      @project.build
+    end
+
+    it "builds HEAD by default" do
+      stub.instance_of(Integrity::Builder).build("foo")
+      @project.build("foo")
+    end
+
+    it "sends notifications with all registered notifiers" do
+      irc = Integrity::Notifier.make(:irc)
+      twitter = Integrity::Notifier.make(:twitter)
+      @project.update_attributes(:notifiers => [irc, twitter])
+
+      stub(Integrity::Notifier::IRC).notify_of_build(@project.last_build) do
+        raise Timeout::Error
+      end
+      stub(Integrity::Notifier::Twitter).notify_of_build @project.last_build
     end
   end
 end
