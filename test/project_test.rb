@@ -171,4 +171,36 @@ describe "Project" do
       project.should have(:no).previous_builds
     end
   end
+
+  describe "When getting destroyed" do
+    before(:each) do
+      @builds  = (1..7).of { Integrity::Build.make }
+      @project = Project.generate(:builds => @builds)
+    end
+
+    it "destroys itself" do
+      lambda do
+        @project.destroy
+      end.should change(Project, :count).by(-1)
+    end
+
+    it "destroys its builds" do
+      lambda do
+        @project.destroy
+      end.should change(Integrity::Build, :count).by(-@builds.length)
+    end
+
+    it "destroys its builds part two" do
+      # TODO: is this one necessary?
+      lambda do
+        @project.destroy
+      end.should change(@project.builds, :count).by(-@builds.length)
+    end
+
+    it "tells Builder to delete the code from disk" do
+      # TODO: real expectation
+      #assert true
+      return true
+    end
+  end
 end

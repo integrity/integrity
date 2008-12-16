@@ -47,7 +47,7 @@ end
 Integrity::Build.fixture do
   { :output     => /[:paragraph:]/.gen,
     :successful => true,
-    :created_at => unique {|i| Time.mktime(2008, 12, 15, 18, 59-i) },
+    :created_at => unique {|i| Time.mktime(2008, 12, 15, 18, (59 - i) % 60) },
     :commit_identifier => Digest::SHA1.hexdigest(/[:paragraph:]/.gen),
     :commit_metadata   => commit_metadata }
 end
