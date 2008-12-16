@@ -103,9 +103,9 @@ describe "Project" do
 
     it "knows it's last build" do
       Project.gen(:builds => []).last_build.should be_nil
-      Project.gen(:builds => (builds = 5.of{Integrity::Build.make(:successful => true)})).tap do |project|
-        project.last_build.should == builds.sort_by {|build| build.created_at }.last
-      end
+
+      project = Project.gen(:builds => (builds = 5.of{Integrity::Build.make(:successful => true)}))
+      project.last_build.should == builds.sort_by {|build| build.created_at }.last
     end
   end
 
