@@ -2,6 +2,7 @@ require File.dirname(__FILE__) + '/test_helper'
 
 describe "Project" do
   Project = Integrity::Project
+  Builder = Integrity::Builder
 
   before(:each) do
     setup_and_reset_database!
@@ -95,16 +96,16 @@ describe "Project" do
     end
 
     it "knows it's status" do
-      Project.gen(:builds => 1.of{Integrity::Build.make(:successful => true )}).status.should == :success
-      Project.gen(:builds => 2.of{Integrity::Build.make(:successful => true )}).status.should == :success
-      Project.gen(:builds => 2.of{Integrity::Build.make(:successful => false)}).status.should == :failed
+      Project.gen(:builds => 1.of{Build.make(:successful => true )}).status.should == :success
+      Project.gen(:builds => 2.of{Build.make(:successful => true )}).status.should == :success
+      Project.gen(:builds => 2.of{Build.make(:successful => false)}).status.should == :failed
       Project.gen(:builds => []).status.should be_nil
     end
 
     it "knows it's last build" do
       Project.gen(:builds => []).last_build.should be_nil
 
-      project = Project.gen(:builds => (builds = 5.of{Integrity::Build.make(:successful => true)}))
+      project = Project.gen(:builds => (builds = 5.of{Build.make(:successful => true)}))
       project.last_build.should == builds.sort_by {|build| build.created_at }.last
     end
   end
@@ -144,7 +145,7 @@ describe "Project" do
 
   describe "When finding its previous builds" do
     before(:each) do
-      @builds = 5.of { Integrity::Build.gen }
+      @builds = 5.of { Build.gen }
       @project = Project.generate(:builds => @builds)
     end
 
@@ -174,13 +175,13 @@ describe "Project" do
 
   describe "When getting destroyed" do
     before(:each) do
-      @builds  = (1..7).of { Integrity::Build.make }
+      @builds  = (1..7).of { Build.make }
       @project = Project.generate(:builds => @builds)
     end
 
     it "destroys itself and tell Builder to delete the code from disk" do
       lambda do
-        stub.instance_of(Integrity::Builder).delete_code
+        stub.instance_of(Builder).delete_code
         @project.destroy
       end.should change(Project, :count).by(-1)
     end
@@ -188,15 +189,15 @@ describe "Project" do
     it "destroys its builds" do
       lambda do
         @project.destroy
-      end.should change(Integrity::Build, :count).by(-@builds.length)
+      end.should change(Build, :count).by(-@builds.length)
     end
   end
 
   describe "When building a build" do
     before(:each) do
-      @builds  = (1..7).of { Integrity::Build.make }
+      @builds  = (1..7).of { Build.make }
       @project = Project.generate(:integrity, :builds => @builds)
-      stub.instance_of(Integrity::Builder).build { nil }
+      stub.instance_of(Builder).build { nil }
     end
 
     it "builds the given commit identifier and handle its building state" do
@@ -209,7 +210,7 @@ describe "Project" do
 
     it "don't build if it is already building" do
       @project.update_attributes(:building => true)
-      do_not_call(Integrity::Builder).build
+      do_not_call(Builder).build
       @project.build
     end
 
