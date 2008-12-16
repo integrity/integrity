@@ -52,5 +52,22 @@ describe "Build" do
       @build.short_commit_identifier.should == "658ba96"
       Build.gen(:commit_identifier => "402").short_commit_identifier.should == "402"
     end
+    
+    it "has a commit author" do
+      build = Build.gen(:commit_metadata => { :author => "Nicolás Sanguinetti <contacto@nicolassanguinetti.info>" })
+      build.commit_author.name.should == "Nicolás Sanguinetti"
+      build.commit_author.email.should == "contacto@nicolassanguinetti.info"
+      build.commit_author.full.should == "Nicolás Sanguinetti <contacto@nicolassanguinetti.info>"
+    end
+    
+    it "has a commit message" do
+      build = Build.gen(:commit_metadata => { :message => "This commit rocks" })
+      build.commit_message.should == "This commit rocks"
+    end
+    
+    it "has a commit date" do
+      build = Build.gen(:commit_metadata => { :date => Time.utc(2008, 10, 12, 14, 18, 20) })
+      build.commited_at.to_s.should == "Sun Oct 12 14:18:20 UTC 2008"
+    end
   end
 end
