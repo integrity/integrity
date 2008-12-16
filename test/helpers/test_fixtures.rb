@@ -25,7 +25,17 @@ def notifier_config
   end
 end
 
+
 Integrity::Project.fixture do
+  { :name       => (name = unique { /\w+/.gen }),
+    :uri        => "git://github.com/#{/\w+/.gen}/#{name}.git",
+    :branch     => ["master", "test-refactoring", "lh-34"].pick,
+    :command    => ["rake", "make", "ant -buildfile test.xml"].pick,
+    :public     => [true, false].pick,
+    :building   => [true, false].pick }
+end
+
+Integrity::Project.fixture(:integrity) do
   { :name       => "Integrity",
     :uri        => "git://github.com/foca/integrity.git",
     :branch     => "master",

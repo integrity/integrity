@@ -8,7 +8,7 @@ describe "Project" do
     ignore_logs!
   end
 
-  specify "fixture is valid and can be saved" do
+  specify "default fixture is valid and can be saved" do
     lambda do
       Project.generate.tap do |project|
         project.should be_valid
@@ -17,9 +17,18 @@ describe "Project" do
     end.should change(Project, :count).by(1)
   end
 
+  specify "integrity fixture is valid and can be saved" do
+    lambda do
+      Project.generate(:integrity).tap do |project|
+        project.should be_valid
+        project.save
+      end
+    end.should change(Project, :count).by(1)
+  end
+
   describe "Properties" do
     before(:each) do
-      @project = Project.generate
+      @project = Project.generate(:integrity)
     end
 
     it "has a name" do
@@ -84,6 +93,20 @@ describe "Project" do
     it "has an updated_at" do
       @project.updated_at.should be_a(DateTime)
     end
+
+    it "knows it's status" do
+      Project.gen(:builds => 1.of{Integrity::Build.make(:successful => true )}).status.should == :success
+      Project.gen(:builds => 2.of{Integrity::Build.make(:successful => true )}).status.should == :success
+      Project.gen(:builds => 2.of{Integrity::Build.make(:successful => false)}).status.should == :failed
+      Project.gen(:builds => []).status.should be_nil
+    end
+
+    it "knows it's last build" do
+      Project.gen(:builds => []).last_build.should be_nil
+      Project.gen(:builds => (builds = 5.of{Integrity::Build.make(:successful => true)})).tap do |project|
+        project.last_build.should == builds.sort_by {|build| build.created_at }.last
+      end
+    end
   end
 
   describe "Validation" do
@@ -112,8 +135,7 @@ describe "Project" do
     end
 
     it "ensures its name is unique" do
-      Project.gen.save
-
+      Project.gen(:name => "Integrity")
       lambda do
         Project.gen(:name => "Integrity").should_not be_valid
       end.should_not change(Project, :count)
