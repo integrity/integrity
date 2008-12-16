@@ -29,9 +29,9 @@ describe "Project" do
       @project.permalink.should == "integrity"
 
       @project.tap do |project|
-        project.name = "foo's bar and BACON?!"
+        project.name = "foo's bar/baz and BACON?!"
         project.save
-      end.permalink.should == "foos-bar-and-bacon"
+      end.permalink.should == "foos-bar-baz-and-bacon"
     end
 
     it "has an URI" do
