@@ -19,10 +19,12 @@ def commit_metadata
 EOS
 end
 
-def notifier_config
-  {}.tap do |config|
-    5.times { config[/\w+/.gen] = /\w+/.gen }
+def create_notifier!(name)
+  klass = Class.new(Integrity::Notifier::Base) do
+    def self.to_haml; "";   end
+    def deliver!;     nil;  end
   end
+  Integrity::Notifier.const_set(name, klass)
 end
 
 
@@ -53,10 +55,15 @@ Integrity::Build.fixture do
 end
 
 Integrity::Notifier.fixture(:irc) do
-  class Integrity::Notifier::IRC < Integrity::Notifier::Base
-    def self.to_haml; ""; end
-    def deliver!; nil; end
-  end
+  create_notifier! "IRC"
 
-  { :name => "IRC", :config => notifier_config }
+  { :name => "IRC",
+    :config => { :uri => "irc://irc.freenode.net/integrity" }}
+end
+
+Integrity::Notifier.fixture(:twitter) do
+  create_notifier! "Twitter"
+
+  { :name => "Twitter",
+    :config => { :email => "foo@example.org", :pass => "secret" }}
 end
