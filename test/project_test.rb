@@ -213,31 +213,32 @@ describe "Project" do
     it "builds the given commit identifier and handle its building state" do
       @project.should_not be_building
       lambda do
+        mock.instance_of(Integrity::Builder).build("foo") { @project.should be_building }
         @project.build("foo")
-        stub.instance_of(Integrity::Builder).build("foo") { @project.should be_building && raise }
       end.should_not change(@project, :building)
     end
 
     it "don't build if it is already building" do
-      @project.tap { |project| project.building = true }.save
+      @project.update_attributes(:building => true)
       do_not_call(Integrity::Builder).build
       @project.build
     end
 
     it "builds HEAD by default" do
-      stub.instance_of(Integrity::Builder).build("HEAD")
+      mock.instance_of(Integrity::Builder).build("HEAD")
       @project.build
     end
 
     it "sends notifications with all registered notifiers" do
-      irc = Integrity::Notifier.make(:irc)
-      twitter = Integrity::Notifier.make(:twitter)
-      @project.update_attributes(:notifiers => [irc, twitter])
-
-      stub(Integrity::Notifier::IRC).notify_of_build(@project.last_build) do
-        raise Timeout::Error
+      @project.tap do |p|
+        p.notifiers << Integrity::Notifier.make(:irc) << Integrity::Notifier.make(:twitter)
+        p.save
       end
-      stub(Integrity::Notifier::Twitter).notify_of_build @project.last_build
+
+      mock.proxy(Integrity::Notifier::IRC).notify_of_build(@project.last_build, :uri => "irc://irc.freenode.net/integrity") { raise Timeout::Error }
+      mock.proxy(Integrity::Notifier::Twitter).notify_of_build(@project.last_build, :email => "foo@example.org", :pass => "secret")
+      
+      @project.build
     end
   end
 end
