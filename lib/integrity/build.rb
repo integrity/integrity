@@ -1,11 +1,9 @@
-require 'ostruct'
-
 module Integrity
   class Build
     include DataMapper::Resource
 
     property :id,                Integer,  :serial => true
-    property :output,            Text,     :nullable => false, :default => ''
+    property :output,            Text,     :nullable => false, :default => ""
     property :successful,        Boolean,  :nullable => false, :default => false
     property :commit_identifier, String,   :nullable => false
     property :commit_metadata,   Yaml,     :nullable => false, :lazy => false
@@ -23,7 +21,7 @@ module Integrity
     end
 
     def human_readable_status
-      successful? ? 'Build Successful' : 'Build Failed'
+      successful? ? "Build Successful" : "Build Failed"
     end
 
     def short_commit_identifier
