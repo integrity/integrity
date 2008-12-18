@@ -1,29 +1,31 @@
 __DIR__ = File.dirname(__FILE__)
 $:.unshift "#{__DIR__}/integrity", *Dir["#{__DIR__}/../vendor/**/lib"].to_a
 
-require 'rubygems'
-require 'json'
-require 'dm-core'
-require 'dm-validations'
-require 'dm-types'
-require 'dm-timestamps'
-require 'dm-aggregates'
+require "rubygems"
+require "json"
+require "dm-core"
+require "dm-validations"
+require "dm-types"
+require "dm-timestamps"
+require "dm-aggregates"
 
-require 'yaml'
-require 'logger'
-require 'digest/sha1'
-require 'timeout'
+require "yaml"
+require "logger"
+require "digest/sha1"
+require "timeout"
+require "ostruct"
+require "fileutils"
 
-require 'core_ext/object'
-require 'core_ext/string'
-require 'core_ext/time'
+require "core_ext/object"
+require "core_ext/string"
+require "core_ext/time"
 
-require 'project'
-require 'build'
-require 'builder'
-require 'scm'
-require 'scm/git'
-require 'notifier'
+require "project"
+require "build"
+require "builder"
+require "scm"
+require "scm/git"
+require "notifier"
 
 module Integrity
   def self.new(config_file = nil)
@@ -36,10 +38,10 @@ module Integrity
   end
 
   def self.default_configuration
-    @defaults ||= { :database_uri     => 'sqlite3::memory:',
-                    :export_directory => root / 'exports',
+    @defaults ||= { :database_uri     => "sqlite3::memory:",
+                    :export_directory => root / "exports",
                     :log              => STDOUT,
-                    :base_uri         => 'http://localhost:8910',
+                    :base_uri         => "http://localhost:8910",
                     :use_basic_auth   => false }
   end
 

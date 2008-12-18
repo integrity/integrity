@@ -48,7 +48,7 @@ EOM
       private
 
         def stripped_build_output
-          build.output.gsub("\e[0m", '').gsub(/\e\[3[1-7]m/, '')
+          build.output.gsub("\e[0m", "").gsub(/\e\[3[1-7]m/, "")
         end
     end
   end

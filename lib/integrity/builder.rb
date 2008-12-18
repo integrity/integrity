@@ -1,5 +1,3 @@
-require 'fileutils'
-
 module Integrity
   class Builder
     attr_reader :build_script
