@@ -190,13 +190,6 @@ describe "Project" do
       end.should change(Integrity::Build, :count).by(-@builds.length)
     end
 
-    it "destroys its builds part two" do
-      # TODO: is this one necessary?
-      lambda do
-        @project.destroy
-      end.should change(@project.builds, :count).by(-@builds.length)
-    end
-
     it "tells Builder to delete the code from disk" do
       # TODO: pending. err
       assert true
