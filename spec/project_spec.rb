@@ -227,8 +227,8 @@ describe Integrity::Project do
     end
 
     it "should tell the builder to delete the code for this project" do
-      builder = Integrity::Builder.new(@project)
-      Integrity::Builder.should_receive(:new).and_return(builder)
+      builder = Integrity::ProjectBuilder.new(@project)
+      Integrity::ProjectBuilder.should_receive(:new).and_return(builder)
       builder.should_receive(:delete_code)
       @project.destroy
     end

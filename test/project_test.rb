@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/test_helper'
 
 describe "Project" do
   Project = Integrity::Project
-  Builder = Integrity::Builder
+  ProjectBuilder = Integrity::ProjectBuilder
 
   before(:each) do
     setup_and_reset_database!
@@ -179,9 +179,9 @@ describe "Project" do
       @project = Project.generate(:builds => @builds)
     end
 
-    it "destroys itself and tell Builder to delete the code from disk" do
+    it "destroys itself and tell ProjectBuilder to delete the code from disk" do
       lambda do
-        stub.instance_of(Builder).delete_code
+        stub.instance_of(ProjectBuilder).delete_code
         @project.destroy
       end.should change(Project, :count).by(-1)
     end
@@ -197,25 +197,25 @@ describe "Project" do
     before(:each) do
       @builds  = (1..7).of { Build.make }
       @project = Project.generate(:integrity, :builds => @builds)
-      stub.instance_of(Builder).build { nil }
+      stub.instance_of(ProjectBuilder).build { nil }
     end
 
     it "builds the given commit identifier and handle its building state" do
       @project.should_not be_building
       lambda do
-        mock.instance_of(Integrity::Builder).build("foo") { @project.should be_building }
+        mock.instance_of(Integrity::ProjectBuilder).build("foo") { @project.should be_building }
         @project.build("foo")
       end.should_not change(@project, :building)
     end
 
     it "don't build if it is already building" do
       @project.update_attributes(:building => true)
-      do_not_call(Builder).build
+      do_not_call(ProjectBuilder).build
       @project.build
     end
 
     it "builds HEAD by default" do
-      mock.instance_of(Integrity::Builder).build("HEAD")
+      mock.instance_of(Integrity::ProjectBuilder).build("HEAD")
       @project.build
     end
 
