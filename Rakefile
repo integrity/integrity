@@ -105,6 +105,7 @@ begin
     s.add_dependency 'foca-sinatra-diddies', ['>= 0.0.2']
     s.add_dependency 'rspec_hpricot_matchers'
     s.add_dependency 'thor'
+    s.add_dependency 'bcrypt-ruby'
   end
 rescue LoadError
 end

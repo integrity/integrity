@@ -15,6 +15,10 @@ describe Integrity::Notifier do
   def sample_project
     @project ||= Integrity::Project.create(:name => "Blah", :uri => "blah.blah")
   end
+
+  def other_project
+    @other_project ||= Integrity::Project.create(:name => "Blah Blah Blah", :uri => "blah.blah")
+  end
   
   describe "configuring a notifier" do
     it "should not be valid by default" do
@@ -51,6 +55,20 @@ describe Integrity::Notifier do
       lambda {
         sample_project.enable_notifiers("Blah", "Blah" => { "foo" => "bar" })
       }.should change(Integrity::Notifier, :count).by(1)
+    end
+
+    it "should destroy all of the previous notifiers for that project" do
+      sample_project.enable_notifiers("Blah", "Blah" => { "foo" => "bar" })
+      sample_project.enable_notifiers(["Cuack", "Test"], "Cuack" => { "foo" => "bar"},
+                                                         "Test" => { "bar" => "baz "})
+
+      sample_project.notifiers.length.should == 2
+    end
+
+    it "should not destroy all of the other notifiers that exist for other projects" do
+      other_project.enable_notifiers("Blah", "Blah" => { "foo" => "bar" })
+      sample_project.enable_notifiers("Blah", "Blah" => { "foo" => "bar" })
+      other_project.notifiers.length.should == 1
     end
   end
   
