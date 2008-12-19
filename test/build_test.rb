@@ -4,6 +4,7 @@ describe "Build" do
   Build = Integrity::Build
   
   before(:each) do
+    RR.reset
     setup_and_reset_database!
   end
   
