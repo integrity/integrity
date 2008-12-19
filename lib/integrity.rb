@@ -38,11 +38,12 @@ module Integrity
   end
 
   def self.default_configuration
-    @defaults ||= { :database_uri     => "sqlite3::memory:",
-                    :export_directory => root / "exports",
-                    :log              => STDOUT,
-                    :base_uri         => "http://localhost:8910",
-                    :use_basic_auth   => false }
+    @defaults ||= { :database_uri      => "sqlite3::memory:",
+                    :export_directory  => root / "exports",
+                    :log               => STDOUT,
+                    :base_uri          => "http://localhost:8910",
+                    :use_basic_auth    => false,
+                    :build_all_commits => true }
   end
 
   def self.config
@@ -53,11 +54,21 @@ module Integrity
     @config = default_configuration.merge(YAML.load_file(file))
   end
   
-  def self.log(message)
-    logger.info(message)
+  def self.log(message, &block)
+    logger.info(message, &block)
   end
 
   def self.logger
-    @logger ||= Logger.new(config[:log])
+    @logger ||= Logger.new(config[:log], "daily").tap do |logger|
+      logger.formatter = LogFormatter.new
+    end
   end
+  
+  private
+  
+    class LogFormatter < Logger::Formatter
+      def call(severity, time, progname, msg)
+        time.strftime("[%H:%M:%S] ") + msg2str(msg) + "\n"
+      end
+    end
 end

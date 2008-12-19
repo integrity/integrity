@@ -2,6 +2,12 @@ require File.dirname(__FILE__) + '/../lib/integrity'
 require File.dirname(__FILE__) + '/spec_fixture'
 require 'spec'
 
+module LoggingSpecHelper
+  def self.included(mod)
+    mod.before(:each) { Integrity.stub!(:log) }
+  end
+end
+
 module NotifierSpecHelper
   def self.included(mod)
     mod.before(:each) { Integrity.stub!(:config).and_return(:base_uri => "http://localhost:4567") }

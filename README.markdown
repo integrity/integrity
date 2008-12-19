@@ -17,7 +17,7 @@ Getting Started
 
 Install the `integrity` gem from GitHub:
 
-    gem sources add http://gems.github.com
+    gem sources --add http://gems.github.com
     sudo gem install foca-integrity
 
 In order to setup Integrity, run the following command:
