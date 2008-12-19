@@ -5,6 +5,7 @@ describe "Project" do
   ProjectBuilder = Integrity::ProjectBuilder
 
   before(:each) do
+    RR.reset
     setup_and_reset_database!
     ignore_logs!
   end
