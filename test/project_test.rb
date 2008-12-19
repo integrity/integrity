@@ -221,14 +221,26 @@ describe "Project" do
     end
 
     it "sends notifications with all registered notifiers" do
-      @project.tap do |p|
-        p.notifiers << Integrity::Notifier.make(:irc) << Integrity::Notifier.make(:twitter)
-        p.save
-      end
+      irc     = Integrity::Notifier.make(:irc)
+      twitter = Integrity::Notifier.make(:twitter)
+      @project.update_attributes(:notifiers => [irc, twitter])
 
       mock.proxy(Integrity::Notifier::IRC).notify_of_build(@project.last_build, :uri => "irc://irc.freenode.net/integrity")
       mock.proxy(Integrity::Notifier::Twitter).notify_of_build(@project.last_build, :email => "foo@example.org", :pass => "secret")
       
+      @project.build
+    end
+
+    it "still sends notification even if one of the notifier timeout" do
+      irc     = Integrity::Notifier.make(:irc)
+      twitter = Integrity::Notifier.make(:twitter)
+      @project.update_attributes(:notifiers => [irc, twitter])
+
+      mock.proxy(Integrity::Notifier::Twitter).notify_of_build(@project.last_build, anything) do
+        raise Timeout::Error
+      end
+      mock.proxy(Integrity::Notifier::IRC).notify_of_build(@project.last_build, anything)
+
       @project.build
     end
   end
