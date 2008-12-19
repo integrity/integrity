@@ -24,7 +24,10 @@ def create_notifier!(name)
     def self.to_haml; "";   end
     def deliver!;     nil;  end
   end
-  Integrity::Notifier.const_set(name, klass)
+
+  unless Integrity::Notifier.const_defined?(name)
+    Integrity::Notifier.const_set(name, klass)
+  end
 end
 
 
