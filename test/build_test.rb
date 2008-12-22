@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/test_helper'
 
 describe "Build" do
-  Build = Integrity::Build
+  Build = Integrity::Build unless defined?(Build)
   
   before(:each) do
     RR.reset
