@@ -56,14 +56,14 @@ describe "ProjectBuilder" do
       end.should raise_error
     end
 
-    it "sets the build status to failure when the command executition exits with a non-zero status" do
+    it "sets the build status to failure when the build command exits with a non-zero status" do
       @project.update_attributes(:command => "exit 1")
       Git.any_instance.expects(:with_revision).with("HEAD").yields
       build = ProjectBuilder.new(@project).build("HEAD")
       build.should be_failed
     end
 
-    it "sets the build status to failure when the command executition exits with a zero status" do
+    it "sets the build status to failure when the build command exits with a zero status" do
       @project.update_attributes(:command => "exit 0")
       Git.any_instance.expects(:with_revision).with("HEAD").yields
       build = ProjectBuilder.new(@project).build("HEAD")
