@@ -60,13 +60,15 @@ end
 Integrity::Notifier.fixture(:irc) do
   create_notifier! "IRC"
 
-  { :name => "IRC",
+  { :project => Integrity::Project.generate,
+    :name => "IRC",
     :config => { :uri => "irc://irc.freenode.net/integrity" }}
 end
 
 Integrity::Notifier.fixture(:twitter) do
   create_notifier! "Twitter"
 
-  { :name => "Twitter",
+  { :project => Integrity::Project.generate,
+    :name => "Twitter",
     :config => { :email => "foo@example.org", :pass => "secret" }}
 end
