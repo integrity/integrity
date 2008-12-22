@@ -1,8 +1,9 @@
 require File.dirname(__FILE__) + '/test_helper'
 
 describe "Project" do
-  Project = Integrity::Project
-  ProjectBuilder = Integrity::ProjectBuilder
+  Project = Integrity::Project                unless defined?(Project)
+  Build   = Integrity::Build                  unless defined?(Build)
+  ProjectBuilder = Integrity::ProjectBuilder  unless defined?(ProjectBuilder)
 
   before(:each) do
     RR.reset
