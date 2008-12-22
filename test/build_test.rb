@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/test_helper'
 
-describe "Build" do
+class BuildTest < Test::Unit::TestCase
   Build = Integrity::Build unless defined?(Build)
   
   before(:each) do

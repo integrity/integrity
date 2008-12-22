@@ -11,11 +11,6 @@ require "mocha"
 require "test_fixtures"
 require "expectations"
 
-# Gives a nicer syntax than declaring TestCase subclasses in tests
-def describe(name, &block)
-  Test::Unit::TestCase.context(name, &block)
-end
-
 module TestHelper
   def setup_and_reset_database!
     DataMapper.setup(:default, "sqlite3::memory:")
