@@ -10,12 +10,6 @@ require "rr"
 require "test_fixtures"
 require "expectations"
 
-class Test::Unit::TestCase
-  class << self
-    alias_method :specify, :test
-  end
-end
-
 # Gives a nicer syntax than declaring TestCase subclasses in tests
 def describe(name, &block)
   Test::Unit::TestCase.context(name, &block)
@@ -33,6 +27,10 @@ module TestHelper
 end
 
 class Test::Unit::TestCase
+  class << self
+    alias_method :specify, :test
+  end
+
   include RR::Adapters::TestUnit
   include TestHelper
 end
