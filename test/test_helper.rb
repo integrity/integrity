@@ -7,6 +7,7 @@ require "redgreen"
 require "context"
 require "matchy"
 require "rr"
+require "mocha"
 require "test_fixtures"
 require "expectations"
 
