@@ -78,5 +78,13 @@ describe "ProjectBuilder" do
       build = ProjectBuilder.new(@project).build("HEAD")
       build.output.should == "bar!"
     end
+
+    it "captures both stdout and stderr" do
+      @project.update_attributes(:command => "cat /no/such/file.txt")
+      Git.any_instance.expects(:with_revision).with("HEAD").yields
+
+      build = ProjectBuilder.new(@project).build("HEAD")
+      build.output.should == "cat: /no/such/file.txt: No such file or directory\n"
+    end
   end
 end
