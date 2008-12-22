@@ -7,7 +7,7 @@ describe "ProjectBuilder" do
   Git     = Integrity::SCM::Git               unless defined?(Git)
 
   before(:all) do
-    Integrity.config[:export_directory] = "./test"
+    Integrity.config[:export_directory] = File.dirname(__FILE__)
     @directory = Integrity.config[:export_directory] + "/foca-integrity-master"
     FileUtils.mkdir(@directory)
   end
@@ -23,7 +23,7 @@ describe "ProjectBuilder" do
   end
 
   it "creates a new SCM with given project's uri, branch and export_directory" do
-    Git.expects(:new).with(@project.uri, @project.branch, "./test/foca-integrity-master")
+    Git.expects(:new).with(@project.uri, @project.branch, @directory)
     ProjectBuilder.new(@project)
   end
 
@@ -85,6 +85,19 @@ describe "ProjectBuilder" do
 
       build = ProjectBuilder.new(@project).build("HEAD")
       build.output.should == "cat: /no/such/file.txt: No such file or directory\n"
+    end
+  end
+
+  describe "When deleting the code from disk" do
+    it "destroys the directory" do
+      lambda do
+        ProjectBuilder.new(@project).delete_code
+      end.should change(Pathname.new(@directory), :directory?).from(true).to(false)
+    end
+
+    it "don't complains if the directory doesn't exists" do
+      Pathname.new(@directory).should_not be_directory
+      lambda { ProjectBuilder.new(@project).delete_code }.should_not raise_error
     end
   end
 end
