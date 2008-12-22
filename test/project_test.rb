@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/test_helper'
 
-describe "Project" do
+class ProjectTest < Test::Unit::TestCase
   Project = Integrity::Project                unless defined?(Project)
   Build   = Integrity::Build                  unless defined?(Build)
   ProjectBuilder = Integrity::ProjectBuilder  unless defined?(ProjectBuilder)

@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + "/test_helper"
 require "fileutils"
 
-describe "ProjectBuilder" do
+class ProjectBuilderTest < Test::Unit::TestCase
   ProjectBuilder = Integrity::ProjectBuilder  unless defined?(ProjectBuilder)
   Build   = Integrity::Build                  unless defined?(Build)
   Git     = Integrity::SCM::Git               unless defined?(Git)
