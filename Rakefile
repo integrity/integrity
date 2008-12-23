@@ -19,13 +19,22 @@ namespace :test do
     t.test_files = FileList["test/acceptance/*_test.rb"]
   end
   
-  desc "Measure test coverage (of both unit and acceptance tests)"
-  Rcov::RcovTask.new(:coverage) do |rcov|
-    rcov.pattern   = "test/**/*_test.rb"
-    rcov.rcov_opts = %w(--html)
-  end
+  desc "Measure test coverage"
+  task :coverage => %w(test:coverage:units test:coverage:acceptance)
   
   namespace :coverage do
+    desc "Measure test coverage of unit tests"
+    Rcov::RcovTask.new(:units) do |rcov|
+      rcov.pattern   = "test/unit/*_test.rb"
+      rcov.rcov_opts = %w(--html --aggregate .aggregated_coverage_report)
+    end
+    
+    desc "Measure test coverage of acceptance tests"
+    Rcov::RcovTask.new(:acceptance) do |rcov|
+      rcov.pattern   = "test/acceptance/*_test.rb"
+      rcov.rcov_opts = %w(--html --aggregate .aggregated_coverage_report)
+    end
+    
     desc "Verify test coverage"
     task :verify => "test:coverage" do
       File.read("coverage/index.html") =~ /<tt class='coverage_total'>\s*(\d+\.\d+)%\s*<\/tt>/
