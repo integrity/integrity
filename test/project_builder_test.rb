@@ -2,10 +2,6 @@ require File.dirname(__FILE__) + "/test_helper"
 require "fileutils"
 
 class ProjectBuilderTest < Test::Unit::TestCase
-  ProjectBuilder = Integrity::ProjectBuilder  unless defined?(ProjectBuilder)
-  Build   = Integrity::Build                  unless defined?(Build)
-  Git     = Integrity::SCM::Git               unless defined?(Git)
-
   before(:all) do
     Integrity.config[:export_directory] = File.dirname(__FILE__)
     @directory = Integrity.config[:export_directory] + "/foca-integrity-master"
@@ -23,16 +19,16 @@ class ProjectBuilderTest < Test::Unit::TestCase
   end
 
   it "creates a new SCM with given project's uri, branch and export_directory" do
-    Git.expects(:new).with(@project.uri, @project.branch, @directory)
+    SCM::Git.expects(:new).with(@project.uri, @project.branch, @directory)
     ProjectBuilder.new(@project)
   end
 
   describe "When building" do
     it "creates a new build" do
       lambda do
-        Git.any_instance.expects(:with_revision).with("commit").yields
-        Git.any_instance.expects(:commit_identifier).with("commit").returns("commit identifier")
-        Git.any_instance.expects(:commit_metadata).with("commit").returns(:meta => "data")
+        SCM::Git.any_instance.expects(:with_revision).with("commit").yields
+        SCM::Git.any_instance.expects(:commit_identifier).with("commit").returns("commit identifier")
+        SCM::Git.any_instance.expects(:commit_metadata).with("commit").returns(:meta => "data")
 
         build = ProjectBuilder.new(@project).build("commit")
         build.commit_identifier.should  == "commit identifier"
@@ -45,9 +41,9 @@ class ProjectBuilderTest < Test::Unit::TestCase
     it "creates a new build even if something horrible happens" do
       lambda do
         lambda do
-          Git.any_instance.expects(:with_revision).with("commit").raises
-          Git.any_instance.expects(:commit_identifier).with("commit").returns("commit identifier")
-          Git.any_instance.expects(:commit_metadata).with("commit").returns(:meta => "data")
+          SCM::Git.any_instance.expects(:with_revision).with("commit").raises
+          SCM::Git.any_instance.expects(:commit_identifier).with("commit").returns("commit identifier")
+          SCM::Git.any_instance.expects(:commit_metadata).with("commit").returns(:meta => "data")
 
           build = ProjectBuilder.new(@project).build("commit")
           build.commit_identifier.should  == "commit identifier"
@@ -58,14 +54,14 @@ class ProjectBuilderTest < Test::Unit::TestCase
 
     it "sets the build status to failure when the build command exits with a non-zero status" do
       @project.update_attributes(:command => "exit 1")
-      Git.any_instance.expects(:with_revision).with("HEAD").yields
+      SCM::Git.any_instance.expects(:with_revision).with("HEAD").yields
       build = ProjectBuilder.new(@project).build("HEAD")
       build.should be_failed
     end
 
     it "sets the build status to failure when the build command exits with a zero status" do
       @project.update_attributes(:command => "exit 0")
-      Git.any_instance.expects(:with_revision).with("HEAD").yields
+      SCM::Git.any_instance.expects(:with_revision).with("HEAD").yields
       build = ProjectBuilder.new(@project).build("HEAD")
       build.should be_successful
     end
@@ -73,7 +69,7 @@ class ProjectBuilderTest < Test::Unit::TestCase
     it "runs the command in the export directory" do
       @project.update_attributes(:command => "cat foo.txt")
       File.open(@directory + "/foo.txt", "w") { |file| file << "bar!" }
-      Git.any_instance.expects(:with_revision).with("HEAD").yields
+      SCM::Git.any_instance.expects(:with_revision).with("HEAD").yields
 
       build = ProjectBuilder.new(@project).build("HEAD")
       build.output.should == "bar!"
@@ -81,7 +77,7 @@ class ProjectBuilderTest < Test::Unit::TestCase
 
     it "captures both stdout and stderr" do
       @project.update_attributes(:command => "cat /no/such/file.txt")
-      Git.any_instance.expects(:with_revision).with("HEAD").yields
+      SCM::Git.any_instance.expects(:with_revision).with("HEAD").yields
 
       build = ProjectBuilder.new(@project).build("HEAD")
       build.output.should == "cat: /no/such/file.txt: No such file or directory\n"
