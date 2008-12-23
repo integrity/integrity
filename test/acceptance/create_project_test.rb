@@ -33,6 +33,22 @@ class CreateProjectTest < Test::Unit::AcceptanceTestCase
   end
   
   scenario "an admin can create a private project" do
+    lambda do
+      post_it "/", { "project_data[name]" => "Integrity",
+        "project_data[uri]" => "git://github.com/foca/integrity.git",
+        "project_data[branch]" => "master",
+        "project_data[command]" => "rake", :env => {"REMOTE_USER" => "foxy"} }
+    end.should change(Project, :count).by(1)
+
+    Project.first(:permalink => "integrity").tap do |project|
+      project.uri.to_s.should == "git://github.com/foca/integrity.git"
+      project.branch.should == "master"
+      project.command.should == "rake"
+      project.should_not be_public
+    end
+
+    response.should be_redirect
+    response["Location"].should == "/integrity"
   end
   
   scenario "a user can't see the new project form" do
