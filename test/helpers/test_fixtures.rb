@@ -49,6 +49,15 @@ Integrity::Project.fixture(:integrity) do
     :building   => false }
 end
 
+Integrity::Project.fixture(:my_test_project) do
+  { :name       => "My Test Project",
+    :uri        => "~/my_test_project",
+    :branch     => "master",
+    :command    => "exit 0",
+    :public     => true,
+    :building   => false }
+end
+
 Integrity::Build.fixture do
   { :output     => /[:paragraph:]/.gen,
     :successful => true,
