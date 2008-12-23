@@ -7,19 +7,26 @@ require 'spec/rake/verify_rcov'
 desc "Run all tests and check test coverage"
 task :default => "test:coverage:verify"
 
-Rake::TestTask.new do |t|
-  t.test_files = FileList["test/unit/*_test.rb"]
-end
+desc "Run tests"
+task :test => %w(test:units test:acceptance)
 
 namespace :test do
-  desc "Measure test coverage"
+  Rake::TestTask.new(:units) do |t|
+    t.test_files = FileList["test/unit/*_test.rb"]
+  end
+
+  Rake::TestTask.new(:acceptance) do |t|
+    t.test_files = FileList["test/acceptance/*_test.rb"]
+  end
+  
+  desc "Measure test coverage (of both unit and acceptance tests)"
   Rcov::RcovTask.new(:coverage) do |rcov|
     rcov.pattern   = "test/**/*_test.rb"
     rcov.rcov_opts = %w(--html)
   end
   
   namespace :coverage do
-    desc "Verify coverage is at 100%"
+    desc "Verify test coverage"
     task :verify => "test:coverage" do
       File.read("coverage/index.html") =~ /<tt class='coverage_total'>\s*(\d+\.\d+)%\s*<\/tt>/
       coverage = $1.to_f
