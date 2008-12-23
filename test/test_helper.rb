@@ -28,5 +28,6 @@ class Test::Unit::TestCase
   end
 
   include RR::Adapters::TestUnit
+  include Integrity
   include TestHelper
 end

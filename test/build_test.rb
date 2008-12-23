@@ -1,8 +1,6 @@
 require File.dirname(__FILE__) + '/test_helper'
 
 class BuildTest < Test::Unit::TestCase
-  Build = Integrity::Build unless defined?(Build)
-  
   before(:each) do
     RR.reset
     setup_and_reset_database!

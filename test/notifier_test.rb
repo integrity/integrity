@@ -1,9 +1,6 @@
 require File.dirname(__FILE__) + "/test_helper"
 
 class NotifierTest < Test::Unit::TestCase
-  Project   = Integrity::Project  unless defined?(Project)
-  Notifier  = Integrity::Notifier unless defined?(Notifier)
-
   before(:each) do 
     setup_and_reset_database!
   end
