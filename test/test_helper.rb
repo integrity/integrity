@@ -52,7 +52,9 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
 
   before :all do
     puts
-    puts self.class.story.to_s.gsub(/^\s+/, '')
+    print "\e[36m"
+    puts  self.class.story.to_s.gsub(/^\s+/, '')
+    print "\e[0m"
   end
 
   after :all do
