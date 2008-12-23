@@ -43,6 +43,16 @@ class Test::Unit::TestCase
 end
 
 module AcceptanceHelper
+  def enable_auth!
+    Integrity.config[:use_basic_auth]      = true
+    Integrity.config[:admin_username]      = "admin"
+    Integrity.config[:admin_password]      = "test"
+    Integrity.config[:hash_admin_password] = false
+  end
+  
+  def disable_auth!
+    Integrity.config[:use_basic_auth] = false
+  end
 end
 
 class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
