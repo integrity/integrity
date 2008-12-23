@@ -1,3 +1,8 @@
+require "sinatra"
+require "sinatra/test/unit"
+require Integrity.root / "app"
+require "webrat/sinatra"
+
 module WebratIntegrationHelper
   include Webrat::Methods
   

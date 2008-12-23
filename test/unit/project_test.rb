@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../test_helper'
+require File.dirname(__FILE__) + "/../helpers"
 
 class ProjectTest < Test::Unit::TestCase
   before(:each) do

@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/../test_helper"
+require File.dirname(__FILE__) + "/../helpers"
 
 class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
   story <<-EOS
