@@ -37,7 +37,7 @@ class CreateProjectTest < Test::Unit::AcceptanceTestCase
   
   scenario "a user can't see the new project form" do
     get_it "/new"
-    status.should == 401
-    body.should_not have_tag("form[@action='/'][@method='post']")
+    response.status.should == 401
+    response.body.should_not have_tag("form[@action='/'][@method='post']")
   end
 end
