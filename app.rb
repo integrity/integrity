@@ -59,7 +59,7 @@ end
 post "/" do
   login_required
   
-  @project = Project.new(params[:project_data])
+  @project = Project.new({"public" => false}.merge(params[:project_data]))
   if @project.save
     @project.enable_notifiers(params["enabled_notifiers[]"], params["notifiers"])
     redirect project_path(@project)
