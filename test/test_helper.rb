@@ -8,11 +8,14 @@ require "context"
 require "matchy"
 require "rr"
 require "mocha"
+require "test_fixtures"
+require "expectations"
+
 require "sinatra"
 require "sinatra/test/unit"
 require Integrity.root / "app"
-require "test_fixtures"
-require "expectations"
+require "webrat/sinatra"
+require "acceptance_test_setup"
 
 module TestHelper
   def setup_and_reset_database!
@@ -43,25 +46,11 @@ module AcceptanceHelper
 end
 
 class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
-  include AcceptanceHelper
-  
   class << self
     alias :scenario :test
   end
-  
-  def self.story(story=nil)
-    @story = story if story
-    @story
-  end
 
-  before :all do
-    puts
-    print "\e[36m"
-    puts  self.class.story.to_s.gsub(/^\s+/, '')
-    print "\e[0m"
-  end
-
-  after :all do
-    puts
-  end
+  include AcceptanceHelper
+  include WebratIntegrationHelper
+  include PrettyStoryPrintingHelper
 end
