@@ -2,7 +2,7 @@ module Integrity
   class Build
     include DataMapper::Resource
 
-    property :id,                Integer,  :serial => true
+    property :id,                Serial
     property :output,            Text,     :nullable => false, :default => ""
     property :successful,        Boolean,  :nullable => false, :default => false
     property :commit_identifier, String,   :nullable => false
