@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/test_helper"
+require File.dirname(__FILE__) + "/../test_helper"
 
 class NotifierTest < Test::Unit::TestCase
   before(:each) do 
