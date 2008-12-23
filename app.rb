@@ -1,7 +1,7 @@
-require File.dirname(__FILE__) + '/lib/integrity'
-require 'sinatra'
-require 'diddies'
-require 'hacks'
+require File.dirname(__FILE__) + "/lib/integrity"
+require "sinatra"
+require "diddies"
+require "hacks"
 
 set :root,   Integrity.root
 set :public, Integrity.root / "public"
@@ -106,20 +106,20 @@ end
 post "/:project/push" do
   login_required
   
-  content_type 'text/plain'
+  content_type "text/plain"
 
   begin
     payload = JSON.parse(params[:payload] || "")
 
     if Integrity.config[:build_all_commits]
-      payload['commits'].sort_by { |commit| Time.parse(commit['timestamp']) }.each do |commit|
-        current_project.build(commit['id']) if payload['ref'] =~ /#{current_project.branch}/
+      payload["commits"].sort_by { |commit| Time.parse(commit["timestamp"]) }.each do |commit|
+        current_project.build(commit["id"]) if payload["ref"] =~ /#{current_project.branch}/
       end
     else
-      current_project.build(payload['after']) if payload['ref'] =~ /#{current_project.branch}/
+      current_project.build(payload["after"]) if payload["ref"] =~ /#{current_project.branch}/
     end
 
-    'Thanks, build started.'
+    "Thanks, build started."
   rescue JSON::ParserError => exception
     invalid_payload!(exception.to_s)
   end
@@ -132,7 +132,7 @@ post "/:project/builds" do
   redirect project_url(@project)
 end
 
-get '/:project/builds/:build' do
+get "/:project/builds/:build" do
   login_required unless current_project.public?
   show :build, :title => ["projects", current_project.permalink, current_build.short_commit_identifier]
 end
@@ -153,7 +153,7 @@ helpers do
 
   def authorized?
     return true unless Integrity.config[:use_basic_auth]
-    !!request.env['REMOTE_USER']
+    !!request.env["REMOTE_USER"]
   end
 
   def authorize(user, password)
@@ -167,12 +167,12 @@ helpers do
   end
 
   def unauthorized!(realm=authorization_realm)
-    header 'WWW-Authenticate' => %(Basic realm="#{realm}")
+    header "WWW-Authenticate" => %(Basic realm="#{realm}")
     throw :halt, [401, show(:unauthorized, :title => "incorrect credentials")]
   end
 
   def invalid_payload!(msg=nil)
-    throw :halt, [422, msg || 'No payload given']
+    throw :halt, [422, msg || "No payload given"]
   end
 
   def current_project
