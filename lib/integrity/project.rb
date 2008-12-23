@@ -2,7 +2,7 @@ module Integrity
   class Project
     include DataMapper::Resource
 
-    property :id,         Integer,  :serial => true
+    property :id,         Serial
     property :name,       String,   :nullable => false
     property :permalink,  String
     property :uri,        URI,      :nullable => false, :length => 255
