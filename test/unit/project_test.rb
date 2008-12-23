@@ -81,6 +81,7 @@ class ProjectTest < Test::Unit::TestCase
       @project.should be_public
 
       Project.gen(:public => "false").should be_public
+      Project.gen(:public => "true").should be_public
       Project.gen(:public => false).should_not be_public
       Project.gen(:public => nil).should_not be_public
     end
