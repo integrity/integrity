@@ -8,6 +8,8 @@ require "context"
 require "matchy"
 require "rr"
 require "mocha"
+require "sinatra"
+require "sinatra/test/unit"
 require "test_fixtures"
 require "expectations"
 
@@ -30,4 +32,29 @@ class Test::Unit::TestCase
   include RR::Adapters::TestUnit
   include Integrity
   include TestHelper
+end
+
+module AcceptanceHelper
+end
+
+class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
+  include AcceptanceHelper
+  
+  class << self
+    alias :scenario :test
+  end
+  
+  def self.story(story=nil)
+    @story = story if story
+    @story
+  end
+
+  before :all do
+    puts
+    puts self.class.story.to_s.gsub(/^\s+/, '')
+  end
+
+  after :all do
+    puts
+  end
 end
