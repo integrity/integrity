@@ -1,5 +1,4 @@
 require File.dirname(__FILE__) + "/test_helper"
-require "fileutils"
 
 class ProjectBuilderTest < Test::Unit::TestCase
   before(:all) do
@@ -14,7 +13,7 @@ class ProjectBuilderTest < Test::Unit::TestCase
 
   before(:each) do
     setup_and_reset_database!
-    @project = Integrity::Project.generate(:integrity, :command => "echo -n 'output!'")
+    @project = Integrity::Project.generate(:integrity, :command => "echo 'output!'")
     ignore_logs!
   end
 
@@ -33,7 +32,7 @@ class ProjectBuilderTest < Test::Unit::TestCase
         build = ProjectBuilder.new(@project).build("commit")
         build.commit_identifier.should  == "commit identifier"
         build.commit_metadata.should    == {:meta => "data"}
-        build.output.should == "output!"
+        build.output.should == "output!\n"
         build.should be_successful
       end.should change(@project.builds, :count).by(1)
     end
