@@ -31,11 +31,11 @@ module Integrity
     end
 
     def last_build
-      builds.first(:order => [:created_at.desc], :project_id => self.id)
+      builds(:order => [:created_at.desc]).first
     end
 
     def previous_builds
-      builds.all(:order => [:created_at.desc]).tap { |builds| builds.shift }
+      builds(:order => [:created_at.desc]).tap { |builds| builds.shift }
     end
 
     def status
