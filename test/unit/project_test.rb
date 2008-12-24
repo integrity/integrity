@@ -242,4 +242,31 @@ class ProjectTest < Test::Unit::TestCase
       @project.build
     end
   end
+
+  it "doesn't have weird, wtf-ish bugs" do
+    success = Project.gen(:builds => 10.of{Build.make(:successful => true)})
+    failure = Project.gen(:builds => 10.of{Build.make(:successful => false)})
+    unbuild = Project.gen
+
+    Build.count.should == 20
+    success.should have(10).builds
+    failure.should have(10).builds
+    unbuild.should have(0).builds
+
+    success.last_build.should be_successful
+    failure.last_build.should be_failed
+    unbuild.last_build.should be_nil
+
+    Project.all.each do |project|
+      case project
+      when success
+        project.last_build.should be_successful
+      when failure
+        project.id.should == failure.id
+        project.last_build.should be_failed
+      when unbuild
+        project.last_build.should be_nil
+      end
+    end
+  end
 end
