@@ -33,6 +33,20 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
     body.should_not =~ /My Test Project/
     body.should =~ /Integrity/
   end
+
+  scenario "a user can see the projects status on the home page" do
+    integrity = Project.gen(:integrity, :builds => 3.of { Build.gen(:successful => true) })
+    test      = Project.gen(:my_test_project, :builds => 2.of { Build.gen(:successful => false) })
+    no_build  = Project.gen(:public => true, :building => false)
+    building  = Project.gen(:public => true, :building => true)
+
+    get "/"
+
+    body.should =~ /Built #{integrity.last_build.short_commit_identifier}\s*successfully/m
+    body.should =~ /Built #{test.last_build.short_commit_identifier}\s*and failed/m
+    body.should =~ /Never built yet/
+    body.should =~ /Building!/
+  end
   
   scenario "a user clicking through a link on the home page for a public project arrives at the project page" do
     Project.gen(:my_test_project, :public => true)
