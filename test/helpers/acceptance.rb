@@ -20,6 +20,12 @@ module AcceptanceHelper
     mkdir(directory)
     Integrity.config[:export_directory] = directory
   end
+
+  def setup_log!
+    pathname = Integrity.root / "integrity.log"
+    rm pathname if File.exists?(pathname)
+    Integrity.config[:log] = pathname
+  end
   
   def response
     @response
