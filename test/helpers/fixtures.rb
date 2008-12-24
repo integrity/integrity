@@ -49,6 +49,15 @@ Integrity::Project.fixture(:integrity) do
     :building   => false }
 end
 
+Integrity::Project.fixture(:shout_bot) do
+  { :name       => "ShoutBot",
+    :uri        => "git://github.com/sr/shout-bot.git",
+    :branch     => "master",
+    :command    => "ruby shout-bot.rb",
+    :public     => true,
+    :building   => false }
+end
+
 Integrity::Project.fixture(:my_test_project) do
   { :name       => "My Test Project",
     :uri        => "~/my_test_project",

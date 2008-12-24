@@ -1,6 +1,8 @@
 require File.dirname(__FILE__) + "/acceptance/webrat"
 
 module AcceptanceHelper
+  include FileUtils
+
   def enable_auth!
     Integrity.config[:use_basic_auth]      = true
     Integrity.config[:admin_username]      = "admin"
@@ -10,6 +12,13 @@ module AcceptanceHelper
   
   def disable_auth!
     Integrity.config[:use_basic_auth] = false
+  end
+
+  def set_and_create_export_directory!
+    directory = File.dirname(__FILE__) / ".." / ".." / "exports"
+    rm_r(directory) if File.directory?(directory)
+    mkdir(directory)
+    Integrity.config[:export_directory] = directory
   end
   
   def response
