@@ -10,7 +10,7 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
   before(:each) do
     setup_and_reset_database!
     set_and_create_export_directory!
-    ignore_logs!
+    setup_log!
   end
 
   scenario "a user clicking on 'Manual Build' trigger a build that is successful" do
