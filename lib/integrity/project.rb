@@ -93,7 +93,11 @@ module Integrity
 
       def delete_code
         builds.destroy!
-        ProjectBuilder.new(self).delete_code
+        begin
+          Builder.new(self).delete_code
+        rescue SCM::SCMUnknownError => errormsg
+          Integrity.log "Problem while trying to deleting code: #{errormsg}"
+        end
       end
 
       def send_notifications
