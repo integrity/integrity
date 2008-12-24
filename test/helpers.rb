@@ -6,6 +6,7 @@ require "context"
 require "matchy"
 require "rr"
 require "mocha"
+require "ruby-debug"
 
 require File.dirname(__FILE__) / "helpers" / "expectations"
 require File.dirname(__FILE__) / "helpers" / "fixtures"
