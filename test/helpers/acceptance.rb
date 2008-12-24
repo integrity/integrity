@@ -11,6 +11,10 @@ module AcceptanceHelper
   def disable_auth!
     Integrity.config[:use_basic_auth] = false
   end
+  
+  def response
+    @response
+  end
 end
 
 module PrettyStoryPrintingHelper

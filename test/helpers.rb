@@ -21,10 +21,6 @@ module TestHelper
   def ignore_logs!
     stub(Integrity).log { nil }
   end
-
-  def response
-    @response
-  end
 end
 
 class Test::Unit::TestCase
