@@ -31,7 +31,7 @@ module Integrity
     end
 
     def last_build
-      builds.first(:order => [:created_at.desc])
+      builds.first(:order => [:created_at.desc], :project_id => self.id)
     end
 
     def previous_builds
