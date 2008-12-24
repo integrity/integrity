@@ -14,6 +14,11 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
     set_and_create_export_directory!
   end
 
+  after(:all) do
+    rm_r git_repository_directory
+    rm_r export_directory
+  end
+
   scenario "a user clicking on 'Manual Build' trigger a build that is successful" do
     project = Project.gen(:my_test_project)
 
