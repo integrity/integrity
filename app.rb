@@ -126,7 +126,7 @@ post "/:project/push" do
 end
 
 post "/:project/builds" do
-  login_required
+  login_required unless current_project.public?
 
   current_project.build
   redirect project_url(@project)
@@ -134,6 +134,7 @@ end
 
 get "/:project/builds/:build" do
   login_required unless current_project.public?
+
   show :build, :title => ["projects", current_project.permalink, current_build.short_commit_identifier]
 end
 
