@@ -1,4 +1,5 @@
-require File.dirname(__FILE__) + "/acceptance/webrat"
+require "webrat/sinatra"
+require Integrity.root / "app"
 
 module AcceptanceHelper
   include FileUtils
@@ -89,6 +90,5 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
   end
 
   include AcceptanceHelper
-  include WebratIntegrationHelper
   include PrettyStoryPrintingHelper
 end
