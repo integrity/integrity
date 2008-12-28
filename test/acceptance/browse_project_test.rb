@@ -18,9 +18,9 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
 
     get "/"
 
-    status.should == 200
-    body.should =~ /Integrity/
-    body.should =~ /My Test Project/
+    response_code.should == 200
+    response_body.should =~ /Integrity/
+    response_body.should =~ /My Test Project/
   end
   
   scenario "a user can't see a private project listed on the home page" do
@@ -29,9 +29,9 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
     
     get "/"
     
-    status.should == 200
-    body.should_not =~ /My Test Project/
-    body.should =~ /Integrity/
+    response_code.should == 200
+    response_body.should_not =~ /My Test Project/
+    response_body.should =~ /Integrity/
   end
 
   scenario "a user can see the projects status on the home page" do
@@ -42,10 +42,10 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
 
     get "/"
 
-    body.should =~ /Built #{integrity.last_build.short_commit_identifier}\s*successfully/m
-    body.should =~ /Built #{test.last_build.short_commit_identifier}\s*and failed/m
-    body.should =~ /Never built yet/
-    body.should =~ /Building!/
+    response_body.should =~ /Built #{integrity.last_build.short_commit_identifier}\s*successfully/m
+    response_body.should =~ /Built #{test.last_build.short_commit_identifier}\s*and failed/m
+    response_body.should =~ /Never built yet/
+    response_body.should =~ /Building!/
   end
   
   scenario "a user clicking through a link on the home page for a public project arrives at the project page" do
@@ -55,14 +55,14 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
     click_link "My Test Project"
     
     current_url.should == "/my-test-project"
-    status.should == 200
+    response_code.should == 200
   end
   
   scenario "a user gets a 404 when browsing to an unexisting project" do
     get "/who-are-you"
     
-    status.should == 404
-    body.should =~ /you seem a bit lost, sir/
+    response_code.should == 404
+    response_body.should =~ /you seem a bit lost, sir/
   end
   
   scenario "a user browsing to the url of a private project gets a 401" do
@@ -70,10 +70,18 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
     
     get "/my-test-project"
     
-    status.should == 401
-    body.should =~ /you don't know the password?/
+    response_code.should == 401
+    response_body.should =~ /you don't know the password?/
   end
   
   scenario "an admin can browse to a private project just fine" do
+    Project.gen(:my_test_project, :public => false)
+    
+    login_as "admin", "test"
+    get "/"
+    click_link "My Test Project"
+    
+    response_code.should == 200
+    current_url.should == "/my-test-project"
   end
 end

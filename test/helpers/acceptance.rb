@@ -1,6 +1,8 @@
 require "webrat/sinatra"
 require Integrity.root / "app"
 
+Webrat.configuration.mode = :sinatra
+
 module AcceptanceHelper
   include FileUtils
 
@@ -17,6 +19,17 @@ module AcceptanceHelper
     Integrity.config[:admin_username]      = "admin"
     Integrity.config[:admin_password]      = "test"
     Integrity.config[:hash_admin_password] = false
+  end
+  
+  def login_as(user, password)
+    get "/"
+    basic_auth user, password
+    click_link "Log in"
+    Sinatra.application.before { login_required }
+  end
+  
+  def log_out
+    basic_auth nil, nil
   end
   
   def disable_auth!
@@ -54,10 +67,6 @@ module AcceptanceHelper
     rm pathname if File.exists?(pathname)
     Integrity.config[:log] = pathname
   end
-  
-  def response
-    @response
-  end
 end
 
 module PrettyStoryPrintingHelper
@@ -84,6 +93,27 @@ module PrettyStoryPrintingHelper
   end
 end
 
+module WebratHelpers
+  include Webrat::Methods
+  Webrat::Methods.delegate_to_session :response_code, :response_body
+  
+  def get(path, data = {})
+    webrat_session.request_page(path, "get", data)
+  end
+  
+  def post(path, data = {})
+    webrat_session.request_page(path, "post", data)
+  end
+  
+  def put(path, data = {})
+    webrat_session.request_page(path, "put", data)
+  end
+
+  def delete(path, data = {})
+    webrat_session.request_page(path, "delete", data)
+  end
+end
+
 class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
   class << self
     alias :scenario :test
@@ -91,4 +121,5 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
 
   include AcceptanceHelper
   include PrettyStoryPrintingHelper
+  include WebratHelpers
 end

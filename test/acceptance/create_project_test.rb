@@ -9,51 +9,74 @@ class CreateProjectTest < Test::Unit::AcceptanceTestCase
 
   before(:each) do
     setup_and_reset_database!
-    Integrity.config[:use_basic_auth] = true
+    enable_auth!
+    log_out
   end
 
   scenario "an admin can create a public project" do
-    lambda do
-      post_it "/", { "project_data[name]" => "Integrity (test-refactoring)",
-        "project_data[uri]" => "git://github.com/foca/integrity.git",
-        "project_data[branch]" => "test-refactoring",
-        "project_data[command]" => "rake test:acceptance",
-        "project_data[public]" => true, :env => {"REMOTE_USER" => "foxy"} }
-    end.should change(Project, :count).by(1)
+    Project.first(:permalink => "integrity-test-refactoring").should be_nil
+    
+    login_as "admin", "test"
 
-    Project.first(:permalink => "integrity-test-refactoring").tap do |project|
-      project.uri.to_s.should == "git://github.com/foca/integrity.git"
-      project.branch.should == "test-refactoring"
-      project.command.should == "rake test:acceptance"
-      project.should be_public
-    end
-
-    response.should be_redirect
-    response["Location"].should == "/integrity-test-refactoring"
+    get "/new"
+    
+    fill_in "Name",            :with => "Integrity (test-refactoring)"
+    fill_in "Git repository",  :with => "git://github.com/foca/integrity.git"
+    fill_in "Branch to track", :with => "test-refactoring"
+    fill_in "Build script",    :with => "rake test:acceptance"
+    check   "Public project"
+    click_button "Create Project"
+    
+    puts response_body
+    
+    current_url.should == "/integrity-test-refactoring"
+    response_code.should == 200
+    Project.first(:permalink => "integrity-test-refactoring").should_not be_nil
+    
+    log_out
+    get "/integrity-test-refactoring"
+    
+    current_url.should == "/integrity-test-refactoring"
+    response_body.should =~ /test-refactoring/
   end
   
   scenario "an admin can create a private project" do
-    lambda do
-      post_it "/", { "project_data[name]" => "Integrity",
-        "project_data[uri]" => "git://github.com/foca/integrity.git",
-        "project_data[branch]" => "master",
-        "project_data[command]" => "rake", :env => {"REMOTE_USER" => "foxy"} }
-    end.should change(Project, :count).by(1)
+    Project.first(:permalink => "integrity").should be_nil
 
-    Project.first(:permalink => "integrity").tap do |project|
-      project.uri.to_s.should == "git://github.com/foca/integrity.git"
-      project.branch.should == "master"
-      project.command.should == "rake"
-      project.should_not be_public
-    end
+    login_as "admin", "test"
+    
+    get "/new"
+    
+    fill_in "Name",            :with => "Integrity (test-refactoring)"
+    fill_in "Git repository",  :with => "git://github.com/foca/integrity.git"
+    fill_in "Branch to track", :with => "test-refactoring"
+    fill_in "Build script",    :with => "rake test:acceptance"
+    uncheck "Public project"
+    click_button "Create Project"
+    
+    current_url.should == "/integrity"
+    response_code.should == 200
+    Project.first(:permalink => "integrity").should_not be_nil
 
-    response.should be_redirect
-    response["Location"].should == "/integrity"
+    log_out
+    get "/integrity"
+    response_code.should == 401
   end
   
   scenario "a user can't see the new project form" do
-    get_it "/new"
-    response.status.should == 401
-    response.body.should_not have_tag("form[@action='/'][@method='post']")
+    get "/new"
+
+    response_code.should == 401
+  end
+  
+  scenario "a user can't post the project data (bypassing the form)" do
+    lambda {
+      post "/", "project_data[name]"    => "Integrity",
+                "project_data[uri]"     => "git://github.com/foca/integrity.git",
+                "project_data[branch]"  => "master",
+                "project_data[command]" => "rake"
+    }.should_not change(Project, :count)
+    
+    response_code.should == 401
   end
 end
