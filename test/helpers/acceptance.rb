@@ -1,5 +1,6 @@
 require "webrat/sinatra"
 require Integrity.root / "app"
+require File.dirname(__FILE__) / "acceptance/git_helper"
 
 Webrat.configuration.mode = :sinatra
 
@@ -8,10 +9,6 @@ module AcceptanceHelper
 
   def export_directory
     Integrity.root / "exports"
-  end
-
-  def git_repository_directory
-    Integrity.root / "my-test-project.git"
   end
 
   def enable_auth!
@@ -35,26 +32,6 @@ module AcceptanceHelper
 
   def disable_auth!
     Integrity.config[:use_basic_auth] = false
-  end
-
-  def create_git_repository!
-    rm_r  git_repository_directory if File.directory?(git_repository_directory)
-    mkdir git_repository_directory
-
-    Dir.chdir(git_repository_directory) do
-      `git init`
-      File.open("test.rb", "w") do |f|
-        f.puts "require 'test/unit/assertions'"
-        f.puts "include Test::Unit::Assertions"
-        f.puts "puts %q{this is just because Build#output can't be blank now ATM}"
-        f.puts "assert_equal 'foo', 'foo'"
-      end
-      `git add test.rb`
-      `git commit -m "initial import"`
-      File.open("README", "w") { |f| f << "uh?" }
-      `git add README`
-      `git commit -m "readme"`
-    end
   end
 
   def set_and_create_export_directory!
@@ -107,4 +84,5 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
   include AcceptanceHelper
   include PrettyStoryPrintingHelper
   include WebratHelpers
+  include GitHelper
 end

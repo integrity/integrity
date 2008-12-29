@@ -10,44 +10,44 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
   before(:each) do
     setup_and_reset_database!
     setup_log!
-    create_git_repository!
     set_and_create_export_directory!
-    login_as "admin", "test"
   end
 
   after(:all) do
-    rm_r git_repository_directory
+    destroy_all_git_repos
     rm_r export_directory
   end
 
-  scenario "a user clicking on 'Manual Build' trigger a build that is successful" do
-    project = Project.gen(:my_test_project)
+  scenario "a user clicking on 'Manual Build' and triggers a successful build" do
+    git_repo(:my_test_project).add_successful_commit
+    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
+    
+    login_as "admin", "test"
 
-    visit "/#{project.permalink}"
+    visit "/my-test-project"
     response_body.should include("No builds for this project, buddy")
 
-    lambda do
-      request_page "/#{project.permalink}/builds", "post", {}
-      response_code.should == 200
-    end.should change(project.builds, :count).from(0).to(1)
+    click_button "manual build"
 
-    visit "/#{project.permalink}"
-    response_body.should have_tag("h1", /Built\s*#{project.last_build.short_commit_identifier}\s*successfully/m)
-    response_body.should have_tag("blockquote p", "readme")
-    response_body.should have_tag("span.who")
-    response_body.should have_tag("span.when", /today/)
-    response_body.should have_tag("pre.output", /this is just because Build/)
+    response_body.should =~ /Built\s+#{git_repo(:my_test_project).head}\s+successfully/
+    response_body.should =~ /This commit will work/          # commit message
+    response_body.should =~ /by:\s+John Doe/                 # commit author
+    response_body.should =~ /today/                          # commit date
+    response_body.should have_tag("pre", /Running tests.../) # build output
   end
 
-  scenario "a user clicks on 'Manual Build' and trigger a build that is unsuccessful" do
-    project = Project.gen(:my_test_project, :command => "ruby not-found.rb")
+  scenario "a user clicking on 'Manual Build' and triggers a failed build" do
+    git_repo(:my_test_project).add_failing_commit
+    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
+    
+    login_as "admin", "test"
+    
+    visit "/my-test-project"
+    response_body.should include("No builds for this project, buddy")
 
-    lambda do
-      request_page "/#{project.permalink}/builds", "post", {}
-      response_code.should == 200
-    end.should change(project.builds, :count).from(0).to(1)
-
-    visit "/#{project.permalink}"
-    response_body.should have_tag("h1", /Built\s*#{project.last_build.short_commit_identifier}\s*and failed/m)
+    click_button "manual build"
+    
+    response_body.should =~ /Built\s+#{git_repo(:my_test_project).head}\s+and failed/
+    response_body.should =~ /This commit will fail/          # commit message
   end
 end

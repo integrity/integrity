@@ -51,9 +51,9 @@ end
 
 Integrity::Project.fixture(:my_test_project) do
   { :name       => "My Test Project",
-    :uri        => Integrity.root / "my-test-project.git",
+    :uri        => Integrity.root / "my-test-project",
     :branch     => "master",
-    :command    => "ruby test.rb",
+    :command    => "./test",
     :public     => true,
     :building   => false }
 end
