@@ -29,7 +29,7 @@ module AcceptanceHelper
   end
   
   def log_out
-    basic_auth nil, nil
+    @_webrat_session = Webrat::SinatraSession.new(self)
   end
   
   def disable_auth!
