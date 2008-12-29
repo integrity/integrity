@@ -22,13 +22,14 @@ module AcceptanceHelper
   end
   
   def login_as(user, password)
-    get "/"
+    def AcceptanceHelper.logged_in; true; end
     basic_auth user, password
-    click_link "Log in"
-    Sinatra.application.before { login_required }
+    visit "/login"
+    Sinatra.application.before { login_required if AcceptanceHelper.logged_in }
   end
   
   def log_out
+    def AcceptanceHelper.logged_in; false; end
     @_webrat_session = Webrat::SinatraSession.new(self)
   end
   
