@@ -24,8 +24,6 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
     login_as "admin", "test"
 
     visit "/my-test-project"
-    response_body.should include("No builds for this project, buddy")
-
     click_button "manual build"
 
     response_body.should have_tag("h1", /Built\s+#{git_repo(:my_test_project).head}\s+successfully/)
@@ -41,8 +39,6 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
     login_as "admin", "test"
     
     visit "/my-test-project"
-    response_body.should include("No builds for this project, buddy")
-
     click_button "manual build"
     
     response_body.should have_tag("h1", /Built\s+#{git_repo(:my_test_project).head}\s+and failed/)
