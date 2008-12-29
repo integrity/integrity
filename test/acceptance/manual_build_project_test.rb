@@ -55,13 +55,10 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
     click_button "manual build"
     response_body.should have_tag("h1", /failed/)
 
-    # FIXME: command is set to './"escape code for /"test because of either
-    # a bug in Webrat or in app.rb (escaping related)
-=begin
-    visit "/my-test-project/edit"
-    fill_in "Build script", :with => "./test"
-    click_button "Update Project"
-=end
+    # FIXME: this is because of a bug in the way webrat fils in forms. or in app.rb
+    # FIXME: visit "/my-test-project/edit"
+    # FIXME: fill_in "Build script", :with => "./test"
+    # FIXME: click_button "Update Project"
     project.update_attributes(:command => "./test")
 
     Project.first(:permalink => "my-test-project").command.should == "./test"
