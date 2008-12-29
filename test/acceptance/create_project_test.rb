@@ -77,4 +77,8 @@ class CreateProjectTest < Test::Unit::AcceptanceTestCase
     response_body.should have_tag("h1", /you don't know the password?/)
     Project.first(:permalink => "integrity").should be_nil
   end
+  
+  def post(path, data={})
+    webrat.request_page(path, :post, data)
+  end
 end
