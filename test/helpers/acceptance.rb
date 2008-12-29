@@ -97,22 +97,6 @@ end
 module WebratHelpers
   include Webrat::Methods
   Webrat::Methods.delegate_to_session :response_code, :response_body
-  
-  def get(path, data = {})
-    webrat_session.request_page(path, "get", data)
-  end
-  
-  def post(path, data = {})
-    webrat_session.request_page(path, "post", data)
-  end
-  
-  def put(path, data = {})
-    webrat_session.request_page(path, "put", data)
-  end
-
-  def delete(path, data = {})
-    webrat_session.request_page(path, "delete", data)
-  end
 end
 
 class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
