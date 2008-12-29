@@ -27,13 +27,13 @@ class CreateProjectTest < Test::Unit::AcceptanceTestCase
     check   "Public project"
     click_button "Create Project"
 
-    response_body.should have_tag("h1", /integrity/)
     Project.first(:permalink => "integrity").should_not be_nil
-    Project.first(:permalink => "integrity").should be_public
+    response_body.should have_tag("h1", /integrity/)
     
     log_out
     
     visit "/integrity"
+
     response_body.should have_tag("h1", /integrity/)
   end
   
