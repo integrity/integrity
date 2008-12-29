@@ -75,6 +75,7 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
     Project.gen(:my_test_project, :public => false)
     
     login_as "admin", "test"
+    
     visit "/"
     click_link "My Test Project"
     
