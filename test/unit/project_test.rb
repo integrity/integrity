@@ -79,6 +79,8 @@ class ProjectTest < Test::Unit::TestCase
       Project.new.should be_public
 
       @project.should be_public
+      @project.tap { |p| p.public = "1" }.should be_public
+      @project.tap { |p| p.public = "0" }.should_not be_public
 
       Project.gen(:public => "false").should be_public
       Project.gen(:public => "true").should be_public
@@ -208,6 +210,34 @@ class ProjectTest < Test::Unit::TestCase
       lambda do
         @project.destroy
       end.should change(Build, :count).by(-@builds.length)
+    end
+  end
+
+  describe "When retrieving state about its notifier" do
+    before(:each) do
+      @project = Project.generate
+      @irc     = Notifier.generate(:irc)
+    end
+
+    specify "#config_for returns given notifier's configuration" do
+      @project.update_attributes(:notifiers => [@irc])
+      @project.config_for("IRC").should == {:uri => "irc://irc.freenode.net/integrity"}
+    end
+
+    specify "#config_for returns an empty hash if no such notifier" do
+      @project.config_for("IRC").should == {}
+    end
+
+    specify "#notifies? is true if it uses the given notifier" do
+      @project.update_attributes(:notifiers => [@irc])
+      @project.notifies?("IRC").should == true
+    end
+
+    specify "#notifies? is false if it doesnt use the given notifier" do
+      @project.update_attributes(:notifiers => [])
+
+      @project.notifies?("IRC").should == false
+      @project.notifies?("UndefinedNotifier").should == false
     end
   end
 
