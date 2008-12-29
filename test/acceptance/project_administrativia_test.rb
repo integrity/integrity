@@ -15,6 +15,9 @@ class ProjectAdministrativiaTest < Test::Unit::AcceptanceTestCase
 
   scenario "browsing to a project page and click on 'Yes, I'm sure, nuke it' destroy the project" do
     project = Project.generate(:integrity, :builds => 4.of { Build.gen })
+
+    visit "/"
+    click_link_within("#content", "Integrity")
     visit "/integrity/edit"
 
     lambda do
