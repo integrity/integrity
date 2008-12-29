@@ -81,4 +81,20 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
     
     response_body.should have_tag("h1", /my-test-project/)
   end
+
+  scenario "a user browsing to a public project with no build see a friendly message" do
+    project = Project.gen(:my_test_project, :public => true)
+
+    visit "/my-test-project"
+    response_body.should include("No builds for this project, buddy")
+  end
+
+  scenario "an admin browsing to a private project with no build see a friendly message" do
+    Project.gen(:my_test_project, :public => false)
+
+    login_as "admin", "test"
+    visit "/my-test-project"
+
+    response_body.should include("No builds for this project, buddy")
+  end
 end
