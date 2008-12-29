@@ -27,7 +27,7 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
     response_body.should include("No builds for this project, buddy")
 
     lambda do
-      post "/#{project.permalink}/builds"
+      request_page "/#{project.permalink}/builds", "post", {}
       response_code.should == 200
     end.should change(project.builds, :count).from(0).to(1)
 
@@ -43,11 +43,11 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
     project = Project.gen(:my_test_project, :command => "ruby not-found.rb")
 
     lambda do
-      post "/#{project.permalink}/builds"
+      request_page "/#{project.permalink}/builds", "post", {}
       response_code.should == 200
     end.should change(project.builds, :count).from(0).to(1)
 
-    get "/#{project.permalink}"
+    visit "/#{project.permalink}"
     response_body.should have_tag("h1", /Built\s*#{project.last_build.short_commit_identifier}\s*and failed/m)
   end
 end

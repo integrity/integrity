@@ -32,7 +32,7 @@ module AcceptanceHelper
     def AcceptanceHelper.logged_in; false; end
     @_webrat_session = Webrat::SinatraSession.new(self)
   end
-  
+
   def disable_auth!
     Integrity.config[:use_basic_auth] = false
   end
