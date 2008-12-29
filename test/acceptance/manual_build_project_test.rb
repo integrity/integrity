@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + "/../helpers"
 
 class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
   story <<-EOS
-    As an user, 
+    As an administrator,
     I want to manually build my project
     So that I know if it build properly
   EOS
