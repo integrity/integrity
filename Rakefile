@@ -27,12 +27,14 @@ namespace :test do
     Rcov::RcovTask.new(:units) do |rcov|
       rcov.pattern   = "test/unit/*_test.rb"
       rcov.rcov_opts = %w(--html --aggregate .aggregated_coverage_report)
+      rcov.rcov_opts << %Q{-x"#{ENV['GEM_PATH']}"}
     end
     
     desc "Measure test coverage of acceptance tests"
     Rcov::RcovTask.new(:acceptance) do |rcov|
       rcov.pattern   = "test/acceptance/*_test.rb"
       rcov.rcov_opts = %w(--html --aggregate .aggregated_coverage_report)
+      rcov.rcov_opts << %Q{-x"#{ENV['GEM_PATH']}"}
     end
     
     desc "Verify test coverage"
