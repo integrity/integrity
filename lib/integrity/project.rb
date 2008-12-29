@@ -43,7 +43,7 @@ module Integrity
     end
 
     def public=(flag)
-      attribute_set(:public, !!flag)
+      attribute_set(:public, flag == "1")
     end
     
     def config_for(notifier)

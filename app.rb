@@ -59,7 +59,7 @@ end
 post "/" do
   login_required
   
-  @project = Project.new({"public" => false}.merge(params[:project_data]))
+  @project = Project.new(params[:project_data])
   if @project.save
     @project.enable_notifiers(params["enabled_notifiers[]"], params["notifiers"])
     redirect project_path(@project)
@@ -248,7 +248,8 @@ helpers do
   end
   
   def checkbox(name, condition, extras={})
-    attrs = { :name => name, :type => "checkbox" }.merge(condition ? { :checked => "checked" } : {})
+    attrs = { :name => name, :type => "checkbox", :value => "1" }
+    attrs.merge(condition ? { :checked => "checked" } : {})
     attrs.merge(extras)
   end
 

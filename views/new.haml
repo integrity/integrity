@@ -29,6 +29,7 @@
 
   %p.normal.checkbox
     %label{ :for => "project_public" } Public project
+    %input.hidden{ :name => "project_data[public]", :value => "0", :type => "hidden" }
     %input.checkbox#project_public{ checkbox("project_data[public]", @project.public?) }
   
   - Notifier.available.each do |notifier|
