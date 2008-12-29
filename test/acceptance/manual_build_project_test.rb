@@ -18,7 +18,7 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
     rm_r export_directory
   end
 
-  scenario "a user clicking on 'Manual Build' and triggers a successful build" do
+  scenario "clicking on 'Manual Build' triggers a successful build" do
     git_repo(:my_test_project).add_successful_commit
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
     login_as "admin", "test"
@@ -33,7 +33,7 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
     response_body.should have_tag("pre.output",   /Running tests.../)       # build output
   end
 
-  scenario "a user clicking on 'Manual Build' and triggers a failed build" do
+  scenario "clicking on 'Manual Build' triggers a failed build" do
     git_repo(:my_test_project).add_failing_commit
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
     login_as "admin", "test"
