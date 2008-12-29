@@ -66,6 +66,8 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
 
     Project.first(:permalink => "my-test-project").command.should == "./test"
 
+    reloads
+
     visit "/my-test-project"
     click_button "Request Manual Build"
 
