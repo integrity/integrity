@@ -21,6 +21,14 @@ module Integrity
 
     validates_is_unique :name
 
+    def self.only_public_unless(condition)
+      if condition
+        all
+      else
+        all(:public => true)
+      end
+    end
+
     def build(commit_identifier="HEAD")
       return if building?
       update_attributes(:building => true)
@@ -43,7 +51,10 @@ module Integrity
     end
 
     def public=(flag)
-      attribute_set(:public, flag == "1")
+      attribute_set(:public, case flag
+        when "1", "0" then flag == "1"
+        else !!flag
+      end)
     end
     
     def config_for(notifier)

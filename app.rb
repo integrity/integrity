@@ -39,7 +39,7 @@ before do
 end
 
 get "/" do
-  @projects = Project.all(authorized? ? {} : { :public => true })
+  @projects = Project.only_public_unless(authorized?)
   show :home, :title => "projects"
 end
 

@@ -141,6 +141,25 @@ class ProjectTest < Test::Unit::TestCase
       end.should_not change(Project, :count)
     end
   end
+  
+  describe "Finding public or private projects" do
+    before(:each) do
+      @public_project = Project.gen(:public => true)
+      @private_project = Project.gen(:public => false)
+    end
+    
+    it "finds only public projects if the condition passed is false" do
+      projects = Project.only_public_unless(false)
+      projects.should_not include(@private_project)
+      projects.should include(@public_project)
+    end
+    
+    it "finds both private and public projects if the condition passed is true" do
+      projects = Project.only_public_unless(true)
+      projects.should include(@private_project)
+      projects.should include(@public_project)
+    end
+  end
 
   describe "When finding its previous builds" do
     before(:each) do
