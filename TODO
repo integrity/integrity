@@ -13,6 +13,8 @@ Scratchpad ;-)
 
 - Possibely change feed format from RSS to Atom. Write acceptance tests in any case
 
+- When renaming a project, it's working copy should be either deleted and re-cloned or renamed
+
 
 Fixes and/or features to merge in
 ---------------------------------
