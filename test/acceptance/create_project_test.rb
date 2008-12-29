@@ -10,7 +10,6 @@ class CreateProjectTest < Test::Unit::AcceptanceTestCase
   before(:each) do
     setup_and_reset_database!
     enable_auth!
-    log_out
   end
 
   scenario "an admin can create a public project" do
