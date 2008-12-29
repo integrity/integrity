@@ -58,7 +58,11 @@ module PrettyStoryPrintingHelper
 
     base.after(:all) do
       puts
-    end    
+    end
+    
+    class << base
+      alias :scenario :test
+    end
     
     base.extend ClassMethods
   end
@@ -77,10 +81,6 @@ module WebratHelpers
 end
 
 class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
-  class << self
-    alias :scenario :test
-  end
-
   include AcceptanceHelper
   include PrettyStoryPrintingHelper
   include WebratHelpers
