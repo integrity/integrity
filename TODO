@@ -1,5 +1,22 @@
+Scratchpad ;-)
+==============
+
 - Integrity::SCM should recognize uri that start with git:// too (not just /\.git$/)
-- Rename commit_metadata to commit_meta_data
-- use trick to pass private methods instead of #send
-- Build#output should be allowed to be blank
-- Fix test for that we captuire both STDOUT and STDERR
+
+- Clean Build#commit_* by adding an "#has n" commits relation with a new model 'Commit'
+
+- Fix that Build#output can't be blank (it's like.. the 1% but oh well)
+
+- Update the README and redirect to <http://integrityapp.com> instead
+
+- Inclusion (or is already included?) of support for SVN. Write acceptance tests in any case
+
+- Possibely change feed format from RSS to Atom. Write acceptance tests in any case
+
+
+Fixes and/or features to merge in
+---------------------------------
+
+- <http://github.com/dbr/integrity> -- various fixes and ui tweaks
+
+- <http://github.com/bantic/integrity> -- show elapsed time when building
