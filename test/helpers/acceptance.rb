@@ -85,4 +85,9 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
   include PrettyStoryPrintingHelper
   include WebratHelpers
   include GitHelper
+  
+  before(:each) do
+    # ensure each scenario is run in a clean sandbox
+    log_out
+  end
 end
