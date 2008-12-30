@@ -7,17 +7,6 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
     So that I know if it build properly
   EOS
   
-  before(:each) do
-    setup_and_reset_database!
-    setup_log!
-    set_and_create_export_directory!
-  end
-
-  after(:all) do
-    destroy_all_git_repos
-    rm_r export_directory
-  end
-
   scenario "clicking on 'Manual Build' triggers a successful build" do
     git_repo(:my_test_project).add_successful_commit
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)

@@ -7,11 +7,6 @@ class DeleteProjectTest < Test::Unit::AcceptanceTestCase
     So that Integrity isn't cluttered with unimportant projects
   EOS
 
-  before(:each) do
-    setup_and_reset_database!
-    enable_auth!
-  end
-
   scenario "an admin can delete a project from the 'Edit Project' screen" do
     Project.generate(:integrity, :builds => 4.of { Build.gen })
 

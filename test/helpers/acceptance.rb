@@ -88,6 +88,15 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
   
   before(:each) do
     # ensure each scenario is run in a clean sandbox
+    setup_and_reset_database!
+    enable_auth!
+    setup_log!
+    set_and_create_export_directory!
     log_out
+  end
+  
+  after(:each) do
+    destroy_all_git_repos
+    rm_r export_directory
   end
 end
