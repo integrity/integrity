@@ -7,6 +7,7 @@ module GitHelper
   
   def destroy_all_git_repos
     @@_git_repositories.each {|n,r| r.destroy }
+    @@_git_repositories.clear
   end
   
   class Repo

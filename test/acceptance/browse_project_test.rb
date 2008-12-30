@@ -7,11 +7,6 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
     So I can follow the status of my favorite OSS projects
   EOS
   
-  before(:each) do
-    setup_and_reset_database!
-    enable_auth!
-  end
-  
   scenario "a user can see a public project listed on the home page" do
     Project.gen(:integrity, :public => true)
     Project.gen(:my_test_project, :public => true)

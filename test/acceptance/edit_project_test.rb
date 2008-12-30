@@ -7,11 +7,6 @@ class EditProjectTest < Test::Unit::AcceptanceTestCase
     So that I can correct mistakes or update the project after a change
   EOS
 
-  before(:each) do
-    setup_and_reset_database!
-    enable_auth!
-  end
-
   scenario "an admin can edit the project information" do
     Project.generate(:integrity)
 

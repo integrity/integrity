@@ -7,11 +7,6 @@ class CreateProjectTest < Test::Unit::AcceptanceTestCase
     So that I can know their status whenever I push code
   EOS
 
-  before(:each) do
-    setup_and_reset_database!
-    enable_auth!
-  end
-
   scenario "an admin can create a public project" do
     Project.first(:permalink => "integrity").should be_nil
     
