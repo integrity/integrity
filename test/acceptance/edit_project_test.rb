@@ -8,19 +8,20 @@ class EditProjectTest < Test::Unit::AcceptanceTestCase
   EOS
 
   scenario "an admin can edit the project information" do
-    Project.generate(:integrity)
+    pending "either webrat or our sinatra app are escaping the form params once too many times" do
+      Project.generate(:integrity)
 
-    login_as "admin", "test"
+      login_as "admin", "test"
 
-    visit "/integrity"
-    click_link "Edit Project"
+      visit "/integrity"
+      click_link "Edit Project"
 
-    fill_in "Name",            :with => "Integrity (test refactoring)"
-    fill_in "Branch to track", :with => "test-refactoring"
-    click_button "Update Project"
+      fill_in "Name",            :with => "Integrity (test refactoring)"
+      fill_in "Branch to track", :with => "test-refactoring"
+      click_button "Update Project"
     
-    # FIXME: the ugly regexp is because of a bug in the way webrat fils in forms. or in app.rb
-    response_body.should have_tag("h1", /integrity-.*test-refactoring/)
+      response_body.should have_tag("h1", /integrity-test-refactoring/)
+    end
   end
 
   scenario "making a public project private will hide it from the home page for non-admins" do
@@ -40,29 +41,29 @@ class EditProjectTest < Test::Unit::AcceptanceTestCase
     log_out
 
     visit "/"
-    # FIXME: the ugly regexp is because of a bug in the way webrat fils in forms. or in app.rb
-    response_body.should_not =~ /My.*Test.*Project/
+    response_body.should_not have_tag("a", /My Test Project/)
   end
 
   scenario "making a private project public will show it in the home page for non-admins" do
-    Project.generate(:my_test_project, :public => false)
+    pending "either webrat or our sinatra app are escaping the form params once too many times" do
+      Project.generate(:my_test_project, :public => false)
 
-    visit "/"
-    response_body.should_not =~ /My Test Project/
+      visit "/"
+      response_body.should_not =~ /My Test Project/
 
-    login_as "admin", "test"
+      login_as "admin", "test"
 
-    visit "/my-test-project"
-    click_link "Edit Project"
+      visit "/my-test-project"
+      click_link "Edit Project"
 
-    check "Public project"
-    click_button "Update Project"
+      check "Public project"
+      click_button "Update Project"
 
-    log_out
+      log_out
 
-    visit "/"
-    # FIXME: the ugly regexp is because of a bug in the way webrat fils in forms. or in app.rb
-    response_body.should =~ /My.*Test.*Project/
+      visit "/"
+      response_body.should have_tag("a", /My Test Project/)
+    end
   end
   
   scenario "a user can't edit a project's information" do
