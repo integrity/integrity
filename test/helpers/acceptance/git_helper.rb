@@ -38,22 +38,33 @@ module GitHelper
       
       add_successful_commit
     end
+
+    def commits
+      Dir.chdir(@path) do
+        `git log --pretty=oneline`.collect { |line| line.split(" ").first }
+      end
+    end
+
+    def add_commit(message, &action)
+      Dir.chdir(@path) do
+        yield action
+        system %Q(git commit -m "#{message}" &>/dev/null)
+      end
+    end
     
     def add_failing_commit
-      Dir.chdir(@path) do
+      add_commit "This commit will fail" do
         system %Q(echo '#{build_script(false)}' > test)
         system %Q(chmod +x test)
         system %Q(git add test &>/dev/null)
-        system %Q(git commit -m "This commit will fail" &>/dev/null)
       end
     end
 
     def add_successful_commit
-      Dir.chdir(@path) do
+      add_commit "This commit will work" do
         system %Q(echo '#{build_script(true)}' > test)
         system %Q(chmod +x test)
         system %Q(git add test &>/dev/null)
-        system %Q(git commit -m "This commit will work" &>/dev/null)
       end
     end
     
