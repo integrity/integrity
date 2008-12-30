@@ -47,34 +47,6 @@ module AcceptanceHelper
   end
 end
 
-module PrettyStoryPrintingHelper
-  def self.included(base)
-    base.before(:all) do
-      puts
-      print "\e[36m"
-      puts  self.class.story.to_s.gsub(/^\s+/, '')
-      print "\e[0m"
-    end
-
-    base.after(:all) do
-      puts
-    end
-    
-    class << base
-      alias :scenario :test
-    end
-    
-    base.extend ClassMethods
-  end
-  
-  module ClassMethods
-    def story(story=nil)
-      @story = story if story
-      @story
-    end  
-  end
-end
-
 module WebratHelpers
   include Webrat::Methods
   Webrat::Methods.delegate_to_session :response_code, :response_body
@@ -82,7 +54,7 @@ end
 
 class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
   include AcceptanceHelper
-  include PrettyStoryPrintingHelper
+  include Test::Storyteller
   include WebratHelpers
   include GitHelper
   
