@@ -8,20 +8,18 @@ class EditProjectTest < Test::Unit::AcceptanceTestCase
   EOS
 
   scenario "an admin can edit the project information" do
-    pending "either webrat or our sinatra app are escaping the form params once too many times" do
-      Project.generate(:integrity)
+    Project.generate(:integrity)
 
-      login_as "admin", "test"
+    login_as "admin", "test"
 
-      visit "/integrity"
-      click_link "Edit Project"
+    visit "/integrity"
+    click_link "Edit Project"
 
-      fill_in "Name",            :with => "Integrity (test refactoring)"
-      fill_in "Branch to track", :with => "test-refactoring"
-      click_button "Update Project"
-    
-      response_body.should have_tag("h1", /integrity-test-refactoring/)
-    end
+    fill_in "Name",            :with => "Integrity (test refactoring)"
+    fill_in "Branch to track", :with => "test-refactoring"
+    click_button "Update Project"
+  
+    response_body.should have_tag("h1", /integrity-test-refactoring/)
   end
 
   scenario "making a public project private will hide it from the home page for non-admins" do
@@ -45,25 +43,23 @@ class EditProjectTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "making a private project public will show it in the home page for non-admins" do
-    pending "either webrat or our sinatra app are escaping the form params once too many times" do
-      Project.generate(:my_test_project, :public => false)
+    Project.generate(:my_test_project, :public => false)
 
-      visit "/"
-      response_body.should_not =~ /My Test Project/
+    visit "/"
+    response_body.should_not =~ /My Test Project/
 
-      login_as "admin", "test"
+    login_as "admin", "test"
 
-      visit "/my-test-project"
-      click_link "Edit Project"
+    visit "/my-test-project"
+    click_link "Edit Project"
 
-      check "Public project"
-      click_button "Update Project"
+    check "Public project"
+    click_button "Update Project"
 
-      log_out
+    log_out
 
-      visit "/"
-      response_body.should have_tag("a", /My Test Project/)
-    end
+    visit "/"
+    response_body.should have_tag("a", /My Test Project/)
   end
   
   scenario "a user can't edit a project's information" do
