@@ -15,9 +15,9 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
     visit "/my-test-project"
     click_button "manual build"
 
-    response_body.should have_tag("h1", /Built\s+#{git_repo(:my_test_project).head}\s+successfully/)
+    response_body.should have_tag("h1", /Built #{git_repo(:my_test_project).head} successfully/)
     response_body.should have_tag("blockquote p", /This commit will work/)  # commit message
-    response_body.should have_tag("span.who",     /by:\s+John Doe/)         # commit author
+    response_body.should have_tag("span.who",     /by: John Doe/)         # commit author
     response_body.should have_tag("span.when",    /today/)                  # commit date
     response_body.should have_tag("pre.output",   /Running tests.../)       # build output
   end
