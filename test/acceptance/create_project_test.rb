@@ -55,6 +55,25 @@ class CreateProjectTest < Test::Unit::AcceptanceTestCase
     response_code.should == 401
   end
   
+  scenario "creating a project without required fields re-renders the new project form" do
+    Project.first(:permalink => "integrity").should be_nil
+    
+    login_as "admin", "test"
+    
+    visit "/new"
+    click_button "Create Project"
+    
+    response_body.should have_tag(".with_errors label", "Name must not be blank")
+    Project.first(:permalink => "integrity").should be_nil
+
+    fill_in "Name",            :with => "Integrity"
+    fill_in "Git repository",  :with => "git://github.com/foca/integrity.git"
+    click_button "Create Project"
+    
+    response_body.should have_tag("h1", /integrity/)
+    Project.first(:permalink => "integrity").should_not be_nil
+  end
+  
   scenario "a user can't see the new project form" do
     visit "/new"
     response_code.should == 401
