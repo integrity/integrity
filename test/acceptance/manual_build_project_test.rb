@@ -35,8 +35,6 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "fixing the build command and then rebuilding result in a successful build" do
-    pending "either webrat or our sinatra app are escaping the form params once too many times"
-    
     git_repo(:my_test_project).add_successful_commit
     project = Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path,
                           :command => "ruby not-found.rb")
@@ -46,16 +44,10 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
     click_button "manual build"
     response_body.should have_tag("h1", /failed/)
 
-    # FIXME: this is because of a bug in the way webrat fils in forms. or in app.rb
-    # FIXME: visit "/my-test-project/edit"
-    # FIXME: fill_in "Build script", :with => "./test"
-    # FIXME: click_button "Update Project"
-    project.update_attributes(:command => "./test")
-
-    Project.first(:permalink => "my-test-project").command.should == "./test"
-
-    reloads
-
+    visit "/my-test-project/edit"
+    fill_in "Build script", :with => "./test"
+    click_button "Update Project"
+    
     visit "/my-test-project"
     click_button "Request Manual Build"
 
