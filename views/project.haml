@@ -22,11 +22,7 @@
       - @project.previous_builds.each do |build|
         %li{ :class => build.status }
           %a{ :href => build_path(build) }
-            %strong.build
-              Build
-              &= build.short_commit_identifier
-            %span.attribution
-              by
-              = succeed "," do
-                &= build.commit_author.name
-              &= pretty_date build.commited_at
+            %strong.build<
+              &== Build #{build.short_commit_identifier}
+            %span.attribution<
+              == by #{succeed(",") {build.commit_author.name}} #{pretty_date build.commited_at}
