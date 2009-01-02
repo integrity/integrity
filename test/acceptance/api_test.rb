@@ -12,7 +12,28 @@ class ApiTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "receiving a build request with build_all_commits *enabled* builds all commits, most recent first" do
-    pending "TODO"
+    Integrity.config[:build_all_commits] = true
+
+    repo = git_repo(:my_test_project) # initial commit && successful commit
+    3.times do |i|
+      repo.add_commit("commit #{i}") do
+        system "echo commit_#{i} >> test-file"
+        system "git add test-file &>/dev/null"
+      end
+      sleep 1
+    end
+    repo.commits.size.should == 5
+
+    Project.gen(:my_test_project, :uri => repo.path)
+
+    basic_auth "admin", "test"
+
+    lambda do
+      post "/my-test-project/push", :payload => payload(repo.head, "master", repo.commits)
+    end.should change(Build, :count).by(5)
+
+    visit "/my-test-project"
+    response_body.should have_tag("h1", /Built #{repo.short_head} successfully/)
   end
 
   scenario "receiving a build request with build_all_commits *disabled* only builds HEAD" do
@@ -55,9 +76,10 @@ class ApiTest < Test::Unit::AcceptanceTestCase
     response_code.should == 422
   end
 
-  def payload(after, branch="master")
-    { "after" => "#{after}",
-      "ref"   => "refs/heads/#{branch}" }.to_json
+  def payload(after, branch="master", commits=[])
+    payload = { "after" => "#{after}", "ref" => "refs/heads/#{branch}" }
+    payload["commits"] = commits if commits.any?
+    payload.to_json
   end
 
   def post(path, data)
