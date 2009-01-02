@@ -44,7 +44,7 @@ module Integrity
     
         def clone
           log "Cloning #{uri} to #{working_directory}"
-          `git clone #{uri} #{working_directory}`
+          `git clone #{uri} #{working_directory} &>/dev/null`
         end
 
         def checkout(treeish=nil)
@@ -55,12 +55,12 @@ module Integrity
           end
 
           log "Checking-out #{strategy}"
-          `cd #{working_directory} && git checkout #{strategy}`
+          `cd #{working_directory} && git checkout #{strategy} &>/dev/null`
         end
 
         def pull
           log "Pull-ing in #{working_directory}"
-          `cd #{working_directory} && git pull`
+          `cd #{working_directory} && git pull &>/dev/null`
         end
 
         def local_branches
