@@ -117,4 +117,10 @@ class NotifierTest < Test::Unit::TestCase
       end.should_not change(project.notifiers, :count)
     end
   end
+  
+  it "requires notifier classes to implement Notifier.to_haml and Notifier#deliver!" do
+    class Blah < Notifier::Base; end
+    lambda { Blah.to_haml }.should raise_error(NoMethodError)
+    lambda { Blah.new(Build.gen, {}).deliver! }.should raise_error(NoMethodError)
+  end
 end
