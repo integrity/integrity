@@ -59,8 +59,12 @@ module GitHelper
     
     def head
       Dir.chdir(@path) do
-        `git log --pretty=format:%H | head -1`.chomp[0..6]
+        `git log --pretty=format:%H | head -1`.chomp
       end
+    end
+    
+    def short_head
+      head[0..6]
     end
     
     def destroy
@@ -71,7 +75,7 @@ module GitHelper
     
       def build_script(successful=true)
         <<-script
-!/bin/sh
+#!/bin/sh
 echo "Running tests..."
 exit #{successful ? 0 : 1}
 script
