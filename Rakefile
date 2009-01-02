@@ -1,8 +1,6 @@
 require File.dirname(__FILE__) + "/lib/integrity"
 require "rake/testtask"
 require "rcov/rcovtask"
-require 'spec/rake/spectask'
-require 'spec/rake/verify_rcov'
 
 desc "Run all tests and check test coverage"
 task :default => "test:coverage:verify"
@@ -48,30 +46,6 @@ namespace :test do
       else
         puts "\e[31mOnly #{coverage}% code coverage. You can do better ;)\e[0m"
       end
-    end
-  end
-end
-
-Spec::Rake::SpecTask.new(:spec) do |t|
-  t.spec_opts = ["--color", "--format", "progress"]
-  t.spec_files = Dir['spec/**/*_spec.rb'].sort
-  t.libs = ['lib']
-  t.rcov = false
-end
-
-namespace :spec do
-  Spec::Rake::SpecTask.new(:coverage) do |t|
-    t.spec_opts = ["--color", "--format", "progress"]
-    t.spec_files = Dir['spec/**/*_spec.rb'].sort
-    t.libs = ['lib']
-    t.rcov = true
-    t.rcov_opts = ['--exclude-only', '".*"', '--include-file', '^lib']
-  end
-
-  namespace :coverage do
-    RCov::VerifyTask.new(:verify) do |t|
-      t.threshold = 100
-      t.index_html = "coverage" / 'index.html'
     end
   end
 end
