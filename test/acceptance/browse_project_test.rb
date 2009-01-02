@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + "/../helpers"
 
 class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
   story <<-EOS
-    As an user, 
+    As a user, 
     I want to browse public projects on Integrity, 
     So I can follow the status of my favorite OSS projects
   EOS
