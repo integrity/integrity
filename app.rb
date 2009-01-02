@@ -109,16 +109,7 @@ post "/:project/push" do
   content_type "text/plain"
 
   begin
-    payload = JSON.parse(params[:payload] || "")
-
-    if Integrity.config[:build_all_commits]
-      payload["commits"].sort_by { |commit| Time.parse(commit["timestamp"]) }.each do |commit|
-        current_project.build(commit["id"]) if payload["ref"] =~ /#{current_project.branch}/
-      end
-    else
-      current_project.build(payload["after"]) if payload["ref"] =~ /#{current_project.branch}/
-    end
-
+    current_project.push(params[:payload])
     "Thanks, build started."
   rescue JSON::ParserError => exception
     invalid_payload!(exception.to_s)

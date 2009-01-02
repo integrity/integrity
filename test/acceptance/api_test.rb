@@ -4,7 +4,7 @@ class ApiTest < Test::Unit::AcceptanceTestCase
   story <<-EOF
     As a project owner,
     I want to be able to use GitHub as a build triggerer
-    So that my project is build is made everytime I push to The Holly Hub
+    So that my project is built everytime I push to the Holy Hub
   EOF
 
   scenario "it only build commits for the branch being monitored" do
