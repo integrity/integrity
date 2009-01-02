@@ -8,7 +8,18 @@ class ApiTest < Test::Unit::AcceptanceTestCase
   EOF
 
   scenario "it only build commits for the branch being monitored" do
-    pending "TODO"
+    repo = git_repo(:my_test_project) # initial commit && successful commit
+    Project.gen(:my_test_project, :uri => repo.path, :branch => "my-branch")
+
+    basic_auth "admin", "test"
+
+    lambda do
+      post "/my-test-project/push", :payload => payload(repo.head, "master", repo.commits)
+      response_code.should == 200
+    end.should_not change(Build, :count)
+
+    visit "/my-test-project"
+    response_body.should =~ /No builds for this project/
   end
 
   scenario "receiving a build request with build_all_commits *enabled* builds all commits, most recent first" do
