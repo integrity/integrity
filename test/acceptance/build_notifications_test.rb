@@ -7,6 +7,10 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     I want to setup notifiers on my projects
     So that I get alerts with every build
   EOS
+  
+  before(:each) do
+    Integrity.config[:base_uri] = "http://integrity.example.org"
+  end
 
   scenario "an admin sets up a notifier for a project that didn't have any" do
     git_repo(:my_test_project).add_successful_commit
@@ -27,6 +31,7 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     notification = File.read("/tmp/textfile_notifications.txt")
     notification.should =~ /=== Build #{git_repo(:my_test_project).short_head} was successful ===/
     notification.should =~ /Build #{git_repo(:my_test_project).head} was successful/
+    notification.should =~ %r(http://integrity.example.org/my-test-project/builds/#{git_repo(:my_test_project).head})
     notification.should =~ /Commit Author: John Doe/
     notification.should =~ /Commit Date: (.+)/
     notification.should =~ /Commit Message: This commit will work/
