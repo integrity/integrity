@@ -37,6 +37,18 @@ module Integrity
       update_attributes(:building => false)
       send_notifications
     end
+    
+    def push(payload)
+      payload = JSON.parse(payload || "")
+
+      if Integrity.config[:build_all_commits]
+        payload["commits"].sort_by { |commit| Time.parse(commit["timestamp"]) }.each do |commit|
+          build(commit["id"]) if payload["ref"] =~ /#{branch}/
+        end
+      else
+        build(payload["after"]) if payload["ref"] =~ /#{branch}/
+      end
+    end
 
     def last_build
       builds(:order => [:created_at.desc]).first
