@@ -72,7 +72,7 @@ module Integrity
         end
 
         def on_branch?
-          File.basename(`cd #{working_directory} && git symbolic-ref HEAD`).chomp == branch
+          File.basename(`cd #{working_directory} && git symbolic-ref HEAD &>/dev/null`).chomp == branch
         end
 
         def log(message)
