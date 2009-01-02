@@ -233,11 +233,6 @@ helpers do
     "#{integrity_domain}#{build_path(build)}"
   end
 
-  def filter_attributes_of(model)
-    valid = model.properties.collect {|p| p.name.to_s }
-    Hash[*params.dup.select {|k,_| valid.include?(k) }.flatten]
-  end
-
   def errors_on(object, field)
     return "" unless errors = object.errors.on(field)
     errors.map {|e| e.gsub(/#{field} /i, "") }.join(", ")
