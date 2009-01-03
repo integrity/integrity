@@ -27,6 +27,13 @@ module Integrity
     def short_commit_identifier
       sha1?(commit_identifier) ? commit_identifier[0..6] : commit_identifier
     end
+    
+    def commit_metadata
+      case data = attribute_get(:commit_metadata)
+        when String; YAML.load(data)
+        else data
+      end
+    end
 
     def commit_author
       @author ||= begin

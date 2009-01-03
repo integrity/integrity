@@ -23,32 +23,25 @@ class ApiTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "receiving a build request with build_all_commits *enabled* builds all commits, most recent first" do
-    pending "FIXME: this fail randomly"
     Integrity.config[:build_all_commits] = true
 
     repo = git_repo(:my_test_project) # initial commit && successful commit
     3.times do |i|
-      sleep 1
       repo.add_commit("commit #{i}") do
         system "echo commit_#{i} >> test-file"
         system "git add test-file &>/dev/null"
       end
     end
 
-    head = repo.head
-    short_head = repo.short_head
-    repo.commits.size.should == 5
-
     Project.gen(:my_test_project, :uri => repo.path)
 
-    basic_auth "admin", "test"
-
     lambda do
-      post "/my-test-project/push", :payload => payload(head, "master", repo.commits)
+      basic_auth "admin", "test"
+      post "/my-test-project/push", :payload => payload(repo.head, "master", repo.commits)
     end.should change(Build, :count).by(5)
 
     visit "/my-test-project"
-    response_body.should have_tag("h1", /Built #{short_head} successfully/)
+    response_body.should have_tag("h1", /Built #{git_repo(:my_test_project).short_head} successfully/)
   end
 
   scenario "receiving a build request with build_all_commits *disabled* only builds HEAD" do

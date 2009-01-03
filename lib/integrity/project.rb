@@ -51,11 +51,11 @@ module Integrity
     end
 
     def last_build
-      builds(:order => [:created_at.desc]).first
+      all_builds.first
     end
 
     def previous_builds
-      builds(:order => [:created_at.desc]).tap { |builds| builds.shift }
+      all_builds.tap {|builds| builds.shift }
     end
 
     def status
@@ -106,6 +106,10 @@ module Integrity
             next
           end
         end
+      end
+      
+      def all_builds
+        builds.all.sort_by {|b| b.commited_at }.reverse
       end
   end
 end

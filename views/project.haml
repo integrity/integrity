@@ -25,4 +25,4 @@
             %strong.build<
               &== Build #{build.short_commit_identifier}
             %span.attribution<
-              == by #{succeed(",") {build.commit_author.name}} #{pretty_date build.commited_at}
+              == by #{build.commit_author.name}, #{pretty_date build.commited_at}
