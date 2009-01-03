@@ -15,7 +15,7 @@ def commit_metadata
 :author: #{/\w+ \w+ <\w+@example.org>/.gen}
 :message: >-
   #{/\w+/.gen}
-:date: #{Time.mktime(2008, 12, 15, 18)}
+:date: #{unique {|i| Time.mktime(2008, 12, 15, 18, (59 - i) % 60) }}
 EOS
 end
 
