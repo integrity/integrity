@@ -21,9 +21,18 @@ class WithIntegrity < Thor
 
   desc "create_db [CONFIG]",
        "Checks the `database_uri` in CONFIG and creates and bootstraps a database for integrity"
-  def create_db(config)
+  def create_db(config, direction="up")
     Integrity.new(config)
-    DataMapper.auto_migrate!
+    require "migrations"
+
+    case direction.to_s
+    when "up"
+      migrate_up!
+    when "down"
+      migrate_down!
+    else
+      raise ArgumentError, "DIRECTION must be either up or down"
+    end
   end
 
   private
