@@ -35,14 +35,14 @@ module AcceptanceHelper
   end
 
   def set_and_create_export_directory!
-    rm_r(export_directory) if File.directory?(export_directory)
-    mkdir(export_directory)
+    FileUtils.rm_r(export_directory) if File.directory?(export_directory)
+    FileUtils.mkdir(export_directory)
     Integrity.config[:export_directory] = export_directory
   end
 
   def setup_log!
     pathname = Integrity.root / "integrity.log"
-    rm pathname if File.exists?(pathname)
+    FileUtils.rm pathname if File.exists?(pathname)
     Integrity.config[:log] = pathname
   end
 end
@@ -69,6 +69,6 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
   
   after(:each) do
     destroy_all_git_repos
-    rm_r export_directory
+    rm_r export_directory if File.directory?(export_directory)
   end
 end
