@@ -29,6 +29,10 @@ module Integrity
 
       def migrate_db(direction="up")
         require "migrations"
+        
+        # TODO: test this
+        # commented out until this can be tested
+        # set_up_migrations unless migrations_already_set_up?
 
         case direction.to_s
         when "up"   then migrate_up!
@@ -84,6 +88,29 @@ module Integrity
         puts %Q(  require "notifier/email")
         puts
         puts %Q(Don't forget to tweak #{root / "config.yml"} to your needs.)
+      end
+      
+      def set_up_migrations
+        without_pluralizing_table_names do
+          # Create migration_info and assume we're in version one of the schema
+          class MigrationInfo
+            include DataMapper::Resource
+            property :migration_name, String, :length => 255
+          end
+        
+          MigrationInfo.auto_upgrade!
+          MigrationInfo.create(:migration_name => "initial")
+        end
+      end
+      
+      def migrations_already_set_up?
+        DataMapper.respository(:default).storage_exists?("migration_info")
+      end
+      
+      def without_pluralizing_table_names
+        repository(:default).adapter.resource_naming_convention = DataMapper::NamingConventions::Resource::Underscored
+        yield
+        repository(:default).adapter.resource_naming_convention = DataMapper::NamingConventions::Resource::UnderscoredAndPluralized
       end
   end
 end
