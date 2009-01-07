@@ -6,12 +6,12 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Nicol\303\241s Sanguinetti", "Simon Rozet"]
-  s.date = %q{2009-01-04}
+  s.date = %q{2009-01-07}
   s.default_executable = %q{integrity}
   s.description = %q{Your Friendly Continuous Integration server. Easy, fun and painless!}
   s.email = %q{contacto@nicolassanguinetti.info}
   s.executables = ["integrity"]
-  s.files = ["README.markdown", "Rakefile", "TODO", "VERSION.yml", "app.rb", "bin/integrity", "config/config.sample.ru", "config/config.sample.yml", "config/thin.sample.yml", "integrity.gemspec", "lib/integrity.rb", "lib/integrity/build.rb", "lib/integrity/core_ext/object.rb", "lib/integrity/core_ext/string.rb", "lib/integrity/core_ext/time.rb", "lib/integrity/helpers.rb", "lib/integrity/notifier.rb", "lib/integrity/notifier/base.rb", "lib/integrity/project.rb", "lib/integrity/project_builder.rb", "lib/integrity/scm.rb", "lib/integrity/scm/git.rb", "lib/integrity/scm/git/uri.rb", "public/buttons.css", "public/reset.css", "public/spinner.gif", "test/acceptance/api_test.rb", "test/acceptance/browse_project_builds_test.rb", "test/acceptance/browse_project_test.rb", "test/acceptance/build_notifications_test.rb", "test/acceptance/create_project_test.rb", "test/acceptance/delete_project_test.rb", "test/acceptance/edit_project_test.rb", "test/acceptance/manual_build_project_test.rb", "test/acceptance/project_syndication_test.rb", "test/helpers.rb", "test/helpers/acceptance.rb", "test/helpers/acceptance/git_helper.rb", "test/helpers/acceptance/textfile_notifier.rb", "test/helpers/expectations.rb", "test/helpers/expectations/be_a.rb", "test/helpers/expectations/change.rb", "test/helpers/expectations/have.rb", "test/helpers/expectations/have_tag.rb", "test/helpers/expectations/predicates.rb", "test/helpers/fixtures.rb", "test/unit/build_test.rb", "test/unit/notifier_test.rb", "test/unit/project_builder_test.rb", "test/unit/project_test.rb", "vendor/sinatra-hacks/lib/hacks.rb", "vendor/webrat", "views/build.haml", "views/build_info.haml", "views/error.haml", "views/home.haml", "views/integrity.sass", "views/layout.haml", "views/new.haml", "views/not_found.haml", "views/notifier.haml", "views/project.builder", "views/project.haml", "views/unauthorized.haml", "spec/spec_helper.rb", "spec/form_field_matchers.rb"]
+  s.files = ["README.markdown", "Rakefile", "TODO", "VERSION.yml", "app.rb", "bin/integrity", "config/config.sample.ru", "config/config.sample.yml", "config/thin.sample.yml", "integrity.gemspec", "lib/integrity.rb", "lib/integrity/build.rb", "lib/integrity/core_ext/object.rb", "lib/integrity/core_ext/string.rb", "lib/integrity/core_ext/time.rb", "lib/integrity/helpers.rb", "lib/integrity/installer.rb", "lib/integrity/migrations.rb", "lib/integrity/notifier.rb", "lib/integrity/notifier/base.rb", "lib/integrity/project.rb", "lib/integrity/project_builder.rb", "lib/integrity/scm.rb", "lib/integrity/scm/git.rb", "lib/integrity/scm/git/uri.rb", "public/buttons.css", "public/reset.css", "public/spinner.gif", "test/helpers.rb", "test/helpers/acceptance.rb", "test/helpers/acceptance/git_helper.rb", "test/helpers/acceptance/textfile_notifier.rb", "test/helpers/expectations.rb", "test/helpers/expectations/be_a.rb", "test/helpers/expectations/change.rb", "test/helpers/expectations/have.rb", "test/helpers/expectations/have_tag.rb", "test/helpers/expectations/predicates.rb", "test/helpers/fixtures.rb", "vendor/sinatra-hacks/lib/hacks.rb", "vendor/webrat", "views/build.haml", "views/build_info.haml", "views/error.haml", "views/home.haml", "views/integrity.sass", "views/layout.haml", "views/new.haml", "views/not_found.haml", "views/notifier.haml", "views/project.builder", "views/project.haml", "views/unauthorized.haml"]
   s.homepage = %q{http://integrityapp.com}
   s.post_install_message = %q{Run `integrity help` for information on how to setup Integrity.}
   s.require_paths = ["lib"]
@@ -35,7 +35,6 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<do_sqlite3>, [">= 0.9.5"])
       s.add_runtime_dependency(%q<json>, [">= 0"])
       s.add_runtime_dependency(%q<foca-sinatra-diddies>, [">= 0.0.2"])
-      s.add_runtime_dependency(%q<rspec_hpricot_matchers>, [">= 0"])
       s.add_runtime_dependency(%q<thor>, [">= 0"])
       s.add_runtime_dependency(%q<bcrypt-ruby>, [">= 0"])
     else
@@ -50,7 +49,6 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<do_sqlite3>, [">= 0.9.5"])
       s.add_dependency(%q<json>, [">= 0"])
       s.add_dependency(%q<foca-sinatra-diddies>, [">= 0.0.2"])
-      s.add_dependency(%q<rspec_hpricot_matchers>, [">= 0"])
       s.add_dependency(%q<thor>, [">= 0"])
       s.add_dependency(%q<bcrypt-ruby>, [">= 0"])
     end
@@ -66,7 +64,6 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<do_sqlite3>, [">= 0.9.5"])
     s.add_dependency(%q<json>, [">= 0"])
     s.add_dependency(%q<foca-sinatra-diddies>, [">= 0.0.2"])
-    s.add_dependency(%q<rspec_hpricot_matchers>, [">= 0"])
     s.add_dependency(%q<thor>, [">= 0"])
     s.add_dependency(%q<bcrypt-ruby>, [">= 0"])
   end
