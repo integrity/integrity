@@ -74,7 +74,7 @@ end
 
 get "/:project.atom" do
   login_required unless current_project.public?
-  response.headers["Content-Type"] = "application/rss+xml; charset=utf-8"
+  response["Content-Type"] = "application/rss+xml; charset=utf-8"
   builder :project
 end
 
@@ -128,7 +128,7 @@ get "/:project/builds/:build" do
 end
 
 get "/integrity.css" do
-  response.headers["Content-Type"] = "text/css; charset=utf-8"
+  response["Content-Type"] = "text/css; charset=utf-8"
   sass :integrity
 end
 
