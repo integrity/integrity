@@ -1,8 +1,60 @@
-require "webrat/sinatra"
+require 'webrat/rack'
+require 'sinatra'
+require 'sinatra/test'
+
+disable :run
+disable :reload
+
+Webrat.configuration.instance_variable_set("@mode", :sinatra)
+
+module Webrat
+  class SinatraSession < Session
+    DEFAULT_DOMAIN = "integrity.example.org"
+
+    def initialize(context = nil)
+      super(context)
+      @sinatra_test = Sinatra::TestHarness.new
+    end
+
+    %w(get head post put delete).each do |verb|
+      class_eval <<-METHOD
+        def #{verb}(path, data, headers = {})
+          params = data.inject({}) do |data, (key,value)|
+            data[key] = Rack::Utils.unescape(value)
+            data
+          end
+          headers['HTTP_HOST'] = DEFAULT_DOMAIN
+          @sinatra_test.#{verb}(path, params, headers)
+        end
+      METHOD
+    end
+
+    def response_body
+      @sinatra_test.body
+    end
+
+    def response_code
+      @sinatra_test.status
+    end
+
+    private
+
+    def response
+      @sinatra_test.response
+    end
+
+    def current_host
+      URI.parse(current_url).host || DEFAULT_DOMAIN
+    end
+
+    def response_location_host
+      URI.parse(response_location).host || DEFAULT_DOMAIN
+    end
+  end
+end
+
 require Integrity.root / "app"
 require File.dirname(__FILE__) / "acceptance/git_helper"
-
-Webrat.configuration.mode = :sinatra
 
 module AcceptanceHelper
   include FileUtils
@@ -17,14 +69,14 @@ module AcceptanceHelper
     Integrity.config[:admin_password]      = "test"
     Integrity.config[:hash_admin_password] = false
   end
-  
+
   def login_as(user, password)
     def AcceptanceHelper.logged_in; true; end
     basic_auth user, password
     visit "/login"
-    Sinatra.application.before { login_required if AcceptanceHelper.logged_in }
+    Sinatra::Application.before { login_required if AcceptanceHelper.logged_in }
   end
-  
+
   def log_out
     def AcceptanceHelper.logged_in; false; end
     @_webrat_session = Webrat::SinatraSession.new(self)
@@ -47,17 +99,17 @@ module AcceptanceHelper
   end
 end
 
-module WebratHelpers
-  include Webrat::Methods
-  Webrat::Methods.delegate_to_session :response_code, :response_body
-end
-
 class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
   include AcceptanceHelper
   include Test::Storyteller
-  include WebratHelpers
   include GitHelper
-  
+  include Webrat::Methods
+  Webrat::Methods.delegate_to_session :response_code
+
+  before(:all) do
+    Integrity.config[:base_uri] = "http://#{Webrat::SinatraSession::DEFAULT_DOMAIN}"
+  end
+
   before(:each) do
     # ensure each scenario is run in a clean sandbox
     setup_and_reset_database!
@@ -66,7 +118,7 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
     set_and_create_export_directory!
     log_out
   end
-  
+
   after(:each) do
     destroy_all_git_repos
     rm_r export_directory if File.directory?(export_directory)

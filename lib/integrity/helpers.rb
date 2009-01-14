@@ -26,7 +26,7 @@ module Integrity
     end
 
     def unauthorized!(realm=authorization_realm)
-      header "WWW-Authenticate" => %(Basic realm="#{realm}")
+      response.headers["WWW-Authenticate"] = %(Basic realm="#{realm}")
       throw :halt, [401, show(:unauthorized, :title => "incorrect credentials")]
     end
 
@@ -68,8 +68,24 @@ module Integrity
       values[next_value]
     end
 
-    def integrity_domain
-      Addressable::URI.parse(Integrity.config[:base_uri]).to_s
+    # def integrity_domain
+    #   Addressable::URI.parse(Integrity.config[:base_uri]).to_s
+    # end
+    
+    def url(path)
+      url = "#{request.scheme}://#{request.host}"
+      
+      if request.scheme == "https" && request.port != 443 ||
+          request.scheme == "http" && request.port != 80
+        url << ":#{request.port}"
+      end
+      
+      url << "/" unless path.index("/").zero?
+      url << path
+    end
+    
+    def root_url
+      url("/")
     end
 
     def project_path(project, *path)
@@ -77,11 +93,11 @@ module Integrity
     end
 
     def project_url(project, *path)
-      "#{integrity_domain}#{project_path(project, *path)}"
+      url project_path(project, *path)
     end
 
     def push_url_for(project)
-      "#{project_url(project)}/push"
+      project_url(project, "push")
     end
 
     def build_path(build)
@@ -89,7 +105,7 @@ module Integrity
     end
 
     def build_url(build)
-      "#{integrity_domain}#{build_path(build)}"
+      url build_path(build)
     end
 
     def errors_on(object, field)

@@ -1,7 +1,6 @@
 require File.dirname(__FILE__) + "/lib/integrity"
 require "sinatra"
 require "helpers"
-require "hacks"
 
 set :root,   Integrity.root
 set :public, Integrity.root / "public"
@@ -46,7 +45,7 @@ end
 get "/login" do
   login_required
   session[:user] = current_user
-  redirect "/"
+  redirect root_url
 end
 
 get "/new" do
@@ -62,7 +61,7 @@ post "/" do
   @project = Project.new(params[:project_data])
   if @project.save
     @project.enable_notifiers(params["enabled_notifiers[]"], params["notifiers"])
-    redirect project_path(@project)
+    redirect project_url(@project)
   else
     show :new, :title => ["projects", "new project"]
   end
@@ -75,7 +74,7 @@ end
 
 get "/:project.atom" do
   login_required unless current_project.public?
-  header "Content-Type" => "application/atom+xml; charset=utf-8"
+  response.headers["Content-Type"] = "application/rss+xml; charset=utf-8"
   builder :project
 end
 
@@ -83,7 +82,7 @@ put "/:project" do
   login_required
 
   if current_project.update_attributes(params[:project_data])
-    current_project.enable_notifiers(params["enabled_notifiers[]"], params["notifiers"])
+    current_project.enable_notifiers(params["enabled_notifiers"], params["notifiers"])
     redirect project_url(current_project)
   else
     show :new, :title => ["projects", current_project.permalink, "edit"]
@@ -94,7 +93,7 @@ delete "/:project" do
   login_required
 
   current_project.destroy
-  redirect "/"
+  redirect root_url
 end
 
 get "/:project/edit" do
@@ -129,7 +128,7 @@ get "/:project/builds/:build" do
 end
 
 get "/integrity.css" do
-  header "Content-Type" => "text/css; charset=utf-8"
+  response.headers["Content-Type"] = "text/css; charset=utf-8"
   sass :integrity
 end
 
