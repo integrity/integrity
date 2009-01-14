@@ -7,6 +7,9 @@
     %dd
       %strong&= @error.message
       %pre.backtrace= @error.backtrace.join("\n")
+    %dd
+      %strong Query parameters:
+      %pre.query_params= params.inspect
 
     %dt What can I do?
     %dd
