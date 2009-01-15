@@ -62,6 +62,15 @@ class EditProjectTest < Test::Unit::AcceptanceTestCase
     response_body.should have_tag("a", /My Test Project/)
   end
 
+  scenario "a user can't edit a project's information" do
+    Project.generate(:integrity)
+
+    visit "/integrity"
+    click_link "Edit Project"
+
+    response_code.should == 401
+  end
+
   scenario "an admin can see the push URL on the edit page" do
     disable_auth!
     Project.generate(:my_test_project)
@@ -72,12 +81,19 @@ class EditProjectTest < Test::Unit::AcceptanceTestCase
     response_body.should have_tag("#push_url", "http://integrity.example.org/my-test-project/push")
   end
 
-  scenario "a user can't edit a project's information" do
-    Project.generate(:integrity)
+  scenario "public projects have a ticked 'public' checkbox on edit form" do
+    Project.generate(:my_test_project, :public => true)
+    disable_auth!
+    visit "/my-test-project/edit"
 
-    visit "/integrity"
-    click_link "Edit Project"
+    response_body.should have_tag('input[@type="checkbox"][@checked="checked"][@name="project_data[public]"]')
+  end
 
-    response_code.should == 401
+  scenario "private projects have an unticked 'public' checkbox on edit form" do
+    Project.generate(:my_test_project, :public => false)
+    disable_auth!
+    visit "/my-test-project/edit"
+
+    response_body.should_not have_tag('input[@type="checkbox"][@checked][@name="project_data[public]"]')
   end
 end

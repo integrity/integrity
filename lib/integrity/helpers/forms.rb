@@ -12,8 +12,8 @@ module Integrity
 
       def checkbox(name, condition, extras={})
         attrs = { :name => name, :type => "checkbox", :value => "1" }
-        attrs.merge(condition ? { :checked => "checked" } : {})
-        attrs.merge(extras)
+        attrs[:checked] = !!condition
+        attrs.update(extras)
       end
 
       def notifier_form(notifier)
