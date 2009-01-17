@@ -129,11 +129,15 @@ module Integrity
       end
     end
 
+    def partial(template, locals={})
+      haml("_#{template}".to_sym, :locals => locals, :layout => false)
+    end
+
     def notifier_form(notifier)
-      haml(notifier.to_haml, :layout => :notifier, :locals => { 
-        :config => current_project.config_for(notifier), 
-        :notifier => "#{notifier.to_s.split(/::/).last}", 
-        :enabled => current_project.notifies?(notifier) 
+      haml(notifier.to_haml, :layout => :notifier, :locals => {
+        :config => current_project.config_for(notifier),
+        :notifier => "#{notifier.to_s.split(/::/).last}",
+        :enabled => current_project.notifies?(notifier)
       })
     end
   end

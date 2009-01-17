@@ -10,7 +10,7 @@
 - else
   - @build = @project.last_build
   #last_build{ :class => @build.status }
-    = haml(:build_info, :layout => false)
+    = partial(:build_info, :build => @build)
 
   %form{ :action => project_path(@project, :builds), :method => :post }
     %p.submit
