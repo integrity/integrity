@@ -1,14 +1,24 @@
 require File.dirname(__FILE__) + "/../lib/integrity"
 
-require "test/unit"
-require "redgreen"
-require "context"
-require "storyteller"
-require "pending"
-require "matchy"
-require "rr"
-require "mocha"
-require "ruby-debug"
+begin
+  require "test/unit"
+  require "redgreen"
+  require "context"
+  require "storyteller"
+  require "pending"
+  require "matchy"
+  require "rr"
+  require "mocha"
+  require "ruby-debug"
+rescue LoadError
+  puts "You're missing some gems required to run the tests."
+  puts "Please run `rake test:install_dependencies`"
+  puts 
+  puts "Thanks :)"
+  puts
+  
+  exit 1
+end
 
 require File.dirname(__FILE__) / "helpers" / "expectations"
 require File.dirname(__FILE__) / "helpers" / "fixtures"

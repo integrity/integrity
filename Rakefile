@@ -48,6 +48,12 @@ namespace :test do
       end
     end
   end
+  
+  desc "Install all gems on which the tests depend on"
+  task :install_dependencies do
+    system 'sudo gem install redgreen rr mocha ruby-debug dm-sweatshop'
+    system 'sudo gem install -s http://gems.github.com jeremymcanally-context jeremymcanally-matchy jeremymcanally-pending foca-storyteller'
+  end
 end
 
 namespace :db do
