@@ -3,7 +3,7 @@ Integrity
 
 Integrity is your friendly automated Continuous Integration server.
 
-* See our [Website][site] for documentation
+* See our [website][] for documentation
 * Report bugs and submit features request on our [Lighthouse account][lighthouse]
 * Join us on [#integrity][irc-channel] for ideas, help, patches or something
 * Get the code on [GitHub][repo]
@@ -47,6 +47,7 @@ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+[website]: http://integrityapp.com
 [repo]: http://github.com/foca/integrity
 [lighthouse]: http://integrity.lighthouseapp.com/projects/14308-integrity
 [irc-channel]: irc://irc.freenode.net/integrity
