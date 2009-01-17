@@ -90,6 +90,7 @@ begin
     s.add_dependency 'dm-types', ['>= 0.9.5']
     s.add_dependency 'dm-timestamps', ['>= 0.9.5']
     s.add_dependency 'dm-aggregates', ['>= 0.9.5']
+    s.add_dependency 'dm-migrations', ['>= 0.9.5']
     s.add_dependency 'data_objects', ['>= 0.9.5']
     s.add_dependency 'do_sqlite3', ['>= 0.9.5']        
     s.add_dependency 'json'

@@ -5,7 +5,7 @@ include DataMapper::Types
 
 migration 1, :initial do
   up do
-    create_table :projects do
+    create_table :integrity_projects do
       column :id,         Serial
       column :name,       String,   :nullable => false
       column :permalink,  String
@@ -21,7 +21,7 @@ migration 1, :initial do
       column :notifier_id,Serial
     end
 
-    create_table :builds do
+    create_table :integrity_builds do
       column :id,                Serial
       column :output,            Text,     :nullable => false, :default => ""
       column :successful,        Boolean,  :nullable => false, :default => false
@@ -33,7 +33,7 @@ migration 1, :initial do
       column :project_id,        Serial
     end
 
-    create_table :notifiers do
+    create_table :integrity_notifiers do
       column :id,         Serial
       column :name,       String, :nullable => false
       column :config,     Yaml,   :nullable => false
@@ -43,8 +43,8 @@ migration 1, :initial do
   end
 
   down do
-    drop_table :notifiers
-    drop_table :projects
-    drop_table :builds
+    drop_table :integrity_notifiers
+    drop_table :integrity_projects
+    drop_table :integrity_builds
   end
 end
