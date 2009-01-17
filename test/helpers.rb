@@ -13,6 +13,7 @@ begin
 rescue LoadError
   puts "You're missing some gems required to run the tests."
   puts "Please run `rake test:install_dependencies`"
+  puts "You'll probably need to run that command as root or with sudo."
   puts 
   puts "Thanks :)"
   puts
