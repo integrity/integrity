@@ -58,7 +58,7 @@ end
 
 post "/" do
   login_required
-  
+
   @project = Project.new(params[:project_data])
   if @project.save
     @project.enable_notifiers(params["enabled_notifiers[]"], params["notifiers"])
@@ -73,15 +73,15 @@ get "/:project" do
   show :project, :title => ["projects", current_project.permalink]
 end
 
-get "/:project.rss" do
-  header "Content-Type" => "application/rss+xml; charset=utf-8"
-  login_required unless current_project.public? 
+get "/:project.atom" do
+  login_required unless current_project.public?
+  header "Content-Type" => "application/atom+xml; charset=utf-8"
   builder :project
 end
 
 put "/:project" do
   login_required
-  
+
   if current_project.update_attributes(params[:project_data])
     current_project.enable_notifiers(params["enabled_notifiers[]"], params["notifiers"])
     redirect project_url(current_project)
@@ -105,7 +105,7 @@ end
 
 post "/:project/push" do
   login_required
-  
+
   content_type "text/plain"
 
   begin

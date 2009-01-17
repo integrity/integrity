@@ -29,7 +29,7 @@ module TestHelper
     DataMapper.setup(:default, "sqlite3::memory:")
     DataMapper.auto_migrate!
   end
-  
+
   def ignore_logs!
     stub(Integrity).log { nil }
   end
