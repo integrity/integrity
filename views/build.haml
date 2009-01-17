@@ -1,2 +1,2 @@
 #build{ :class => @build.status }
-  = haml(:build_info, :layout => false)
+  = partial(:build_info, :build => @build)
