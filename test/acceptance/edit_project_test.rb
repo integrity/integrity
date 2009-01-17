@@ -18,8 +18,8 @@ class EditProjectTest < Test::Unit::AcceptanceTestCase
     fill_in "Name",            :with => "Integrity (test refactoring)"
     fill_in "Branch to track", :with => "test-refactoring"
     click_button "Update Project"
-  
-    response_body.should have_tag("h1", /integrity-test-refactoring/)
+
+    response_body.should have_tag("h1", /Integrity \(test refactoring\)/)
   end
 
   scenario "making a public project private will hide it from the home page for non-admins" do
@@ -61,13 +61,13 @@ class EditProjectTest < Test::Unit::AcceptanceTestCase
     visit "/"
     response_body.should have_tag("a", /My Test Project/)
   end
-  
+
   scenario "a user can't edit a project's information" do
     Project.generate(:integrity)
-    
+
     visit "/integrity"
     click_link "Edit Project"
-    
+
     response_code.should == 401
   end
 end
