@@ -64,6 +64,13 @@ module Integrity
     end
   end
   
+  def self.version
+    @version ||= begin
+      file = YAML.load_file(Integrity.root / "VERSION.yml")
+      "#{file['major']}.#{file['minor']}.#{file['patch']}"
+    end
+  end
+  
   private
   
     class LogFormatter < Logger::Formatter

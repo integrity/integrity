@@ -23,6 +23,12 @@ module Integrity
       Integrity.new(config)
       migrate_db(direction)
     end
+    
+    desc "version",
+         "Print the current integrity version"
+    def version
+      puts Integrity.version
+    end
 
     private
       attr_reader :root
