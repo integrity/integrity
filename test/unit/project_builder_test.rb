@@ -81,11 +81,6 @@ class ProjectBuilderTest < Test::Unit::TestCase
       build = ProjectBuilder.new(@project).build("HEAD")
       build.output.should == "foo\ncat: /no/such/file.txt: No such file or directory\n"
     end
-
-    it "raises SCMUnknownError if it can't figure the scm from the uri" do
-      @project.update_attributes(:uri => "scm://example.org")
-      lambda { @project.build }.should raise_error(SCM::SCMUnknownError)
-    end
   end
 
   describe "When deleting the code from disk" do
