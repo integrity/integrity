@@ -70,7 +70,7 @@ end
 
 get "/:project" do
   login_required unless current_project.public?
-  show :project, :title => ["projects", current_project.permalink]
+  show :project, :title => ["projects", current_project.name]
 end
 
 get "/:project.atom" do
