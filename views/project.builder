@@ -1,18 +1,21 @@
 xml.instruct!
-xml.rss "version" => "2.0" do
- xml.channel do
+xml.feed :xmlns => "http://www.w3.org/2005/Atom" do
+  xml.title     "Build history for #{@project.name}"
+  xml.subtitle  @project.uri
+  xml.updated   @project.builds.first.created_at
+  xml.link      :href => "#{project_url(@project)}.atom", :rel => "self"
+  xml.id        "#{project_url(@project)}.atom"
 
-   xml.title       @project.name
-   xml.link        project_url(@project)
-   xml.description @project.uri
+  @project.builds.each do |build|
+    xml.entry do
+      xml.id        build_url(build)
+      xml.link      :href => build_url(build), :rel => "alternate", :type => "text/html"
+      xml.updated   build.created_at
+      xml.published build.created_at
 
-   @project.builds.each do |build|
-     xml.item do
-       xml.title       "Build #{build.short_commit_identifier} #{build.successful? ? "succeeded" : "failed"}"
-       xml.link        build_url(build)
-       xml.description "Build #{build.commit_identifier} was committed by #{build.commit_author.name} on #{pretty_date build.commited_at}: <br />#{build.commit_message} <br />#{build.output}"
-       xml.guid        build_url(build)
-     end
+      xml.title "Built #{build.short_commit_identifier} #{build.successful? ? "successfully" : "and failed"}"
+      xml.author { xml.name(build.commit_author.name) }
+      xml.content("<div>#{partial(:build_info, :build => build)}</div>", :type => "html")
    end
- end
+  end
 end
