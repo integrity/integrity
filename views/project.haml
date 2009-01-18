@@ -1,28 +1,28 @@
 #administrative
   %a{ :href => project_path(@project, :edit) } Edit Project
 
-- if @project.builds.empty?
+- if @project.commits.empty?
   %form.blank_slate{ :action => project_path(@project, :builds), :method => :post }
     %p No builds for this project, buddy
     %h1
       You can request a
       %button{ :type => :submit } manual build
 - else
-  - @build = @project.last_build
-  #last_build{ :class => @build.status }
-    = partial(:build_info, :build => @build)
+  - @commit = @project.last_commit
+  #last_build{ :class => @commit.status }
+    = partial(:commit_info, :commit => @commit)
 
   %form{ :action => project_path(@project, :builds), :method => :post }
     %p.submit
       %button{ :type => :submit } Request Manual Build
 
-  - unless @project.previous_builds.empty?
+  - unless @project.previous_commits.empty?
     %h2 Previous builds
     %ul#previous_builds
-      - @project.previous_builds.each do |build|
-        %li{ :class => build.status }
-          %a{ :href => build_path(build) }
+      - @project.previous_commits.each do |commit|
+        %li{ :class => commit.status }
+          %a{ :href => build_path(commit) }
             %strong.build<
-              &== Build #{build.short_commit_identifier}
+              &== Build #{commit.short_identifier}
             %span.attribution<
-              == by #{build.commit_author.name}, #{pretty_date build.commited_at}
+              == by #{commit.author.name}, #{pretty_date commit.committed_at}

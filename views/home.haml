@@ -8,16 +8,14 @@
 - else
   %ul#projects
     - @projects.each do |project|
-      %li{ :class => cycle("even", "odd") + (project.building? ? ' building' : '') + (project.last_build ? (project.last_build.successful? ? ' success' : ' failed') : '') }
+      %li{ :class => cycle("even", "odd") + ' ' + project.status.to_s }
         %a{ :href => project_path(project) }&= project.name
         .meta
           - if project.building?
             Building!
-          - elsif project.last_build.nil?
+          - elsif project.last_commit.nil?
             Never built yet
           - else
-            == Built #{project.last_build.short_commit_identifier}
-            = pretty_date(project.last_build.created_at)
-            = project.last_build.successful? ? "successfully" : "and failed"
+            == Built #{project.last_commit.short_identifier} #{pretty_date(project.last_commit.committed_at)} #{project.last_commit.successful? ? "successfully" : "and failed"}
   %p#new
     %a{ :href => "/new" } Add a new project

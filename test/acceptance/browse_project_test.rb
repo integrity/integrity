@@ -28,15 +28,15 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "a user can see the projects status on the home page" do
-    integrity = Project.gen(:integrity, :builds => 3.of { Build.gen(:successful => true) })
-    test      = Project.gen(:my_test_project, :builds => 2.of { Build.gen(:successful => false) })
+    integrity = Project.gen(:integrity, :commits => 3.of { Commit.gen(:successful) })
+    test      = Project.gen(:my_test_project, :commits => 2.of { Commit.gen(:failed) })
     no_build  = Project.gen(:public => true, :building => false)
     building  = Project.gen(:public => true, :building => true)
 
     visit "/"
-
-    response_body.should =~ /Built #{integrity.last_build.short_commit_identifier}\s*on Dec 15th\s*successfully/m
-    response_body.should =~ /Built #{test.last_build.short_commit_identifier}\s*on Dec 15th\s*and failed/m
+    
+    response_body.should =~ /Built #{integrity.last_commit.short_identifier} on Dec 15th successfully/m
+    response_body.should =~ /Built #{test.last_commit.short_identifier} on Dec 15th and failed/m
     response_body.should =~ /Never built yet/
     response_body.should =~ /Building!/
   end

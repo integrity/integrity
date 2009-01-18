@@ -122,9 +122,9 @@ post "/:project/builds" do
   redirect project_url(@project)
 end
 
-get "/:project/builds/:build" do
+get "/:project/builds/:commit" do
   login_required unless current_project.public?
-  show :build, :title => ["projects", current_project.permalink, current_build.short_commit_identifier]
+  show :build, :title => ["projects", current_project.permalink, current_commit.short_commit_identifier]
 end
 
 get "/integrity.css" do

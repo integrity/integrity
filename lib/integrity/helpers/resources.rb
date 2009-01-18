@@ -5,8 +5,8 @@ module Integrity
         @project ||= Project.first(:permalink => params[:project]) or raise Sinatra::NotFound
       end
 
-      def current_build
-        @build ||= current_project.builds.first(:commit_identifier => params[:build]) or raise Sinatra::NotFound
+      def current_commit
+        @commit ||= current_project.commits.first(:identifier => params[:commit]) or raise Sinatra::NotFound
       end
     end
   end

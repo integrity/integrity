@@ -2,60 +2,75 @@ module Integrity
   class Build
     include DataMapper::Resource
 
-    property :id,                Serial
-    property :output,            Text,     :nullable => false, :default => ""
-    property :successful,        Boolean,  :nullable => false, :default => false
-    property :commit_identifier, String,   :nullable => false
-    property :commit_metadata,   Yaml,     :nullable => false, :lazy => false
-    property :created_at,        DateTime
-    property :updated_at,        DateTime
+    property :id,           Integer,  :serial => true
+    property :output,       Text,     :default => "", :lazy => false
+    property :successful,   Boolean,  :default => false
+    property :commit_id,    Integer,  :nullable => false
+    property :created_at,   DateTime
+    property :updated_at,   DateTime
+    property :started_at,   DateTime
+    property :completed_at, DateTime
 
-    belongs_to :project, :class_name => "Integrity::Project"
+    belongs_to :commit, :class_name => "Integrity::Commit"
+    
+    def self.pending
+      all(:started_at => nil)
+    end
+    
+    def pending?
+      started_at.nil?
+    end
 
     def failed?
       !successful?
     end
 
     def status
-      successful? ? :success : :failed
-    end
-
-    def human_readable_status
-      successful? ? "Build Successful" : "Build Failed"
-    end
-
-    def short_commit_identifier
-      sha1?(commit_identifier) ? commit_identifier[0..6] : commit_identifier
+      case
+      when pending?    then :pending
+      when successful? then :success
+      when failed?     then :failed
+      end
     end
     
-    def commit_metadata
-      case data = attribute_get(:commit_metadata)
-        when String; YAML.load(data)
-        else data
-      end
+    #
+    # Deprecated methods
+    #
+    def short_commit_identifier
+      warn "Build#short_commit_identifier is deprecated, use Commit#short_identifier"
+      commit.short_identifier
     end
-
+    
+    def commit_identifier
+      warn "Build#commit_identifier is deprecated, use Commit#identifier"
+      commit.identifier
+    end
+    
     def commit_author
-      @author ||= begin
-        commit_metadata[:author] =~ /^(.*) <(.*)>$/
-        OpenStruct.new(:name => $1.strip, :email => $2.strip, :full => commit_metadata[:author])
-      end
+      warn "Build#commit_author is deprecated, use Commit#author"
+      commit.author
     end
 
     def commit_message
-      commit_metadata[:message]
+      warn "Build#commit_message is deprecated, use Commit#message"
+      commit.message
     end
 
     def commited_at
-      case commit_metadata[:date]
-        when String then Time.parse(commit_metadata[:date])
-        else commit_metadata[:date]
-      end
+      warn "Build#commited_at is deprecated, use Commit#committed_at"
+      commit.committed_at
     end
-
-    private
-      def sha1?(string)
-        string =~ /^[a-f0-9]{40}$/
-      end
+    
+    def project_id
+      warn "Build#project_id is deprecated, use Commit#project_id"
+      commit.project_id
+    end
+    
+    def commit_metadata
+      warn "Build#commit_metadata is deprecated, use the different methods in Commit instead"
+      { :message => commit.message,
+        :author  => commit.author,
+        :date    => commit.committed_at }
+    end
   end
 end

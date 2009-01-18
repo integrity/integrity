@@ -8,7 +8,7 @@ class BrowseProjectBuildsTest < Test::Unit::AcceptanceTestCase
   EOS
   
   scenario "a project with no builds should say so in a friendly manner" do
-    Project.gen(:integrity, :public => true, :builds => [])
+    Project.gen(:integrity, :public => true, :commits => [])
     
     visit "/integrity"
     
@@ -18,39 +18,39 @@ class BrowseProjectBuildsTest < Test::Unit::AcceptanceTestCase
   end
   
   scenario "a user can see the last build and the list of previous builds on a project page" do
-    Project.gen(:integrity, :public => true, :builds => 2.of { Build.gen(:successful => true) } + 2.of { Build.gen(:successful => false) })
+    Project.gen(:integrity, :public => true, :commits => 2.of { Commit.gen(:successful) } + 2.of { Commit.gen(:failed) } + 2.of { Commit.gen(:pending) })
 
     visit "/integrity"
 
     response_body.should have_tag("#last_build")
     response_body.should have_tag("#previous_builds") do |builds|
+      builds.should have_exactly(1).search("li.pending")
+      builds.should have_exactly(2).search("li.failed")
       builds.should have_exactly(2).search("li.success")
-      builds.should have_exactly(1).search("li.failed")
     end
   end
   
   scenario "a user can see details about the last build on the project page" do
-    build = Build.gen(:successful => true, 
-                      :commit_identifier => "7fee3f0014b529e2b76d591a8085d76eab0ff923",
-                      :commit_metadata => { :author  => "Nicolas Sanguinetti <contacto@nicolassanguinetti.info>",
-                                            :message => "No more pending tests :)",
-                                            :date    => Time.mktime(2008, 12, 15, 18) }.to_yaml,
-                      :output => "This is the build output")
-    Project.gen(:integrity, :public => true, :builds => [build])
+    commit = Commit.gen(:successful, :identifier   => "7fee3f0014b529e2b76d591a8085d76eab0ff923",
+                                     :author       => "Nicolas Sanguinetti <contacto@nicolassanguinetti.info>",
+                                     :message      => "No more pending tests :)",
+                                     :committed_at => Time.mktime(2008, 12, 15, 18))
+    commit.build.update_attributes(:output => "This is the build output")
+    Project.gen(:integrity, :public => true, :commits => [commit])
     
     visit "/integrity"
     
     response_body.should have_tag("h1", /Built 7fee3f0 successfully/)
     response_body.should have_tag("blockquote p", /No more pending tests/)
-    response_body.should have_tag("span.who",     /by:\s+Nicolas Sanguinetti/)
+    response_body.should have_tag("span.who",     /by: Nicolas Sanguinetti/)
     response_body.should have_tag("span.when",    /Dec 15th/)
     response_body.should have_tag("pre.output",   /This is the build output/)
   end
   
   scenario "a user can browse to individual build pages" do
-    Project.gen(:integrity, :public => true, :builds => [
-      Build.gen(:commit_identifier => "7fee3f0014b529e2b76d591a8085d76eab0ff923"),
-      Build.gen(:commit_identifier => "87e673a83d273ecde121624a3fcfae57a04f2b76")
+    Project.gen(:integrity, :public => true, :commits => [
+      Commit.gen(:successful, :identifier => "7fee3f0014b529e2b76d591a8085d76eab0ff923"),
+      Commit.gen(:successful, :identifier => "87e673a83d273ecde121624a3fcfae57a04f2b76")
     ])
     
     visit "/integrity"

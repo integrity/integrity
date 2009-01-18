@@ -21,15 +21,6 @@ module Integrity
         yield
       end
 
-      def commit_identifier(sha1)
-        `cd #{working_directory} && git show -s --pretty=format:%H #{sha1}`.chomp
-      end
-
-      def commit_metadata(sha1)
-        format  = %Q(---%n:author: %an <%ae>%n:message: >-%n  %s%n:date: %ci%n)
-        YAML.load(`cd #{working_directory} && git show -s --pretty=format:"#{format}" #{sha1}`)
-      end
-      
       def name
         self.class.name.split("::").last
       end
