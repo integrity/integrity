@@ -64,7 +64,7 @@ module Integrity
         edit_integrity_configuration
         edit_thin_configuration
       end
-
+      
       def edit_integrity_configuration
         config = File.read(root / "config.yml")
         config.gsub! %r(sqlite3:///var/integrity.db), "sqlite3://#{root}/integrity.db"

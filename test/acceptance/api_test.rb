@@ -35,16 +35,17 @@ class ApiTest < Test::Unit::AcceptanceTestCase
 
     Project.gen(:my_test_project, :uri => repo.path, :command => "echo successful")
 
-    lambda do
-      basic_auth "admin", "test"
-      post "/my-test-project/push", :payload => payload(repo.head, "master", repo.commits)
-    end.should change(Build, :count).by(5)
+    basic_auth "admin", "test"
+    post "/my-test-project/push", :payload => payload(repo.head, "master", repo.commits)
 
     visit "/my-test-project"
     response_body.should have_tag("h1", /Built #{git_repo(:my_test_project).short_head} successfully/)
+
+    previous_builds = Hpricot(response_body).search("#previous_builds li")
+    previous_builds.should have(4).elements
   end
 
-  scenario "receiving a build request with build_all_commits *disabled* only builds HEAD" do
+  scenario "receiving a build request with build_all_commits *disabled* only builds the last commit passed" do
     Integrity.config[:build_all_commits] = false
 
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
@@ -53,18 +54,18 @@ class ApiTest < Test::Unit::AcceptanceTestCase
     git_repo(:my_test_project).add_successful_commit
     head = git_repo(:my_test_project).head
 
-    lambda do
-      basic_auth "admin", "test"
-      post "/my-test-project/push", :payload => payload(head, "master")
-    end.should change(Build, :count).by(1)
+    basic_auth "admin", "test"
+    post "/my-test-project/push", :payload => payload(head, "master", git_repo(:my_test_project).commits)
 
     response_body.should == "Thanks, build started."
     response_code.should == 200
 
     visit "/my-test-project"
 
-    response_body.should =~ /#{git_repo(:my_test_project).short_head} successfully/
-    response_body.should =~ /This commit will work/
+    response_body.should have_tag("h1", /Built #{git_repo(:my_test_project).short_head} successfully/)
+
+    previous_builds = Hpricot(response_body).search("#previous_builds li")
+    previous_builds.should be_empty
   end
 
   scenario "an unauthenticated request returns a 401" do

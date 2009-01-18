@@ -2,7 +2,7 @@ module Integrity
   class Notifier
     include DataMapper::Resource
     
-    property :id,      Serial
+    property :id,      Integer,  :serial => true
     property :name,    String,   :nullable => false
     property :config,  Yaml,     :nullable => false, :lazy => false
     

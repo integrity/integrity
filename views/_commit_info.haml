@@ -1,0 +1,18 @@
+%h1<
+  &== Built #{commit.short_identifier} #{commit.successful? ? "successfully" : "and failed"}
+%blockquote
+  %p&= commit.message
+  %p.meta<
+    %span.who<
+      &== by: #{commit.author.name}
+    |
+    %span.when{ :title => commit.commited_at }<
+      &= pretty_date commit.committed_at
+    |
+    %span.what<
+      &== commit: #{commit.identifier}
+
+%h2 Build Output:
+%pre.output
+  :preserve
+    #{bash_color_codes h(commit.output)}

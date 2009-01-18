@@ -8,7 +8,7 @@ class DeleteProjectTest < Test::Unit::AcceptanceTestCase
   EOS
 
   scenario "an admin can delete a project from the 'Edit Project' screen" do
-    Project.generate(:integrity, :builds => 4.of { Build.gen })
+    Project.generate(:integrity, :commits => 4.of { Commit.gen })
 
     login_as "admin", "test"
 

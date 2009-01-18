@@ -20,6 +20,7 @@ require "core_ext/object"
 require "core_ext/string"
 
 require "project"
+require "commit"
 require "build"
 require "project_builder"
 require "scm"

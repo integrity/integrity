@@ -43,7 +43,7 @@ module GitHelper
       Dir.chdir(@path) do
         commits = `git log --pretty=oneline`.collect { |line| line.split(" ").first }
         commits.inject([]) do |commits, sha1|
-          format  = %Q(---%n:message: >-%n  %s%n:timestamp: %ci%n:id: #{sha1})
+          format  = %Q(---%n:message: >-%n  %s%n:timestamp: %ci%n:id: %H%n:author: %an <%ae>)
           commits << YAML.load(`git show -s --pretty=format:"#{format}" #{sha1}`)
         end
       end

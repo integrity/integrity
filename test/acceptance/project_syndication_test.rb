@@ -14,8 +14,8 @@ class ProjectSyndicationTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "a public project's feed should include the latest builds" do
-    builds = 10.of { Build.gen(:successful => true) } + 1.of { Build.gen(:successful => false) }
-    Project.gen(:integrity, :public => true, :builds => builds)
+    commits = 10.of { Commit.gen(:successful) } + 1.of { Commit.gen(:failed) }
+    Project.gen(:integrity, :public => true, :commits => commits)
 
     visit "/integrity.atom"
 
