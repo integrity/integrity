@@ -24,6 +24,19 @@ class DeleteProjectTest < Test::Unit::AcceptanceTestCase
     response_code.should == 404
   end
 
+  scenario "an admin can delete a project with an invalid SCM URI just fine" do
+    Project.generate(:integrity, :uri => "unknown://example.org")
+
+    login_as "admin", "test"
+
+    visit "/integrity/edit"
+
+    click_button "Yes, I'm sure, nuke it"
+
+    visit "/integrity"
+    response_code.should == 404
+  end
+
   scenario "a user can't delete a project by doing a manual DELETE request" do
     Project.gen(:integrity)
 
