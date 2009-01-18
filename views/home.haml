@@ -16,7 +16,8 @@
           - elsif project.last_build.nil?
             Never built yet
           - else
-            = "Built #{project.last_build.short_commit_identifier}"
+            == Built #{project.last_build.short_commit_identifier}
+            = pretty_date(project.last_build.created_at)
             = project.last_build.successful? ? "successfully" : "and failed"
   %p#new
     %a{ :href => "/new" } Add a new project
