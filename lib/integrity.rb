@@ -29,6 +29,7 @@ require "notifier"
 module Integrity
   def self.new(config_file = nil)
     self.config = config_file unless config_file.nil?
+    DataMapper.logger = self.logger
     DataMapper.setup(:default, config[:database_uri])
   end
 
