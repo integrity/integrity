@@ -18,7 +18,6 @@ require "fileutils"
 
 require "core_ext/object"
 require "core_ext/string"
-require "core_ext/time"
 
 require "project"
 require "build"
@@ -53,7 +52,7 @@ module Integrity
   def self.config=(file)
     @config = default_configuration.merge(YAML.load_file(file))
   end
-  
+
   def self.log(message, &block)
     logger.info(message, &block)
   end
@@ -63,16 +62,16 @@ module Integrity
       logger.formatter = LogFormatter.new
     end
   end
-  
+
   def self.version
     @version ||= begin
       file = YAML.load_file(Integrity.root / "VERSION.yml")
       "#{file['major']}.#{file['minor']}.#{file['patch']}"
     end
   end
-  
+
   private
-  
+
     class LogFormatter < Logger::Formatter
       def call(severity, time, progname, msg)
         time.strftime("[%H:%M:%S] ") + msg2str(msg) + "\n"
