@@ -51,6 +51,7 @@ module Integrity
         mkdir_p root
         mkdir_p root / "builds"
         mkdir_p root / "log"
+        mkdir_p root / "public" # this one is to play nice with Passenger
       end
 
       def copy_template_files
