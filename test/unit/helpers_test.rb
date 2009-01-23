@@ -21,4 +21,33 @@ class BrowsePublicProjectsTest < Test::Unit::TestCase
     pretty_date(Time.mktime(1995, 12, 15)).should == "on Dec 15th"
     pretty_date(Time.mktime(1995, 12, 15)).should == "on Dec 15th"
   end
+
+  describe "#push_url_for" do
+    before(:each) do
+      setup_and_reset_database!
+      @project = Project.gen(:integrity)
+      Integrity.config[:admin_username] = "admin"
+      Integrity.config[:admin_password] = "test"
+    end
+
+    test "with auth disabled" do
+      Integrity.config[:use_basic_auth] = false
+
+      push_url_for(@project).should == "http://0.0.0.0:1234/integrity/push"
+    end
+
+    test "with auth and hashing enabled" do
+      Integrity.config[:use_basic_auth]      = true
+      Integrity.config[:hash_admin_password] = true
+
+      push_url_for(@project).should == "http://0.0.0.0:1234/integrity/push"
+    end
+
+    test "with auth enabled and hashing disabled" do
+      Integrity.config[:use_basic_auth]      = true
+      Integrity.config[:hash_admin_password] = false
+
+      push_url_for(@project).should == "http://admin:test@0.0.0.0:1234/integrity/push"
+    end
+  end
 end
