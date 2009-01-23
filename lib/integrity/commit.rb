@@ -10,9 +10,9 @@ module Integrity
     property :created_at,   DateTime
     property :updated_at,   DateTime
 
+    has 1,     :build,   :class_name => "Integrity::Build"
     belongs_to :project, :class_name => "Integrity::Project"
-    has 1, :build, :class_name => "Integrity::Build"
-    
+
     def short_identifier
       identifier.to_s[0..6]
     end
