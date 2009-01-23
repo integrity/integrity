@@ -62,6 +62,16 @@ class EditProjectTest < Test::Unit::AcceptanceTestCase
     response_body.should have_tag("a", /My Test Project/)
   end
 
+  scenario "an admin can see the push URL on the edit page" do
+    disable_auth!
+    Project.generate(:my_test_project)
+
+    visit "/my-test-project"
+    click_link "Edit Project"
+
+    response_body.should have_tag("#push_url", "http://integrity.example.org/my-test-project/push")
+  end
+
   scenario "a user can't edit a project's information" do
     Project.generate(:integrity)
 

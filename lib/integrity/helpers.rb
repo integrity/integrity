@@ -97,7 +97,12 @@ module Integrity
     end
 
     def push_url_for(project)
-      project_url(project, "push")
+      Addressable::URI.parse("#{project_url(project)}/push").tap do |url|
+        if Integrity.config[:use_basic_auth] && !Integrity.config[:hash_admin_password]
+          url.user     = Integrity.config[:admin_username]
+          url.password = Integrity.config[:admin_password]
+        end
+      end.to_s
     end
 
     def build_path(build)
