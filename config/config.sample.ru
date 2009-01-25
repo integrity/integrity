@@ -27,4 +27,5 @@ set     :port,    8910
 set     :env,     :production
 disable :run,     :reload
 
+use Rack::CommonLogger, Integrity.logger
 run Sinatra.application
