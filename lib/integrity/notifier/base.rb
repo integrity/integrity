@@ -32,7 +32,7 @@ Commit Message: #{build.commit_message}
 Commit Date: #{build.commited_at}
 Commit Author: #{build.commit_author.name}
 
-Link: #{build_url}
+Link: #{commit_url}
 
 Build Output:
 
@@ -40,9 +40,9 @@ Build Output:
 EOM
       end
       
-      def build_url
+      def commit_url
         raise if Integrity.config[:base_uri].nil?
-        Integrity.config[:base_uri] / build.project.permalink / "builds" / build.commit_identifier
+        Integrity.config[:base_uri] / build.project.permalink / "commits" / build.commit.identifier
       end
 
       private

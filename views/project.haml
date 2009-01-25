@@ -21,7 +21,7 @@
     %ul#previous_builds
       - @project.previous_commits.each do |commit|
         %li{ :class => commit.status }
-          %a{ :href => build_path(commit) }
+          %a{ :href => commit_path(commit) }
             %strong.build<
               &== Build #{commit.short_identifier}
             %span.attribution<
