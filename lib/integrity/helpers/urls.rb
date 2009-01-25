@@ -35,12 +35,22 @@ module Integrity
         end.to_s
       end
 
+      def commit_path(commit)
+        project_path(commit.project, "commits", commit.identifier)
+      end
+      
       def build_path(build)
-        "/#{build.project.permalink}/builds/#{build.commit_identifier}"
+        warn "#build_path is deprecated, use #commit_path instead"
+        commit_path build.commit
+      end
+
+      def commit_url(commit)
+        url commit_path(commit)
       end
 
       def build_url(build)
-        url build_path(build)
+        warn "#build_url is deprecated, use #commit_url instead"
+        commit_url build.commit
       end
     end
   end

@@ -8,8 +8,8 @@ xml.feed :xmlns => "http://www.w3.org/2005/Atom" do
 
   @project.commits.each do |commit|
     xml.entry do
-      xml.id        build_url(commit)
-      xml.link      :href => build_url(commit), :rel => "alternate", :type => "text/html"
+      xml.id        commit_url(commit)
+      xml.link      :href => commit_url(commit), :rel => "alternate", :type => "text/html"
       xml.updated   commit.created_at
       xml.published commit.created_at
 
