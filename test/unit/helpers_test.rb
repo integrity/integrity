@@ -28,26 +28,27 @@ class BrowsePublicProjectsTest < Test::Unit::TestCase
       @project = Project.gen(:integrity)
       Integrity.config[:admin_username] = "admin"
       Integrity.config[:admin_password] = "test"
+      Integrity.config[:base_uri] = "http://integrity.example.org:1234"
     end
 
     test "with auth disabled" do
       Integrity.config[:use_basic_auth] = false
 
-      push_url_for(@project).should == "http://0.0.0.0:1234/integrity/push"
+      push_url_for(@project).should == "http://integrity.example.org:1234/integrity/push"
     end
 
     test "with auth and hashing enabled" do
       Integrity.config[:use_basic_auth]      = true
       Integrity.config[:hash_admin_password] = true
 
-      push_url_for(@project).should == "http://0.0.0.0:1234/integrity/push"
+      push_url_for(@project).should == "http://admin:<password>@integrity.example.org:1234/integrity/push"
     end
 
     test "with auth enabled and hashing disabled" do
       Integrity.config[:use_basic_auth]      = true
       Integrity.config[:hash_admin_password] = false
 
-      push_url_for(@project).should == "http://admin:test@0.0.0.0:1234/integrity/push"
+      push_url_for(@project).should == "http://admin:test@integrity.example.org:1234/integrity/push"
     end
   end
 end
