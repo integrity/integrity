@@ -29,7 +29,7 @@ require "notifier"
 module Integrity
   def self.new(config_file = nil)
     self.config = config_file unless config_file.nil?
-    DataMapper.logger = self.logger
+    DataMapper.logger = self.logger if config[:log_debug_info]
     DataMapper.setup(:default, config[:database_uri])
   end
 
@@ -43,7 +43,8 @@ module Integrity
                     :log               => STDOUT,
                     :base_uri          => "http://localhost:8910",
                     :use_basic_auth    => false,
-                    :build_all_commits => true }
+                    :build_all_commits => true,
+                    :log_debug_info    => false }
   end
 
   def self.config
