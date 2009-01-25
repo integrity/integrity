@@ -33,7 +33,7 @@ class ApiTest < Test::Unit::AcceptanceTestCase
       end
     end
 
-    Project.gen(:my_test_project, :uri => repo.path)
+    Project.gen(:my_test_project, :uri => repo.path, :command => "echo successful")
 
     lambda do
       basic_auth "admin", "test"
@@ -71,7 +71,7 @@ class ApiTest < Test::Unit::AcceptanceTestCase
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
     head = git_repo(:my_test_project).head
     post "/my-test-project/push", :payload => payload(head, "master")
-    
+
     response_code.should == 401
   end
 
