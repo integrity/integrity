@@ -102,7 +102,8 @@ begin
     s.add_dependency 'json'
     s.add_dependency 'foca-sinatra-diddies', ['>= 0.0.2']
     s.add_dependency 'thor'
-    s.add_dependency 'bcrypt-ruby'
+    s.add_dependency 'uuidtools' # required by dm-types
+    s.add_dependency 'bcrypt-ruby' # required by dm-types
   end
 rescue LoadError
 end
