@@ -27,5 +27,5 @@ set     :port,    8910
 set     :env,     :production
 disable :run,     :reload
 
-use Rack::CommonLogger, Integrity.logger
+use Rack::CommonLogger, Integrity.logger if Integrity.config[:log_debug_info]
 run Sinatra.application
