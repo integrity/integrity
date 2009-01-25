@@ -25,7 +25,7 @@ module Integrity
       end
 
       def unauthorized!(realm=authorization_realm)
-        header "WWW-Authenticate" => %(Basic realm="#{realm}")
+        response["WWW-Authenticate"] = %(Basic realm="#{realm}")
         throw :halt, [401, show(:unauthorized, :title => "incorrect credentials")]
       end
     end

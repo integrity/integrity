@@ -1,3 +1,0 @@
-[submodule "vendor/webrat"]
-	path = vendor/webrat
-	url = git://github.com/foca/webrat.git
