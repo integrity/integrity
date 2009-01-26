@@ -29,6 +29,7 @@ class ProjectBuilderTest < Test::Unit::TestCase
     
     it "sets the started and completed timestamps" do
       SCM::Git.any_instance.expects(:with_revision).with(@commit.identifier).yields
+      SCM::Git.any_instance.expects(:info).returns({})
 
       build = ProjectBuilder.new(@project).build(@commit)
       build.output.should == "output!\n"
@@ -40,6 +41,7 @@ class ProjectBuilderTest < Test::Unit::TestCase
     it "ensures completed_at is set, even if something horrible happens" do
       lambda {
         SCM::Git.any_instance.expects(:with_revision).with(@commit.identifier).raises
+        SCM::Git.any_instance.expects(:info).returns({})
 
         build = ProjectBuilder.new(@project).build(@commit)
         build.started_at.should_not be_nil
@@ -52,6 +54,8 @@ class ProjectBuilderTest < Test::Unit::TestCase
     it "sets the build status to failure when the build command exits with a non-zero status" do
       @project.update_attributes(:command => "exit 1")
       SCM::Git.any_instance.expects(:with_revision).with(@commit.identifier).yields
+      SCM::Git.any_instance.expects(:info).returns({})
+
       build = ProjectBuilder.new(@project).build(@commit)
       build.should be_failed
     end
@@ -59,6 +63,8 @@ class ProjectBuilderTest < Test::Unit::TestCase
     it "sets the build status to success when the build command exits with a zero status" do
       @project.update_attributes(:command => "exit 0")
       SCM::Git.any_instance.expects(:with_revision).with(@commit.identifier).yields
+      SCM::Git.any_instance.expects(:info).returns({})
+
       build = ProjectBuilder.new(@project).build(@commit)
       build.should be_successful
     end
@@ -67,6 +73,7 @@ class ProjectBuilderTest < Test::Unit::TestCase
       @project.update_attributes(:command => "cat foo.txt")
       File.open(@directory + "/foo.txt", "w") { |file| file << "bar!" }
       SCM::Git.any_instance.expects(:with_revision).with(@commit.identifier).yields
+      SCM::Git.any_instance.expects(:info).returns({})
   
       build = ProjectBuilder.new(@project).build(@commit)
       build.output.should == "bar!"
@@ -75,6 +82,7 @@ class ProjectBuilderTest < Test::Unit::TestCase
     it "captures both stdout and stderr" do
       @project.update_attributes(:command => "echo foo through out && echo bar through err 1>&2")
       SCM::Git.any_instance.expects(:with_revision).with(@commit.identifier).yields
+      SCM::Git.any_instance.expects(:info).returns({})
       
       build = ProjectBuilder.new(@project).build(@commit)
       build.output.should == "foo through out\nbar through err\n"

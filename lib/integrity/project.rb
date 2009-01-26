@@ -30,7 +30,8 @@ module Integrity
     end
     
     def build(commit_identifier="HEAD")
-      commit = commits.first(:identifier => commit_identifier, :project_id => id) || last_commit
+      commit_identifier = head_of_remote_repo if commit_identifier == "HEAD"
+      commit = find_or_create_commit_with_identifier(commit_identifier)
       commit.queue_build
     end
 
@@ -73,6 +74,10 @@ module Integrity
     def status
       last_commit && last_commit.status
     end
+    
+    def human_readable_status
+      last_commit && last_commit.human_readable_status
+    end
 
     def public=(flag)
       attribute_set(:public, case flag
@@ -95,6 +100,23 @@ module Integrity
     end
 
     private
+      def find_or_create_commit_with_identifier(commit_identifier)
+        # We abuse +committed_at+ here setting it to Time.now because we use it
+        # to sort (for last_commit and previous_commits). I don't like this
+        # very much, but for now it's the only solution I can find.
+        #
+        # This also creates a dependency, as now we *always* have to update the
+        # +committed_at+ field after building to ensure the date is correct :(
+        #
+        # This might also make your commit listings a little jumpy, if some
+        # commits change place every time a build finishes =\
+        commits.first_or_create({ :identifier => commit_identifier, :project_id => id }, :committed_at => Time.now)
+      end
+    
+      def head_of_remote_repo
+        SCM.new(uri, branch).head
+      end
+    
       def create_commit_from(data)
         commits.create(:identifier   => data["id"],
                        :author       => data["author"],

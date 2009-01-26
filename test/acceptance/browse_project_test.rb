@@ -35,8 +35,8 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
 
     visit "/"
     
-    response_body.should =~ /Built #{integrity.last_commit.short_identifier} on Dec 15th successfully/m
-    response_body.should =~ /Built #{test.last_commit.short_identifier} on Dec 15th and failed/m
+    response_body.should =~ /Built #{integrity.last_commit.short_identifier} successfully/m
+    response_body.should =~ /Built #{test.last_commit.short_identifier} and failed/m
     response_body.should =~ /Never built yet/
     response_body.should =~ /Building!/
   end

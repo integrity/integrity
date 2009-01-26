@@ -54,7 +54,7 @@ Integrity::Commit.fixture do
   { :identifier =>   Digest::SHA1.hexdigest(/[:paragraph:]/.gen),
     :message =>      /[:sentence:]/.gen,
     :author =>       /\w+ \w+ <\w+@example.org>/.gen,
-    :committed_at => unique {|i| Time.mktime(2009, 12, 15, 18, (59 - i) % 60) },
+    :committed_at => unique {|i| Time.mktime(2008, 12, 15, 18, (59 - i) % 60) },
     :project_id =>   project.id }
 end
 

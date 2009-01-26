@@ -13,8 +13,10 @@
     = partial(:commit_info, :commit => @commit)
 
   %form{ :action => project_path(@project, :builds), :method => :post }
-    %p.submit
-      %button{ :type => :submit } Request Manual Build
+    %p.submit.manual-build
+      %button{ :type => :submit, :title => "Fetch the last commit and build it" }<
+        Build the last commit
+      in the repository (or rebuild the latest)
 
   - unless @project.previous_commits.empty?
     %h2 Previous builds
