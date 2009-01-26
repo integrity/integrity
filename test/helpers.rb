@@ -32,8 +32,7 @@ module TestHelper
   end
 
   def ignore_logs!
-    DataMapper.logger = Logger.new("/dev/null")
-    stub(Integrity).log { nil }
+    Integrity.config[:log] = "/dev/null"
   end
 end
 
