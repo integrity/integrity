@@ -19,7 +19,7 @@ module Integrity
     end
 
     def self.load(value, property)
-      AuthorStruct.parse(value)
+      AuthorStruct.parse(value) unless value.nil?
     end
 
     def self.dump(value, property)

@@ -242,7 +242,7 @@ class ProjectTest < Test::Unit::TestCase
     end
   end
 
-  describe "When building a build" do
+  describe "When building a commit" do
     before(:each) do
       @commits = 2.of { Commit.gen }
       @project = Project.gen(:integrity, :commits => @commits)
@@ -263,13 +263,21 @@ class ProjectTest < Test::Unit::TestCase
       commit.should be_pending
     end
     
-    it "gets the project's last commit if passed a wrong commit identifier" do
-      @project.build
-
+    it "creates an empty commit with the head of the project if passed 'HEAD' (the default)" do
+      mock(@project).head_of_remote_repo { "FOOBAR" }
+      
+      lambda {
+        @project.build("HEAD")
+      }.should change(Commit, :count).by(1)
+      
       build = Build.all.last
       build.commit.should be(@project.last_commit)
       
       @project.last_commit.should be_pending
+      @project.last_commit.identifier.should be("FOOBAR")
+
+      @project.last_commit.author.name.should == "<Commit author not loaded>"
+      @project.last_commit.message.should == "<Commit message not loaded>"
     end
   end
 end

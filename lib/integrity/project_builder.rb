@@ -17,6 +17,7 @@ module Integrity
       @build
     ensure
       @build.update_attributes(:commit_id => commit.id, :completed_at => Time.now)
+      @commit.update_attributes(@scm.info(commit.identifier))
       send_notifications
     end
 

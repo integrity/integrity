@@ -177,11 +177,22 @@ a
         :content "."
         :text-indent -9999em
         :text-align left
-      &.destroy
-        :margin-top 0
+      &.destroy, &.manual-build
         button
           :float none
           :display inline
+      &.manual-build
+        button
+          :margin-right 0
+
+  #build form, #last_build form
+    :font-size .75em
+    p.submit
+      :margin 0
+      :padding 0
+      :position absolute
+      :right .5em
+      :top 1.25em
 
   .blank_slate, .error
     p
@@ -291,6 +302,7 @@ a
   
 
   #build, #last_build
+    :position relative
     h1, blockquote
       :border
         :width 0 1px

@@ -119,7 +119,7 @@ post "/:project/builds" do
   login_required
 
   current_project.build
-  redirect project_url(@project)
+  redirect project_url(current_project)
 end
 
 get "/:project/commits/:commit" do
@@ -129,6 +129,13 @@ end
 
 get "/:project/builds/:commit" do
   redirect "/#{params[:project]}/commits/#{params[:commit]}", 301
+end
+
+post "/:project/commits/:commit/builds" do
+  login_required
+
+  current_project.build(params[:commit])
+  redirect commit_url(current_commit)
 end
 
 get "/integrity.css" do

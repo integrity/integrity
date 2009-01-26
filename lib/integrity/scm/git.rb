@@ -9,7 +9,7 @@ module Integrity
         Git::URI.new(uri).working_tree_path
       end
 
-      def initialize(uri, branch, working_directory)
+      def initialize(uri, branch, working_directory=nil)
         @uri = uri.to_s
         @branch = branch.to_s
         @working_directory = working_directory
@@ -23,6 +23,16 @@ module Integrity
 
       def name
         self.class.name.split("::").last
+      end
+      
+      def head
+        log "Getting the HEAD of '#{uri}' at '#{branch}'"
+        `git ls-remote --heads #{uri} #{branch} | awk '{print $1}'`.chomp
+      end
+      
+      def info(revision)
+        format  = %Q(---%n:author: %an <%ae>%n:message: >-%n  %s%n:committed_at: %ci%n)
+        YAML.load(`cd #{working_directory} && git show -s --pretty=format:"#{format}" #{revision}`)
       end
 
       private

@@ -1,5 +1,11 @@
-%h1<
-  &== Built #{commit.short_identifier} #{commit.successful? ? "successfully" : "and failed"}
+%h1&= commit.human_readable_status
+
+- if commit.failed?
+  %form{ :action => commit_path(commit, :builds), :method => :post }
+    %p.submit
+      %button{ :type => :submit, :title => "Rebuild this commit" }<
+        Rebuild
+
 %blockquote
   %p&= commit.message
   %p.meta<

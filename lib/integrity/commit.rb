@@ -4,14 +4,22 @@ module Integrity
 
     property :id,           Integer,  :serial => true
     property :identifier,   String,   :nullable => false
-    property :message,      String,   :nullable => false, :length => 255
-    property :author,       Author,   :nullable => false, :length => 255
-    property :committed_at, DateTime, :nullable => false
+    property :message,      String,   :length => 255
+    property :author,       Author,   :length => 255
+    property :committed_at, DateTime
     property :created_at,   DateTime
     property :updated_at,   DateTime
 
-    has 1,     :build,   :class_name => "Integrity::Build"
+    has 1,     :build,   :class_name => "Integrity::Build", :order => [:created_at.desc]
     belongs_to :project, :class_name => "Integrity::Project"
+
+    def message
+      attribute_get(:message) || "<Commit message not loaded>"
+    end
+    
+    def author
+      attribute_get(:author) || Author.load('<Commit author not loaded> <<Commit author not loaded>>', :author)
+    end
 
     def short_identifier
       identifier.to_s[0..6]
@@ -20,7 +28,7 @@ module Integrity
     def status
       build.nil? ? :pending : build.status
     end
-
+    
     def successful?
       status == :success
     end
