@@ -28,4 +28,4 @@ set     :env,     :production
 disable :run,     :reload
 
 use Rack::CommonLogger, Integrity.logger if Integrity.config[:log_debug_info]
-run Sinatra.application
+run Sinatra::Application
