@@ -1,7 +1,7 @@
 Integrity
 =========
 
-Integrity is your friendly automated Continuous Integration server.
+[Integrity][website] is your friendly automated Continuous Integration server.
 
 * See our [website][] for documentation and a [live demo][demo]
 * Report bugs and submit features request on our [Lighthouse account][lighthouse]
