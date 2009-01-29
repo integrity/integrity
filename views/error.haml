@@ -13,9 +13,10 @@
 
     %dt What can I do?
     %dd
-      Is your
-      %a{ :href => project_url(@project, :edit) } config
-      ok?
+      - if @project
+        Is your
+        %a{ :href => project_url(@project, :edit) } config
+        ok?
       Need
       %a{ :href => "http://integrityapp.com/configure" } help?
       Remember to restart Integrity.
