@@ -96,4 +96,22 @@ class EditProjectTest < Test::Unit::AcceptanceTestCase
 
     response_body.should_not have_tag('input[@type="checkbox"][@checked][@name="project_data[public]"]')
   end
+
+  scenario "after I uncheck the public checkbox, it should still be uncheck after I save" do
+    Project.generate(:integrity, :public => true)
+
+    login_as "admin", "test"
+
+    visit "/integrity"
+    click_link "Edit Project"
+
+    response_body.should have_tag('input[@type="checkbox"][@checked="checked"][@name="project_data[public]"]')
+
+    uncheck "project_public"
+    click_button "Update Project"
+
+    click_link "Edit Project"
+
+    response_body.should_not have_tag('input[@type="checkbox"][@checked="checked"][@name="project_data[public]"]')
+  end
 end
