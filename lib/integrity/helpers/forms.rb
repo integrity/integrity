@@ -12,7 +12,7 @@ module Integrity
 
       def checkbox(name, condition, extras={})
         attrs = { :name => name, :type => "checkbox", :value => "1" }
-        attrs.merge(condition ? { :checked => "checked" } : {})
+        attrs.merge!(:checked => condition ? true : nil)
         attrs.merge(extras)
       end
 
