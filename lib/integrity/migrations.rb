@@ -32,10 +32,9 @@ module Integrity
           column :successful,        Boolean,  :nullable => false, :default => false
           column :commit_identifier, String,   :nullable => false
           column :commit_metadata,   Yaml,     :nullable => false
+          column :project_id,        Integer
           column :created_at,        DateTime
           column :updated_at,        DateTime
-
-          column :project_id,        Integer
         end
 
         create_table :integrity_notifiers do
@@ -74,12 +73,6 @@ module Integrity
           column :project_id,   Integer
         end
 
-        modify_table :integrity_builds do
-          add_column :commit_id,    Integer
-          add_column :started_at,   DateTime
-          add_column :completed_at, DateTime
-        end
-
         # Die, orphans, die
         Build.all(:project_id => nil).destroy!
 
@@ -94,8 +87,10 @@ module Integrity
           column :output,       Text,    :nullable => false, :default => ""
           column :created_at,   DateTime
           column :updated_at,   DateTime
-
           column :commit_id,    Integer
+          column :commit_identifier, String,   :nullable => false
+          column :commit_metadata,   Yaml,     :nullable => false
+          column :project_id,        Integer
         end
 
         all_builds.each do |build|
