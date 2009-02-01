@@ -5,7 +5,7 @@ class BrowsePublicProjectsTest < Test::Unit::TestCase
 
   test "#pretty_date" do
     pretty_date(Time.now).should == "today"
-    pretty_date(Time.mktime(Time.now.year, Time.now.month, Time.now.day-1)).should == "yesterday"
+    pretty_date(Time.new - 86400).should == "yesterday"
 
     pretty_date(Time.mktime(1995, 12, 01)).should == "on Dec 01st"
     pretty_date(Time.mktime(1995, 12, 21)).should == "on Dec 21st"
