@@ -49,7 +49,9 @@ class ApiTest < Test::Unit::AcceptanceTestCase
     post "/my-test-project/push", :payload => payload(repo.head, "master", repo.commits)
 
     visit "/my-test-project"
+
     response_body.should have_tag("h1", /Built #{git_repo(:my_test_project).short_head} successfully/)
+    response_body.should have_tag(".attribution", /^by John Doe/)
 
     previous_builds = Hpricot(response_body).search("#previous_builds li")
     previous_builds.should have(4).elements
