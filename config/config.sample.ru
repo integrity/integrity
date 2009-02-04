@@ -21,11 +21,11 @@ Integrity.config = File.expand_path("./config.yml")
 #######################################################################
 require Integrity.root / "app"
 
-set     :public,  Integrity.root / "public"
-set     :views,   Integrity.root / "views"
-set     :port,    8910
-set     :env,     :production
-disable :run,     :reload
+set     :environment, ENV["RACK_ENV"] || :production
+set     :public,      Integrity.root / "public"
+set     :views,       Integrity.root / "views"
+set     :port,        8910
+disable :run, :reload
 
 use Rack::CommonLogger, Integrity.logger if Integrity.config[:log_debug_info]
 run Sinatra::Application
