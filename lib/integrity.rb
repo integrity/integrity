@@ -1,7 +1,5 @@
-__DIR__ = File.dirname(__FILE__)
-$:.unshift "#{__DIR__}/integrity", *Dir["#{__DIR__}/../vendor/**/lib"].to_a
+$:.unshift File.expand_path(File.dirname(__FILE__))
 
-require "rubygems"
 require "json"
 require "dm-core"
 require "dm-validations"
@@ -16,15 +14,15 @@ require "timeout"
 require "ostruct"
 require "fileutils"
 
-require "core_ext/object"
-require "core_ext/string"
+require "integrity/core_ext/object"
+require "integrity/core_ext/string"
 
-require "project"
-require "build"
-require "project_builder"
-require "scm"
-require "scm/git"
-require "notifier"
+require "integrity/project"
+require "integrity/build"
+require "integrity/project_builder"
+require "integrity/scm"
+require "integrity/scm/git"
+require "integrity/notifier"
 
 module Integrity
   def self.new(config_file = nil)
