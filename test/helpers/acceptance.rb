@@ -2,6 +2,7 @@ require 'webrat/rack'
 require 'sinatra'
 require 'sinatra/test'
 
+set :environment, :test
 disable :run
 disable :reload
 
