@@ -43,5 +43,9 @@ class Test::Unit::TestCase
   include RR::Adapters::TestUnit
   include Integrity
   include TestHelper
+
+  before(:each) do
+    Integrity.instance_variable_set(:@config, nil)
+  end
 end
 
