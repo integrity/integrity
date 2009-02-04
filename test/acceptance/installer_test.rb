@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + "/../helpers"
 
-require "installer"
+require "integrity/installer"
 
 class InstallerTest < Test::Unit::AcceptanceTestCase
   story <<-EOS
