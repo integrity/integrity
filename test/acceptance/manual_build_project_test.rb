@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/../helpers"
+require File.dirname(__FILE__) + "/helpers"
 
 class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
   story <<-EOS
@@ -6,7 +6,7 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
     I want to manually build my project
     So that I know if it build properly
   EOS
-  
+
   scenario "clicking on 'Manual Build' triggers a successful build" do
     git_repo(:my_test_project).add_successful_commit
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
@@ -26,10 +26,10 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
     git_repo(:my_test_project).add_failing_commit
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
     login_as "admin", "test"
-    
+
     visit "/my-test-project"
     click_button "manual build"
-    
+
     response_body.should have_tag("h1", /Built\s+#{git_repo(:my_test_project).short_head}\s+and failed/)
     response_body.should have_tag("blockquote p", /This commit will fail/)
   end
@@ -47,7 +47,7 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
     visit "/my-test-project/edit"
     fill_in "Build script", :with => "./test"
     click_button "Update Project"
-    
+
     visit "/my-test-project"
     click_button "Request Manual Build"
 
