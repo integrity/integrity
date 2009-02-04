@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/../helpers"
+require File.dirname(__FILE__) + "/helpers"
 require File.dirname(__FILE__) + "/../helpers/acceptance/textfile_notifier"
 
 class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
