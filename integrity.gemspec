@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<sinatra>, [">= 0.9.0.3"])
-      s.add_runtime_dependency(%q<haml>, [">= 0"])
+      s.add_runtime_dependency(%q<haml>, [">= 2.0.0"])
       s.add_runtime_dependency(%q<dm-core>, [">= 0.9.5"])
       s.add_runtime_dependency(%q<dm-validations>, [">= 0.9.5"])
       s.add_runtime_dependency(%q<dm-types>, [">= 0.9.5"])
@@ -41,7 +41,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<bcrypt-ruby>, [">= 0"])
     else
       s.add_dependency(%q<sinatra>, [">= 0.9.0.3"])
-      s.add_dependency(%q<haml>, [">= 0"])
+      s.add_dependency(%q<haml>, [">= 2.0.0"])
       s.add_dependency(%q<dm-core>, [">= 0.9.5"])
       s.add_dependency(%q<dm-validations>, [">= 0.9.5"])
       s.add_dependency(%q<dm-types>, [">= 0.9.5"])
@@ -58,7 +58,7 @@ Gem::Specification.new do |s|
     end
   else
     s.add_dependency(%q<sinatra>, [">= 0.9.0.3"])
-    s.add_dependency(%q<haml>, [">= 0"])
+    s.add_dependency(%q<haml>, [">= 2.0.0"])
     s.add_dependency(%q<dm-core>, [">= 0.9.5"])
     s.add_dependency(%q<dm-validations>, [">= 0.9.5"])
     s.add_dependency(%q<dm-types>, [">= 0.9.5"])
