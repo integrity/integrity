@@ -26,14 +26,9 @@ require "integrity/notifier"
 
 module Integrity
   def self.new(config_file = nil)
-    load_config(config_file) unless config_file.nil?
-
+    self.config = config_file unless config_file.nil?
     DataMapper.logger = self.logger if config[:log_debug_info]
     DataMapper.setup(:default, config[:database_uri])
-  end
-
-  def self.load_config(file)
-    self.config = YAML.load_file(file)
   end
 
   def self.root
@@ -54,8 +49,8 @@ module Integrity
     @config ||= default_configuration
   end
 
-  def self.config=(options)
-    @config = {}.merge!(options)
+  def self.config=(file)
+    @config = default_configuration.merge(YAML.load_file(file))
   end
 
   def self.log(message, &block)
