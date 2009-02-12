@@ -21,7 +21,7 @@ module Integrity
          "Checks the `database_uri` in CONFIG and creates and bootstraps a database for integrity"
     def create_db(config, direction="up")
       Integrity.new(config)
-      migrate_db(direction)
+      migrate_db(direction, 1)
     end
 
     desc "version",
@@ -33,15 +33,15 @@ module Integrity
     private
       attr_reader :root
 
-      def migrate_db(direction="up")
+      def migrate_db(direction, level=nil)
         require 'migrations'
 
         set_up_migrations unless migrations_already_set_up?
         add_initial_migration if tables_from_before_migrations_exist?
 
-        case direction.to_s
-        when "up"   then Integrity::Migrations.migrate_up!
-        when "down" then Integrity::Migrations.migrate_down!
+        case direction
+        when "up"   then Integrity::Migrations.migrate_up!(level)
+        when "down" then Integrity::Migrations.migrate_down!(level)
         else raise ArgumentError, "DIRECTION must be either up or down"
         end
       end
@@ -106,8 +106,8 @@ module Integrity
       end
 
       def tables_from_before_migrations_exist?
-        table_exists?("integrity_projects") && 
-          table_exists?("integrity_builds") && 
+        table_exists?("integrity_projects") &&
+          table_exists?("integrity_builds") &&
           table_exists?("integrity_notifiers")
       end
 

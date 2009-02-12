@@ -9,6 +9,14 @@ class InstallerTest < Test::Unit::AcceptanceTestCase
     Because I am lazy
   EOS
 
+  def table_exists?(table_name)
+    database_adapter.storage_exists?(table_name)
+  end
+
+  def database_adapter
+    DataMapper.repository(:default).adapter
+  end
+
   before do
     @config_path   = "/tmp/integrity-test.yml"
     @database_path = "/tmp/integrity-test.db"
@@ -16,20 +24,33 @@ class InstallerTest < Test::Unit::AcceptanceTestCase
     config = File.read(Integrity.root / "config/config.sample.yml")
     config.gsub!(%r(sqlite3:///var/integrity.db), "sqlite3://#{@database_path}")
     File.open(@config_path, "w") { |f| f << config }
-  end
-
-  after do
     rm @database_path if File.exists?(@database_path)
   end
 
-  scenario "running #create_db creates and migrates the database specified in config" do
+  scenario "Running #create_db for the first time" do
     Installer.new.create_db(@config_path)
 
-    `echo .schema | sqlite3 #{@database_path}`.tap do |schema|
-      schema.should =~ /integrity_notifiers/
-      schema.should =~ /integrity_projects/
-      schema.should =~ /integrity_builds/
-      schema.should =~ /integrity_commits/
-    end
+    database_adapter.query("SELECT * from migration_info").
+      should == ["initial"]
+    assert table_exists?("migration_info")
+    assert table_exists?("integrity_projects")
+    assert table_exists?("integrity_builds")
+    assert table_exists?("integrity_notifiers")
+    assert !table_exists?("integrity_commits") # just to be sure :)
+  end
+
+  scenario "Running #migrate_db on a pre-migrations database" do
+    DataMapper.setup(:default, "sqlite3://:memory:")
+    DataMapper.auto_migrate!
+
+    assert table_exists?("integrity_projects")
+    assert table_exists?("integrity_builds")
+    assert table_exists?("integrity_notifiers")
+    assert !table_exists?("integrity_commits")
+    assert !table_exists?("migration_info")
+
+    Installer.new.send(:migrate_db, "up", 1)
+
+    assert table_exists?("migration_info")
   end
 end
