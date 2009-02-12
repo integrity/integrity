@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{integrity}
-  s.version = "0.1.7"
+  s.version = "0.1.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Nicol\303\241s Sanguinetti", "Simon Rozet"]
-  s.date = %q{2009-01-31}
+  s.date = %q{2009-02-12}
   s.default_executable = %q{integrity}
   s.description = %q{Your Friendly Continuous Integration server. Easy, fun and painless!}
   s.email = %q{contacto@nicolassanguinetti.info}
