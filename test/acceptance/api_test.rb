@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/../helpers"
+require File.dirname(__FILE__) + "/helpers"
 
 class ApiTest < Test::Unit::AcceptanceTestCase
   story <<-EOF
@@ -22,7 +22,7 @@ class ApiTest < Test::Unit::AcceptanceTestCase
     response_body.should =~ /No builds for this project/
   end
 
-  scenario "receiving a build request with build_all_commits *enabled* builds all commits, most recent first" do
+  it "receiving a build request with build_all_commits *enabled* builds all commits, most recent first" do
     Integrity.config[:build_all_commits] = true
 
     repo = git_repo(:my_test_project) # initial commit && successful commit

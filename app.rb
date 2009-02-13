@@ -1,6 +1,7 @@
-require File.dirname(__FILE__) + "/lib/integrity"
 require "sinatra"
-require "helpers"
+
+require File.dirname(__FILE__) + "/lib/integrity"
+require "integrity/helpers"
 
 set :root,   Integrity.root
 set :public, Integrity.root / "public"
