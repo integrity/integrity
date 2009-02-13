@@ -100,7 +100,7 @@ begin
     s.add_dependency 'data_objects', ['>= 0.9.5']
     s.add_dependency 'do_sqlite3', ['>= 0.9.5']
     s.add_dependency 'json'
-    s.add_dependency 'foca-sinatra-ditties', ['>= 0.0.2']
+    s.add_dependency 'foca-sinatra-ditties', ['>= 0.0.3']
     s.add_dependency 'thor'
     s.add_dependency 'uuidtools' # required by dm-types
     s.add_dependency 'bcrypt-ruby' # required by dm-types
