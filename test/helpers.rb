@@ -31,7 +31,7 @@ module TestHelper
   end
 
   def ignore_logs!
-    Integrity.config[:log] = "/dev/null"
+    Integrity.config[:log] = "/tmp/integrity.test.log"
   end
 end
 
