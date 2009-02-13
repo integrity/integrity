@@ -33,15 +33,15 @@ module Integrity
     private
       attr_reader :root
 
-      def migrate_db(direction="up")
-        require 'migrations'
+      def migrate_db(direction, level=nil)
+        require "integrity/migrations"
 
         set_up_migrations unless migrations_already_set_up?
         add_initial_migration if tables_from_before_migrations_exist?
 
-        case direction.to_s
-        when "up"   then Integrity::Migrations.migrate_up!
-        when "down" then Integrity::Migrations.migrate_down!
+        case direction
+        when "up"   then Integrity::Migrations.migrate_up!(level)
+        when "down" then Integrity::Migrations.migrate_down!(level)
         else raise ArgumentError, "DIRECTION must be either up or down"
         end
       end
@@ -51,6 +51,7 @@ module Integrity
         mkdir_p root / "builds"
         mkdir_p root / "log"
         mkdir_p root / "public" # this one is to play nice with Passenger
+        mkdir_p root / "tmp"    # this one is to play nice with Passenger
       end
 
       def copy_template_files
@@ -105,8 +106,8 @@ module Integrity
       end
 
       def tables_from_before_migrations_exist?
-        table_exists?("integrity_projects") && 
-          table_exists?("integrity_builds") && 
+        table_exists?("integrity_projects") &&
+          table_exists?("integrity_builds") &&
           table_exists?("integrity_notifiers")
       end
 

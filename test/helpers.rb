@@ -23,7 +23,6 @@ end
 
 require File.dirname(__FILE__) / "helpers" / "expectations"
 require File.dirname(__FILE__) / "helpers" / "fixtures"
-require File.dirname(__FILE__) / "helpers" / "acceptance"
 
 module TestHelper
   def setup_and_reset_database!

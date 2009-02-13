@@ -20,10 +20,10 @@ module Integrity
       end
 
       def pretty_date(date_time)
-        today = Date.today
-        if date_time.day == today.day && date_time.month == today.month && date_time.year == today.year
+        days_away = (Date.today - Date.new(date_time.year, date_time.month, date_time.day)).to_i
+        if days_away == 0
           "today"
-        elsif date_time.day == today.day - 1 && date_time.month == today.month && date_time.year == today.year
+        elsif days_away == 1
           "yesterday"
         else
           strftime_with_ordinal(date_time, "on %b %d%o")

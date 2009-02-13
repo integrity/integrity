@@ -1,4 +1,4 @@
-require "diddies"
+require "sinatra/ditties"
 
 module Integrity
   module Helpers
