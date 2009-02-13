@@ -44,4 +44,3 @@ class Test::Unit::TestCase
   include Integrity
   include TestHelper
 end
-

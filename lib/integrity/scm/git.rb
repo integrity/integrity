@@ -29,7 +29,7 @@ module Integrity
         format  = %Q(---%n:author: %an <%ae>%n:message: >-%n  %s%n:date: %ci%n)
         YAML.load(`cd #{working_directory} && git show -s --pretty=format:"#{format}" #{sha1}`)
       end
-      
+
       def name
         self.class.name.split("::").last
       end
@@ -41,7 +41,7 @@ module Integrity
           checkout unless on_branch?
           pull
         end
-    
+
         def clone
           log "Cloning #{uri} to #{working_directory}"
           `git clone #{uri} #{working_directory} &>/dev/null`
