@@ -26,7 +26,6 @@ class BrowsePublicProjectsTest < Test::Unit::TestCase
 
   describe "#push_url_for" do
     before(:each) do
-      setup_and_reset_database!
       @project = Project.gen(:integrity)
       Integrity.config[:admin_username] = "admin"
       Integrity.config[:admin_password] = "test"

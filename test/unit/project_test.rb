@@ -3,7 +3,6 @@ require File.dirname(__FILE__) + "/../helpers"
 class ProjectTest < Test::Unit::TestCase
   before(:each) do
     RR.reset
-    setup_and_reset_database!
     ignore_logs!
   end
 

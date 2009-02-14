@@ -1,11 +1,6 @@
 require File.dirname(__FILE__) + '/../helpers'
 
 class CommitTest < Test::Unit::TestCase
-  before(:each) do
-    RR.reset
-    setup_and_reset_database!
-  end
-
   specify "fixture is valid and can be saved" do
     lambda do
       commit = Commit.gen

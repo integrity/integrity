@@ -12,7 +12,6 @@ class ProjectBuilderTest < Test::Unit::TestCase
   end
   
   before(:each) do
-    setup_and_reset_database!
     @project = Integrity::Project.generate(:integrity, :command => "echo 'output!'")
     ignore_logs!
   end
