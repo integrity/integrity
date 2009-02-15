@@ -7,15 +7,6 @@ class ApiTest < Test::Unit::AcceptanceTestCase
     So that my project is built everytime I push to the Holy Hub
   EOF
 
-  it "parses payload author correctly" do
-    repo = git_repo(:my_test_project) # initial commit && successful commit
-    Project.gen(:my_test_project, :uri => repo.path)
-    basic_auth "admin", "test"
-    post "/my-test-project/push", :payload => payload(repo.head, "master", repo.commits)
-    visit "/my-test-project"
-    response_body.should have_tag(".who", "by: John Doe")
-  end
-
   scenario "it only build commits for the branch being monitored" do
     repo = git_repo(:my_test_project) # initial commit && successful commit
     Project.gen(:my_test_project, :uri => repo.path, :branch => "my-branch")

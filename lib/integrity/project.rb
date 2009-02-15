@@ -119,7 +119,7 @@ module Integrity
     
       def create_commit_from(data)
         commits.create(:identifier   => data["id"],
-                       :author       => "#{data["author"]["name"]} <#{data["author"]["email"]}>",
+                       :author       => data["author"],
                        :message      => data["message"],
                        :committed_at => data["timestamp"])
       end
