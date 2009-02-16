@@ -32,7 +32,15 @@ module Integrity
       when failed?     then :failed
       end
     end
-    
+
+    def start!(time=Time.now)
+      self.started_at = time
+    end
+
+    def complete!(time=Time.now)
+      self.completed_at = time
+    end
+
     #
     # Deprecated methods
     #
