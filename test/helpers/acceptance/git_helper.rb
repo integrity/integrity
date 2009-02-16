@@ -1,32 +1,32 @@
 module GitHelper
   @@_git_repositories = Hash.new {|h,k| h[k] = Repo.new(k) }
-  
+
   def git_repo(name)
     @@_git_repositories[name]
   end
-  
+
   def destroy_all_git_repos
     @@_git_repositories.each {|n,r| r.destroy }
     @@_git_repositories.clear
   end
-  
+
   class Repo
     attr_reader :path
-    
+
     def initialize(name)
       @name = name
       @path = "/tmp" / @name.to_s
       create
     end
-    
+
     def path
       @path / ".git"
     end
-    
+
     def create
       destroy
       FileUtils.mkdir_p @path
-      
+
       Dir.chdir(@path) do
         system 'git init &>/dev/null'
         system 'git config user.name "John Doe"'
@@ -35,7 +35,7 @@ module GitHelper
         system 'git add README &>/dev/null'
         system 'git commit -m "First commit" &>/dev/null'
       end
-      
+
       add_successful_commit
     end
 
@@ -55,7 +55,7 @@ module GitHelper
         system %Q(git commit -m "#{message}" &>/dev/null)
       end
     end
-    
+
     def add_failing_commit
       add_commit "This commit will fail" do
         system %Q(echo '#{build_script(false)}' > test)
@@ -71,23 +71,23 @@ module GitHelper
         system %Q(git add test &>/dev/null)
       end
     end
-    
+
     def head
       Dir.chdir(@path) do
         `git log --pretty=format:%H | head -1`.chomp
       end
     end
-    
+
     def short_head
       head[0..6]
     end
-    
+
     def destroy
       FileUtils.rm_rf @path if File.directory?(@path)
     end
-    
+
     protected
-    
+
       def build_script(successful=true)
         <<-script
 #!/bin/sh

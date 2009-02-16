@@ -8,12 +8,12 @@ module Integrity
   %input.text#textfile_notifier_file{ :name => "notifiers[Textfile][file]", :type => "text", :value => config["file"] }
         haml
       end
-      
+
       def initialize(build, config={})
         super
         @file = @config["file"]
       end
-      
+
       def deliver!
         File.open(@file, "a") do |f|
           f.puts "=== #{short_message} ==="

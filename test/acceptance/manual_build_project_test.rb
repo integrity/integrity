@@ -21,7 +21,7 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
     response_body.should have_tag("span.when",    /today/)                  # commit date
     response_body.should have_tag("pre.output",   /Running tests.../)       # build output
   end
-  
+
   scenario "clicking on 'Manual Build' triggers a failed build" do
     git_repo(:my_test_project).add_failing_commit
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
@@ -36,7 +36,7 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
 
   scenario "fixing the build command and then rebuilding result in a successful build" do
     git_repo(:my_test_project).add_successful_commit
-    Project.gen(:my_test_project, 
+    Project.gen(:my_test_project,
                 :uri => git_repo(:my_test_project).path,
                 :command => "ruby not-found.rb")
 
@@ -55,26 +55,26 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
 
     response_body.should have_tag("h1", /success/)
   end
-  
+
   scenario "Successful builds should not display the 'Rebuild' button" do
     git_repo(:my_test_project).add_successful_commit
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
     login_as "admin", "test"
-    
+
     visit "/my-test-project"
     click_button "manual build"
-    
+
     response_body.should_not have_tag("button", "Rebuild")
   end
-  
+
   scenario "Failed builds should display the 'Rebuild' button" do
     git_repo(:my_test_project).add_failing_commit
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
     login_as "admin", "test"
-    
+
     visit "/my-test-project"
     click_button "manual build"
-    
+
     response_body.should have_tag("button", "Rebuild")
   end
 end

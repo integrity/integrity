@@ -9,7 +9,7 @@ class BrowseProjectBuildsTest < Test::Unit::AcceptanceTestCase
 
   scenario "a project with no builds should say so in a friendly manner" do
     Project.gen(:integrity, :public => true, :commits => [])
-    
+
     visit "/integrity"
 
     response_body.should_not have_tag("#last_build")
@@ -37,7 +37,7 @@ class BrowseProjectBuildsTest < Test::Unit::AcceptanceTestCase
                                      :committed_at => Time.mktime(2008, 12, 15, 18))
     commit.build.update_attributes(:output => "This is the build output")
     Project.gen(:integrity, :public => true, :commits => [commit])
-    
+
     visit "/integrity"
 
     response_body.should have_tag("h1", /Built 7fee3f0 successfully/)

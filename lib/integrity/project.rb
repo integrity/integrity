@@ -28,7 +28,7 @@ module Integrity
         all(:public => true)
       end
     end
-    
+
     def build(commit_identifier="HEAD")
       commit_identifier = head_of_remote_repo if commit_identifier == "HEAD"
       commit = find_or_create_commit_with_identifier(commit_identifier)
@@ -40,13 +40,13 @@ module Integrity
       return unless payload["ref"] =~ /#{branch}/
       return if payload["commits"].nil?
       return if payload["commits"].empty?
-        
+
       commits = if Integrity.config[:build_all_commits]
         payload["commits"]
       else
         [payload["commits"].first]
       end
-      
+
       commits.each do |commit_data|
         create_commit_from(commit_data)
         build(commit_data['id'])
@@ -56,7 +56,7 @@ module Integrity
     def last_commit
       commits.first(:project_id => id, :order => [:committed_at.desc])
     end
-    
+
     def last_build
       warn "Project#last_build is deprecated, use Project#last_commit"
       last_commit
@@ -65,7 +65,7 @@ module Integrity
     def previous_commits
       commits.all(:project_id => id, :order => [:committed_at.desc]).tap {|commits| commits.shift }
     end
-    
+
     def previous_builds
       warn "Project#previous_builds is deprecated, use Project#previous_commits"
       previous_commits
@@ -74,7 +74,7 @@ module Integrity
     def status
       last_commit && last_commit.status
     end
-    
+
     def human_readable_status
       last_commit && last_commit.human_readable_status
     end
@@ -112,18 +112,18 @@ module Integrity
         # commits change place every time a build finishes =\
         commits.first_or_create({ :identifier => commit_identifier, :project_id => id }, :committed_at => Time.now)
       end
-    
+
       def head_of_remote_repo
         SCM.new(uri, branch).head
       end
-    
+
       def create_commit_from(data)
         commits.create(:identifier   => data["id"],
                        :author       => data["author"],
                        :message      => data["message"],
                        :committed_at => data["timestamp"])
       end
-    
+
       def set_permalink
         self.permalink = (name || "").downcase.
           gsub(/'s/, "s").

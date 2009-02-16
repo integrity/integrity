@@ -16,7 +16,7 @@ module Integrity
     def message
       attribute_get(:message) || "<Commit message not loaded>"
     end
-    
+
     def author
       attribute_get(:author) || Author.load('<Commit author not loaded> <<Commit author not loaded>>', :author)
     end
@@ -28,7 +28,7 @@ module Integrity
     def status
       build.nil? ? :pending : build.status
     end
-    
+
     def successful?
       status == :success
     end

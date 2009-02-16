@@ -50,7 +50,7 @@ end
 
 Integrity::Commit.fixture do
   project = Integrity::Project.first || Integrity::Project.gen
-  
+
   { :identifier =>   Digest::SHA1.hexdigest(/[:paragraph:]/.gen),
     :message =>      /[:sentence:]/.gen,
     :author =>       /\w+ \w+ <\w+@example.org>/.gen,
@@ -72,7 +72,7 @@ end
 
 Integrity::Build.fixture do
   commit = Integrity::Commit.first || Integrity::Commit.gen
-  
+
   { :output       => /[:paragraph:]/.gen,
     :successful   => true,
     :started_at   => unique {|i| Time.mktime(2008, 12, 15, 18, i % 60) },

@@ -34,7 +34,7 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
     building  = Project.gen(:public => true, :building => true)
 
     visit "/"
-    
+
     response_body.should =~ /Built #{integrity.last_commit.short_identifier} successfully/m
     response_body.should =~ /Built #{test.last_commit.short_identifier} and failed/m
     response_body.should =~ /Never built yet/
