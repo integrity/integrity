@@ -10,7 +10,7 @@ module Integrity
       end
 
       def initialize(uri, branch, working_directory=nil)
-        @uri = uri.to_s
+        @uri    = uri.to_s
         @branch = branch.to_s
         @working_directory = working_directory
       end
@@ -38,7 +38,7 @@ module Integrity
       private
 
         def fetch_code
-          clone unless cloned?
+          clone    unless cloned?
           checkout unless on_branch?
           pull
         end
@@ -52,11 +52,11 @@ module Integrity
           strategy = case
             when treeish                         then treeish
             when local_branches.include?(branch) then branch
-            else                                      "-b #{branch} origin/#{branch}"
+            else                                      "origin/#{branch}"
           end
 
           log "Checking-out #{strategy}"
-          `cd #{working_directory} && git checkout #{strategy} &>/dev/null`
+          `cd #{working_directory} && git reset --hard #{strategy} &>/dev/null`
         end
 
         def pull
