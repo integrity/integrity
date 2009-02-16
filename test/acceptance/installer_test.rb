@@ -10,21 +10,28 @@ class InstallerTest < Test::Unit::AcceptanceTestCase
     So that I can spend time actually writing code
   EOS
 
-  after(:all) do
-    rm_rf install_directory
+  before(:each) do
+    rm_rf install_directory if File.directory?(install_directory)
   end
 
   def install_directory
-    install_directory = File.expand_path(File.dirname(__FILE__) + "/i-haz-integrity")
+    install_directory = "/tmp/i-haz-integrity"
+  end
+
+  def install(options={})
+    installer = Installer.new
+    installer.options = { :passenger => false }.merge!(options)
+    stdout, _ = util_capture { installer.install(install_directory) }
+    stdout
   end
 
   scenario "Installing integrity into directory" do
-    output, _ = util_capture { Installer.new.install(install_directory) }
+    assert install.include?("Awesome")
 
     assert File.directory?(install_directory + "/builds")
     assert File.directory?(install_directory + "/log")
-    assert File.directory?(install_directory + "/public")
-    assert File.directory?(install_directory + "/tmp")
+    assert ! File.directory?(install_directory + "/public")
+    assert ! File.directory?(install_directory + "/tmp")
 
     assert File.file?(install_directory + "/config.ru")
 
@@ -40,7 +47,12 @@ class InstallerTest < Test::Unit::AcceptanceTestCase
       config["rackup"].should be(install_directory + "/config.ru")
       config["log"].should    be(install_directory + "/log/thin.log")
     }
+  end
 
-    output.should =~ /Awesome/
+  scenario "Installing integrity for Passenger" do
+    install(:passenger => true)
+
+    assert File.directory?(install_directory + "/public")
+    assert File.directory?(install_directory + "/tmp")
   end
 end

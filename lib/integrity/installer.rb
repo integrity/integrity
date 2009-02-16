@@ -7,6 +7,7 @@ module Integrity
 
     desc "install [PATH]",
        "Copy template files to PATH. Next, go there and edit them."
+    method_options :passenger => false
     def install(path)
       @root = File.expand_path(path)
 
@@ -43,8 +44,11 @@ module Integrity
         mkdir_p root
         mkdir_p root / "builds"
         mkdir_p root / "log"
-        mkdir_p root / "public" # this one is to play nice with Passenger
-        mkdir_p root / "tmp"    # this one is to play nice with Passenger
+
+        if options[:passenger]
+          mkdir_p root / "public"
+          mkdir_p root / "tmp"
+        end
       end
 
       def copy_template_files
