@@ -2,11 +2,41 @@ require "dm-migrations"
 require "migration_runner"
 
 module Integrity
-  class Migrations
-    include DataMapper::Types
+  def self.migrate(direction, level=nil)
+    setup_initial_migration if pre_migrations?
 
-    # not strictly necessary, but it makes it clear what is going on.
-    include DataMapper::MigrationRunner
+    case direction
+      when "up"   then Integrity::Migrations.migrate_up!(level)
+      when "down" then Integrity::Migrations.migrate_down!(level)
+      else raise ArgumentError, "DIRECTION must be either up or down"
+    end
+  end
+
+  def self.setup_initial_migration
+    database_adapter.execute %q(CREATE TABLE "migration_info" ("migration_name" VARCHAR(255));)
+    database_adapter.execute %q(INSERT INTO "migration_info" ("migration_name") VALUES ("initial"))
+  end
+
+  def self.pre_migrations?
+    !table_exists?("migration_info") &&
+      ( table_exists?("integrity_projects") &&
+        table_exists?("integrity_builds")   &&
+        table_exists?("integrity_notifiers") )
+  end
+
+  def self.table_exists?(table_name)
+    database_adapter.storage_exists?(table_name)
+  end
+
+  def self.database_adapter
+    DataMapper.repository(:default).adapter
+  end
+
+  module Migrations
+    # This is what is actually happening:
+    # include DataMapper::MigrationRunner
+
+    include DataMapper::Types
 
     migration 1, :initial, :verbose => false do
       up do

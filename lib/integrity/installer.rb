@@ -33,17 +33,10 @@ module Integrity
     private
       attr_reader :root
 
-      def migrate_db(direction, level=nil)
+      def migrate_db(direction)
         require "integrity/migrations"
 
-        set_up_migrations unless migrations_already_set_up?
-        add_initial_migration if tables_from_before_migrations_exist?
-
-        case direction
-        when "up"   then Integrity::Migrations.migrate_up!(level)
-        when "down" then Integrity::Migrations.migrate_down!(level)
-        else raise ArgumentError, "DIRECTION must be either up or down"
-        end
+        Integrity.migrate(direction)
       end
 
       def create_dir_structure
@@ -95,38 +88,6 @@ module Integrity
         puts %Q(  require "notifier/email")
         puts
         puts %Q(Don't forget to tweak #{root / "config.yml"} to your needs.)
-      end
-
-      def set_up_migrations
-        database_adapter.execute %q(CREATE TABLE "migration_info" ("migration_name" VARCHAR(255));)
-      end
-
-      def add_initial_migration
-        database_adapter.execute %q(INSERT INTO "migration_info" ("migration_name") VALUES ("initial"))
-      end
-
-      def tables_from_before_migrations_exist?
-        table_exists?("integrity_projects") &&
-          table_exists?("integrity_builds") &&
-          table_exists?("integrity_notifiers")
-      end
-
-      def migrations_already_set_up?
-        table_exists?("migration_info")
-      end
-
-      def without_pluralizing_table_names
-        database_adapter.resource_naming_convention = DataMapper::NamingConventions::Resource::Underscored
-        yield
-        database_adapter.resource_naming_convention = DataMapper::NamingConventions::Resource::UnderscoredAndPluralized
-      end
-
-      def table_exists?(table_name)
-        database_adapter.storage_exists?(table_name)
-      end
-
-      def database_adapter
-        DataMapper.repository(:default).adapter
       end
   end
 end
