@@ -10,6 +10,7 @@ begin
   require "rr"
   require "mocha"
   require "ruby-debug"
+  require "test/zentest_assertions"
 rescue LoadError
   puts "You're missing some gems required to run the tests."
   puts "Please run `rake test:install_dependencies`"
