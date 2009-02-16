@@ -6,8 +6,9 @@ module Integrity
     include FileUtils
 
     desc "install [PATH]",
-       "Copy template files to PATH. Next, go there and edit them."
-    method_options :passenger => false
+       "Copy template files to PATH for desired deployement strategy (either Thin or Passenger).
+       Next, go there and edit them."
+    method_options :passenger => false, :thin => false
     def install(path)
       @root = File.expand_path(path)
 
@@ -54,12 +55,15 @@ module Integrity
       def copy_template_files
         cp Integrity.root / "config" / "config.sample.ru",  root / "config.ru"
         cp Integrity.root / "config" / "config.sample.yml", root / "config.yml"
-        cp Integrity.root / "config" / "thin.sample.yml",   root / "thin.yml"
+
+        if options[:thin]
+          cp Integrity.root / "config" / "thin.sample.yml",   root / "thin.yml"
+        end
       end
 
       def edit_template_files
         edit_integrity_configuration
-        edit_thin_configuration
+        edit_thin_configuration if options[:thin]
       end
 
       def edit_integrity_configuration
