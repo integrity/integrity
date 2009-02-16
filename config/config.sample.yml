@@ -4,9 +4,16 @@
 #   http://builder.integrityapp.com
 :base_uri: http://integrity.domain.tld
 
-# This should be a complete connection string to your database. For example
-# `mysql://user@localhost/integrity` (you need an `integrity` db created in
-# localhost, of course).
+# This should be a complete connection string to your database.
+#
+# Examples:
+# * `mysql://user:password@localhost/integrity`
+# * `postgres://user:password@localhost/integrity`
+# * `sqlite3:///home/integrity/db/integrity.sqlite`
+#
+# Note:
+# * The appropriate data_objects adapter must be installed (`do_mysql`, etc)
+# * You must create the `integrity` database on localhost, of course.
 :database_uri: sqlite3:///var/integrity.db
 
 # This is where your project's code will be checked out to. Make sure it's
