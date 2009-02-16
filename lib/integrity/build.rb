@@ -12,11 +12,11 @@ module Integrity
     property :completed_at, DateTime
 
     belongs_to :commit, :class_name => "Integrity::Commit"
-    
+
     def self.pending
       all(:started_at => nil)
     end
-    
+
     def pending?
       started_at.nil?
     end
@@ -48,12 +48,12 @@ module Integrity
       warn "Build#short_commit_identifier is deprecated, use Commit#short_identifier"
       commit.short_identifier
     end
-    
+
     def commit_identifier
       warn "Build#commit_identifier is deprecated, use Commit#identifier"
       commit.identifier
     end
-    
+
     def commit_author
       warn "Build#commit_author is deprecated, use Commit#author"
       commit.author
@@ -68,12 +68,12 @@ module Integrity
       warn "Build#commited_at is deprecated, use Commit#committed_at"
       commit.committed_at
     end
-    
+
     def project_id
       warn "Build#project_id is deprecated, use Commit#project_id"
       commit.project_id
     end
-    
+
     def commit_metadata
       warn "Build#commit_metadata is deprecated, use the different methods in Commit instead"
       { :message => commit.message,

@@ -24,12 +24,12 @@ module Integrity
       def name
         self.class.name.split("::").last
       end
-      
+
       def head
         log "Getting the HEAD of '#{uri}' at '#{branch}'"
         `git ls-remote --heads #{uri} #{branch} | awk '{print $1}'`.chomp
       end
-      
+
       def info(revision)
         format  = %Q(---%n:author: %an <%ae>%n:message: >-%n  %s%n:committed_at: %ci%n)
         YAML.load(`cd #{working_directory} && git show -s --pretty=format:"#{format}" #{revision}`)
@@ -42,7 +42,7 @@ module Integrity
           checkout unless on_branch?
           pull
         end
-    
+
         def clone
           log "Cloning #{uri} to #{working_directory}"
           `git clone #{uri} #{working_directory} &>/dev/null`

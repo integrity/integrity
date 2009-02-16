@@ -38,7 +38,7 @@ module Integrity
       def commit_path(commit, *path)
         project_path(commit.project, "commits", commit.identifier, *path)
       end
-      
+
       def build_path(build, *path)
         warn "#build_path is deprecated, use #commit_path instead"
         commit_path build.commit, *path

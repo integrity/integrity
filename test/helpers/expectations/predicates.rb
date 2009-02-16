@@ -5,12 +5,12 @@ module Matchy::Expectations
       @predicate = predicate
       @arguments = arguments
     end
-    
+
     def matches?(receiver)
       @receiver = receiver
       @receiver.send("#{@predicate}?", *@arguments)
     end
-    
+
     def failure_message
       message = "Expected #{@receiver.inspect} to be #{@predicate}"
       message << " with #{@arguments.map {|e| e.inspect }.join(", ")}" unless @arguments.empty?
@@ -23,7 +23,7 @@ module Matchy::Expectations
       message
     end
   end
-  
+
   module TestCaseExtensions
     def method_missing(method, *args, &block)
       if method.to_s =~ /^be_(.*)/
