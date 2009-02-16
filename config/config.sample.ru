@@ -27,5 +27,4 @@ set     :views,       Integrity.root / "views"
 set     :port,        8910
 disable :run, :reload
 
-use Rack::CommonLogger, Integrity.logger if Integrity.config[:log_debug_info]
 run Sinatra::Application
