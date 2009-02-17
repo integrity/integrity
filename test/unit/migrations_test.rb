@@ -13,6 +13,11 @@ class MigrationsTest < Test::Unit::TestCase
     database_adapter.query("SELECT * from migration_info")
   end
 
+  def load_initial_migration_fixture
+    database_adapter.execute(File.read(File.dirname(__FILE__) +
+      "/../helpers/initial_migration_fixture.sql"))
+  end
+
   before(:all) do
     require "integrity/migrations"
   end
@@ -48,7 +53,20 @@ class MigrationsTest < Test::Unit::TestCase
   end
 
   test "migrating data from initial up to add_commits migration" do
-    pending
+    load_initial_migration_fixture
+
+    Integrity.migrate("up")
+    current_migrations.should == ["initial", "add_commits"]
+
+    sinatra = Project.first(:name => "Sinatra")
+    sinatra.should have(1).commits
+    sinatra.commits.first.should be_successful
+    sinatra.commits.first.output.should =~ /sinatra/
+
+    shout_bot = Project.first(:name => "Shout Bot")
+    shout_bot.should have(1).commits
+    shout_bot.commits.first.should be_failed
+    shout_bot.commits.first.output.should =~ /shout-bot/
   end
 
   test "migrating data from migration down to initial migration" do
