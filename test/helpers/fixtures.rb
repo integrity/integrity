@@ -1,5 +1,4 @@
-require 'rubygems'
-require 'dm-sweatshop'
+require "dm-sweatshop"
 
 include DataMapper::Sweatshop::Unique
 
