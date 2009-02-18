@@ -54,14 +54,14 @@ module Webrat
   end
 end
 
-require Integrity.root / "app"
+require Integrity.root.join("app")
 require File.dirname(__FILE__) / "acceptance/git_helper"
 
 module AcceptanceHelper
   include FileUtils
 
   def export_directory
-    Integrity.root / "exports"
+    Integrity.root.join("exports")
   end
 
   def enable_auth!
@@ -94,9 +94,9 @@ module AcceptanceHelper
   end
 
   def setup_log!
-    pathname = Integrity.root / "integrity.log"
-    FileUtils.rm pathname if File.exists?(pathname)
-    Integrity.config[:log] = pathname
+    log_file = Integrity.root.join("integrity.log")
+    log_file.delete if log_file.exist?
+    Integrity.config[:log] = log_file
   end
 end
 

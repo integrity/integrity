@@ -1,5 +1,5 @@
 require File.dirname(__FILE__) + "/helpers"
-require Integrity.root / "lib" / "integrity" / "installer"
+require Integrity.root.join("lib", "integrity", "installer")
 
 class InstallerTest < Test::Unit::AcceptanceTestCase
   include FileUtils

@@ -12,10 +12,9 @@ require "logger"
 require "digest/sha1"
 require "timeout"
 require "ostruct"
-require "fileutils"
+require "pathname"
 
 require "integrity/core_ext/object"
-require "integrity/core_ext/string"
 
 require "integrity/project"
 require "integrity/author"
@@ -33,7 +32,7 @@ module Integrity
   end
 
   def self.root
-    File.expand_path(File.join(File.dirname(__FILE__), ".."))
+    Pathname.new(File.dirname(__FILE__)).join("..").expand_path
   end
 
   def self.default_configuration
@@ -66,7 +65,7 @@ module Integrity
 
   def self.version
     @version ||= begin
-      file = YAML.load_file(Integrity.root / "VERSION.yml")
+      file = YAML.load_file(Integrity.root.join("VERSION.yml"))
       "#{file['major']}.#{file['minor']}.#{file['patch']}"
     end
   end
