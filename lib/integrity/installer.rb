@@ -10,12 +10,12 @@ module Integrity
        Next, go there and edit them."
     method_options :passenger => false, :thin => false
     def install(path)
-      @root = File.expand_path(path)
+      @root = Pathname(path).expand_path
 
       create_dir_structure
       copy_template_files
       edit_template_files
-      create_db(root / "config.yml")
+      create_db(root.join("config.yml"))
       after_setup_message
     end
 
@@ -96,6 +96,11 @@ module Integrity
         puts %Q(  require "notifier/email")
         puts
         puts %Q(Don't forget to tweak #{root / "config.yml"} to your needs.)
+      end
+
+      def copy(path)
+        cp(Integrity.root.join(path),
+          root.join(File.basename(path).gsub(/\.sample/, "")))
       end
   end
 end

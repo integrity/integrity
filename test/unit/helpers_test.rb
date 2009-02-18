@@ -1,6 +1,7 @@
-require "rack"
 require File.dirname(__FILE__) + "/../helpers"
-require Integrity.root / "lib" / "integrity" / "helpers"
+
+require "rack"
+require Integrity.root.join("lib", "integrity", "helpers")
 
 class BrowsePublicProjectsTest < Test::Unit::TestCase
   include ::Integrity::Helpers
