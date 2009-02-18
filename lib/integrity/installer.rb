@@ -53,12 +53,9 @@ module Integrity
       end
 
       def copy_template_files
-        cp Integrity.root / "config" / "config.sample.ru",  root / "config.ru"
-        cp Integrity.root / "config" / "config.sample.yml", root / "config.yml"
-
-        if options[:thin]
-          cp Integrity.root / "config" / "thin.sample.yml",   root / "thin.yml"
-        end
+        copy "config/config.sample.ru"
+        copy "config/config.sample.yml"
+        copy "config/thin.sample.yml" if options[:thin]
       end
 
       def edit_template_files

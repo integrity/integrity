@@ -42,7 +42,7 @@ module Integrity
                     :base_uri          => "http://localhost:8910",
                     :use_basic_auth    => false,
                     :build_all_commits => true,
-                    :log_debug_info    => false }
+                    :log_debug_info    => false }.dup
   end
 
   def self.config
@@ -64,10 +64,7 @@ module Integrity
   end
 
   def self.version
-    @version ||= begin
-      file = YAML.load_file(Integrity.root.join("VERSION.yml"))
-      "#{file['major']}.#{file['minor']}.#{file['patch']}"
-    end
+    YAML.load_file(Integrity.root.join("VERSION.yml")).values.join(".")
   end
 
   private
