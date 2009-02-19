@@ -2,14 +2,9 @@ require "dm-migrations"
 require "migration_runner"
 
 module Integrity
-  def self.migrate(direction, level=nil)
+  def self.migrate_db
     setup_initial_migration if pre_migrations?
-
-    case direction
-      when "up"   then Integrity::Migrations.migrate_up!(level)
-      when "down" then Integrity::Migrations.migrate_down!(level)
-      else raise ArgumentError, "DIRECTION must be either up or down"
-    end
+    Integrity::Migrations.migrate_up!
   end
 
   def self.setup_initial_migration
@@ -76,12 +71,6 @@ module Integrity
           column :project_id, Integer
         end
       end
-
-      down do
-        drop_table :integrity_notifiers
-        drop_table :integrity_projects
-        drop_table :integrity_builds
-      end
     end
 
     migration 2, :add_commits, :verbose => true do
@@ -145,42 +134,6 @@ module Integrity
                        :successful   => build.successful,
                        :output       => build.output)
         end
-      end
-
-      down do
-        modify_table :integrity_builds do
-          add_column :commit_identifier, String, :nullable => false
-          add_column :commit_metadata,   Yaml,   :nullable => false
-          add_column :project_id,        Integer
-        end
-
-        # sqlite hodgepockery
-        all_builds = Build.all.map {|b| b.freeze }
-        drop_table :integrity_builds
-        create_table :integrity_builds do
-          column :id,                Integer,  :serial => true
-          column :output,            Text,     :nullable => false, :default => ""
-          column :successful,        Boolean,  :nullable => false, :default => false
-          column :commit_identifier, String,   :nullable => false
-          column :commit_metadata,   Yaml,     :nullable => false
-          column :created_at,        DateTime
-          column :updated_at,        DateTime
-          column :project_id,        Integer
-        end
-
-        all_builds.each do |build|
-          Build.create(:project_id => build.commit.project_id,
-                       :output => build.output,
-                       :successful => build.successful,
-                       :commit_identifier => build.commit.identifier,
-                       :commit_metadata => {
-            :message => build.commit.message,
-            :author => build.commit.author.full,
-            :date => commit.committed_at
-          }.to_yaml)
-        end
-
-        drop_table :commits
       end
     end
   end
