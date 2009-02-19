@@ -38,7 +38,7 @@ module Integrity
 
     include DataMapper::Types
 
-    migration 1, :initial, :verbose => false do
+    migration 1, :initial, :verbose => true do
       up do
         create_table :integrity_projects do
           column :id,          Integer,  :serial => true
@@ -84,7 +84,7 @@ module Integrity
       end
     end
 
-    migration 2, :add_commits, :verbose => false do
+    migration 2, :add_commits, :verbose => true do
       up do
         class ::Integrity::Build
           property :commit_identifier, String
