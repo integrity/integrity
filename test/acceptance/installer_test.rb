@@ -15,7 +15,7 @@ class InstallerTest < Test::Unit::AcceptanceTestCase
   end
 
   def install_directory
-    install_directory = "/tmp/i-haz-integrity"
+    "/tmp/i-haz-integrity"
   end
 
   def install(options={})
@@ -25,7 +25,7 @@ class InstallerTest < Test::Unit::AcceptanceTestCase
     stdout
   end
 
-  scenario "Installing integrity into directory" do
+  scenario "Installing integrity into a given directory" do
     assert install.include?("Awesome")
 
     assert File.directory?(install_directory + "/builds")

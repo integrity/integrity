@@ -6,8 +6,8 @@ module Integrity
     include FileUtils
 
     desc "install [PATH]",
-       "Copy template files to PATH for desired deployement strategy (either Thin or Passenger).
-       Next, go there and edit them."
+       "Copy template files to PATH for desired deployement strategy
+       (either Thin or Passenger). Next, go there and edit them."
     method_options :passenger => false, :thin => false
     def install(path)
       @root = Pathname(path).expand_path
@@ -29,8 +29,7 @@ module Integrity
       Integrity.migrate_db
     end
 
-    desc "version",
-         "Print the current integrity version"
+    desc "version", "Print the current integrity version."
     def version
       puts Integrity.version
     end

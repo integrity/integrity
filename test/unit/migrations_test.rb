@@ -28,7 +28,7 @@ class MigrationsTest < Test::Unit::TestCase
   end
 
   test "upgrading a pre migration database" do
-    Integrity.migrate_db
+    util_capture { Integrity.migrate_db }
 
     current_migrations.should == ["initial", "add_commits"]
     assert table_exists?("integrity_projects")
@@ -40,7 +40,7 @@ class MigrationsTest < Test::Unit::TestCase
   test "migrating data from initial to add_commits migration" do
     load_initial_migration_fixture
 
-    Integrity.migrate_db
+    util_capture { Integrity.migrate_db }
     current_migrations.should == ["initial", "add_commits"]
 
     sinatra = Project.first(:name => "Sinatra")
