@@ -15,15 +15,18 @@ module Integrity
       create_dir_structure
       copy_template_files
       edit_template_files
-      create_db(root.join("config.yml"))
+      migrate_db(root.join("config.yml"))
       after_setup_message
     end
 
-    desc "create_db [CONFIG]",
-         "Checks the `database_uri` in CONFIG and creates and bootstraps a database for integrity"
-    def create_db(config)
+    desc "migrate_db [CONFIG]",
+         "Checks the `database_uri` in CONFIG and migrates the
+          database up to the lastest version."
+    def migrate_db(config)
       Integrity.new(config)
-      migrate_db
+
+      require "integrity/migrations"
+      Integrity.migrate_db
     end
 
     desc "version",
@@ -34,12 +37,6 @@ module Integrity
 
     private
       attr_reader :root
-
-      def migrate_db
-        require "integrity/migrations"
-
-        Integrity.migrate_db
-      end
 
       def create_dir_structure
         mkdir_p root
