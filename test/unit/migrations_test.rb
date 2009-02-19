@@ -27,8 +27,8 @@ class MigrationsTest < Test::Unit::TestCase
     assert !table_exists?("migration_info") # just to be sure
   end
 
-  test "migrating up a pre migration database" do
-    Integrity.migrate("up")
+  test "upgrading a pre migration database" do
+    Integrity.migrate_db
 
     current_migrations.should == ["initial", "add_commits"]
     assert table_exists?("integrity_projects")
@@ -37,25 +37,10 @@ class MigrationsTest < Test::Unit::TestCase
     assert table_exists?("integrity_commits")
   end
 
-  test "migrating down a pre migration database" do
-    [Project, Build, Notifier].each(&:auto_migrate!)
-
-    Integrity.migrate("down")
-
-    # Initial migration is created but it gets removed just after
-    # because we migrate down
-    assert table_exists?("migration_info")
-    current_migrations.should == []
-
-    assert ! table_exists?("integrity_projects")
-    assert ! table_exists?("integrity_builds")
-    assert ! table_exists?("integrity_notifiers")
-  end
-
-  test "migrating data from initial up to add_commits migration" do
+  test "migrating data from initial to add_commits migration" do
     load_initial_migration_fixture
 
-    Integrity.migrate("up")
+    Integrity.migrate_db
     current_migrations.should == ["initial", "add_commits"]
 
     sinatra = Project.first(:name => "Sinatra")
@@ -67,9 +52,5 @@ class MigrationsTest < Test::Unit::TestCase
     shout_bot.should have(1).commits
     shout_bot.commits.first.should be_failed
     shout_bot.commits.first.output.should =~ /shout-bot/
-  end
-
-  test "migrating data from migration down to initial migration" do
-    pending
   end
 end
