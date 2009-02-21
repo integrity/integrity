@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/../lib/integrity"
+$:.unshift File.dirname(__FILE__) + "/../lib", File.dirname(__FILE__)
 
 begin
   require "test/unit"
@@ -22,8 +22,9 @@ rescue LoadError
   exit 1
 end
 
-require File.dirname(__FILE__) / "helpers" / "expectations"
-require File.dirname(__FILE__) / "helpers" / "fixtures"
+require "integrity"
+require "helpers/expectations"
+require "helpers/fixtures"
 
 module TestHelper
   def ignore_logs!

@@ -1,6 +1,6 @@
 module Integrity
   class App < Sinatra::Default
-    set :root,     Integrity.root
+    set :root,     File.dirname(__FILE__) + "/../.."
     set :app_file, __FILE__
     enable :sessions
 
