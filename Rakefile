@@ -80,19 +80,13 @@ begin
 
     s.add_dependency 'sinatra', ['>= 0.9.0.3']
     s.add_dependency 'haml',    ['>= 2.0.0']
-    s.add_dependency 'dm-core', ['>= 0.9.5']
-    s.add_dependency 'dm-validations', ['>= 0.9.5']
-    s.add_dependency 'dm-types', ['>= 0.9.5']
-    s.add_dependency 'dm-timestamps', ['>= 0.9.5']
-    s.add_dependency 'dm-aggregates', ['>= 0.9.5']
-    s.add_dependency 'dm-migrations', ['>= 0.9.5']
-    s.add_dependency 'data_objects', ['>= 0.9.5']
-    s.add_dependency 'do_sqlite3', ['>= 0.9.5']
+    s.add_dependency 'data_mapper', ['>= 0.9.10']
+    s.add_dependency 'do_sqlite3', ['>= 0.9.11']
+    s.add_dependency 'uuidtools' # required by dm-types
+    s.add_dependency 'bcrypt-ruby' # required by dm-types
     s.add_dependency 'json'
     s.add_dependency 'foca-sinatra-ditties', ['>= 0.0.3']
     s.add_dependency 'thor'
-    s.add_dependency 'uuidtools' # required by dm-types
-    s.add_dependency 'bcrypt-ruby' # required by dm-types
   end
 rescue LoadError
 end
