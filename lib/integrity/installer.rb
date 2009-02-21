@@ -92,7 +92,7 @@ module Integrity
       end
 
       def copy(path)
-        cp(Integrity.root.join(path),
+        cp(File.dirname(__FILE__) + "/../../#{path}",
           root.join(File.basename(path).gsub(/\.sample/, "")))
       end
   end

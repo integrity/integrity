@@ -40,7 +40,7 @@ end
 
 Integrity::Project.fixture(:my_test_project) do
   { :name       => "My Test Project",
-    :uri        => Integrity.root.join("my-test-project"),
+    :uri        => File.dirname(__FILE__) + "/../../",
     :branch     => "master",
     :command    => "./test",
     :public     => true,

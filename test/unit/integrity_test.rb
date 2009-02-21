@@ -4,7 +4,7 @@ class IntegrityTest < Test::Unit::TestCase
   test "Integrity.new loads configuration from a file" do
     stub(DataMapper).setup { nil }
 
-    file = Integrity.root / "config" / "config.sample.yml"
+    file = File.dirname(__FILE__) + "/../../config/config.sample.yml"
     Integrity.new(file)
 
     Integrity.config[:base_uri].should == "http://integrity.domain.tld"

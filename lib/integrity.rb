@@ -26,10 +26,9 @@ require "integrity/scm"
 require "integrity/scm/git"
 require "integrity/notifier"
 require "integrity/helpers"
+require "integrity/app"
 
 module Integrity
-  autoload :App, "integrity/app"
-
   def self.new(config_file = nil)
     self.config = YAML.load_file(config_file) unless config_file.nil?
     DataMapper.setup(:default, config[:database_uri])
@@ -68,7 +67,8 @@ module Integrity
   end
 
   def self.version
-    YAML.load_file(Integrity.root.join("VERSION.yml")).values.join(".")
+    YAML.load_file(File.dirname(__FILE__) + "/../VERSION.yml").
+      values.join(".")
   end
 
   private
