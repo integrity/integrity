@@ -56,25 +56,14 @@ namespace :test do
   end
 end
 
-namespace :db do
-  desc "Setup connection."
-  task :connect do
-    config = File.expand_path(ENV['CONFIG']) if ENV['CONFIG']
-    config = Integrity.root / 'config.yml' if File.exists?(Integrity.root / 'config.yml')
-    Integrity.new(config)
-  end
-
-  desc "Automigrate the database"
-  task :migrate => :connect do
-    require "project"
-    require "build"
-    require "notifier"
-    DataMapper.auto_migrate!
-  end
+desc "Launch Integrity real quick"
+task :launch do
+  ruby "bin/integrity launch"
 end
 
 begin
-  require 'jeweler'
+  require "jeweler"
+
   Jeweler::Tasks.new do |s|
     files  = `git ls-files`.split("\n").reject {|f| f =~ %r(^test/acceptance) || f =~ %r(^test/unit) || f =~ /^\.git/ }
 
