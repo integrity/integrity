@@ -29,7 +29,27 @@ module Integrity
       Integrity.migrate_db
     end
 
-    desc "version", "Print the current integrity version."
+    desc "launch [CONFIG]",
+         "Launch Integrity real quick."
+    method_options :config => :optional, :port => 4567
+    def launch
+      require "thin"
+
+      if File.file?(options[:config].to_s)
+        Integrity.new(options[:config])
+      else
+        DataMapper.setup(:default, "sqlite3::memory:")
+      end
+
+      DataMapper.auto_migrate!
+
+      Thin::Server.start("0.0.0.0", options[:port], Integrity::App)
+    rescue LoadError
+      puts "Please install Thin launch Integrity"
+    end
+
+    desc "version",
+         "Print the current integrity version"
     def version
       puts Integrity.version
     end
