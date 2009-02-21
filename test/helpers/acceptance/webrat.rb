@@ -1,14 +1,15 @@
-require 'webrat/rack'
-require 'sinatra'
-require 'sinatra/test'
-
-set :environment, :test
-disable :run
-disable :reload
+require "webrat/rack"
+require "sinatra/test"
 
 Webrat.configure do |config|
   config.mode = :sinatra
 end
+
+# TODO: Weird, the env seems to overriden somewhere
+Integrity::App.set(:environment  => :test,
+                   :raise_errors => false,
+                   :run          => false,
+                   :reload       => false)
 
 module Webrat
   class SinatraSession
@@ -16,7 +17,7 @@ module Webrat
 
     def initialize(context = nil)
       super(context)
-      @sinatra_test = Sinatra::TestHarness.new
+      @sinatra_test = Sinatra::TestHarness.new(Integrity::App)
     end
 
     %w(get head post put delete).each do |verb|

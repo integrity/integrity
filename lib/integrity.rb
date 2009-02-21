@@ -6,6 +6,7 @@ require "dm-validations"
 require "dm-types"
 require "dm-timestamps"
 require "dm-aggregates"
+require "sinatra/base"
 
 require "yaml"
 require "logger"
@@ -24,8 +25,11 @@ require "integrity/project_builder"
 require "integrity/scm"
 require "integrity/scm/git"
 require "integrity/notifier"
+require "integrity/helpers"
 
 module Integrity
+  autoload :App, "integrity/app"
+
   def self.new(config_file = nil)
     self.config = config_file unless config_file.nil?
     DataMapper.setup(:default, config[:database_uri])

@@ -1,6 +1,5 @@
 require File.dirname(__FILE__) / "acceptance/webrat"
 require File.dirname(__FILE__) / "acceptance/git_helper"
-require Integrity.root.join("app")
 
 module AcceptanceHelper
   include FileUtils
@@ -20,7 +19,7 @@ module AcceptanceHelper
     def AcceptanceHelper.logged_in; true; end
     basic_auth user, password
     visit "/login"
-    Sinatra::Application.before { login_required if AcceptanceHelper.logged_in }
+    Integrity::App.before { login_required if AcceptanceHelper.logged_in }
   end
 
   def log_out

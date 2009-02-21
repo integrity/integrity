@@ -11,20 +11,11 @@ require "integrity"
 #
 # require "notifier/email"
 
-# Load integrity's configuration.
-Integrity.config = File.expand_path("./config.yml")
+# Load Integrity's configuration.
+Integrity.config = File.dirname(__FILE__) + "/config.yml")
 
-#######################################################################
-##                                                                   ##
-## == DON'T EDIT ANYTHING BELOW UNLESS YOU KNOW WHAT YOU'RE DOING == ##
-##                                                                   ##
-#######################################################################
-require Integrity.root / "app"
+# You probably don't want to edit anything below
+Integrity::App.set :environment, ENV["RACK_ENV"] || :production
+Integrity::App.set :port,        8910
 
-set     :environment, ENV["RACK_ENV"] || :production
-set     :public,      Integrity.root / "public"
-set     :views,       Integrity.root / "views"
-set     :port,        8910
-disable :run, :reload
-
-run Sinatra::Application
+run Integrity::App

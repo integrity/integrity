@@ -29,7 +29,7 @@
     %input.hidden{ :name => "project_data[public]", :value => "0", :type => "hidden" }
     %input.checkbox#project_public{ checkbox("project_data[public]", @project.public?) }
 
-  - Notifier.available.each do |notifier|
+  - Integrity::Notifier.available.each do |notifier|
     = notifier_form(notifier)
 
   %p.submit
