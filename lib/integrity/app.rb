@@ -7,11 +7,6 @@ module Integrity
     include Integrity
     include Integrity::Helpers
 
-    configure :development do
-      config = Integrity.root / "config" / "config.yml"
-      Integrity.new(config) if File.exists?(config)
-    end
-
     not_found do
       status 404
       show :not_found, :title => "lost, are we?"
