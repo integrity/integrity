@@ -34,6 +34,7 @@ module Integrity
     method_options :config => :optional, :port => 4567
     def launch
       require "thin"
+      require "do_sqlite3"
 
       if File.file?(options[:config].to_s)
         Integrity.new(options[:config])
@@ -44,8 +45,9 @@ module Integrity
       DataMapper.auto_migrate!
 
       Thin::Server.start("0.0.0.0", options[:port], Integrity::App)
-    rescue LoadError
-      puts "Please install Thin launch Integrity"
+    rescue LoadError => boom
+      missing_dependency = boom.message.split("--").last.lstrip
+      puts "Please install #{missing_dependency} to launch Integrity"
     end
 
     desc "version",

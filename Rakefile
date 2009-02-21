@@ -81,7 +81,6 @@ begin
     s.add_dependency 'sinatra', ['>= 0.9.0.3']
     s.add_dependency 'haml',    ['>= 2.0.0']
     s.add_dependency 'data_mapper', ['>= 0.9.10']
-    s.add_dependency 'do_sqlite3', ['>= 0.9.11']
     s.add_dependency 'uuidtools' # required by dm-types
     s.add_dependency 'bcrypt-ruby' # required by dm-types
     s.add_dependency 'json'
