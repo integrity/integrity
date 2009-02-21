@@ -31,7 +31,7 @@ module Integrity
   autoload :App, "integrity/app"
 
   def self.new(config_file = nil)
-    self.config = config_file unless config_file.nil?
+    self.config = YAML.load_file(config_file) unless config_file.nil?
     DataMapper.setup(:default, config[:database_uri])
   end
 
@@ -53,8 +53,8 @@ module Integrity
     @config ||= default_configuration
   end
 
-  def self.config=(file)
-    @config = default_configuration.merge(YAML.load_file(file))
+  def self.config=(options)
+    @config = default_configuration.merge(options)
   end
 
   def self.log(message, &block)
@@ -72,7 +72,6 @@ module Integrity
   end
 
   private
-
     class LogFormatter < Logger::Formatter
       def call(severity, time, progname, msg)
         time.strftime("[%H:%M:%S] ") + msg2str(msg) + "\n"

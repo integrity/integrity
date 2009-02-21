@@ -46,8 +46,8 @@ class Test::Unit::TestCase
 
   before(:each) do
     RR.reset
-
     DataMapper.auto_migrate!
+    Integrity.instance_variable_set(:@config, nil)
 
     repository(:default) do
       transaction = DataMapper::Transaction.new(repository)

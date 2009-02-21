@@ -9,11 +9,7 @@ module Integrity
 
     configure :development do
       config = Integrity.root / "config" / "config.yml"
-      Integrity.config = config if File.exists? config
-    end
-
-    configure do
-      Integrity.new
+      Integrity.new(config) if File.exists?(config)
     end
 
     not_found do
