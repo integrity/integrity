@@ -11,8 +11,8 @@ require "integrity"
 #
 # require "notifier/email"
 
-# Load Integrity's configuration.
-Integrity.config = File.dirname(__FILE__) + "/config.yml")
+# Load configuration and initialize Integrity
+Integrity.new(File.dirname(__FILE__) + "/config.yml")
 
 # You probably don't want to edit anything below
 Integrity::App.set :environment, ENV["RACK_ENV"] || :production
