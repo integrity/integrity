@@ -11,53 +11,52 @@ class InstallerTest < Test::Unit::AcceptanceTestCase
   EOS
 
   before(:each) do
-    rm_rf install_directory if File.directory?(install_directory)
+    rm_rf root if File.directory?(root)
   end
 
-  def install_directory
-    "/tmp/i-haz-integrity"
+  def root
+    Pathname("/tmp/i-haz-integrity")
   end
 
   def install(options={})
     installer = Installer.new
     installer.options = { :passenger => false, :thin => false }.merge!(options)
-    stdout, _ = util_capture { installer.install(install_directory) }
+    stdout, _ = util_capture { installer.install(root.to_s) }
     stdout
   end
 
   scenario "Installing integrity into a given directory" do
     assert install.include?("Awesome")
 
-    assert File.directory?(install_directory + "/builds")
-    assert File.directory?(install_directory + "/log")
-    assert ! File.directory?(install_directory + "/public")
-    assert ! File.directory?(install_directory + "/tmp")
+    assert root.join("builds").directory?
+    assert root.join("log").directory?
+    assert ! root.join("public").directory?
+    assert ! root.join("tmp").directory?
 
-    assert ! File.file?(install_directory + "/thin.yml")
-    assert File.file?(install_directory + "/config.ru")
+    assert ! root.join("thin.yml").file?
+    assert root.join("config.ru").file?
 
-    YAML.load_file(install_directory + "/config.yml").tap { |config|
-      config[:database_uri].should     be("sqlite3://#{install_directory}/integrity.db")
-      config[:export_directory].should be(install_directory + "/builds")
-      config[:log].should              be(install_directory + "/log/integrity.log")
-    }
+    config = YAML.load_file(root.join("config.yml"))
+
+    config[:export_directory].should == root.join("builds").to_s
+    config[:database_uri].should == "sqlite3://#{root}/integrity.db"
+    config[:log].should          == root.join("log/integrity.log").to_s
   end
 
   scenario "Installing integrity for Passenger" do
     install(:passenger => true)
 
-    assert File.directory?(install_directory + "/public")
-    assert File.directory?(install_directory + "/tmp")
+    assert root.join("public").directory?
+    assert root.join("tmp").directory?
   end
 
   scenario "Installing Integrity for Thin" do
     install(:thin => true)
 
-    YAML.load_file(install_directory + "/thin.yml").tap { |config|
-      config["chdir"].should  be(install_directory)
-      config["pid"].should    be(install_directory + "/thin.pid")
-      config["rackup"].should be(install_directory + "/config.ru")
-      config["log"].should    be(install_directory + "/log/thin.log")
-    }
+    config = YAML.load_file(root.join("thin.yml"))
+    config["chdir"].should  == root.to_s
+    config["pid"].should    == root.join("thin.pid").to_s
+    config["rackup"].should == root.join("config.ru").to_s
+    config["log"].should    == root.join("log/thin.log").to_s
   end
 end
