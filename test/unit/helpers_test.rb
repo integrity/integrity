@@ -28,7 +28,9 @@ class BrowsePublicProjectsTest < Test::Unit::TestCase
       Integrity.config[:admin_username] = "admin"
       Integrity.config[:admin_password] = "test"
 
-      stub(self).request { OpenStruct.new(:scheme => "http", :port => "1234", :host => "integrity.example.org") }
+      stub(self).request {
+        OpenStruct.new(:url => "http://integrity.example.org:1234")
+      }
     end
 
     test "with auth disabled" do
