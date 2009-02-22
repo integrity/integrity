@@ -78,7 +78,7 @@ class EditProjectTest < Test::Unit::AcceptanceTestCase
     visit "/my-test-project"
     click_link "Edit Project"
 
-    response_body.should have_tag("#push_url", "http://integrity.example.org/my-test-project/push")
+    response_body.should have_tag("#push_url", "http://www.example.com/my-test-project/push")
   end
 
   scenario "public projects have a ticked 'public' checkbox on edit form" do

@@ -1,4 +1,4 @@
-require "helpers/acceptance/webrat"
+require "webrat/sinatra"
 require "helpers/acceptance/git_helper"
 
 module AcceptanceHelper
@@ -49,10 +49,19 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
   include Test::Storyteller
   include GitHelper
   include Webrat::Methods
+
+  # TODO: does this belongs in Webrat::SinatraSession?
   Webrat::Methods.delegate_to_session :response_code
 
+  def app
+    Integrity::App.tap { |app|
+      app.set     :environment, :test
+      app.disable :raise_errors, :run, :reload
+    }
+  end
+
   before(:all) do
-    Integrity.config[:base_uri] = "http://#{Webrat::SinatraSession::DEFAULT_DOMAIN}"
+    Integrity.config[:base_uri] = "http://www.example.com"
   end
 
   before(:each) do
@@ -67,4 +76,5 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
     destroy_all_git_repos
     rm_r export_directory if File.directory?(export_directory)
   end
+
 end
