@@ -1,5 +1,4 @@
-require "webrat/rack"
-require "sinatra/test"
+require "webrat/sinatra"
 
 Webrat.configure do |config|
   config.mode = :sinatra
