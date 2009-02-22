@@ -21,7 +21,7 @@
   %p.normal{ :class => error_class(@project, :command) }
     %label{ :for => "project_build_script" }
       &== Build script #{errors_on @project, :command}
-    %textarea#project_build_script{ :name => "project_data[command]", :cols => 40, :rows => 1 }
+    %textarea#project_build_script{ :name => "project_data[command]", :cols => 40, :rows => 2 }
       &== #{@project.command.to_s}
 
   %p.normal.checkbox
