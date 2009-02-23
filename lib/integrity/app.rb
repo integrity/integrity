@@ -99,9 +99,9 @@ module Integrity
 
       begin
         current_project.push(params[:payload])
-        "Thanks, build started."
-      rescue JSON::ParserError => exception
-        throw :halt, [422, exception.to_s]
+        201
+      rescue ArgumentError
+        [422, "Invalid Request"]
       end
     end
 
