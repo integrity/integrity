@@ -7,6 +7,16 @@ class ApiTest < Test::Unit::AcceptanceTestCase
     So that my project is built everytime I push to the Holy Hub
   EOF
 
+  def payload(after, branch="master", commits=[])
+    payload = { "after" => "#{after}", "ref" => "refs/heads/#{branch}" }
+    payload["commits"] = commits if commits.any?
+    payload.to_json
+  end
+
+  def post(path, data)
+    request_page(path, "post", data)
+  end
+
   scenario "it only build commits for the branch being monitored" do
     repo = git_repo(:my_test_project) # initial commit && successful commit
     Project.gen(:my_test_project, :uri => repo.path, :branch => "my-branch")
@@ -15,7 +25,7 @@ class ApiTest < Test::Unit::AcceptanceTestCase
 
     lambda do
       post "/my-test-project/push", :payload => payload(repo.head, "master", repo.commits)
-      response_code.should == 200
+      response_code.should == 422
     end.should_not change(Build, :count)
 
     visit "/my-test-project"
@@ -33,7 +43,7 @@ class ApiTest < Test::Unit::AcceptanceTestCase
       end
     end
 
-    Project.gen(:my_test_project, :uri => repo.path, :command => "echo successful")
+    Project.gen(:my_test_project, :uri => repo.path, :command => "echo successful", :branch => "master")
 
     basic_auth "admin", "test"
     post "/my-test-project/push", :payload => payload(repo.head, "master", repo.commits)
@@ -57,8 +67,7 @@ class ApiTest < Test::Unit::AcceptanceTestCase
     basic_auth "admin", "test"
     post "/my-test-project/push", :payload => payload(head, "master", git_repo(:my_test_project).commits)
 
-    response_body.should == "Thanks, build started."
-    response_code.should == 200
+    response_code.should == 201
 
     visit "/my-test-project"
 
@@ -83,15 +92,5 @@ class ApiTest < Test::Unit::AcceptanceTestCase
 
     post "/my-test-project/push", :payload => "foo"
     response_code.should == 422
-  end
-
-  def payload(after, branch="master", commits=[])
-    payload = { "after" => "#{after}", "ref" => "refs/heads/#{branch}" }
-    payload["commits"] = commits if commits.any?
-    payload.to_json
-  end
-
-  def post(path, data)
-    request_page(path, "post", data)
   end
 end

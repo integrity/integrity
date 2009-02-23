@@ -36,20 +36,19 @@ module Integrity
     end
 
     def push(payload)
-      payload = JSON.parse(payload || "")
-      return unless payload["ref"] =~ /#{branch}/
-      return if payload["commits"].nil?
-      return if payload["commits"].empty?
+      payload = parse_payload(payload)
+      raise ArgumentError unless valid_payload?(payload)
 
-      commits = if Integrity.config[:build_all_commits]
-        payload["commits"]
-      else
-        [payload["commits"].first]
-      end
+      commits =
+        if Integrity.config[:build_all_commits]
+          payload["commits"]
+        else
+          [ payload["commits"].first ]
+        end
 
       commits.each do |commit_data|
         create_commit_from(commit_data)
-        build(commit_data['id'])
+        build(commit_data["id"])
       end
     end
 
@@ -137,6 +136,18 @@ module Integrity
         ProjectBuilder.new(self).delete_code
       rescue SCM::SCMUnknownError => error
         Integrity.log "Problem while trying to deleting code: #{error}"
+      end
+
+      def valid_payload?(payload)
+        payload && payload["ref"].to_s.include?(branch) &&
+                               !payload["commits"].nil? &&
+                               !payload["commits"].to_a.empty?
+      end
+
+      def parse_payload(payload)
+        JSON.parse(payload.to_s)
+      rescue JSON::ParserError
+        false
       end
   end
 end
