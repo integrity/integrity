@@ -29,7 +29,8 @@ class ApiTest < Test::Unit::AcceptanceTestCase
     end.should_not change(Build, :count)
 
     visit "/my-test-project"
-    response_body.should =~ /No builds for this project/
+
+    assert_contain("No builds for this project")
   end
 
   it "receiving a build request with build_all_commits *enabled* builds all commits, most recent first" do
@@ -50,11 +51,10 @@ class ApiTest < Test::Unit::AcceptanceTestCase
 
     visit "/my-test-project"
 
-    response_body.should have_tag("h1", /Built #{git_repo(:my_test_project).short_head} successfully/)
-    response_body.should have_tag(".attribution", /^by John Doe/)
+    assert_have_tag("h1", :content => "Built #{git_repo(:my_test_project).short_head} successfully")
+    assert_have_tag(".attribution", :content => "by John Doe")
 
-    previous_builds = Hpricot(response_body).search("#previous_builds li")
-    previous_builds.should have(4).elements
+    assert_have_tag("#previous_builds li", :count => 4)
   end
 
   scenario "receiving a build request with build_all_commits *disabled* only builds the last commit passed" do
@@ -73,10 +73,9 @@ class ApiTest < Test::Unit::AcceptanceTestCase
 
     visit "/my-test-project"
 
-    response_body.should have_tag("h1", /Built #{git_repo(:my_test_project).short_head} successfully/)
+    assert_have_tag("h1", :content => "Built #{git_repo(:my_test_project).short_head} successfully")
 
-    previous_builds = Hpricot(response_body).search("#previous_builds li")
-    previous_builds.should be_empty
+    assert_have_no_tag("#previous_builds li")
   end
 
   scenario "an unauthenticated request returns a 401" do
