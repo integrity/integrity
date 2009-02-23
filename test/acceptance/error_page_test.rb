@@ -12,7 +12,7 @@ class ErrorPageTest < Test::Unit::AcceptanceTestCase
     lambda { visit "/" }.should raise_error(Webrat::PageLoadError)
 
     response_code.should == 500
-    response_body.should have_tag("h1", /Whatever you do, DON'T PANIC!/)
-    response_body.should have_tag("strong", "ArgumentError")
+    assert_have_tag("h1", :content => "Whatever you do")
+    assert_have_tag("strong", :content => "ArgumentError")
   end
 end

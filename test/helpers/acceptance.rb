@@ -49,6 +49,8 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
   include Test::Storyteller
   include GitHelper
   include Webrat::Methods
+  include Webrat::Matchers
+  include Webrat::HaveTagMatcher
 
   # TODO: does this belongs in Webrat::SinatraSession?
   Webrat::Methods.delegate_to_session :response_code

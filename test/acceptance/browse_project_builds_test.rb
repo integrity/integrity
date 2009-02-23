@@ -12,9 +12,9 @@ class BrowseProjectBuildsTest < Test::Unit::AcceptanceTestCase
 
     visit "/integrity"
 
-    response_body.should_not have_tag("#last_build")
-    response_body.should_not have_tag("#previous_builds")
-    response_body.should =~ /No builds for this project, buddy/
+    assert_have_no_tag("#last_build")
+    assert_have_no_tag("#previous_builds")
+    assert_contain("No builds for this project, buddy")
   end
 
   scenario "a user can see the last build and the list of previous builds on a project page" do
@@ -22,8 +22,8 @@ class BrowseProjectBuildsTest < Test::Unit::AcceptanceTestCase
 
     visit "/integrity"
 
-    response_body.should have_tag("#last_build")
-    response_body.should have_tag("#previous_builds") do |builds|
+    assert_have_tag("#last_build")
+    assert_have_tag("#previous_builds") do |builds|
       builds.should have_exactly(1).search("li.pending")
       builds.should have_exactly(2).search("li.failed")
       builds.should have_exactly(2).search("li.success")
@@ -40,11 +40,11 @@ class BrowseProjectBuildsTest < Test::Unit::AcceptanceTestCase
 
     visit "/integrity"
 
-    response_body.should have_tag("h1", /Built 7fee3f0 successfully/)
-    response_body.should have_tag("blockquote p", /No more pending tests/)
-    response_body.should have_tag("span.who",     /by: Nicolas Sanguinetti/)
-    response_body.should have_tag("span.when",    /Dec 15th/)
-    response_body.should have_tag("pre.output",   /This is the build output/)
+    assert_have_tag("h1", :content => "Built 7fee3f0 successfully")
+    assert_have_tag("blockquote p", :content => "No more pending tests")
+    assert_have_tag("span.who",     :content => "by: Nicolas Sanguinetti")
+    assert_have_tag("span.when",    :content => "Dec 15th")
+    assert_have_tag("pre.output",   :content => "This is the build output")
   end
 
   scenario "a user can browse to individual build pages" do
@@ -56,6 +56,6 @@ class BrowseProjectBuildsTest < Test::Unit::AcceptanceTestCase
     visit "/integrity"
     click_link(/Build 87e673a/)
 
-    response_body.should have_tag("h1", /Built 87e673a successfully/)
+    assert_have_tag("h1", :content => "Built 87e673a successfully")
   end
 end
