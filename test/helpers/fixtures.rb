@@ -1,3 +1,5 @@
+require "dm-sweatshop"
+
 include DataMapper::Sweatshop::Unique
 
 class Array
