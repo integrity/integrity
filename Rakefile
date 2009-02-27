@@ -21,6 +21,9 @@ task :ci do
   metrics = %w(flay flog:all reek roodi saikuro)
   metrics.each { |m| Rake::Task["metrics:#{m}"].invoke }
 
+  rm_rf "/var/www/integrity-metrics"
+  mv "tmp/metric_fu", "/var/www/integrity-metrics"
+
   File.open("/var/www/integrity-metrics/index.html", "w") { |f|
     f << "<ul>"
     metrics.map { |m| m.split(":").first }.each { |m|
@@ -28,9 +31,6 @@ task :ci do
     }
     f << "</ul>"
   }
-
-  rm_rf "/var/www/integrity-metrics"
-  mv "tmp/metric_fu", "/var/www/integrity-metrics"
 end
 
 desc "Run tests"
