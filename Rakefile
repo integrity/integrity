@@ -12,6 +12,27 @@ require File.dirname(__FILE__) + "/lib/integrity"
 desc "Default: run all tests"
 task :default => :test
 
+desc "Special task for running tests on <http://builder.integrityapp.com>"
+task :ci do
+  sh "git submodule update --init"
+
+  Rake::Task["test"].invoke
+
+  metrics = %w(flay flog:all reek roodi saikuro)
+  metrics.each { |m| Rake::Task["metrics:#{m}"].invoke }
+
+  File.open("/var/www/integrity-metrics/index.html", "w") { |f|
+    f << "<ul>"
+    metrics.map { |m| m.split(":").first }.each { |m|
+      f << %Q(<li><a href="/metric_fu/#{m}">#{m}</a></li>)
+    }
+    f << "</ul>"
+  }
+
+  rm_rf "/var/www/integrity-metrics"
+  mv "tmp/metric_fu", "/var/www/integrity-metrics"
+end
+
 desc "Run tests"
 task :test => %w(test:units test:acceptance)
 namespace :test do
