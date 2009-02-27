@@ -2,6 +2,11 @@ require "rake/testtask"
 require "rake/clean"
 require "rcov/rcovtask"
 
+begin
+  require "metric_fu"
+rescue LoadError
+end
+
 require File.dirname(__FILE__) + "/lib/integrity"
 
 desc "Default: run all tests"
