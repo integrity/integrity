@@ -1,4 +1,3 @@
-require "webrat/sinatra"
 require "helpers/acceptance/git_helper"
 
 module AcceptanceHelper

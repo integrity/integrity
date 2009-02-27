@@ -23,6 +23,7 @@ namespace :test do
     system "gem install rr mocha dm-sweatshop ZenTest"
     system "gem install -s http://gems.github.com jeremymcanally-context \
 jeremymcanally-matchy jeremymcanally-pending foca-storyteller"
+    system "git submodule update --init"
   end
 end
 
