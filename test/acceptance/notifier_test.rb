@@ -1,5 +1,4 @@
 require File.dirname(__FILE__) + "/helpers"
-require File.dirname(__FILE__) + "/../helpers/acceptance/email_notifier"
 
 class NotifierConfigIssues < Test::Unit::AcceptanceTestCase
   story <<-EOS
@@ -7,6 +6,13 @@ class NotifierConfigIssues < Test::Unit::AcceptanceTestCase
     I want to add multiple projects to Integrity,
     So that I can be certain notifiers remain functional (cf #43)
   EOS
+
+  before(:each) do
+    # This is needed before any available notifier is unset
+    # in the global #before
+    load File.dirname(__FILE__) + "/../helpers/acceptance/email_notifier.rb"
+  end
+
   def fill_in_email_notifier
     fill_in "notifiers[Email][to]",     :with => "quentin@example.com"
     fill_in "notifiers[Email][from]",   :with => "ci@example.com"

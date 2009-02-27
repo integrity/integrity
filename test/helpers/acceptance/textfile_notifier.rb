@@ -15,7 +15,6 @@ module Integrity
       end
 
       def deliver!
-        return if @file =~ /^\s*$/
         File.open(@file, "a") do |f|
           f.puts "=== #{short_message} ==="
           f.puts
