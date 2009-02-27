@@ -1,27 +1,33 @@
 $:.unshift File.dirname(__FILE__) + "/../lib", File.dirname(__FILE__),
   File.dirname(__FILE__) + "/../vendor/webrat/lib"
 
-begin
-  require "test/unit"
-  require "redgreen"
-  require "context"
-  require "storyteller"
-  require "pending"
-  require "matchy"
-  require "rr"
-  require "mocha"
-  require "ruby-debug"
-  require "test/zentest_assertions"
-  require "dm-sweatshop"
-rescue LoadError
-  puts "You're missing some gems required to run the tests."
-  puts "Please run `rake test:install_dependencies`"
-  puts "You'll probably need to run that command as root or with sudo."
-  puts
-  puts "Thanks :)"
-  puts
+%w(test/unit
+context
+pending
+matchy
+storyteller
+rr
+mocha
+test/zentest_assertions
+dm-sweatshop).each { |dependency|
+  begin
+    require dependency
+  rescue LoadError
+    puts "You're missing some gems required to run the tests."
+    puts "Please run `rake test:install_dependencies`"
+    puts "You'll probably need to run that command as root or with sudo."
 
-  exit 1
+    puts "Thanks :)"
+    puts
+
+    exit 1
+  end
+}
+
+begin
+  require "ruby-debug"
+  require "redgreen"
+rescue LoadError
 end
 
 require "integrity"
