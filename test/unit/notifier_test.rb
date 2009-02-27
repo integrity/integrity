@@ -67,6 +67,7 @@ class NotifierTest < Test::Unit::TestCase
   end
 
   it "knows which notifiers are available" do
+    Notifier.gen(:irc)
     Notifier.gen(:twitter)
     Notifier.should have(2).available
     Notifier.available.should include(Integrity::Notifier::IRC)
