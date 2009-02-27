@@ -13,7 +13,7 @@ module Integrity
     end
 
     error do
-      @error = request.env['sinatra.error']
+      @error = request.env["sinatra.error"]
       status 500
       show :error, :title => "something has gone terribly wrong"
     end
