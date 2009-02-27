@@ -6,6 +6,7 @@ context
 pending
 matchy
 storyteller
+webrat/sinatra
 rr
 mocha
 test/zentest_assertions
