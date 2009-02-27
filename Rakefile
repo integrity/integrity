@@ -4,12 +4,11 @@ require "rcov/rcovtask"
 
 require File.dirname(__FILE__) + "/lib/integrity"
 
-desc "Run all tests and check test coverage"
-task :default => "test:coverage:verify"
+desc "Default: run all tests"
+task :default => :test
 
 desc "Run tests"
 task :test => %w(test:units test:acceptance)
-
 namespace :test do
   Rake::TestTask.new(:units) do |t|
     t.test_files = FileList["test/unit/*_test.rb"]
@@ -17,38 +16,6 @@ namespace :test do
 
   Rake::TestTask.new(:acceptance) do |t|
     t.test_files = FileList["test/acceptance/*_test.rb"]
-  end
-
-  desc "Measure test coverage"
-  task :coverage => %w(test:coverage:units test:coverage:acceptance)
-
-  namespace :coverage do
-    desc "Measure test coverage of unit tests"
-    Rcov::RcovTask.new(:units) do |rcov|
-      rcov.pattern   = "test/unit/*_test.rb"
-      rcov.rcov_opts = %w(--html --aggregate .aggregated_coverage_report)
-      rcov.rcov_opts << ENV["RCOV_OPTS"] if ENV["RCOV_OPTS"]
-    end
-
-    desc "Measure test coverage of acceptance tests"
-    Rcov::RcovTask.new(:acceptance) do |rcov|
-      rcov.pattern   = "test/acceptance/*_test.rb"
-      rcov.rcov_opts = %w(--html --aggregate .aggregated_coverage_report)
-      rcov.rcov_opts << ENV["RCOV_OPTS"] if ENV["RCOV_OPTS"]
-    end
-
-    desc "Verify test coverage"
-    task :verify => "test:coverage" do
-      File.read("coverage/index.html") =~ /<tt class='coverage_total'>\s*(\d+\.\d+)%\s*<\/tt>/
-      coverage = $1.to_f
-
-      puts
-      if coverage == 100
-        puts "\e[32m100% coverage! Awesome!\e[0m"
-      else
-        puts "\e[31mOnly #{coverage}% code coverage. You can do better ;)\e[0m"
-      end
-    end
   end
 
   desc "Install all gems on which the tests depend on"
