@@ -27,7 +27,7 @@ task :ci do
   File.open("/var/www/integrity-metrics/index.html", "w") { |f|
     f << "<ul>"
     metrics.map { |m| m.split(":").first }.each { |m|
-      f << %Q(<li><a href="/metric_fu/#{m}">#{m}</a></li>)
+      f << %Q(<li><a href="/#{m}">#{m}</a></li>)
     }
     f << "</ul>"
   }
