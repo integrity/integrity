@@ -62,15 +62,15 @@ module Integrity
       end
     end
 
-    get "/:project" do
-      login_required unless current_project.public?
-      show :project, :title => ["projects", current_project.name]
-    end
-
     get "/:project.atom" do
       login_required unless current_project.public?
       response["Content-Type"] = "application/rss+xml; charset=utf-8"
       builder :project
+    end
+
+    get "/:project" do
+      login_required unless current_project.public?
+      show :project, :title => ["projects", current_project.name]
     end
 
     put "/:project" do
