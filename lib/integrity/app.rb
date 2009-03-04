@@ -25,6 +25,11 @@ module Integrity
       login_required if session[:user]
     end
 
+    get "/integrity.css" do
+      response["Content-Type"] = "text/css; charset=utf-8"
+      sass :integrity
+    end
+
     get "/" do
       @projects = Project.only_public_unless(authorized?)
       show :home, :title => "projects"
@@ -127,11 +132,6 @@ module Integrity
 
       current_project.build(params[:commit])
       redirect commit_url(current_commit)
-    end
-
-    get "/integrity.css" do
-      response["Content-Type"] = "text/css; charset=utf-8"
-      sass :integrity
     end
   end
 end
