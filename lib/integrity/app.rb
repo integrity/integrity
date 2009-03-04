@@ -27,6 +27,7 @@ module Integrity
 
     get "/integrity.css" do
       response["Content-Type"] = "text/css; charset=utf-8"
+      etag stylesheet_hash
       sass :integrity
     end
 
