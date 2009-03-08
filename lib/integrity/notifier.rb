@@ -1,3 +1,5 @@
+require File.dirname(__FILE__) + "/notifier/base"
+
 module Integrity
   class Notifier
     include DataMapper::Resource
@@ -44,7 +46,3 @@ module Integrity
       private_class_method :valid_notifier?
   end
 end
-
-require File.dirname(__FILE__) / "notifier" / "base"
-
-Dir["#{File.dirname(__FILE__)}/notifier/*.rb"].each &method(:require)
