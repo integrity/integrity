@@ -15,6 +15,12 @@ class SCMTest < Test::Unit::TestCase
     lambda { scm("scm://example.org") }.should raise_error(SCM::SCMUnknownError)
   end
 
+  it "doesn't need the working tree path for all operations, so it's not required on the constructor" do
+    lambda {
+      SCM.new(Addressable::URI.parse("git://github.com/foca/integrity.git"), "master")
+    }.should_not raise_error
+  end
+
   describe "SCM::Git::URI" do
     uris = [
       "rsync://host.xz/path/to/repo.git/",
@@ -46,4 +52,3 @@ class SCMTest < Test::Unit::TestCase
     end
   end
 end
-

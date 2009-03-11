@@ -1,6 +1,4 @@
-require "rack"
 require File.dirname(__FILE__) + "/../helpers"
-require Integrity.root / "lib" / "integrity" / "helpers"
 
 class BrowsePublicProjectsTest < Test::Unit::TestCase
   include ::Integrity::Helpers
@@ -26,12 +24,13 @@ class BrowsePublicProjectsTest < Test::Unit::TestCase
 
   describe "#push_url_for" do
     before(:each) do
-      setup_and_reset_database!
       @project = Project.gen(:integrity)
       Integrity.config[:admin_username] = "admin"
       Integrity.config[:admin_password] = "test"
 
-      stub(self).request { OpenStruct.new(:scheme => "http", :port => "1234", :host => "integrity.example.org") }
+      stub(self).request {
+        OpenStruct.new(:url => "http://integrity.example.org:1234")
+      }
     end
 
     test "with auth disabled" do

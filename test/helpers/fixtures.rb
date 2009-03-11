@@ -1,5 +1,4 @@
-require 'rubygems'
-require 'dm-sweatshop'
+require "dm-sweatshop"
 
 include DataMapper::Sweatshop::Unique
 
@@ -7,16 +6,6 @@ class Array
   def pick
     self[rand(self.length)]
   end
-end
-
-def commit_metadata
-  meta_data = <<-EOS
----
-:author: #{/\w+ \w+ <\w+@example.org>/.gen}
-:message: >-
-  #{/\w+/.gen}
-:date: #{unique {|i| Time.mktime(2008, 12, 15, 18, (59 - i) % 60) }}
-EOS
 end
 
 def create_notifier!(name)
@@ -51,19 +40,56 @@ end
 
 Integrity::Project.fixture(:my_test_project) do
   { :name       => "My Test Project",
-    :uri        => Integrity.root / "my-test-project",
+    :uri        => File.dirname(__FILE__) + "/../../",
     :branch     => "master",
     :command    => "./test",
     :public     => true,
     :building   => false }
 end
 
+Integrity::Commit.fixture do
+  project = Integrity::Project.first || Integrity::Project.gen
+
+  { :identifier =>   Digest::SHA1.hexdigest(/[:paragraph:]/.gen),
+    :message =>      /[:sentence:]/.gen,
+    :author =>       /\w+ \w+ <\w+@example.org>/.gen,
+    :committed_at => unique {|i| Time.mktime(2008, 12, 15, 18, (59 - i) % 60) },
+    :project_id =>   project.id }
+end
+
+Integrity::Commit.fixture(:successful) do
+  Integrity::Commit.generate_attributes.update(:build => Integrity::Build.gen(:successful))
+end
+
+Integrity::Commit.fixture(:failed) do
+  Integrity::Commit.generate_attributes.update(:build => Integrity::Build.gen(:failed))
+end
+
+Integrity::Commit.fixture(:pending) do
+  Integrity::Commit.generate_attributes.update(:build => Integrity::Build.gen(:pending))
+end
+
 Integrity::Build.fixture do
-  { :output     => /[:paragraph:]/.gen,
-    :successful => true,
-    :created_at => unique {|i| Time.mktime(2008, 12, 15, 18, (59 - i) % 60) },
-    :commit_identifier => Digest::SHA1.hexdigest(/[:paragraph:]/.gen),
-    :commit_metadata   => commit_metadata }
+  commit = Integrity::Commit.first || Integrity::Commit.gen
+
+  { :output       => /[:paragraph:]/.gen,
+    :successful   => true,
+    :started_at   => unique {|i| Time.mktime(2008, 12, 15, 18, i % 60) },
+    :created_at   => unique {|i| Time.mktime(2008, 12, 15, 18, i % 60) },
+    :completed_at => unique {|i| Time.mktime(2008, 12, 15, 18, i % 60) },
+    :commit_id    => commit.id }
+end
+
+Integrity::Build.fixture(:successful) do
+  Integrity::Build.generate_attributes.update(:successful => true)
+end
+
+Integrity::Build.fixture(:failed) do
+  Integrity::Build.generate_attributes.update(:successful => false)
+end
+
+Integrity::Build.fixture(:pending) do
+  Integrity::Build.generate_attributes.update(:successful => nil, :started_at => nil, :completed_at => nil)
 end
 
 Integrity::Notifier.fixture(:irc) do

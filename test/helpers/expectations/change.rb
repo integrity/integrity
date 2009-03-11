@@ -10,16 +10,16 @@ module Matchy::Expectations
 
     def matches?(event_proc)
       raise_block_syntax_error if block_given?
-      
+
       @before = evaluate_value_proc
       event_proc.call
       @after = evaluate_value_proc
-      
+
       return false if @from unless @from == @before
       return false if @to unless @to == @after
       return (@before + @amount == @after) if @amount
       return ((@after - @before) >= @minimum) if @minimum
-      return ((@after - @before) <= @maximum) if @maximum        
+      return ((@after - @before) <= @maximum) if @maximum
       return @before != @after
     end
 
@@ -68,7 +68,7 @@ module Matchy::Expectations
     def by_at_most(maximum)
       @maximum = maximum
       self
-    end      
+    end
 
     def to(to)
       @to = to

@@ -8,19 +8,19 @@ class DeleteProjectTest < Test::Unit::AcceptanceTestCase
   EOS
 
   scenario "an admin can delete a project from the 'Edit Project' screen" do
-    Project.generate(:integrity, :builds => 4.of { Build.gen })
+    Project.generate(:integrity, :commits => 4.of { Commit.gen })
 
     login_as "admin", "test"
 
     visit "/integrity"
     click_link "Edit Project"
-
     click_button "Yes, I'm sure, nuke it"
-
     visit "/"
-    response_body.should_not have_tag("ul#projects", "Integrity")
+
+    assert_have_no_tag("ul#projects", :content => "Integrity")
 
     visit "/integrity"
+
     response_code.should == 404
   end
 
@@ -28,12 +28,10 @@ class DeleteProjectTest < Test::Unit::AcceptanceTestCase
     Project.generate(:integrity, :uri => "unknown://example.org")
 
     login_as "admin", "test"
-
     visit "/integrity/edit"
-
     click_button "Yes, I'm sure, nuke it"
-
     visit "/integrity"
+
     response_code.should == 404
   end
 
@@ -41,10 +39,12 @@ class DeleteProjectTest < Test::Unit::AcceptanceTestCase
     Project.gen(:integrity)
 
     delete "/integrity"
+
     response_code.should == 401
 
     visit "/integrity"
-    response_body.should have_tag("h1", /Integrity/)
+
+    assert_have_tag("h1", :content => 'Integrity')
   end
 
   def delete(path, data={})

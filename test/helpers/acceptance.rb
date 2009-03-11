@@ -1,67 +1,10 @@
-require 'webrat/rack'
-require 'sinatra'
-require 'sinatra/test'
-
-set :environment, :test
-disable :run
-disable :reload
-
-Webrat.configuration.instance_variable_set("@mode", :sinatra)
-
-module Webrat
-  class SinatraSession < Session
-    DEFAULT_DOMAIN = "integrity.example.org"
-
-    def initialize(context = nil)
-      super(context)
-      @sinatra_test = Sinatra::TestHarness.new
-    end
-
-    %w(get head post put delete).each do |verb|
-      class_eval <<-METHOD
-        def #{verb}(path, data, headers = {})
-          params = data.inject({}) do |data, (key,value)|
-            data[key] = Rack::Utils.unescape(value)
-            data
-          end
-          headers['HTTP_HOST'] = DEFAULT_DOMAIN
-          @sinatra_test.#{verb}(path, params, headers)
-        end
-      METHOD
-    end
-
-    def response_body
-      @sinatra_test.body
-    end
-
-    def response_code
-      @sinatra_test.status
-    end
-
-    private
-
-    def response
-      @sinatra_test.response
-    end
-
-    def current_host
-      URI.parse(current_url).host || DEFAULT_DOMAIN
-    end
-
-    def response_location_host
-      URI.parse(response_location).host || DEFAULT_DOMAIN
-    end
-  end
-end
-
-require Integrity.root / "app"
-require File.dirname(__FILE__) / "acceptance/git_helper"
+require "helpers/acceptance/git_helper"
 
 module AcceptanceHelper
   include FileUtils
 
   def export_directory
-    Integrity.root / "exports"
+    File.dirname(__FILE__) + "/../../exports"
   end
 
   def enable_auth!
@@ -75,7 +18,7 @@ module AcceptanceHelper
     def AcceptanceHelper.logged_in; true; end
     basic_auth user, password
     visit "/login"
-    Sinatra::Application.before { login_required if AcceptanceHelper.logged_in }
+    Integrity::App.before { login_required if AcceptanceHelper.logged_in }
   end
 
   def log_out
@@ -94,9 +37,9 @@ module AcceptanceHelper
   end
 
   def setup_log!
-    pathname = Integrity.root / "integrity.log"
-    FileUtils.rm pathname if File.exists?(pathname)
-    Integrity.config[:log] = pathname
+    log_file = Pathname(File.dirname(__FILE__) + "/../../integrity.log")
+    log_file.delete if log_file.exist?
+    Integrity.config[:log] = log_file
   end
 end
 
@@ -105,15 +48,25 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
   include Test::Storyteller
   include GitHelper
   include Webrat::Methods
+  include Webrat::Matchers
+  include Webrat::HaveTagMatcher
+
+  # TODO: does this belongs in Webrat::SinatraSession?
   Webrat::Methods.delegate_to_session :response_code
 
+  def app
+    Integrity::App.tap { |app|
+      app.set     :environment, :test
+      app.disable :raise_errors, :run, :reload
+    }
+  end
+
   before(:all) do
-    Integrity.config[:base_uri] = "http://#{Webrat::SinatraSession::DEFAULT_DOMAIN}"
+    Integrity.config[:base_uri] = "http://www.example.com"
   end
 
   before(:each) do
     # ensure each scenario is run in a clean sandbox
-    setup_and_reset_database!
     enable_auth!
     setup_log!
     set_and_create_export_directory!
@@ -124,4 +77,5 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
     destroy_all_git_repos
     rm_r export_directory if File.directory?(export_directory)
   end
+
 end

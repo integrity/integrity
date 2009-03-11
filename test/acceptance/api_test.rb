@@ -7,6 +7,16 @@ class ApiTest < Test::Unit::AcceptanceTestCase
     So that my project is built everytime I push to the Holy Hub
   EOF
 
+  def payload(after, branch="master", commits=[])
+    payload = { "after" => "#{after}", "ref" => "refs/heads/#{branch}" }
+    payload["commits"] = commits if commits.any?
+    payload.to_json
+  end
+
+  def post(path, data)
+    request_page(path, "post", data)
+  end
+
   scenario "it only build commits for the branch being monitored" do
     repo = git_repo(:my_test_project) # initial commit && successful commit
     Project.gen(:my_test_project, :uri => repo.path, :branch => "my-branch")
@@ -15,11 +25,12 @@ class ApiTest < Test::Unit::AcceptanceTestCase
 
     lambda do
       post "/my-test-project/push", :payload => payload(repo.head, "master", repo.commits)
-      response_code.should == 200
+      response_code.should == 422
     end.should_not change(Build, :count)
 
     visit "/my-test-project"
-    response_body.should =~ /No builds for this project/
+
+    assert_contain("No builds for this project")
   end
 
   it "receiving a build request with build_all_commits *enabled* builds all commits, most recent first" do
@@ -33,18 +44,20 @@ class ApiTest < Test::Unit::AcceptanceTestCase
       end
     end
 
-    Project.gen(:my_test_project, :uri => repo.path, :command => "echo successful")
+    Project.gen(:my_test_project, :uri => repo.path, :command => "echo successful", :branch => "master")
 
-    lambda do
-      basic_auth "admin", "test"
-      post "/my-test-project/push", :payload => payload(repo.head, "master", repo.commits)
-    end.should change(Build, :count).by(5)
+    basic_auth "admin", "test"
+    post "/my-test-project/push", :payload => payload(repo.head, "master", repo.commits)
 
     visit "/my-test-project"
-    response_body.should have_tag("h1", /Built #{git_repo(:my_test_project).short_head} successfully/)
+
+    assert_have_tag("h1", :content => "Built #{git_repo(:my_test_project).short_head} successfully")
+    assert_have_tag(".attribution", :content => "by John Doe")
+
+    assert_have_tag("#previous_builds li", :count => 4)
   end
 
-  scenario "receiving a build request with build_all_commits *disabled* only builds HEAD" do
+  scenario "receiving a build request with build_all_commits *disabled* only builds the last commit passed" do
     Integrity.config[:build_all_commits] = false
 
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
@@ -53,18 +66,16 @@ class ApiTest < Test::Unit::AcceptanceTestCase
     git_repo(:my_test_project).add_successful_commit
     head = git_repo(:my_test_project).head
 
-    lambda do
-      basic_auth "admin", "test"
-      post "/my-test-project/push", :payload => payload(head, "master")
-    end.should change(Build, :count).by(1)
+    basic_auth "admin", "test"
+    post "/my-test-project/push", :payload => payload(head, "master", git_repo(:my_test_project).commits)
 
-    response_body.should == "Thanks, build started."
-    response_code.should == 200
+    response_code.should == 201
 
     visit "/my-test-project"
 
-    response_body.should =~ /#{git_repo(:my_test_project).short_head} successfully/
-    response_body.should =~ /This commit will work/
+    assert_have_tag("h1", :content => "Built #{git_repo(:my_test_project).short_head} successfully")
+
+    assert_have_no_tag("#previous_builds li")
   end
 
   scenario "an unauthenticated request returns a 401" do
@@ -82,15 +93,5 @@ class ApiTest < Test::Unit::AcceptanceTestCase
 
     post "/my-test-project/push", :payload => "foo"
     response_code.should == 422
-  end
-
-  def payload(after, branch="master", commits=[])
-    payload = { "after" => "#{after}", "ref" => "refs/heads/#{branch}" }
-    payload["commits"] = commits if commits.any?
-    payload.to_json
-  end
-
-  def post(path, data)
-    request_page(path, "post", data)
   end
 end

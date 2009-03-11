@@ -19,34 +19,33 @@ class EditProjectTest < Test::Unit::AcceptanceTestCase
     fill_in "Branch to track", :with => "test-refactoring"
     click_button "Update Project"
 
-    response_body.should have_tag("h1", /Integrity \(test refactoring\)/)
+    assert_have_tag("h1", :content => "Integrity (test refactoring)")
   end
 
   scenario "making a public project private will hide it from the home page for non-admins" do
     Project.generate(:my_test_project, :public => true)
 
     visit "/"
-    response_body.should =~ /My Test Project/
+
+    assert_contain("My Test Project")
 
     login_as "admin", "test"
-
     visit "/my-test-project"
     click_link "Edit Project"
-
     uncheck "Public project"
     click_button "Update Project"
-
     log_out
-
     visit "/"
-    response_body.should_not have_tag("a", /My Test Project/)
+
+    assert_have_no_tag("a", :content => "My Test Project")
   end
 
   scenario "making a private project public will show it in the home page for non-admins" do
     Project.generate(:my_test_project, :public => false)
 
     visit "/"
-    response_body.should_not =~ /My Test Project/
+
+    assert_not_contain("My Test Project")
 
     login_as "admin", "test"
 
@@ -59,17 +58,8 @@ class EditProjectTest < Test::Unit::AcceptanceTestCase
     log_out
 
     visit "/"
-    response_body.should have_tag("a", /My Test Project/)
-  end
 
-  scenario "an admin can see the push URL on the edit page" do
-    disable_auth!
-    Project.generate(:my_test_project)
-
-    visit "/my-test-project"
-    click_link "Edit Project"
-
-    response_body.should have_tag("#push_url", "http://integrity.example.org/my-test-project/push")
+    assert_have_tag("a", :content => "My Test Project")
   end
 
   scenario "a user can't edit a project's information" do
@@ -79,5 +69,49 @@ class EditProjectTest < Test::Unit::AcceptanceTestCase
     click_link "Edit Project"
 
     response_code.should == 401
+  end
+
+  scenario "an admin can see the push URL on the edit page" do
+    disable_auth!
+    Project.generate(:my_test_project)
+
+    visit "/my-test-project"
+    click_link "Edit Project"
+
+    assert_have_tag("#push_url", :content => "http://www.example.com/my-test-project/push")
+  end
+
+  scenario "public projects have a ticked 'public' checkbox on edit form" do
+    Project.generate(:my_test_project, :public => true)
+    disable_auth!
+    visit "/my-test-project/edit"
+
+    assert_have_tag('input[@type="checkbox"][@checked="checked"][@name="project_data[public]"]')
+  end
+
+  scenario "private projects have an unticked 'public' checkbox on edit form" do
+    Project.generate(:my_test_project, :public => false)
+    disable_auth!
+    visit "/my-test-project/edit"
+
+    assert_have_no_tag('input[@type="checkbox"][@checked][@name="project_data[public]"]')
+  end
+
+  scenario "after I uncheck the public checkbox, it should still be uncheck after I save" do
+    Project.generate(:integrity, :public => true)
+
+    login_as "admin", "test"
+
+    visit "/integrity"
+    click_link "Edit Project"
+
+    assert_have_tag('input[@type="checkbox"][@checked="checked"][@name="project_data[public]"]')
+
+    uncheck "project_public"
+    click_button "Update Project"
+
+    click_link "Edit Project"
+
+    assert_have_no_tag('input[@type="checkbox"][@checked="checked"][@name="project_data[public]"]')
   end
 end

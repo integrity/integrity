@@ -3,7 +3,6 @@ require File.dirname(__FILE__) + "/../helpers"
 class ProjectTest < Test::Unit::TestCase
   before(:each) do
     RR.reset
-    setup_and_reset_database!
     ignore_logs!
   end
 
@@ -97,17 +96,19 @@ class ProjectTest < Test::Unit::TestCase
     end
 
     it "knows it's status" do
-      Project.gen(:builds => 1.of{Build.make(:successful => true )}).status.should == :success
-      Project.gen(:builds => 2.of{Build.make(:successful => true )}).status.should == :success
-      Project.gen(:builds => 2.of{Build.make(:successful => false)}).status.should == :failed
-      Project.gen(:builds => []).status.should be_nil
+      Project.gen(:commits => 1.of{ Commit.gen(:successful) }).status.should == :success
+      Project.gen(:commits => 2.of{ Commit.gen(:successful) }).status.should == :success
+      Project.gen(:commits => 2.of{ Commit.gen(:failed) }).status.should == :failed
+      Project.gen(:commits => 1.of{ Commit.gen(:pending) }).status.should == :pending
+      Project.gen(:commits => []).status.should be_nil
     end
 
     it "knows it's last build" do
-      Project.gen(:builds => []).last_build.should be_nil
+      Project.gen(:commits => []).last_commit.should be_nil
 
-      project = Project.gen(:builds => (builds = 5.of{Build.make(:successful => true)}))
-      project.last_build.should == builds.sort_by {|build| build.created_at }.last
+      commits = 5.of { Commit.gen(:successful) }
+      project = Project.gen(:commits => commits)
+      project.last_commit.should == commits.sort_by {|c| c.committed_at }.last
     end
   end
 
@@ -143,19 +144,19 @@ class ProjectTest < Test::Unit::TestCase
       end.should_not change(Project, :count)
     end
   end
-  
+
   describe "Finding public or private projects" do
     before(:each) do
       @public_project = Project.gen(:public => true)
       @private_project = Project.gen(:public => false)
     end
-    
+
     it "finds only public projects if the condition passed is false" do
       projects = Project.only_public_unless(false)
       projects.should_not include(@private_project)
       projects.should include(@public_project)
     end
-    
+
     it "finds both private and public projects if the condition passed is true" do
       projects = Project.only_public_unless(true)
       projects.should include(@private_project)
@@ -165,38 +166,37 @@ class ProjectTest < Test::Unit::TestCase
 
   describe "When finding its previous builds" do
     before(:each) do
-      @builds = 5.of { Build.gen }
-      @project = Project.generate(:builds => @builds)
+      @project = Project.generate(:commits => 5.of { Commit.gen })
+      @commits = @project.commits.sort_by {|c| c.committed_at }.reverse
     end
 
     it "has 4 previous builds" do
-      @project.should have(4).previous_builds
+      @project.should have(4).previous_commits
     end
 
     it "returns the builds ordered chronogicaly (desc) by creation date" do
-      builds_sorted_by_creation_date = @builds.sort_by {|build| build.created_at }.reverse
-      @project.previous_builds.should == builds_sorted_by_creation_date[1..-1]
+      @project.previous_commits.should == @commits[1..-1]
     end
 
     it "excludes the last build" do
-      @project.previous_builds.should_not include(@project.last_build)
+      @project.previous_commits.should_not include(@project.last_commit)
     end
 
     it "returns an empty array if it has only one build" do
-      project = Project.gen(:builds => 1.of { Integrity::Build.make })
-      project.should have(:no).previous_builds
+      project = Project.gen(:commits => 1.of { Integrity::Commit.gen })
+      project.should have(:no).previous_commits
     end
 
     it "returns an empty array if there are no builds" do
-      project = Project.gen(:builds => [])
-      project.should have(:no).previous_builds
+      project = Project.gen(:commits => [])
+      project.should have(:no).previous_commits
     end
   end
 
   describe "When getting destroyed" do
     before(:each) do
-      @builds  = (1..7).of { Build.make }
-      @project = Project.generate(:builds => @builds)
+      @commits  = 7.of { Commit.gen }
+      @project = Project.generate(:commits => @commits)
     end
 
     it "destroys itself and tell ProjectBuilder to delete the code from disk" do
@@ -209,7 +209,7 @@ class ProjectTest < Test::Unit::TestCase
     it "destroys its builds" do
       lambda do
         @project.destroy
-      end.should change(Build, :count).by(-@builds.length)
+      end.should change(Commit, :count).by(-7)
     end
   end
 
@@ -241,81 +241,42 @@ class ProjectTest < Test::Unit::TestCase
     end
   end
 
-  describe "When building a build" do
+  describe "When building a commit" do
     before(:each) do
-      @builds  = (1..7).of { Build.make }
-      @project = Project.generate(:integrity, :builds => @builds)
+      @commits = 2.of { Commit.gen }
+      @project = Project.gen(:integrity, :commits => @commits)
       stub.instance_of(ProjectBuilder).build { nil }
     end
 
-    it "builds the given commit identifier and handle its building state" do
-      @project.should_not be_building
-      lambda do
-        mock.instance_of(Integrity::ProjectBuilder).build("foo") { @project.should be_building }
-        @project.build("foo")
-      end.should_not change(@project, :building)
+    it "gets the specified commit and creates a pending build for it" do
+      commit = @commits.last
+
+      lambda {
+        @project.build(commit.identifier)
+      }.should change(Build, :count).by(1)
+
+      build = Build.all.last
+      build.commit.should be(commit)
+      build.should be_pending
+
+      commit.should be_pending
     end
 
-    it "don't build if it is already building" do
-      @project.update_attributes(:building => true)
-      do_not_call(ProjectBuilder).build
-      @project.build
-    end
+    it "creates an empty commit with the head of the project if passed 'HEAD' (the default)" do
+      mock(@project).head_of_remote_repo { "FOOBAR" }
 
-    it "builds HEAD by default" do
-      mock.instance_of(Integrity::ProjectBuilder).build("HEAD")
-      @project.build
-    end
+      lambda {
+        @project.build("HEAD")
+      }.should change(Commit, :count).by(1)
 
-    it "sends notifications with all registered notifiers" do
-      irc     = Integrity::Notifier.make(:irc)
-      twitter = Integrity::Notifier.make(:twitter)
-      @project.update_attributes(:notifiers => [irc, twitter])
+      build = Build.all.last
+      build.commit.should be(@project.last_commit)
 
-      mock.proxy(Integrity::Notifier::IRC).notify_of_build(@project.last_build, :uri => "irc://irc.freenode.net/integrity")
-      mock.proxy(Integrity::Notifier::Twitter).notify_of_build(@project.last_build, :email => "foo@example.org", :pass => "secret")
-      
-      @project.build
-    end
+      @project.last_commit.should be_pending
+      @project.last_commit.identifier.should be("FOOBAR")
 
-    it "still sends notification even if one of the notifier timeout" do
-      irc     = Integrity::Notifier.make(:irc)
-      twitter = Integrity::Notifier.make(:twitter)
-      @project.update_attributes(:notifiers => [irc, twitter])
-
-      mock.proxy(Integrity::Notifier::Twitter).notify_of_build(@project.last_build, anything) do
-        raise Timeout::Error
-      end
-      mock.proxy(Integrity::Notifier::IRC).notify_of_build(@project.last_build, anything)
-
-      @project.build
-    end
-  end
-
-  it "doesn't have weird, wtf-ish bugs" do
-    success = Project.gen(:builds => 10.of{Build.make(:successful => true)})
-    failure = Project.gen(:builds => 10.of{Build.make(:successful => false)})
-    unbuild = Project.gen
-
-    Build.count.should == 20
-    success.should have(10).builds
-    failure.should have(10).builds
-    unbuild.should have(0).builds
-
-    success.last_build.should be_successful
-    failure.last_build.should be_failed
-    unbuild.last_build.should be_nil
-
-    Project.all.each do |project|
-      case project
-      when success
-        project.last_build.should be_successful
-      when failure
-        project.id.should == failure.id
-        project.last_build.should be_failed
-      when unbuild
-        project.last_build.should be_nil
-      end
+      @project.last_commit.author.name.should == "<Commit author not loaded>"
+      @project.last_commit.message.should == "<Commit message not loaded>"
     end
   end
 end
