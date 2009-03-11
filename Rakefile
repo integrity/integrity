@@ -146,7 +146,7 @@ begin
       s.executables          = ['integrity']
       s.post_install_message = 'Run `integrity help` for information on how to setup Integrity.'
 
-      s.add_dependency 'sinatra', ['>= 0.9.0.3']
+      s.add_dependency 'sinatra', ['>= 0.9.1.1']
       s.add_dependency 'haml',    ['>= 2.0.0']
       s.add_dependency 'data_mapper', ['>= 0.9.10']
       s.add_dependency 'uuidtools'   # required by dm-types
