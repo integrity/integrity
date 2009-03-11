@@ -46,3 +46,4 @@ class SCMTest < Test::Unit::TestCase
     end
   end
 end
+

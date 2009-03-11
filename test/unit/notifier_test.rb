@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + "/../helpers"
 
 class NotifierTest < Test::Unit::TestCase
-  before(:each) do
+  before(:each) do 
     setup_and_reset_database!
   end
 
@@ -59,7 +59,7 @@ class NotifierTest < Test::Unit::TestCase
     it "requires an unique name in project scope" do
       project = Project.generate
       irc     = Notifier.gen(:irc, :project => project)
-
+      
       project.tap { |project| project.notifiers << irc }.save
 
       lambda do
@@ -117,7 +117,7 @@ class NotifierTest < Test::Unit::TestCase
       end.should_not change(project.notifiers, :count)
     end
   end
-
+  
   it "requires notifier classes to implement Notifier.to_haml and Notifier#deliver!" do
     class Blah < Notifier::Base; end
     lambda { Blah.to_haml }.should raise_error(NoMethodError)

@@ -87,17 +87,17 @@ EOF
     end
   end
 
-
+  
   module TestCaseExtensions
     def have(n)
       HaveExpectation.new(n, :exactly, self)
     end
     alias :have_exactly :have
-
+    
     def have_at_least(n)
       HaveExpectation.new(n, :at_least, self)
     end
-
+    
     def have_at_most(n)
       HaveExpectation.new(n, :at_most, self)
     end
