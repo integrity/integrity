@@ -8,47 +8,57 @@ module Integrity
       def self.to_haml
         raise NoMethodError, "you need to implement this method in your notifier"
       end
-      
-      attr_reader :build
-      
-      def initialize(build, config)
-        @build = build
+
+      attr_reader :commit
+
+      def initialize(commit, config)
+        @commit = commit
         @config = config
       end
-      
+
+      def build
+        warn "Notifier::Base#build is deprecated, use Notifier::Base#commit instead"
+        commit
+      end
+
       def deliver!
         raise NoMethodError, "you need to implement this method in your notifier"
       end
-      
+
       def short_message
-        "Build #{build.short_commit_identifier} #{build.successful? ? "was successful" : "failed"}"
+        commit.human_readable_status
       end
-      
+
       def full_message
         <<-EOM
-"Build #{build.commit_identifier} #{build.successful? ? "was successful" : "failed"}"
+"Build #{commit.identifier} #{commit.successful? ? "was successful" : "failed"}"
 
-Commit Message: #{build.commit_message}
-Commit Date: #{build.commited_at}
-Commit Author: #{build.commit_author.name}
+Commit Message: #{commit.message}
+Commit Date: #{commit.committed_at}
+Commit Author: #{commit.author.name}
 
-Link: #{build_url}
+Link: #{commit_url}
 
 Build Output:
 
-#{stripped_build_output}
+#{stripped_commit_output}
 EOM
       end
-      
-      def build_url
+
+      def commit_url
         raise if Integrity.config[:base_uri].nil?
-        Integrity.config[:base_uri] / build.project.permalink / "builds" / build.commit_identifier
+        Integrity.config[:base_uri] / commit.project.permalink / "commits" / commit.identifier
       end
 
       private
 
+        def stripped_commit_output
+          commit.output.gsub("\e[0m", "").gsub(/\e\[3[1-7]m/, "")
+        end
+
         def stripped_build_output
-          build.output.gsub("\e[0m", "").gsub(/\e\[3[1-7]m/, "")
+          warn "Notifier::Base#stripped_build_output is deprecated, use Notifier::base#stripped_commit_output instead"
+          stripped_commit_output
         end
     end
   end

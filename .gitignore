@@ -2,6 +2,7 @@ log/*.log
 config/thin.yml
 config/deploy.rb
 config/config.yml
+dist
 coverage
 integrity.db
 exports

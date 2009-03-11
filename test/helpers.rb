@@ -1,37 +1,43 @@
-require File.dirname(__FILE__) + "/../lib/integrity"
+$:.unshift File.dirname(__FILE__) + "/../lib", File.dirname(__FILE__),
+  File.dirname(__FILE__) + "/../vendor/webrat/lib"
+
+%w(test/unit
+context
+pending
+matchy
+storyteller
+webrat/sinatra
+rr
+mocha
+test/zentest_assertions
+dm-sweatshop).each { |dependency|
+  begin
+    require dependency
+  rescue LoadError
+    puts "You're missing some gems required to run the tests."
+    puts "Please run `rake test:install_dependencies`"
+    puts "You'll probably need to run that command as root or with sudo."
+
+    puts "Thanks :)"
+    puts
+
+    exit 1
+  end
+}
 
 begin
-  require "test/unit"
-  require "redgreen"
-  require "context"
-  require "storyteller"
-  require "pending"
-  require "matchy"
-  require "rr"
-  require "mocha"
   require "ruby-debug"
+  require "redgreen"
 rescue LoadError
-  puts "You're missing some gems required to run the tests."
-  puts "Please run `rake test:install_dependencies`"
-  puts "You'll probably need to run that command as root or with sudo."
-  puts
-  puts "Thanks :)"
-  puts
-
-  exit 1
 end
 
-require File.dirname(__FILE__) / "helpers" / "expectations"
-require File.dirname(__FILE__) / "helpers" / "fixtures"
+require "integrity"
+require "helpers/expectations"
+require "helpers/fixtures"
 
 module TestHelper
-  def setup_and_reset_database!
-    DataMapper.setup(:default, "sqlite3::memory:")
-    DataMapper.auto_migrate!
-  end
-
   def ignore_logs!
-    stub(Integrity).log { nil }
+    Integrity.config[:log] = "/tmp/integrity.test.log"
   end
 end
 
@@ -43,5 +49,32 @@ class Test::Unit::TestCase
   include RR::Adapters::TestUnit
   include Integrity
   include TestHelper
-end
 
+  before(:all) do
+    DataMapper.setup(:default, "sqlite3::memory:")
+  end
+
+  before(:each) do
+    RR.reset
+    DataMapper.auto_migrate!
+    Integrity.instance_variable_set(:@config, nil)
+    Notifier.available.each { |n|
+      Notifier.send(:remove_const, n.to_s.split(":").last.to_sym)
+    }
+
+    repository(:default) do
+      transaction = DataMapper::Transaction.new(repository)
+      transaction.begin
+      repository.adapter.push_transaction(transaction)
+    end
+  end
+
+  after(:each) do
+    repository(:default) do
+      while repository.adapter.current_transaction
+        repository.adapter.current_transaction.rollback
+        repository.adapter.pop_transaction
+      end
+    end
+  end
+end

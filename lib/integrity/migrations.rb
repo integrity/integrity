@@ -2,13 +2,38 @@ require "dm-migrations"
 require "migration_runner"
 
 module Integrity
-  class Migrations
+  def self.migrate_db
+    setup_initial_migration if pre_migrations?
+    Integrity::Migrations.migrate_up!
+  end
+
+  def self.setup_initial_migration
+    database_adapter.execute %q(CREATE TABLE "migration_info" ("migration_name" VARCHAR(255));)
+    database_adapter.execute %q(INSERT INTO "migration_info" ("migration_name") VALUES ("initial"))
+  end
+
+  def self.pre_migrations?
+    !table_exists?("migration_info") &&
+      ( table_exists?("integrity_projects") &&
+        table_exists?("integrity_builds")   &&
+        table_exists?("integrity_notifiers") )
+  end
+
+  def self.table_exists?(table_name)
+    database_adapter.storage_exists?(table_name)
+  end
+
+  def self.database_adapter
+    DataMapper.repository(:default).adapter
+  end
+
+  module Migrations
+    # This is what is actually happening:
+    # include DataMapper::MigrationRunner
+
     include DataMapper::Types
 
-    # not strictly necessary, but it makes it clear what is going on.
-    include DataMapper::MigrationRunner
-
-    migration 1, :initial, :verbose => false do
+    migration 1, :initial, :verbose => true do
       up do
         create_table :integrity_projects do
           column :id,          Integer,  :serial => true
@@ -46,15 +71,9 @@ module Integrity
           column :project_id, Integer
         end
       end
-
-      down do
-        drop_table :integrity_notifiers
-        drop_table :integrity_projects
-        drop_table :integrity_builds
-      end
     end
 
-    migration 2, :add_commits, :verbose => false do
+    migration 2, :add_commits, :verbose => true do
       up do
         class ::Integrity::Build
           property :commit_identifier, String
@@ -115,42 +134,6 @@ module Integrity
                        :successful   => build.successful,
                        :output       => build.output)
         end
-      end
-
-      down do
-        modify_table :integrity_builds do
-          add_column :commit_identifier, String, :nullable => false
-          add_column :commit_metadata,   Yaml,   :nullable => false
-          add_column :project_id,        Integer
-        end
-
-        # sqlite hodgepockery
-        all_builds = Build.all.map {|b| b.freeze }
-        drop_table :integrity_builds
-        create_table :integrity_builds do
-          column :id,                Integer,  :serial => true
-          column :output,            Text,     :nullable => false, :default => ""
-          column :successful,        Boolean,  :nullable => false, :default => false
-          column :commit_identifier, String,   :nullable => false
-          column :commit_metadata,   Yaml,     :nullable => false
-          column :created_at,        DateTime
-          column :updated_at,        DateTime
-          column :project_id,        Integer
-        end
-
-        all_builds.each do |build|
-          Build.create(:project_id => build.commit.project_id,
-                       :output => build.output,
-                       :successful => build.successful,
-                       :commit_identifier => build.commit.identifier,
-                       :commit_metadata => {
-            :message => build.commit.message,
-            :author => build.commit.author.full,
-            :date => commit.committed_at
-          }.to_yaml)
-        end
-
-        drop_table :commits
       end
     end
   end

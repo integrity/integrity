@@ -8,6 +8,12 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     So that I get alerts with every build
   EOS
 
+  before(:each) do
+    # This is needed before any available notifier is unset
+    # in the global #before
+    load File.dirname(__FILE__) + "/../helpers/acceptance/textfile_notifier.rb"
+  end
+
   scenario "an admin sets up a notifier for a project that didn't have any" do
     git_repo(:my_test_project).add_successful_commit
     Project.gen(:my_test_project, :notifiers => [], :uri => git_repo(:my_test_project).path)
@@ -25,9 +31,9 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     click_button "manual build"
 
     notification = File.read("/tmp/textfile_notifications.txt")
-    notification.should =~ /=== Build #{git_repo(:my_test_project).short_head} was successful ===/
+    notification.should =~ /=== Built #{git_repo(:my_test_project).short_head} successfully ===/
     notification.should =~ /Build #{git_repo(:my_test_project).head} was successful/
-    notification.should =~ %r(http://integrity.example.org/my-test-project/builds/#{git_repo(:my_test_project).head})
+    notification.should =~ %r(http://www.example.com/my-test-project/commits/#{git_repo(:my_test_project).head})
     notification.should =~ /Commit Author: John Doe/
     notification.should =~ /Commit Date: (.+)/
     notification.should =~ /Commit Message: This commit will work/

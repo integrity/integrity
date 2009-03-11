@@ -1,10 +1,6 @@
 require File.dirname(__FILE__) + "/../helpers"
 
 class NotifierTest < Test::Unit::TestCase
-  before(:each) do 
-    setup_and_reset_database!
-  end
-
   specify "IRC fixture is valid and can be saved" do
     lambda do
       Notifier.generate(:irc).tap do |project|
@@ -59,7 +55,7 @@ class NotifierTest < Test::Unit::TestCase
     it "requires an unique name in project scope" do
       project = Project.generate
       irc     = Notifier.gen(:irc, :project => project)
-      
+
       project.tap { |project| project.notifiers << irc }.save
 
       lambda do
@@ -71,6 +67,7 @@ class NotifierTest < Test::Unit::TestCase
   end
 
   it "knows which notifiers are available" do
+    Notifier.gen(:irc)
     Notifier.gen(:twitter)
     Notifier.should have(2).available
     Notifier.available.should include(Integrity::Notifier::IRC)
@@ -117,7 +114,7 @@ class NotifierTest < Test::Unit::TestCase
       end.should_not change(project.notifiers, :count)
     end
   end
-  
+
   it "requires notifier classes to implement Notifier.to_haml and Notifier#deliver!" do
     class Blah < Notifier::Base; end
     lambda { Blah.to_haml }.should raise_error(NoMethodError)

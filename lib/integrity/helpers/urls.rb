@@ -2,15 +2,7 @@ module Integrity
   module Helpers
     module Urls
       def url(path)
-        url = "#{request.scheme}://#{request.host}"
-
-        if request.scheme == "https" && request.port != 443 ||
-            request.scheme == "http" && request.port != 80
-          url << ":#{request.port}"
-        end
-
-        url << "/" unless path.index("/").zero?
-        url << path
+        Addressable::URI.parse(request.url).join(path).to_s
       end
 
       def root_url
@@ -35,12 +27,22 @@ module Integrity
         end.to_s
       end
 
-      def build_path(build)
-        "/#{build.project.permalink}/builds/#{build.commit_identifier}"
+      def commit_path(commit, *path)
+        project_path(commit.project, "commits", commit.identifier, *path)
+      end
+
+      def build_path(build, *path)
+        warn "#build_path is deprecated, use #commit_path instead"
+        commit_path build.commit, *path
+      end
+
+      def commit_url(commit)
+        url commit_path(commit)
       end
 
       def build_url(build)
-        url build_path(build)
+        warn "#build_url is deprecated, use #commit_url instead"
+        commit_url build.commit
       end
     end
   end

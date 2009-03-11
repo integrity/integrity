@@ -9,8 +9,8 @@ module Integrity
         Git::URI.new(uri).working_tree_path
       end
 
-      def initialize(uri, branch, working_directory)
-        @uri = uri.to_s
+      def initialize(uri, branch, working_directory=nil)
+        @uri    = uri.to_s
         @branch = branch.to_s
         @working_directory = working_directory
       end
@@ -21,27 +21,28 @@ module Integrity
         yield
       end
 
-      def commit_identifier(sha1)
-        `cd #{working_directory} && git show -s --pretty=format:%H #{sha1}`.chomp
-      end
-
-      def commit_metadata(sha1)
-        format  = %Q(---%n:author: %an <%ae>%n:message: >-%n  %s%n:date: %ci%n)
-        YAML.load(`cd #{working_directory} && git show -s --pretty=format:"#{format}" #{sha1}`)
-      end
-      
       def name
         self.class.name.split("::").last
+      end
+
+      def head
+        log "Getting the HEAD of '#{uri}' at '#{branch}'"
+        `git ls-remote --heads #{uri} #{branch} | awk '{print $1}'`.chomp
+      end
+
+      def info(revision)
+        format  = %Q(---%n:author: %an <%ae>%n:message: >-%n  %s%n:committed_at: %ci%n)
+        YAML.load(`cd #{working_directory} && git show -s --pretty=format:"#{format}" #{revision}`)
       end
 
       private
 
         def fetch_code
-          clone unless cloned?
+          clone    unless cloned?
           checkout unless on_branch?
           pull
         end
-    
+
         def clone
           log "Cloning #{uri} to #{working_directory}"
           `git clone #{uri} #{working_directory} &>/dev/null`
@@ -51,11 +52,11 @@ module Integrity
           strategy = case
             when treeish                         then treeish
             when local_branches.include?(branch) then branch
-            else                                      "-b #{branch} origin/#{branch}"
+            else                                      "origin/#{branch}"
           end
 
           log "Checking-out #{strategy}"
-          `cd #{working_directory} && git checkout #{strategy} &>/dev/null`
+          `cd #{working_directory} && git reset --hard #{strategy} &>/dev/null`
         end
 
         def pull

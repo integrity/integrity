@@ -22,13 +22,13 @@ class CreateProjectTest < Test::Unit::AcceptanceTestCase
     click_button "Create Project"
 
     Project.first(:permalink => "integrity").should_not be_nil
-    response_body.should have_tag("h1", /Integrity/)
+
+    assert_have_tag("h1", :content => "Integrity")
 
     log_out
-
     visit "/integrity"
 
-    response_body.should have_tag("h1", /Integrity/)
+    assert_have_tag("h1", :content => "Integrity")
   end
 
   scenario "an admin can create a private project" do
@@ -45,14 +45,14 @@ class CreateProjectTest < Test::Unit::AcceptanceTestCase
     uncheck "Public project"
     click_button "Create Project"
 
-    response_body.should have_tag("h1", /Integrity/)
+    assert_have_tag("h1", :content => "Integrity")
     Project.first(:permalink => "integrity").should_not be_nil
 
     log_out
-
     visit "/integrity"
-    response_body.should have_tag("h1", /you don't know the password?/)
+
     response_code.should == 401
+    assert_have_tag("h1", :content => "know the password?")
   end
 
   scenario "creating a project without required fields re-renders the new project form" do
@@ -63,21 +63,21 @@ class CreateProjectTest < Test::Unit::AcceptanceTestCase
     visit "/new"
     click_button "Create Project"
 
-    response_body.should have_tag(".with_errors label", "Name must not be blank")
+    assert_have_tag(".with_errors label", :content => "Name must not be blank")
     Project.first(:permalink => "integrity").should be_nil
 
     fill_in "Name",            :with => "Integrity"
     fill_in "Git repository",  :with => "git://github.com/foca/integrity.git"
     click_button "Create Project"
 
-    response_body.should have_tag("h1", /Integrity/)
+    assert_have_tag("h1", :content => 'Integrity')
     Project.first(:permalink => "integrity").should_not be_nil
   end
 
   scenario "a user can't see the new project form" do
     visit "/new"
     response_code.should == 401
-    response_body.should have_tag("h1", /you don't know the password?/)
+    assert_have_tag("h1", :content => "know the password?")
   end
 
   scenario "a user can't post the project data (bypassing the form)" do
@@ -87,7 +87,7 @@ class CreateProjectTest < Test::Unit::AcceptanceTestCase
               "project_data[command]" => "rake"
 
     response_code.should == 401
-    response_body.should have_tag("h1", /you don't know the password?/)
+    assert_have_tag("h1", :content => "know the password?")
     Project.first(:permalink => "integrity").should be_nil
   end
 

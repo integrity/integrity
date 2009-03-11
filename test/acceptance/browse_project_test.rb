@@ -13,8 +13,8 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
 
     visit "/"
 
-    response_body.should have_tag("a", /Integrity/)
-    response_body.should have_tag("a", /My Test Project/)
+    assert_have_tag("a", :content => "Integrity")
+    assert_have_tag("a", :content => "My Test Project")
   end
 
   scenario "a user can't see a private project listed on the home page" do
@@ -23,22 +23,22 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
 
     visit "/"
 
-    response_body.should_not have_tag("a", /My Test Project/)
-    response_body.should have_tag("a", /Integrity/)
+    assert_have_no_tag("a", :content => "My Test Project")
+    assert_have_tag("a", :content => "Integrity")
   end
 
   scenario "a user can see the projects status on the home page" do
-    integrity = Project.gen(:integrity, :builds => 3.of { Build.gen(:successful => true) })
-    test      = Project.gen(:my_test_project, :builds => 2.of { Build.gen(:successful => false) })
+    integrity = Project.gen(:integrity, :commits => 3.of { Commit.gen(:successful) })
+    test      = Project.gen(:my_test_project, :commits => 2.of { Commit.gen(:failed) })
     no_build  = Project.gen(:public => true, :building => false)
     building  = Project.gen(:public => true, :building => true)
 
     visit "/"
 
-    response_body.should =~ /Built #{integrity.last_build.short_commit_identifier}\s*on Dec 15th\s*successfully/m
-    response_body.should =~ /Built #{test.last_build.short_commit_identifier}\s*on Dec 15th\s*and failed/m
-    response_body.should =~ /Never built yet/
-    response_body.should =~ /Building!/
+    assert_contain("Built #{integrity.last_commit.short_identifier} successfully")
+    assert_contain("Built #{test.last_commit.short_identifier} and failed")
+    assert_contain("Never built yet")
+    assert_contain("Building!")
   end
 
   scenario "a user clicking through a link on the home page for a public project arrives at the project page" do
@@ -47,14 +47,14 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
     visit "/"
     click_link "My Test Project"
 
-    response_body.should have_tag("h1", /My Test Project/)
+    assert_have_tag("h1", :content => "My Test Project")
   end
 
   scenario "a user gets a 404 when browsing to an unexisting project" do
     visit "/who-are-you"
 
     response_code.should == 404
-    response_body.should have_tag("h1", /you seem a bit lost, sir/)
+    assert_have_tag("h1", :content => "you seem a bit lost, sir")
   end
 
   scenario "a user browsing to the url of a private project gets a 401" do
@@ -63,7 +63,7 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
     visit "/my-test-project"
 
     response_code.should == 401
-    response_body.should have_tag("h1", /you don't know the password?/)
+    assert_have_tag("h1", :content => "know the password?")
   end
 
   scenario "an admin can browse to a private project just fine" do
@@ -74,14 +74,14 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
     visit "/"
     click_link "My Test Project"
 
-    response_body.should have_tag("h1", /My Test Project/)
+    assert_have_tag("h1", :content => "My Test Project")
   end
 
   scenario "a user browsing to a public project with no build see a friendly message" do
     project = Project.gen(:my_test_project, :public => true)
 
     visit "/my-test-project"
-    response_body.should include("No builds for this project, buddy")
+    assert_contain("No builds for this project, buddy")
   end
 
   scenario "an admin browsing to a private project with no build see a friendly message" do
@@ -90,6 +90,6 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
     login_as "admin", "test"
     visit "/my-test-project"
 
-    response_body.should include("No builds for this project, buddy")
+    assert_contain("No builds for this project, buddy")
   end
 end

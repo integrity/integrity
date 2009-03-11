@@ -8,6 +8,13 @@ Integrity
 * Join us on [#integrity][irc-channel] for ideas, help, patches or something
 * Get the code on [GitHub][repo]
 
+Try it!
+-------
+
+    $ git clone git://github.com/foca/integrity.git
+    $ rake launch
+    # Navigate to <http://0.0.0.0:4567>
+
 Thanks
 ------
 

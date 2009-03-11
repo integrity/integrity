@@ -6,22 +6,48 @@ module Integrity
     include FileUtils
 
     desc "install [PATH]",
-       "Copy template files to PATH. Next, go there and edit them."
+       "Copy template files to PATH for desired deployement strategy
+       (either Thin or Passenger). Next, go there and edit them."
+    method_options :passenger => false, :thin => false
     def install(path)
-      @root = File.expand_path(path)
+      @root = Pathname(path).expand_path
 
       create_dir_structure
       copy_template_files
       edit_template_files
-      create_db(root / "config.yml")
+      migrate_db(root.join("config.yml"))
       after_setup_message
     end
 
-    desc "create_db [CONFIG]",
-         "Checks the `database_uri` in CONFIG and creates and bootstraps a database for integrity"
-    def create_db(config, direction="up")
+    desc "migrate_db [CONFIG]",
+         "Checks the `database_uri` in CONFIG and migrates the
+          database up to the lastest version."
+    def migrate_db(config)
       Integrity.new(config)
-      migrate_db(direction, 1)
+
+      require "integrity/migrations"
+      Integrity.migrate_db
+    end
+
+    desc "launch [CONFIG]",
+         "Launch Integrity real quick."
+    method_options :config => :optional, :port => 4567
+    def launch
+      require "thin"
+      require "do_sqlite3"
+
+      if File.file?(options[:config].to_s)
+        Integrity.new(options[:config])
+      else
+        DataMapper.setup(:default, "sqlite3::memory:")
+      end
+
+      DataMapper.auto_migrate!
+
+      Thin::Server.start("0.0.0.0", options[:port], Integrity::App)
+    rescue LoadError => boom
+      missing_dependency = boom.message.split("--").last.lstrip
+      puts "Please install #{missing_dependency} to launch Integrity"
     end
 
     desc "version",
@@ -33,36 +59,26 @@ module Integrity
     private
       attr_reader :root
 
-      def migrate_db(direction, level=nil)
-        require "integrity/migrations"
-
-        set_up_migrations unless migrations_already_set_up?
-        add_initial_migration if tables_from_before_migrations_exist?
-
-        case direction
-        when "up"   then Integrity::Migrations.migrate_up!(level)
-        when "down" then Integrity::Migrations.migrate_down!(level)
-        else raise ArgumentError, "DIRECTION must be either up or down"
-        end
-      end
-
       def create_dir_structure
         mkdir_p root
         mkdir_p root / "builds"
         mkdir_p root / "log"
-        mkdir_p root / "public" # this one is to play nice with Passenger
-        mkdir_p root / "tmp"    # this one is to play nice with Passenger
+
+        if options[:passenger]
+          mkdir_p root / "public"
+          mkdir_p root / "tmp"
+        end
       end
 
       def copy_template_files
-        cp Integrity.root / "config" / "config.sample.ru",  root / "config.ru"
-        cp Integrity.root / "config" / "config.sample.yml", root / "config.yml"
-        cp Integrity.root / "config" / "thin.sample.yml",   root / "thin.yml"
+        copy "config/config.sample.ru"
+        copy "config/config.sample.yml"
+        copy "config/thin.sample.yml" if options[:thin]
       end
 
       def edit_template_files
         edit_integrity_configuration
-        edit_thin_configuration
+        edit_thin_configuration if options[:thin]
       end
 
       def edit_integrity_configuration
@@ -97,36 +113,9 @@ module Integrity
         puts %Q(Don't forget to tweak #{root / "config.yml"} to your needs.)
       end
 
-      def set_up_migrations
-        database_adapter.execute %q(CREATE TABLE "migration_info" ("migration_name" VARCHAR(255));)
-      end
-
-      def add_initial_migration
-        database_adapter.execute %q(INSERT INTO "migration_info" ("migration_name") VALUES ("initial"))
-      end
-
-      def tables_from_before_migrations_exist?
-        table_exists?("integrity_projects") &&
-          table_exists?("integrity_builds") &&
-          table_exists?("integrity_notifiers")
-      end
-
-      def migrations_already_set_up?
-        table_exists?("migration_info")
-      end
-
-      def without_pluralizing_table_names
-        database_adapter.resource_naming_convention = DataMapper::NamingConventions::Resource::Underscored
-        yield
-        database_adapter.resource_naming_convention = DataMapper::NamingConventions::Resource::UnderscoredAndPluralized
-      end
-
-      def table_exists?(table_name)
-        database_adapter.storage_exists?(table_name)
-      end
-
-      def database_adapter
-        DataMapper.repository(:default).adapter
+      def copy(path)
+        cp(File.dirname(__FILE__) + "/../../#{path}",
+          root.join(File.basename(path).gsub(/\.sample/, "")))
       end
   end
 end
