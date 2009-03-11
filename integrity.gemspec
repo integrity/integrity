@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Nicol\303\241s Sanguinetti", "Simon Rozet"]
-  s.date = %q{2009-03-08}
+  s.date = %q{2009-03-11}
   s.default_executable = %q{integrity}
   s.description = %q{Your Friendly Continuous Integration server. Easy, fun and painless!}
   s.email = %q{contacto@nicolassanguinetti.info}
@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
     s.specification_version = 2
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<sinatra>, [">= 0.9.0.3"])
+      s.add_runtime_dependency(%q<sinatra>, [">= 0.9.1.1"])
       s.add_runtime_dependency(%q<haml>, [">= 2.0.0"])
       s.add_runtime_dependency(%q<data_mapper>, [">= 0.9.10"])
       s.add_runtime_dependency(%q<uuidtools>, [">= 0"])
@@ -33,7 +33,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<foca-sinatra-ditties>, [">= 0.0.3"])
       s.add_runtime_dependency(%q<thor>, [">= 0"])
     else
-      s.add_dependency(%q<sinatra>, [">= 0.9.0.3"])
+      s.add_dependency(%q<sinatra>, [">= 0.9.1.1"])
       s.add_dependency(%q<haml>, [">= 2.0.0"])
       s.add_dependency(%q<data_mapper>, [">= 0.9.10"])
       s.add_dependency(%q<uuidtools>, [">= 0"])
@@ -43,7 +43,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<thor>, [">= 0"])
     end
   else
-    s.add_dependency(%q<sinatra>, [">= 0.9.0.3"])
+    s.add_dependency(%q<sinatra>, [">= 0.9.1.1"])
     s.add_dependency(%q<haml>, [">= 2.0.0"])
     s.add_dependency(%q<data_mapper>, [">= 0.9.10"])
     s.add_dependency(%q<uuidtools>, [">= 0"])
