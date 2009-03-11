@@ -7,7 +7,11 @@ begin
 rescue LoadError
 end
 
-require File.dirname(__FILE__) + "/lib/integrity"
+module Integrity
+  def self.version
+    YAML.load_file("VERSION.yml").values.join(".")
+  end
+end
 
 desc "Default: run all tests"
 task :default => :test
