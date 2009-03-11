@@ -18,15 +18,19 @@ class BrowseProjectBuildsTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "a user can see the last build and the list of previous builds on a project page" do
-    Project.gen(:integrity, :public => true, :commits => 2.of { Commit.gen(:successful) } + 2.of { Commit.gen(:failed) } + 2.of { Commit.gen(:pending) })
+    Project.gen(:integrity, :public => true, :commits => \
+                3.of { Commit.gen(:successful) } +
+                2.of { Commit.gen(:failed) }     +
+                2.of { Commit.gen(:pending) })
 
     visit "/integrity"
 
     assert_have_tag("#last_build")
-    assert_have_tag("#previous_builds") do |builds|
-      builds.should have_exactly(1).search("li.pending")
-      builds.should have_exactly(2).search("li.failed")
-      builds.should have_exactly(2).search("li.success")
+
+    within("ul#previous_builds") do
+      assert_have_tag("li.pending", :count => 2)
+      assert_have_tag("li.failed",  :count => 2)
+      assert_have_tag("li.success", :count => 2)
     end
   end
 
