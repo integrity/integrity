@@ -1,6 +1,6 @@
 require 'hpricot'
 
-# evil hack to duck-type CgiResponse so that nested shoulds can use
+# evil hack to duck-type CgiResponse so that nested shoulds can use 
 # +rspec_on_rails+ matchers without remembering to call to_s on it
 #
 # e.g.

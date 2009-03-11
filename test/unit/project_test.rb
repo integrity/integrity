@@ -143,19 +143,19 @@ class ProjectTest < Test::Unit::TestCase
       end.should_not change(Project, :count)
     end
   end
-
+  
   describe "Finding public or private projects" do
     before(:each) do
       @public_project = Project.gen(:public => true)
       @private_project = Project.gen(:public => false)
     end
-
+    
     it "finds only public projects if the condition passed is false" do
       projects = Project.only_public_unless(false)
       projects.should_not include(@private_project)
       projects.should include(@public_project)
     end
-
+    
     it "finds both private and public projects if the condition passed is true" do
       projects = Project.only_public_unless(true)
       projects.should include(@private_project)
@@ -274,7 +274,7 @@ class ProjectTest < Test::Unit::TestCase
 
       mock.proxy(Integrity::Notifier::IRC).notify_of_build(@project.last_build, :uri => "irc://irc.freenode.net/integrity")
       mock.proxy(Integrity::Notifier::Twitter).notify_of_build(@project.last_build, :email => "foo@example.org", :pass => "secret")
-
+      
       @project.build
     end
 
