@@ -74,7 +74,7 @@ begin
       s.rubyforge_project    = "integrity"
       s.email                = "contacto@nicolassanguinetti.info"
       s.authors              = ["Nicolás Sanguinetti", "Simon Rozet"]
-      s.files                = FileList["[A-Z]*", "{bin,lib,test,vendor}/**/*"]
+      s.files                = FileList["[A-Z]*", "{bin,lib,views,public,config,test,vendor}/**/*"]
       s.executables          = ["integrity"]
       s.post_install_message = "Run `integrity help` for information on how to setup Integrity."
 
