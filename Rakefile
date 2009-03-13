@@ -7,12 +7,6 @@ begin
 rescue LoadError
 end
 
-module Integrity
-  def self.version
-    YAML.load_file("VERSION.yml").values.join(".")
-  end
-end
-
 desc "Default: run all tests"
 task :default => :test
 
@@ -62,31 +56,58 @@ task :launch do
   ruby "bin/integrity launch"
 end
 
-begin
-  require "jeweler"
+directory "dist/"
+CLOBBER.include("dist")
 
-  namespace :jeweler do
-    Jeweler::Tasks.new do |s|
-      s.name                 = "integrity"
-      s.summary              = "The easy and fun Continuous Integration server"
-      s.description          = "Your Friendly Continuous Integration server. Easy, fun and painless!"
-      s.homepage             = "http://integrityapp.com"
-      s.rubyforge_project    = "integrity"
-      s.email                = "contacto@nicolassanguinetti.info"
-      s.authors              = ["Nicolás Sanguinetti", "Simon Rozet"]
-      s.files                = FileList["[A-Z]*", "{bin,lib,views,public,config,test,vendor}/**/*"]
-      s.executables          = ["integrity"]
-      s.post_install_message = "Run `integrity help` for information on how to setup Integrity."
-
-      s.add_dependency "sinatra", [">= 0.9.1.1"]
-      s.add_dependency "haml",    [">= 2.0.0"]
-      s.add_dependency "data_mapper", [">= 0.9.10"]
-      s.add_dependency "uuidtools"   # required by dm-types
-      s.add_dependency "bcrypt-ruby" # required by dm-types
-      s.add_dependency "json"
-      s.add_dependency "foca-sinatra-ditties", [">= 0.0.3"]
-      s.add_dependency "thor"
+# Load the gemspec using the same limitations as github
+def spec
+  @spec ||=
+    begin
+      require "rubygems/specification"
+      data = File.read("integrity.gemspec")
+      spec = nil
+      Thread.new { spec = eval("$SAFE = 3\n#{data}") }.join
+      spec
     end
+end
+
+def package(ext="")
+  "dist/integrity-#{spec.version}" + ext
+end
+
+desc "Publish the current release on Rubyforge"
+task :rubyforge => ["rubyforge:gem", "rubyforge:tarball", "rubyforge:git"]
+
+namespace :rubyforge do
+  desc "Publish gem and tarball to rubyforge"
+  task :gem => package(".gem") do
+    sh "rubyforge add_release integrity integrity #{spec.version} #{package('.gem')}"
   end
-rescue LoadError
+
+  task :tarball => package(".tar.gz") do
+    sh "rubyforge add_file integrity integrity #{spec.version} #{package('.tar.gz')}"
+  end
+
+  desc "Push to gitosis@rubyforge.org:integrity.git"
+  task :git do
+    sh "git push gitosis@rubyforge.org:integrity.git master"
+  end
+end
+
+desc "Build gem tarball into dist/"
+task :package => %w(.gem .tar.gz).map { |ext| package(ext) }
+namespace :package do
+  file package(".tar.gz") => "dist/" do |f|
+    sh <<-SH
+      git archive \
+        --prefix=integrity-#{spec.version}/ \
+        --format=tar \
+        HEAD | gzip > #{f.name}
+    SH
+  end
+
+  file package(".gem") => "dist/" do |f|
+    sh "gem build integrity.gemspec"
+    mv File.basename(f.name), f.name
+  end
 end
