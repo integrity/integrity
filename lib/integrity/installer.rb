@@ -50,12 +50,6 @@ module Integrity
       puts "Please install #{missing_dependency} to launch Integrity"
     end
 
-    desc "version",
-         "Print the current integrity version"
-    def version
-      puts Integrity.version
-    end
-
     private
       attr_reader :root
 
