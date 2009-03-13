@@ -75,6 +75,11 @@ def package(ext="")
   "dist/integrity-#{spec.version}" + ext
 end
 
+desc "Build and install as local gem"
+task :install => package('.gem') do
+  sh "gem install #{package('.gem')}"
+end
+
 desc "Publish the current release on Rubyforge"
 task :rubyforge => ["rubyforge:gem", "rubyforge:tarball", "rubyforge:git"]
 
