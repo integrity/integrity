@@ -67,12 +67,6 @@ begin
 
   namespace :jeweler do
     Jeweler::Tasks.new do |s|
-      files  = `git ls-files`.split("\n").reject { |f|
-          f =~ %r(^test/acceptance) ||
-          f =~ %r(^test/unit)       ||
-          f =~ /^\.git/
-      }
-
       s.name                 = "integrity"
       s.summary              = "The easy and fun Continuous Integration server"
       s.description          = "Your Friendly Continuous Integration server. Easy, fun and painless!"
@@ -80,7 +74,7 @@ begin
       s.rubyforge_project    = "integrity"
       s.email                = "contacto@nicolassanguinetti.info"
       s.authors              = ["Nicolás Sanguinetti", "Simon Rozet"]
-      s.files                = files
+      s.files                = FileList["[A-Z]*", "{bin,lib,test,vendor}/**/*"]
       s.executables          = ["integrity"]
       s.post_install_message = "Run `integrity help` for information on how to setup Integrity."
 
