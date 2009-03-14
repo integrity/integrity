@@ -29,6 +29,10 @@ require "integrity/helpers"
 require "integrity/app"
 
 module Integrity
+  class Notifier
+    autoload :Test, "integrity/notifier/test"
+  end
+
   def self.new(config_file = nil)
     self.config = YAML.load_file(config_file) unless config_file.nil?
     DataMapper.setup(:default, config[:database_uri])
