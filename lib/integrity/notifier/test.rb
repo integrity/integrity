@@ -73,11 +73,11 @@ module Integrity
       include NotifierFormHelpers
 
       def build
-        @build ||= Integrity::Build.gen(:successful)
+        @build = Integrity::Build.gen(:successful)
       end
 
       def commit
-        @commit ||= build.commit
+        @commit = build.commit
       end
 
       def notifier_class
