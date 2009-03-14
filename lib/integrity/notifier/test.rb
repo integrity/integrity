@@ -1,6 +1,5 @@
 require "hpricot"
 require "haml"
-require File.dirname(__FILE__) + "/../../integrity"
 
 module Integrity
   class Notifier
