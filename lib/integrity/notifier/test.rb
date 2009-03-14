@@ -1,6 +1,7 @@
 require "haml"
 
 require File.dirname(__FILE__) + "/test/hpricot_matcher"
+require File.dirname(__FILE__) + "/test/fixtures"
 
 module Integrity
   class Notifier
@@ -8,8 +9,6 @@ module Integrity
       def setup_database
         DataMapper.setup(:default, "sqlite3::memory:")
         DataMapper.auto_migrate!
-
-        require File.dirname(__FILE__) + "/../../../test/helpers/fixtures"
       end
 
       def build
