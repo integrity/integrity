@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + "/../integrity"
 require "thor"
+require File.dirname(__FILE__) + "/../integrity"
 
 module Integrity
   class Installer < Thor
