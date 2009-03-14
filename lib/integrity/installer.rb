@@ -8,7 +8,8 @@ module Integrity
     desc "install [PATH]",
        "Copy template files to PATH for desired deployement strategy
        (either Thin or Passenger). Next, go there and edit them."
-    method_options :passenger => false, :thin => false
+    method_options :passenger => :boolean,
+                   :thin      => :boolean
     def install(path)
       @root = Pathname(path).expand_path
 
