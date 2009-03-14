@@ -61,12 +61,9 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
     }
   end
 
-  before(:all) do
-    Integrity.config[:base_uri] = "http://www.example.com"
-  end
-
   before(:each) do
     # ensure each scenario is run in a clean sandbox
+    Integrity.config[:base_uri] = "http://www.example.com"
     enable_auth!
     setup_log!
     set_and_create_export_directory!

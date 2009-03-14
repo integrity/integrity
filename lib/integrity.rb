@@ -41,11 +41,11 @@ module Integrity
                     :base_uri          => "http://localhost:8910",
                     :use_basic_auth    => false,
                     :build_all_commits => true,
-                    :log_debug_info    => false }.dup
+                    :log_debug_info    => false }
   end
 
   def self.config
-    @config ||= default_configuration
+    @config ||= default_configuration.dup
   end
 
   def self.config=(options)
