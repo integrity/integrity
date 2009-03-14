@@ -25,7 +25,7 @@ module Integrity
       end
 
       def notification
-        notifier_class.new(commit).body
+        notifier_class.new(commit).full_message
       end
 
       def assert_form_have_option(option, value=nil)
