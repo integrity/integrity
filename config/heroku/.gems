@@ -1,0 +1,4 @@
+mailfactory --version '>= 1.4.0'
+tlsmail
+foca-sinatra-ditties --version 0.0.3 --source http://gems.github.com
+integrity --version 0.1.9.0

@@ -7,17 +7,30 @@ module Integrity
 
     desc "install [PATH]",
        "Copy template files to PATH for desired deployement strategy
-       (either Thin or Passenger). Next, go there and edit them."
+       (either Thin, Passenger or Heroku). Next, go there and edit them."
     method_options :passenger => :boolean,
-                   :thin      => :boolean
+                   :thin      => :boolean,
+                   :heroku    => :boolean
     def install(path)
       @root = Pathname(path).expand_path
 
-      create_dir_structure
-      copy_template_files
-      edit_template_files
-      migrate_db(root.join("config.yml"))
-      after_setup_message
+      if options[:heroku]
+        cp_r Pathname(__FILE__).join("../../../config/heroku"), root
+        puts <<EOF
+Your Integrity install is ready to be deployed onto Heroku. Next steps:
+
+  1. git init && git add . && git commit -am "Initial import"
+  2. heroku create
+  3. git push heroku master
+  4. heroku rake db:migrate
+EOF
+      else
+        create_dir_structure
+        copy_template_files
+        edit_template_files
+        migrate_db(root.join("config.yml"))
+        after_setup_message
+      end
     end
 
     desc "migrate_db [CONFIG]",
