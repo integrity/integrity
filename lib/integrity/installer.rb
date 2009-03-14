@@ -56,6 +56,7 @@ module Integrity
 
       def create_dir_structure
         mkdir_p root
+
         mkdir_p root / "builds"
         mkdir_p root / "log"
 
@@ -66,9 +67,9 @@ module Integrity
       end
 
       def copy_template_files
-        copy "config/config.sample.ru"
-        copy "config/config.sample.yml"
-        copy "config/thin.sample.yml" if options[:thin]
+        copy "config.sample.ru"
+        copy "config.sample.yml"
+        copy "thin.sample.yml" if options[:thin]
       end
 
       def edit_template_files
@@ -109,9 +110,9 @@ Don't forget to tweak #{root / "config.yml"} to your needs.
 EOF
       end
 
-      def copy(path)
-        cp(File.dirname(__FILE__) + "/../../#{path}",
-          root.join(File.basename(path).gsub(/\.sample/, "")))
+      def copy(source)
+        cp(Pathname(__FILE__).dirname.join("../../config", source),
+          root.join(File.basename(source).gsub(/\.sample/, "")))
       end
   end
 end
