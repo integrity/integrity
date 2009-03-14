@@ -91,21 +91,22 @@ module Integrity
       end
 
       def after_setup_message
-        puts
-        puts %Q(Awesome! Integrity was installed successfully!)
-        puts
-        puts %Q(If you want to enable notifiers, install the gems and then require them)
-        puts %Q(in #{root}/config.ru)
-        puts
-        puts %Q(For example:)
-        puts
-        puts %Q(  sudo gem install -s http://gems.github.com foca-integrity-email)
-        puts
-        puts %Q(And then in #{root}/config.ru add:)
-        puts
-        puts %Q(  require "notifier/email")
-        puts
-        puts %Q(Don't forget to tweak #{root / "config.yml"} to your needs.)
+        puts <<EOF
+Awesome! Integrity was installed successfully!
+
+If you want to enable notifiers, install the gems and then require them
+in #{root}/config.ru
+
+For example:
+
+    sudo gem install -s http://gems.github.com foca-integrity-email)
+
+And then in #{root}/config.ru add:
+
+    require "notifier/email"
+
+Don't forget to tweak #{root / "config.yml"} to your needs.
+EOF
       end
 
       def copy(path)
