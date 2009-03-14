@@ -2,7 +2,10 @@ require File.dirname(__FILE__) + "/../helpers"
 
 class ProjectBuilderTest < Test::Unit::TestCase
   before(:all) do
-    Integrity.config[:export_directory] = File.dirname(__FILE__)
+    unless File.directory?(Integrity.config[:export_directory])
+      FileUtils.mkdir(Integrity.config[:export_directory])
+    end
+
     @directory = Integrity.config[:export_directory] + "/foca-integrity-master"
     FileUtils.mkdir(@directory)
   end

@@ -34,13 +34,9 @@ module Integrity
     DataMapper.setup(:default, config[:database_uri])
   end
 
-  def self.root
-    Pathname.new(File.dirname(__FILE__)).join("..").expand_path
-  end
-
   def self.default_configuration
     @defaults ||= { :database_uri      => "sqlite3::memory:",
-                    :export_directory  => root / "exports",
+                    :export_directory  => "/tmp/exports",
                     :log               => STDOUT,
                     :base_uri          => "http://localhost:8910",
                     :use_basic_auth    => false,
