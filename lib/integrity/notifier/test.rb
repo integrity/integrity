@@ -4,7 +4,7 @@ require File.dirname(__FILE__) + "/../../integrity"
 
 module Integrity
   class Notifier
-    module TestHelpers
+    module Test
       module HpricotAssertions
         # Thanks Harry! http://gist.github.com/39960
 
