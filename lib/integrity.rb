@@ -61,8 +61,8 @@ module Integrity
       logger.formatter = LogFormatter.new
     end
   end
+  private_class_method :logger
 
-  private
     class LogFormatter < Logger::Formatter
       def call(severity, time, progname, msg)
         time.strftime("[%H:%M:%S] ") + msg2str(msg) + "\n"
