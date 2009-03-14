@@ -66,11 +66,6 @@ module Integrity
     end
   end
 
-  def self.version
-    YAML.load_file(File.dirname(__FILE__) + "/../VERSION.yml").
-      values.join(".")
-  end
-
   private
     class LogFormatter < Logger::Formatter
       def call(severity, time, progname, msg)
