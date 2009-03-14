@@ -1,3 +1,24 @@
+require "dm-sweatshop"
+
+include DataMapper::Sweatshop::Unique
+
+class Array
+  def pick
+    self[rand(self.length)]
+  end
+end
+
+def create_notifier!(name)
+  klass = Class.new(Integrity::Notifier::Base) do
+    def self.to_haml; "";   end
+    def deliver!;     nil;  end
+  end
+
+  unless Integrity::Notifier.const_defined?(name)
+    Integrity::Notifier.const_set(name, klass)
+  end
+end
+
 Integrity::Project.fixture do
   { :name       => (name = unique { /\w+/.gen }),
     :uri        => "git://github.com/#{/\w+/.gen}/#{name}.git",

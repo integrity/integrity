@@ -33,7 +33,7 @@ end
 
 require "integrity"
 require "helpers/expectations"
-require "helpers/fixtures"
+require "integrity/notifier/test/fixtures"
 
 module TestHelper
   def ignore_logs!
