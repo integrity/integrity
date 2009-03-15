@@ -1,6 +1,7 @@
 $:.unshift File.expand_path(File.dirname(__FILE__))
 
 require "json"
+require "haml"
 require "dm-core"
 require "dm-validations"
 require "dm-types"
