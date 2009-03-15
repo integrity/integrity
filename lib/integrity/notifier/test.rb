@@ -1,7 +1,7 @@
-require "haml"
+require File.dirname(__FILE__) + "/../../integrity"
 
-require File.dirname(__FILE__) + "/test/hpricot_matcher"
-require File.dirname(__FILE__) + "/test/fixtures"
+require "integrity/notifier/test/hpricot_matcher"
+require "integrity/notifier/test/fixtures"
 
 module Integrity
   class Notifier
