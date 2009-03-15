@@ -1,6 +1,8 @@
 require File.dirname(__FILE__) + "/../../helpers"
 require "helpers/acceptance/textfile_notifier"
 
+require "integrity/notifier/test"
+
 class NotifierTestTest < Test::Unit::TestCase
   include Integrity::Notifier::Test
 
