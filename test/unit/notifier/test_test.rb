@@ -20,6 +20,10 @@ class NotifierTestTest < Test::Unit::TestCase
   end
 
   test "it sends notification" do
-    assert notification.include?(commit.message)
+    commit = Integrity::Commit.gen(:build => Build.gen(:successful))
+
+    assert notification(commit).include?(commit.identifier)
+    assert notification_failed.include?("failed")
+    assert notification_successful.include?("was successful")
   end
 end

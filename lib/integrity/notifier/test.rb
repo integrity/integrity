@@ -11,20 +11,20 @@ module Integrity
         DataMapper.auto_migrate!
       end
 
-      def build
-        @build = Integrity::Build.gen(:successful)
-      end
-
-      def commit
-        @commit = build.commit
-      end
-
       def notifier_class
         Integrity::Notifier.const_get(notifier)
       end
 
-      def notification
+      def notification(commit)
         notifier_class.new(commit).full_message
+      end
+
+      def notification_successful
+        notification(Integrity::Commit.gen(:successful))
+      end
+
+      def notification_failed
+        notification(Integrity::Commit.gen(:failed))
       end
 
       def assert_form_have_option(option, value=nil)
