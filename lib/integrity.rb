@@ -1,4 +1,5 @@
-$:.unshift File.expand_path(File.dirname(__FILE__))
+$:.unshift File.expand_path(File.dirname(__FILE__)),
+  File.expand_path(File.dirname(__FILE__) + "/../vendor/sinatra-ditties/lib")
 
 require "json"
 require "haml"
