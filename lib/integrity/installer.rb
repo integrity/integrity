@@ -113,7 +113,7 @@ in #{root}/config.ru
 
 For example:
 
-    sudo gem install -s http://gems.github.com foca-integrity-email)
+    sudo gem install -s http://gems.github.com foca-integrity-email
 
 And then in #{root}/config.ru add:
 
