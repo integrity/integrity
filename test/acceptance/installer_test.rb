@@ -18,11 +18,9 @@ class InstallerTest < Test::Unit::AcceptanceTestCase
     Pathname("/tmp/i-haz-integrity")
   end
 
-  def install(options={})
-    installer = Installer.new
-    installer.options = { :passenger => false, :thin => false }.merge!(options)
-    stdout, _ = util_capture { installer.install(root.to_s) }
-    stdout
+  def install(option="")
+    installer = File.dirname(__FILE__) + "/../../bin/integrity"
+    IO.popen("#{installer} install #{root} #{option}".strip).read
   end
 
   scenario "Installing integrity into a given directory" do
@@ -48,14 +46,14 @@ class InstallerTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "Installing integrity for Passenger" do
-    install(:passenger => true)
+    install("--passenger")
 
     assert root.join("public").directory?
     assert root.join("tmp").directory?
   end
 
   scenario "Installing Integrity for Thin" do
-    install(:thin => true)
+    install("--thin")
 
     config = YAML.load_file(root.join("thin.yml"))
     config["chdir"].should  == root.to_s
@@ -65,7 +63,7 @@ class InstallerTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "Installing Integrity for Heroku" do
-    message = install(:heroku => true)
+    message = install("--heroku")
 
     gemifest = root.join(".gems").read
     assert gemifest.include?("mailfactory")
