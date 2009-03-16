@@ -8,10 +8,12 @@ class IntegrityStylesheetTest < Test::Unit::AcceptanceTestCase
   EOS
 
   scenario "browsing on some Integrity install" do
+    visit "/"
+    assert_have_tag("link[@href='/integrity.css']")
     visit "/integrity.css"
 
     assert_contain("body {")
-    # TODO: better test
+    # TODO: Check that it actually returns a 302
     assert_equal %Q{"2465c472aacf302259dde5146a841e45"},
       webrat_session.send(:response).headers["ETag"]
   end
