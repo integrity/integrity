@@ -56,63 +56,9 @@ task :launch do
   ruby "bin/integrity launch"
 end
 
-directory "dist/"
-CLOBBER.include("dist")
+begin
+  require "mg"
 
-# Load the gemspec using the same limitations as github
-def spec
-  @spec ||=
-    begin
-      require "rubygems/specification"
-      data = File.read("integrity.gemspec")
-      spec = nil
-      Thread.new { spec = eval("$SAFE = 3\n#{data}") }.join
-      spec
-    end
-end
-
-def package(ext="")
-  "dist/integrity-#{spec.version}" + ext
-end
-
-desc "Build and install as local gem"
-task :install => package('.gem') do
-  sh "gem install #{package('.gem')}"
-end
-
-desc "Publish the current release on Rubyforge"
-task :rubyforge => ["rubyforge:gem", "rubyforge:tarball", "rubyforge:git"]
-
-namespace :rubyforge do
-  desc "Publish gem and tarball to rubyforge"
-  task :gem => package(".gem") do
-    sh "rubyforge add_release integrity integrity #{spec.version} #{package('.gem')}"
-  end
-
-  task :tarball => package(".tar.gz") do
-    sh "rubyforge add_file integrity integrity #{spec.version} #{package('.tar.gz')}"
-  end
-
-  desc "Push to gitosis@rubyforge.org:integrity.git"
-  task :git do
-    sh "git push gitosis@rubyforge.org:integrity.git master"
-  end
-end
-
-desc "Build gem tarball into dist/"
-task :package => %w(.gem .tar.gz).map { |ext| package(ext) }
-namespace :package do
-  file package(".tar.gz") => "dist/" do |f|
-    sh <<-SH
-      git archive \
-        --prefix=integrity-#{spec.version}/ \
-        --format=tar \
-        HEAD | gzip > #{f.name}
-    SH
-  end
-
-  file package(".gem") => "dist/" do |f|
-    sh "gem build integrity.gemspec"
-    mv File.basename(f.name), f.name
-  end
+  MG.new("integrity.gemspec")
+rescue LoadError
 end
