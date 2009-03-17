@@ -1,5 +1,4 @@
-$:.unshift File.dirname(__FILE__) + "/../lib", File.dirname(__FILE__),
-  File.dirname(__FILE__) + "/../vendor/webrat/lib"
+$:.unshift File.dirname(__FILE__) + "/../lib", File.dirname(__FILE__)
 
 %w(test/unit
 context
