@@ -1,6 +1,5 @@
 require "rake/testtask"
 require "rake/clean"
-require "rcov/rcovtask"
 
 begin
   require "metric_fu"
