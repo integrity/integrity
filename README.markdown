@@ -15,6 +15,12 @@ Try it!
     $ rake launch
     # Navigate to <http://0.0.0.0:4567>
 
+Run the test suite
+------------------
+
+Install the test dependencies with `rake test:install_dependencies` and
+run the test suite with `rake test`.
+
 Thanks
 ------
 
