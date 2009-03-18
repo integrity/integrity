@@ -44,10 +44,9 @@ namespace :test do
 
   desc "Install all gems on which the tests depend on"
   task :install_dependencies do
-    system "gem install rr mocha dm-sweatshop ZenTest"
+    system "gem install rr mocha dm-sweatshop ZenTest webrat"
     system "gem install -s http://gems.github.com jeremymcanally-context \
 jeremymcanally-matchy jeremymcanally-pending foca-storyteller"
-    system "git submodule update --init"
   end
 end
 
