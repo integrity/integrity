@@ -1,4 +1,4 @@
-require "sinatra/ditties"
+require "sinatra/authorization"
 
 module Integrity
   module Helpers
