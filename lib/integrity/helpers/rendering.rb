@@ -2,8 +2,7 @@ module Integrity
   module Helpers
     module Rendering
       def stylesheet_hash
-        @_hash ||= Digest::MD5.file(
-          options.views + "/integrity.sass").tap { |file| file.hexdigest }
+        @_hash ||= Digest::MD5.file(options.views + "/integrity.sass").hexdigest
       end
 
       def show(view, options={})
