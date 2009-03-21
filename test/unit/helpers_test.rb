@@ -22,15 +22,28 @@ class BrowsePublicProjectsTest < Test::Unit::TestCase
     pretty_date(Time.mktime(1995, 12, 15)).should == "on Dec 15th"
   end
 
+  test "urls" do
+    Integrity.config[:base_uri] = "http://example.org/ci"
+
+    assert_equal "http://example.org/ci", root_url.to_s
+    assert_equal "/ci", root_path
+
+    project = Project.gen(:name => "Foo Bar")
+    build  = Build.gen(:successful)
+    commit = build.commit
+
+    assert_equal "/ci/foo-bar", project_path(project)
+    assert_equal "/ci/foo-bar/commits/#{commit.identifier}",
+      commit_path(build.commit)
+  end
+
+
   describe "#push_url_for" do
     before(:each) do
       @project = Project.gen(:integrity)
       Integrity.config[:admin_username] = "admin"
       Integrity.config[:admin_password] = "test"
-
-      stub(self).request {
-        OpenStruct.new(:url => "http://integrity.example.org:1234")
-      }
+      Integrity.config[:base_uri] = "http://integrity.example.org:1234"
     end
 
     test "with auth disabled" do
