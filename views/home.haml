@@ -4,7 +4,7 @@
     %h1
       Why don't you
       = succeed "?" do
-        %a{ :href => "/new" } create your first project
+        %a{ :href => root_path("/new") } create your first project
 - else
   %ul#projects
     - @projects.each do |project|
@@ -18,4 +18,4 @@
           - else
             = project.human_readable_status
   %p#new
-    %a{ :href => "/new" } Add a new project
+    %a{ :href => root_path("/new") } Add a new project
