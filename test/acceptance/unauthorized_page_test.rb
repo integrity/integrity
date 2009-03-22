@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/helpers"
+require File.dirname(__FILE__) + "/../helpers/acceptance"
 
 class UnauthorizedPageTest < Test::Unit::AcceptanceTestCase
   story <<-EOS
