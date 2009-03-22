@@ -31,7 +31,7 @@ module Integrity
       sass :integrity
     end
 
-    get "/" do
+    get "/?" do
       @projects = Project.only_public_unless(authorized?)
       show :home, :title => "projects"
     end
@@ -50,7 +50,7 @@ module Integrity
       show :new, :title => ["projects", "new project"]
     end
 
-    post "/" do
+    post "/?" do
       login_required
 
       @project = Project.new(params[:project_data])

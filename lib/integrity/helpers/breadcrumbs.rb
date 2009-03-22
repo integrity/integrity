@@ -2,7 +2,7 @@ module Integrity
   module Helpers
     module Breadcrumbs
       def pages
-        @pages ||= [["projects", "/"], ["new project", "/new"]]
+        @pages ||= [["projects", root_path], ["new project", root_path("/new")]]
       end
 
       def breadcrumbs(*crumbs)
