@@ -1,3 +1,4 @@
+require File.dirname(__FILE__) + "/../helpers"
 require "helpers/acceptance/git_helper"
 
 module AcceptanceHelper
