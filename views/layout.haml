@@ -4,7 +4,7 @@
     %meta{ :content => "text/html; charset=utf-8", :"http-equiv" => "Content-Type" }
     %meta{ :content => "en", :"http-equiv" => "Content-Language" }
     %title= "#{@title.last} | integrity"
-    = stylesheets(:reset, :buttons, :integrity)
+    - stylesheets(:reset, :buttons, :integrity)
     - unless @project.nil?
       %link{ :rel => "alternate", :type => "application/atom+xml", :title => "Build history Atom", :href => "#{project_path(@project)}.atom"}
 
