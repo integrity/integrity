@@ -27,14 +27,22 @@ class BrowsePublicProjectsTest < Test::Unit::TestCase
 
     assert_equal "http://example.org/ci", root_url.to_s
     assert_equal "/ci", root_path
+    assert_equal "/ci/stylesheet.css", root_path("/stylesheet.css")
 
     project = Project.gen(:name => "Foo Bar")
     build  = Build.gen(:successful)
     commit = build.commit
 
     assert_equal "/ci/foo-bar", project_path(project)
+    assert_equal "http://example.org/ci/foo-bar", project_url(project).to_s
     assert_equal "/ci/foo-bar/commits/#{commit.identifier}",
       commit_path(build.commit)
+    assert_equal "http://example.org/ci/foo-bar/commits/#{commit.identifier}",
+      commit_url(build.commit).to_s
+
+    # Compat
+    assert_equal build_path(build), commit_path(build.commit)
+    assert_equal build_url(build),  commit_url(build.commit)
   end
 
 
