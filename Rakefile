@@ -68,7 +68,7 @@ task :install_dependencies do
 end
 
 desc "Launch Integrity real quick"
-task :launch do
+task :launch => :install_dependencies do
   ruby "bin/integrity launch"
 end
 
