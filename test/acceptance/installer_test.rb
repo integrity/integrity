@@ -65,11 +65,7 @@ class InstallerTest < Test::Unit::AcceptanceTestCase
   scenario "Installing Integrity for Heroku" do
     message = install("--heroku")
 
-    gemifest = root.join(".gems").read
-    assert gemifest.include?("mailfactory")
-    assert gemifest.include?("tlsmail")
-    assert gemifest.include?("foca-sinatra-ditties")
-    assert gemifest.include?("integrity")
+    assert_equal "integrity --version 0.1.9.0", root.join(".gems").read.chomp
 
     assert root.join("Rakefile").file?
     assert root.join("integrity-config.rb").file?
