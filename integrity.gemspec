@@ -27,6 +27,19 @@ Gem::Specification.new do |s|
   s.add_dependency "json"
   s.add_dependency "thor"
 
+  if s.respond_to?(:add_development_dependency)
+    s.add_development_dependency "rr"
+    s.add_development_dependency "mocha"
+    s.add_development_dependency "ZenTest"
+    s.add_development_dependency "webrat"
+    s.add_development_dependency "do_sqlite3"
+    s.add_development_dependency "dm-sweatshop"
+    s.add_development_dependency "ParseTree" # required by dm-sweatshop
+    s.add_development_dependency "jeremymcanally-context"
+    s.add_development_dependency "jeremymcanally-pending"
+    s.add_development_dependency "foca-storyteller"
+  end
+
   s.files = %w[
 README.markdown
 Rakefile
