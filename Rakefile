@@ -12,7 +12,7 @@ desc "Default: run all tests"
 task :default => :test
 
 desc "Install Integrity dependencies"
-task :install_dependencies do
+task :setup do
   puts "NOTE: assuming you have gems.github.com in your gem sources"
 
   system "gem install " +
@@ -21,7 +21,7 @@ task :install_dependencies do
 end
 
 desc "Launch Integrity real quick"
-task :launch => :install_dependencies do
+task :launch => :setup do
   ruby "bin/integrity launch"
 end
 
@@ -37,7 +37,7 @@ namespace :test do
   end
 
   desc "Install tests dependencies"
-  task :install_dependencies do
+  task :setup do
     puts "NOTE: assuming you have gems.github.com in your gem sources"
 
     system "gem install " +

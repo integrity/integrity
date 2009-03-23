@@ -18,7 +18,7 @@ Try it!
 Run the test suite
 ------------------
 
-Install the test dependencies with `rake test:install_dependencies` and
+Install the test dependencies with `rake test:setup` and
 run the test suite with `rake test`.
 
 Thanks
