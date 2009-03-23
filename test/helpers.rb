@@ -8,7 +8,6 @@ storyteller
 webrat/sinatra
 rr
 mocha
-test/zentest_assertions
 dm-sweatshop).each { |dependency|
   begin
     require dependency
@@ -37,6 +36,14 @@ require "integrity/notifier/test/fixtures"
 module TestHelper
   def ignore_logs!
     Integrity.config[:log] = "/tmp/integrity.test.log"
+  end
+
+  def util_capture
+    output = StringIO.new
+    $stdout = output
+    yield
+    $stdout = STDOUT
+    output
   end
 end
 
