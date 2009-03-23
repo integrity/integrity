@@ -6,6 +6,13 @@ begin
 rescue LoadError
 end
 
+def spec
+  @spec ||= begin
+    require "rubygems/specification"
+    eval(File.read("integrity.gemspec"))
+  end
+end
+
 desc "Default: run all tests"
 task :default => :test
 
@@ -41,11 +48,13 @@ namespace :test do
     t.test_files = FileList["test/acceptance/*_test.rb"]
   end
 
-  desc "Install all gems on which the tests depend on"
+  desc "Install tests dependencies"
   task :install_dependencies do
-    system "gem install rr mocha dm-sweatshop ZenTest webrat"
-    system "gem install -s http://gems.github.com jeremymcanally-context \
-jeremymcanally-matchy jeremymcanally-pending foca-storyteller"
+    puts "NOTE: assuming you have gems.github.com in your gem sources"
+
+    system "gem install " +
+      spec.dependencies.select { |dep| dep.type  == :development }.
+        collect(&:name).join(" ")
   end
 end
 
