@@ -58,6 +58,15 @@ namespace :test do
   end
 end
 
+desc "Install Integrity dependencies"
+task :install_dependencies do
+  puts "NOTE: assuming you have gems.github.com in your gem sources"
+
+  system "gem install " +
+    spec.dependencies.select { |dep| dep.type == :runtime }.
+      collect(&:name).join(" ")
+end
+
 desc "Launch Integrity real quick"
 task :launch do
   ruby "bin/integrity launch"
