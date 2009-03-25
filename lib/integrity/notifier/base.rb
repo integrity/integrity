@@ -50,6 +50,11 @@ EOM
         Integrity.config[:base_uri] / commit.project.permalink / "commits" / commit.identifier
       end
 
+      def build_url
+        warn "Notifier::Base#build_url is deprecated, use Notifier::Base#commit_url instead (#{caller[0]})"
+        commit_url
+      end
+
       private
 
         def stripped_commit_output
