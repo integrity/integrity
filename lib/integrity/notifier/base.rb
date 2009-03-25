@@ -17,7 +17,7 @@ module Integrity
       end
 
       def build
-        warn "Notifier::Base#build is deprecated, use Notifier::Base#commit instead"
+        warn "Notifier::Base#build is deprecated, use Notifier::Base#commit instead (#{caller[0]})"
         commit
       end
 
@@ -57,7 +57,7 @@ EOM
         end
 
         def stripped_build_output
-          warn "Notifier::Base#stripped_build_output is deprecated, use Notifier::base#stripped_commit_output instead"
+          warn "Notifier::Base#stripped_build_output is deprecated, use Notifier::base#stripped_commit_output instead (#{caller[0]})"
           stripped_commit_output
         end
     end

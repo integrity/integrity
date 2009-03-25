@@ -57,7 +57,7 @@ module Integrity
     end
 
     def last_build
-      warn "Project#last_build is deprecated, use Project#last_commit"
+      warn "Project#last_build is deprecated, use Project#last_commit (#{caller[0]})"
       last_commit
     end
 
@@ -66,7 +66,7 @@ module Integrity
     end
 
     def previous_builds
-      warn "Project#previous_builds is deprecated, use Project#previous_commits"
+      warn "Project#previous_builds is deprecated, use Project#previous_commits (#{caller[0]})"
       previous_commits
     end
 

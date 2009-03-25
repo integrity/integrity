@@ -26,12 +26,12 @@ module Integrity
       end
 
       def build_path(build, *path)
-        warn "#build_path is deprecated, use #commit_path instead"
+        warn "#build_path is deprecated, use #commit_path instead (#{caller[0]})"
         commit_path build.commit, *path
       end
 
       def build_url(build)
-        warn "#build_url is deprecated, use #commit_url instead"
+        warn "#build_url is deprecated, use #commit_url instead (#{caller[0]})"
         commit_url build.commit
       end
 
