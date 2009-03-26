@@ -13,8 +13,8 @@ dm-sweatshop).each { |dependency|
     require dependency
   rescue LoadError => e
     puts "You're missing some gems required to run the tests."
-    puts "Please run `rake test:install_dependencies`"
-    puts "You'll probably need to run that command as root or with sudo."
+    puts "Please run `rake test:setup`"
+    puts "NOTE: You'll probably need to run that command as root or with sudo."
 
     puts "Thanks :)"
     puts
