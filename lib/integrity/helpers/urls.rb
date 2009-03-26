@@ -2,7 +2,7 @@ module Integrity
   module Helpers
     module Urls
       def root_url
-        @url ||= Addressable::URI.parse(Integrity.config[:base_uri])
+        @url ||= Addressable::URI.parse(base_url)
       end
 
       def root_path(path="")
@@ -48,6 +48,11 @@ module Integrity
       private
         def url(path="")
           root_url.dup.tap { |url| url.path = root_url.path + path }
+        end
+
+        def base_url
+          Integrity.config[:base_uri] || ((respond_to?(:request) &&
+            request.respond_to?(:url)) ? request.url : fail("set base_uri"))
         end
     end
   end
