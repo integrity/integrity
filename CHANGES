@@ -1,0 +1,21 @@
+0.1.9.2 / unreleased
+====================
+* Add development dependencies to gemspec
+* Fix and improve deprecation (Josh Nichols)
+* Fix a typo in post install message (Josh Nichols)
+* Fix URLs issues (hopefully)
+  * Calculate URLs using base_uri option instead of the request.url
+  * Fix and use the URLs generation helpers in views (Will Leinweber)
+* Depend on sinatra-authorization (which has no dependency) instead
+  of sinatra-ditties
+* Use [mg](http://github.com/sr/mg) to manage release
+* Various tweaks to the bootstraping Rake task
+
+0.1.9.1 / 2009-03-16
+====================
+* Add Integrity::Notifier::Test, a bunch of test helpers
+  for notifiers
+* Add support for Heroku as a deployment option
+* Fix the installer to work with the current Thor gem
+
+There is no changelog for previous release
