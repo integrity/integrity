@@ -16,20 +16,13 @@ module Integrity
 
       if options[:heroku]
         cp_r Pathname(__FILE__).join("../../../config/heroku"), root
-        puts <<EOF
-Your Integrity install is ready to be deployed onto Heroku. Next steps:
-
-  1. git init && git add . && git commit -am "Initial import"
-  2. heroku create
-  3. git push heroku master
-  4. heroku rake db:migrate
-EOF
+        puts post_heroku_install_message
       else
         create_dir_structure
         copy_template_files
         edit_template_files
         migrate_db(root.join("config.yml"))
-        after_setup_message
+        puts post_install_message
       end
     end
 
@@ -104,8 +97,19 @@ EOF
         File.open(root / "thin.yml", 'w') { |f| f.puts config }
       end
 
-      def after_setup_message
-        puts <<EOF
+      def post_heroku_install_message
+        <<EOF
+Your Integrity install is ready to be deployed onto Heroku. Next steps:
+
+  1. git init && git add . && git commit -am "Initial import"
+  2. heroku create
+  3. git push heroku master
+  4. heroku rake db:migrate
+EOF
+      end
+
+      def post_install_message
+        <<EOF
 Awesome! Integrity was installed successfully!
 
 If you want to enable notifiers, install the gems and then require them
