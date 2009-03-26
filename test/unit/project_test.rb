@@ -110,6 +110,11 @@ class ProjectTest < Test::Unit::TestCase
       project = Project.gen(:commits => commits)
       project.last_commit.should == commits.sort_by {|c| c.committed_at }.last
     end
+
+    test "deprecated properties" do
+      @project.last_build.should      == @project.last_commit
+      @project.previous_builds.should == @project.previous_commits
+    end
   end
 
   describe "Validation" do
