@@ -6,7 +6,10 @@
     %title= "#{@title.last} | integrity"
     - stylesheets(:reset, :buttons, :integrity)
     - unless @project.nil?
-      %link{ :rel => "alternate", :type => "application/atom+xml", :title => "Build history Atom", :href => "#{project_path(@project)}.atom"}
+      %link{ :rel  => "alternate",                   |
+        :type   => "application/atom+xml",           |
+        :title  => "Build history Atom",             |
+        :href   => "#{project_path(@project)}.atom"} |
 
   %body
     #header
