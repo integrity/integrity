@@ -1,14 +1,31 @@
 require File.dirname(__FILE__) + "/../helpers"
 
 class IntegrityTest < Test::Unit::TestCase
-  test "Integrity.new loads configuration from a file" do
-    stub(DataMapper).setup { nil }
+  describe "#new" do
+    setup do
+      stub(DataMapper).setup { nil }
+      @config_file = File.dirname(__FILE__) + "/../../config/config.sample.yml"
+    end
 
-    file = File.dirname(__FILE__) + "/../../config/config.sample.yml"
-    Integrity.new(file)
+    it "doesn't require any argument" do
+      Integrity.new
 
-    Integrity.config[:base_uri].should == "http://integrity.domain.tld"
-    Integrity.config[:export_directory].should == "/path/to/scm/exports"
+      assert_equal Integrity.default_configuration[:log],
+        Integrity.config[:log]
+    end
+
+    it "loads configuration from a file" do
+      Integrity.new(@config_file)
+
+      assert_equal "http://integrity.domain.tld", Integrity.config[:base_uri]
+      assert_equal "/path/to/scm/exports",        Integrity.config[:export_directory]
+    end
+
+    it "takes configuration as an hash" do
+      Integrity.new(:base_uri => "http://foo.org")
+
+      assert_equal "http://foo.org", Integrity.config[:base_uri]
+    end
   end
 
   specify "config is just a hash" do
