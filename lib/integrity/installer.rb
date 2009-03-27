@@ -43,11 +43,8 @@ module Integrity
       require "thin"
       require "do_sqlite3"
 
-      if File.file?(options[:config].to_s)
-        Integrity.new(options[:config])
-      else
-        DataMapper.setup(:default, "sqlite3::memory:")
-      end
+      File.file?(options[:config].to_s) ?
+        Integrity.new(options[:config]) : Integrity.new
 
       DataMapper.auto_migrate!
 
