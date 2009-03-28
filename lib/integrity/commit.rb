@@ -53,14 +53,6 @@ module Integrity
       build && build.output
     end
 
-    def queue_build
-      self.build = Build.create(:commit_id => id)
-      self.save
-
-      # Build on foreground (this will move away, I promise)
-      ProjectBuilder.new(project).build(self)
-    end
-
     # Deprecation layer
     alias :short_commit_identifier :short_identifier
     alias :commit_identifier       :identifier

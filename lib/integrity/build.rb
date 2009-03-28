@@ -17,6 +17,13 @@ module Integrity
       all(:started_at => nil)
     end
 
+    def self.queue(commit)
+      commit.update_attributes(:build => new)
+
+      # Build on foreground (this will move away, I promise)
+      ProjectBuilder.new(commit.project).build(commit)
+    end
+
     def pending?
       started_at.nil?
     end
