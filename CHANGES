@@ -1,7 +1,7 @@
 0.1.9.2 / unreleased
 ====================
 
-* Add development dependencies to gemspec.
+* Add development dependencies to gemspec
 * Fix and improve deprecation (Josh Nichols)
 * Fix a typo in post install message (Josh Nichols)
 * Fix URLs issues (hopefully)
@@ -9,17 +9,20 @@
   * Fix and use the URLs generation helpers in views. (Will Leinweber)
 * Depend on sinatra-authorization (which has no dependency) instead
   of sinatra-ditties.
-* Use [mg](http://github.com/sr/mg) to manage release.
-* Various tweaks to the bootstraping Rake task.
+* Use [mg](http://github.com/sr/mg) to manage release
+* Various tweaks to the bootstraping Rake tasks. I am not happy
+  with them, though.
+  <http://integrity.lighthouseapp.com/projects/14308/tickets/126>
 
 0.1.9.1 / 2009-03-16
 ====================
 
 * Add the Integrity::Notifier::Test mixin, aimed at helping
-  writing test for notifiers
-    NOTE: The API is not fixed yet. Any feedbacks to help define
-          it is more than welcome
+  writing test for notifiers.
+    NOTE: The API is not fixed yet. See the following ticket
+    <http://integrity.lighthouseapp.com/projects/14308-integrity/tickets/130>
 * Add support for Heroku as a deployment option
 * Fix the installer to work with the current Thor gem
 
-There is no changelog for previous release
+
+**There is no changelog for previous release :-)**
