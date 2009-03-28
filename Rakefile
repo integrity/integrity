@@ -21,7 +21,7 @@ task :setup do
 end
 
 desc "Launch Integrity real quick"
-task :launch => :setup do
+task :launch do
   ruby "bin/integrity launch"
 end
 
