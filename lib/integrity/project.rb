@@ -17,7 +17,7 @@ module Integrity
     has n, :notifiers, :class_name => "Integrity::Notifier"
 
     before :save, :set_permalink
-    before :destroy, :delete_code
+    before :destroy, :delete_working_directory
 
     validates_is_unique :name
 
@@ -131,9 +131,9 @@ module Integrity
           gsub(/-*$/, "")
       end
 
-      def delete_code
+      def delete_working_directory
         commits.all(:project_id => id).destroy!
-        ProjectBuilder.new(self).delete_code
+        ProjectBuilder.delete_working_directory(self)
       rescue SCM::SCMUnknownError => error
         Integrity.log "Problem while trying to deleting code: #{error}"
       end

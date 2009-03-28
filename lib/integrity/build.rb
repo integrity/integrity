@@ -21,7 +21,7 @@ module Integrity
       commit.update_attributes(:build => new)
 
       # Build on foreground (this will move away, I promise)
-      ProjectBuilder.new(commit.project).build(commit)
+      ProjectBuilder.build(commit)
     end
 
     def pending?
