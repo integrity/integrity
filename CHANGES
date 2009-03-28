@@ -1,3 +1,10 @@
+0.1.9.3 / unreleased
+====================
+
+* Fix for when the commit identifier can't be retrieved
+  <http://integrity.lighthouseapp.com/projects/14308/tickets/116>
+* Fix two issues with MySQL
+
 0.1.9.2 / 2009-03-28
 ====================
 
