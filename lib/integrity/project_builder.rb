@@ -38,7 +38,7 @@ module Integrity
       build
     ensure
       build.complete!
-      commit.update_attributes(scm.info(commit.identifier))
+      commit.update_attributes(scm.info(commit.identifier) || {})
       project.notifiers.each { |notifier| notifier.notify_of_build(build) }
     end
 

@@ -52,7 +52,6 @@ class ProjectBuilderTest < Test::Unit::TestCase
       }.should raise_error
     end
 
-
     it "sets the build status to failure when the build command exits with a non-zero status" do
       @project.update_attributes(:command => "exit 1")
       SCM::Git.any_instance.expects(:with_revision).with(@commit.identifier).yields
@@ -93,6 +92,14 @@ class ProjectBuilderTest < Test::Unit::TestCase
     it "raises SCMUnknownError if it can't figure the scm from the uri" do
       @project.update_attributes(:uri => "scm://example.org")
       lambda { ProjectBuilder.new(@project) }.should raise_error(SCM::SCMUnknownError)
+    end
+
+    it "doesn't fail if the commit identifier can't be retrieved" do
+      SCM::Git.any_instance.expects(:with_revision).with(@commit.identifier).yields
+      SCM::Git.any_instance.expects(:info).returns(false)
+      lambda {
+        ProjectBuilder.new(@project).build(@commit)
+      }.should_not raise_error
     end
   end
 
