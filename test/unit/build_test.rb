@@ -38,13 +38,15 @@ class BuildTest < Test::Unit::TestCase
     end
 
     test "deprecated properties" do
-      @build.short_commit_identifier.should == @build.commit.short_identifier
-      @build.commit_identifier.should == @build.commit.identifier
-      @build.commit_author.should     == @build.commit.author
-      @build.commit_message.should    == @build.commit.message
-      @build.commited_at.should       == @build.commit.committed_at
-      @build.project_id.should        == @build.commit.project_id
-      @build.should respond_to(:commit_metadata)
+      silence_warnings {
+        @build.short_commit_identifier.should == @build.commit.short_identifier
+        @build.commit_identifier.should == @build.commit.identifier
+        @build.commit_author.should     == @build.commit.author
+        @build.commit_message.should    == @build.commit.message
+        @build.commited_at.should       == @build.commit.committed_at
+        @build.project_id.should        == @build.commit.project_id
+        @build.should respond_to(:commit_metadata)
+      }
     end
   end
 
