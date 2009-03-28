@@ -32,7 +32,7 @@ module Integrity
     def build(commit_identifier="HEAD")
       commit_identifier = head_of_remote_repo if commit_identifier == "HEAD"
       commit = find_or_create_commit_with_identifier(commit_identifier)
-      commit.queue_build
+      Build.queue(commit)
     end
 
     def push(payload)
