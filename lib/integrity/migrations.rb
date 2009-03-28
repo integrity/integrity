@@ -53,7 +53,7 @@ module Integrity
 
         create_table :integrity_builds do
           column :id,                Integer,  :serial => true
-          column :output,            Text,     :nullable => false, :default => ""
+          column :output,            Text,     :nullable => false
           column :successful,        Boolean,  :nullable => false, :default => false
           column :commit_identifier, String,   :nullable => false
           column :commit_metadata,   Yaml,     :nullable => false
@@ -110,7 +110,7 @@ module Integrity
           column :started_at,   DateTime
           column :completed_at, DateTime
           column :successful,   Boolean
-          column :output,       Text,    :nullable => false, :default => ""
+          column :output,       Text,    :nullable => false
           column :created_at,   DateTime
           column :updated_at,   DateTime
 
