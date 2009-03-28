@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name    = "integrity"
-  s.version = "0.1.9.1"
+  s.version = "0.1.9.2"
   s.date    = "2009-03-16"
 
   s.description = "Your Friendly Continuous Integration server. Easy, fun and painless!"
@@ -40,6 +40,8 @@ Gem::Specification.new do |s|
   end
 
   s.files = %w[
+.gitignore
+CHANGES
 README.markdown
 Rakefile
 bin/integrity
@@ -88,12 +90,13 @@ test/acceptance/create_project_test.rb
 test/acceptance/delete_project_test.rb
 test/acceptance/edit_project_test.rb
 test/acceptance/error_page_test.rb
-test/acceptance/helpers.rb
 test/acceptance/installer_test.rb
 test/acceptance/manual_build_project_test.rb
+test/acceptance/not_found_page_test.rb
 test/acceptance/notifier_test.rb
 test/acceptance/project_syndication_test.rb
 test/acceptance/stylesheet_test.rb
+test/acceptance/unauthorized_page_test.rb
 test/helpers.rb
 test/helpers/acceptance.rb
 test/helpers/acceptance/email_notifier.rb
@@ -116,10 +119,6 @@ test/unit/notifier_test.rb
 test/unit/project_builder_test.rb
 test/unit/project_test.rb
 test/unit/scm_test.rb
-vendor/sinatra-ditties/README.rdoc
-vendor/sinatra-ditties/lib/sinatra/ditties.rb
-vendor/sinatra-ditties/lib/sinatra/ditties/authorization.rb
-vendor/sinatra-ditties/lib/sinatra/ditties/mailer.rb
 views/_commit_info.haml
 views/build.haml
 views/error.haml
