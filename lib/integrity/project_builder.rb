@@ -18,7 +18,7 @@ module Integrity
     ensure
       @build.complete!
       @commit.update_attributes(@scm.info(commit.identifier))
-      send_notifications
+      @project.notifiers.each { |notifier| notifier.notify_of_build(@build) }
     end
 
     def delete_code
@@ -28,18 +28,6 @@ module Integrity
     end
 
     private
-      def send_notifications
-        @project.notifiers.each do |notifier|
-          begin
-            Integrity.log "Notifying of build #{@commit.short_identifier} using the #{notifier.name} notifier"
-            notifier.notify_of_build @commit
-          rescue Timeout::Error
-            Integrity.log "#{notifier.name} notifier timed out"
-            next
-          end
-        end
-      end
-
       def export_directory
         Integrity.config[:export_directory] / "#{SCM.working_tree_path(@uri)}-#{@branch}"
       end
