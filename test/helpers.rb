@@ -45,6 +45,13 @@ module TestHelper
     $stdout = STDOUT
     output
   end
+
+  def silence_warnings
+    $VERBOSE, v = nil, $VERBOSE
+    yield
+  ensure
+    $VERBOSE = v
+  end
 end
 
 class Test::Unit::TestCase

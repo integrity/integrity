@@ -112,8 +112,10 @@ class ProjectTest < Test::Unit::TestCase
     end
 
     test "deprecated properties" do
-      @project.last_build.should      == @project.last_commit
-      @project.previous_builds.should == @project.previous_commits
+      silence_warnings {
+        @project.last_build.should      == @project.last_commit
+        @project.previous_builds.should == @project.previous_commits
+      }
     end
   end
 
