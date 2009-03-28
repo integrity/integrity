@@ -38,7 +38,7 @@ module TestHelper
     Integrity.config[:log] = "/tmp/integrity.test.log"
   end
 
-  def util_capture
+  def capture_stdout
     output = StringIO.new
     $stdout = output
     yield
