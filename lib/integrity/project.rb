@@ -102,9 +102,7 @@ module Integrity
       to_enable = Array(to_enable)
       config  ||= {}
 
-      to_disable = enabled_notifiers.select { |notifier| ! to_enable.include?(notifier.name) }
-      to_disable.each { |notifier| notifier.update_attributes(:enabled => false) }
-
+      disable_notifiers(to_enable)
 
       config.each_pair { |name, config|
         notifier = notifiers.first(:name => name)
@@ -148,6 +146,14 @@ module Integrity
           gsub(/[^a-z0-9]+/, "-").
           gsub(/-*$/, "")
       end
+
+      def disable_notifiers(to_enable)
+        enabled_notifiers.select { |notifier|
+          ! to_enable.include?(notifier.name) }.
+            each { |notifier|
+              notifier.update_attributes(:enabled => false) }
+      end
+
 
       def delete_working_directory
         commits.all(:project_id => id).destroy!
