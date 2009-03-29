@@ -1,7 +1,9 @@
 require File.dirname(__FILE__) + "/../helpers/acceptance"
-require "helpers/acceptance/textfile_notifier"
+require "helpers/acceptance/notifier_helper"
 
 class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
+  include NotifierHelper
+
   story <<-EOS
     As an administrator,
     I want to setup notifiers on my projects
@@ -12,6 +14,7 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     # This is needed before any available notifier is unset
     # in the global #before
     load "helpers/acceptance/textfile_notifier.rb"
+    load "helpers/acceptance/email_notifier.rb"
   end
 
   scenario "an admin sets up a notifier for a project that didn't have any" do
@@ -38,5 +41,53 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     notification.should =~ /Commit Date: (.+)/
     notification.should =~ /Commit Message: This commit will work/
     notification.should =~ /Build Output:\n\nRunning tests...\n/
+  end
+
+  scenario "an admin can create a public project and retain mailer info" do
+    Project.first(:permalink => "integrity").should be_nil
+
+    login_as "admin", "test"
+
+    visit "/"
+    add_project  "Integrity", "git://github.com/foca/integrity.git"
+    edit_project "integrity"
+
+    visit "/integrity"
+    click_link "Edit Project"
+
+    assert_have_email_notifier
+  end
+
+  scenario "an admin can create multiple public projects" do
+    Project.first(:permalink => "integrity").should be_nil
+
+    login_as "admin", "test"
+
+    visit "/"
+
+    add_project "Integrity", "git://github.com/foca/integrity.git"
+    click_link  "projects"
+
+    add_project "Webrat", "git://github.com/brynary/webrat.git"
+    click_link  "projects"
+
+    add_project "Rails", "git://github.com/rails/rails.git"
+    click_link  "projects"
+
+    edit_project "integrity"
+    edit_project "webrat"
+    edit_project "rails"
+
+    visit "/integrity"
+    click_link "Edit Project"
+    assert_have_email_notifier
+
+    visit "/webrat"
+    click_link "Edit Project"
+    assert_have_email_notifier
+
+    visit "/rails"
+    click_link "Edit Project"
+    assert_have_email_notifier
   end
 end
