@@ -45,12 +45,11 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "an admin can setup a notifier without enabling it" do
+    Project.gen(:integrity)
+
     login_as "admin", "test"
 
-    visit "/new"
-    fill_in_project_info("Integrity", "git://github.com/foca/integrity.git")
-    click_button "Create Project"
-
+    visit "/integrity"
     click_link "Edit Project"
     fill_in_email_notifier
     click_button "Update Project"
