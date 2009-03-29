@@ -108,7 +108,7 @@ module Integrity
 
       config.each_pair { |name, config|
         notifier = notifiers.first(:name => name)
-        notifier ||= notifiers.new(:name => name, :config => config)
+        notifier ||= notifiers.new(:name => name)
 
         notifier.enabled = true
         notifier.config  = config
