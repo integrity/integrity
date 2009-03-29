@@ -98,16 +98,20 @@ module Integrity
       notifiers.all(:enabled => true)
     end
 
-    def update_notifiers(to_enable, config={})
+    def update_notifiers(to_enable, config)
+      to_enable = Array(to_enable)
+      config  ||= {}
+
       to_disable = enabled_notifiers.select { |notifier| ! to_enable.include?(notifier.name) }
       to_disable.each { |notifier| notifier.update_attributes(:enabled => false) }
 
-      Array(to_enable).each { |name|
-        notifier = notifiers.first(:name => name, :project_id => id)
-        notifier ||= notifiers.new(:name => name, :config => config, :project_id => id)
+
+      config.each_pair { |name, config|
+        notifier = notifiers.first(:name => name)
+        notifier ||= notifiers.new(:name => name, :config => config)
 
         notifier.enabled = true
-        notifier.config  = config[name] || {}
+        notifier.config  = config
         notifier.save
       }
     end
