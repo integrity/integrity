@@ -10,7 +10,7 @@ module Integrity
       end
 
       def self.to_haml
-        raise NoMethodError, "you need to implement this method in your notifier"
+        raise NotImplementedError, "you need to implement this method in your notifier"
       end
 
       attr_reader :commit
@@ -26,7 +26,7 @@ module Integrity
       end
 
       def deliver!
-        raise NoMethodError, "you need to implement this method in your notifier"
+        raise NotImplementedError, "you need to implement this method in your notifier"
       end
 
       def short_message
