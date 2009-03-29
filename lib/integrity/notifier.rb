@@ -6,6 +6,7 @@ module Integrity
 
     property :id,      Integer,  :serial => true
     property :name,    String,   :nullable => false
+    property :enabled, Boolean,  :nullable => false, :default  => false
     property :config,  Yaml,     :nullable => false, :lazy => false
 
     belongs_to :project, :class_name => "Integrity::Project"
