@@ -229,6 +229,30 @@ class ProjectTest < Test::Unit::TestCase
       assert_equal 1, project.enabled_notifiers.size
     end
 
+    it "preserves config of notifiers that are being disabled" do
+      notifiers = [Notifier.gen(:irc, :enabled => false),
+        Notifier.gen(:twitter, :enabled => true)]
+      project = Project.gen(:notifiers => notifiers)
+
+      project.update_notifiers(["IRC"],
+        {"IRC"     => {"uri" => "irc://irc.freenode.net/integrity"},
+          "Twitter" => {"username" => "john"}})
+      assert_equal "john",
+        project.notifiers.first(:name => "Twitter").config["username"]
+    end
+
+    it "creates notifiers present in config even if not supplied in the to_enable list" do
+      notifiers = [Notifier.gen(:irc, :enabled => false),
+        Notifier.gen(:twitter, :enabled => true)]
+      project = Project.gen(:notifiers => notifiers)
+
+      project.update_notifiers(["IRC"],
+        {"IRC"     => {"uri" => "irc://irc.freenode.net/integrity"},
+         "Twitter" => {"username" => "john"}})
+
+      assert_equal 2, project.notifiers.count
+    end
+
     it "creates and enable given notifiers" do
       project = Project.gen
       project.update_notifiers(["IRC", "Twitter"],

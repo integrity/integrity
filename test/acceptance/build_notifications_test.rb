@@ -17,7 +17,7 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     load "helpers/acceptance/email_notifier.rb"
   end
 
-  scenario "an admin sets up a notifier for a project that didn't have any" do
+  scenario "an admin sets up a notifier and issue a manual build" do
     git_repo(:my_test_project).add_successful_commit
     Project.gen(:my_test_project, :notifiers => [], :uri => git_repo(:my_test_project).path)
     rm_f "/tmp/textfile_notifications.txt"
@@ -43,22 +43,22 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     notification.should =~ /Build Output:\n\nRunning tests...\n/
   end
 
-  scenario "an admin can create a public project and retain mailer info" do
-    Project.first(:permalink => "integrity").should be_nil
-
+  scenario "an admin can setup a notifier without enabling it" do
     login_as "admin", "test"
 
-    visit "/"
-    add_project  "Integrity", "git://github.com/foca/integrity.git"
-    edit_project "integrity"
+    visit "/new"
+    fill_in_project_info("Integrity", "git://github.com/foca/integrity.git")
+    click_button "Create Project"
 
-    visit "/integrity"
     click_link "Edit Project"
+    fill_in_email_notifier
+    click_button "Update Project"
 
+    visit "/integrity/edit"
     assert_have_email_notifier
   end
 
-  scenario "an admin can create multiple public projects" do
+  scenario "an admin configures various notifiers accros multiple projects" do
     Project.first(:permalink => "integrity").should be_nil
 
     login_as "admin", "test"
