@@ -18,7 +18,7 @@ module Integrity
 
       def notifier_form(notifier)
         haml(notifier.to_haml, :layout => :notifier, :locals => {
-          :config => current_project.config_for(notifier),
+          :config => current_project.config_for(notifier.to_s.split(/::/).last),
           :notifier => "#{notifier.to_s.split(/::/).last}",
           :enabled => current_project.notifies?(notifier)
         })

@@ -288,7 +288,7 @@ class ProjectTest < Test::Unit::TestCase
 
   describe "When retrieving state about its notifier" do
     before(:each) do
-      @project = Project.generate
+      @project = Project.gen
       @irc     = Notifier.generate(:irc)
     end
 
@@ -305,20 +305,17 @@ class ProjectTest < Test::Unit::TestCase
       @project.config_for("IRC").should == {:uri => "irc://irc.freenode.net/integrity"}
     end
 
-    specify "#config_for returns an empty hash if no such notifier" do
+    specify "#config_for returns an empty hash for unknown notifier" do
       @project.config_for("IRC").should == {}
     end
 
-    specify "#notifies? is true if it uses the given notifier" do
+    specify "#notifies? is true if it uses the notifier" do
+      assert_equal false, @project.notifies?("UndefinedNotifier")
+      assert_equal false, @project.notifies?("IRC")
+
       @project.update_attributes(:notifiers => [@irc])
-      @project.notifies?("IRC").should == true
-    end
 
-    specify "#notifies? is false if it doesnt use the given notifier" do
-      @project.update_attributes(:notifiers => [])
-
-      @project.notifies?("IRC").should == false
-      @project.notifies?("UndefinedNotifier").should == false
+      assert_equal true, @project.notifies?("IRC")
     end
   end
 

@@ -85,17 +85,17 @@ module Integrity
       end)
     end
 
-    def config_for(notifier)
-      notifier = notifiers.first(:name => notifier.to_s.split(/::/).last, :project_id => id)
-      notifier.blank? ? {} : notifier.config
-    end
-
     def notifies?(notifier)
-      !notifiers.first(:name => notifier.to_s.split(/::/).last, :project_id => id).blank?
+      !! notifiers.first(:name => notifier)
     end
 
     def enabled_notifiers
       notifiers.all(:enabled => true)
+    end
+
+    def config_for(notifier)
+      notifier = notifiers.first(:name => notifier)
+      notifier ? notifier.config : {}
     end
 
     def update_notifiers(to_enable, config)
