@@ -11,7 +11,7 @@ module Integrity
 
       def update_notifiers_of(project)
         if params["notifiers"]
-          project.enable_notifiers(params["notifiers"].keys, params["notifiers"])
+          project.update_notifiers(params["notifiers"].keys, params["notifiers"])
         end
       end
     end

@@ -94,8 +94,8 @@ module Integrity
       !notifiers.first(:name => notifier.to_s.split(/::/).last, :project_id => id).blank?
     end
 
-    def enable_notifiers(*args)
-      Notifier.enable_notifiers(id, *args)
+    def update_notifiers(*args)
+      Notifier.update_notifiers(id, *args)
     end
 
     private
