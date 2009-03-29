@@ -18,7 +18,7 @@ module Integrity
       constants.map { |name| const_get(name) }.select { |notifier| valid_notifier?(notifier) }
     end
 
-    def self.enable_notifiers(project, enabled, config={})
+    def self.update_notifiers(project, enabled, config={})
       all(:project_id => project).destroy!
       list_of_enabled_notifiers(enabled).each do |name|
         create! :project_id => project, :name => name, :config => config[name]
