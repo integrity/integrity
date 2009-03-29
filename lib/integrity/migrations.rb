@@ -136,5 +136,15 @@ module Integrity
         end
       end
     end
+
+    migration 3, :add_enabled_column do
+      up do
+        modify_table(:integrity_notifiers) { add_column :enabled, Boolean }
+      end
+
+      down do
+        modify_table(:integrity_notifiers) { remove_column :enabled }
+      end
+    end
   end
 end
