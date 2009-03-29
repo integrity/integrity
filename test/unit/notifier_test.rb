@@ -1,11 +1,6 @@
 require File.dirname(__FILE__) + "/../helpers"
 
 class NotifierTest < Test::Unit::TestCase
-  test "deprecated methods" do
-    Notifier::Base.new(Build.gen, {}).should respond_to(:build)
-    Notifier::Base.new(Build.gen, {}).should respond_to(:build_url)
-  end
-
   specify "IRC fixture is valid and can be saved" do
     lambda do
       Notifier.generate(:irc).tap do |project|
@@ -118,11 +113,5 @@ class NotifierTest < Test::Unit::TestCase
         Project.gen.enable_notifiers("IRC", {"IRC" => irc.config})
       end.should_not change(project.notifiers, :count)
     end
-  end
-
-  it "requires notifier classes to implement Notifier.to_haml and Notifier#deliver!" do
-    class Blah < Notifier::Base; end
-    lambda { Blah.to_haml }.should raise_error(NoMethodError)
-    lambda { Blah.new(Build.gen, {}).deliver! }.should raise_error(NoMethodError)
   end
 end
