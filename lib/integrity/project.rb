@@ -99,9 +99,6 @@ module Integrity
     end
 
     def update_notifiers(to_enable, config)
-      to_enable = Array(to_enable)
-      config  ||= {}
-
       disable_notifiers(to_enable)
 
       config.each_pair { |name, config|
