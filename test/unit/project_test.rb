@@ -220,6 +220,74 @@ class ProjectTest < Test::Unit::TestCase
     end
   end
 
+  context "Dealing with notifiers" do
+    it "knows which notifiers are enabled" do
+      notifiers = [Notifier.gen(:irc, :enabled => false),
+        Notifier.gen(:twitter, :enabled => true)]
+      project = Project.gen(:notifiers => notifiers)
+
+      assert_equal 1, project.enabled_notifiers.size
+    end
+
+    it "creates and enable given notifiers" do
+      project = Project.gen
+      project.update_notifiers(["IRC", "Twitter"],
+          {"IRC"     => {"uri" => "irc://irc.freenode.net/integrity"},
+           "Twitter" => {"username" => "john"}})
+
+      assert_equal 2,         Notifier.count
+      assert_equal "IRC",     project.notifiers.first.name
+      assert_equal "Twitter", project.notifiers.last.name
+    end
+
+    it "disables notifiers that are not included in the list" do
+      project = Project.gen
+      project.update_notifiers(["IRC", "Twitter"],
+          {"IRC"     => {"uri" => "irc://irc.freenode.net/integrity"},
+           "Twitter" => {"username" => "john"}})
+
+      lambda {
+        project.update_notifiers(["IRC"],
+          {"IRC"     => {"uri" => "irc://irc.freenode.net/integrity"}})
+      }.should change(project.enabled_notifiers, :count).from(2).to(1)
+
+      assert ! project.notifiers.first(:name => "Twitter").enabled?
+      assert project.notifiers.first(:name => "IRC").enabled?
+    end
+
+    it "creates new notifiers for the project" do
+      project = Project.generate
+      lambda do
+        project.update_notifiers(["IRC", "Twitter"],
+          {"IRC" => {"uri" => "irc://irc.freenode.net/integrity"},
+           "Twitter" => {"username" => "john"}})
+      end.should change(project.notifiers, :count).from(0).to(2)
+    end
+
+    it "don't deletes all of previous notifiers" do
+      project = Project.generate(:notifiers => [Notifier.gen(:irc), Notifier.gen(:twitter)])
+      lambda do
+        project.update_notifiers("IRC", {"IRC" => {:foo => "bar"}})
+        project.reload
+      end.should_not change(project.notifiers, :count)
+    end
+
+    it "does nothing if given nil as the list of notifiers to enable" do
+      lambda { Project.gen.update_notifiers(nil, {}) }.should_not change(Notifier, :count)
+    end
+
+    it "doesn't destroy any of the other notifiers that exist for other projects" do
+      irc = Notifier.generate(:irc)
+
+      project = Project.gen
+      project.update_notifiers("IRC", {"IRC" => irc.config})
+
+      lambda do
+        Project.gen.update_notifiers("IRC", {"IRC" => irc.config})
+      end.should_not change(project.notifiers, :count)
+    end
+  end
+
   describe "When retrieving state about its notifier" do
     before(:each) do
       @project = Project.generate

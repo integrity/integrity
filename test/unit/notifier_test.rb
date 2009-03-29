@@ -80,38 +80,4 @@ class NotifierTest < Test::Unit::TestCase
     Notifier::IRC.expects(:notify_of_build).with(build, irc.config)
     irc.notify_of_build(build)
   end
-
-  describe "Updating notifiers of a project" do
-    it "creates new notifiers for the project" do
-      project = Project.generate
-      lambda do
-        project.update_notifiers(["IRC", "Twitter"],
-          {"IRC" => {"uri" => "irc://irc.freenode.net/integrity"},
-           "Twitter" => {"username" => "john"}})
-      end.should change(project.notifiers, :count).from(0).to(2)
-    end
-
-    it "deletes all of previous notifiers" do
-      project = Project.generate(:notifiers => [Notifier.gen(:irc), Notifier.gen(:twitter)])
-      lambda do
-        project.update_notifiers("IRC", {"IRC" => {:foo => "bar"}})
-        project.reload
-      end.should change(project.notifiers, :count).from(2).to(1)
-    end
-
-    it "does nothing if given nil as the list of notifiers to enable" do
-      lambda { Project.gen.update_notifiers(nil, {}) }.should_not change(Notifier, :count)
-    end
-
-    it "doesn't destroy any of the other notifiers that exist for other projects" do
-      irc = Notifier.generate(:irc)
-
-      project = Project.gen
-      project.update_notifiers("IRC", {"IRC" => irc.config})
-
-      lambda do
-        Project.gen.update_notifiers("IRC", {"IRC" => irc.config})
-      end.should_not change(project.notifiers, :count)
-    end
-  end
 end
