@@ -1,6 +1,14 @@
+require "integrity/project/notifiers"
+require "integrity/project/push"
+require "integrity/project/deprecated"
+
 module Integrity
   class Project
     include DataMapper::Resource
+
+    include Helpers::Deprecated
+    include Helpers::Notifiers
+    include Helpers::Push
 
     property :id,         Integer,  :serial => true
     property :name,       String,   :nullable => false
@@ -35,39 +43,12 @@ module Integrity
       Build.queue(commit)
     end
 
-    def push(payload)
-      payload = parse_payload(payload)
-      raise ArgumentError unless valid_payload?(payload)
-
-      commits =
-        if Integrity.config[:build_all_commits]
-          payload["commits"]
-        else
-          [ payload["commits"].first ]
-        end
-
-      commits.each do |commit_data|
-        create_commit_from(commit_data)
-        build(commit_data["id"])
-      end
-    end
-
     def last_commit
       commits.first(:project_id => id, :order => [:committed_at.desc])
     end
 
-    def last_build
-      warn "Project#last_build is deprecated, use Project#last_commit (#{caller[0]})"
-      last_commit
-    end
-
     def previous_commits
       commits.all(:project_id => id, :order => [:committed_at.desc]).tap {|commits| commits.shift }
-    end
-
-    def previous_builds
-      warn "Project#previous_builds is deprecated, use Project#previous_commits (#{caller[0]})"
-      previous_commits
     end
 
     def status
@@ -83,32 +64,6 @@ module Integrity
         when "1", "0" then flag == "1"
         else !!flag
       end)
-    end
-
-    def notifies?(notifier)
-      !! notifiers.first(:name => notifier)
-    end
-
-    def enabled_notifiers
-      notifiers.all(:enabled => true)
-    end
-
-    def config_for(notifier)
-      notifier = notifiers.first(:name => notifier)
-      notifier ? notifier.config : {}
-    end
-
-    def update_notifiers(to_enable, config)
-      disable_notifiers(to_enable)
-
-      config.each_pair { |name, config|
-        notifier = notifiers.first(:name => name)
-        notifier ||= notifiers.new(:name => name)
-
-        notifier.enabled = true
-        notifier.config  = config
-        notifier.save
-      }
     end
 
     private
@@ -129,13 +84,6 @@ module Integrity
         SCM.new(uri, branch).head
       end
 
-      def create_commit_from(data)
-        commits.create(:identifier   => data["id"],
-                       :author       => "#{data["author"]["name"]} <#{data["author"]["email"]}>",
-                       :message      => data["message"],
-                       :committed_at => data["timestamp"])
-      end
-
       def set_permalink
         self.permalink = (name || "").downcase.
           gsub(/'s/, "s").
@@ -144,31 +92,11 @@ module Integrity
           gsub(/-*$/, "")
       end
 
-      def disable_notifiers(to_enable)
-        enabled_notifiers.select { |notifier|
-          ! to_enable.include?(notifier.name) }.
-            each { |notifier|
-              notifier.update_attributes(:enabled => false) }
-      end
-
-
       def delete_working_directory
         commits.all(:project_id => id).destroy!
         ProjectBuilder.delete_working_directory(self)
       rescue SCM::SCMUnknownError => error
         Integrity.log "Problem while trying to deleting code: #{error}"
-      end
-
-      def valid_payload?(payload)
-        payload && payload["ref"].to_s.include?(branch) &&
-                               !payload["commits"].nil? &&
-                               !payload["commits"].to_a.empty?
-      end
-
-      def parse_payload(payload)
-        JSON.parse(payload.to_s)
-      rescue JSON::ParserError
-        false
       end
   end
 end
