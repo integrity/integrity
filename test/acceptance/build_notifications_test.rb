@@ -15,6 +15,8 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     # in the global #before
     load "helpers/acceptance/textfile_notifier.rb"
     load "helpers/acceptance/email_notifier.rb"
+    Notifier.register(Integrity::Notifier::Textfile)
+    Notifier.register(Integrity::Notifier::Email)
   end
 
   scenario "an admin sets up a notifier and issue a manual build" do

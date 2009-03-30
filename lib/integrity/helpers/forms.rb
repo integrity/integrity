@@ -16,12 +16,13 @@ module Integrity
         attrs.update(extras)
       end
 
-      def notifier_form(notifier)
-        haml(notifier.to_haml, :layout => :notifier, :locals => {
-          :config => current_project.config_for(notifier.to_s.split(/::/).last),
-          :notifier => "#{notifier.to_s.split(/::/).last}",
-          :enabled => current_project.notifies?(notifier)
-        })
+      def notifier_form
+        Notifier.available.each_pair { |name, klass|
+          haml_concat haml(klass.to_haml, :layout => :notifier, :locals => {
+            :notifier => name,
+            :enabled  => current_project.notifies?(name),
+            :config   => current_project.config_for(name) })
+        }
       end
     end
   end
