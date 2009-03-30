@@ -35,6 +35,7 @@ Gem::Specification.new do |s|
     s.add_development_dependency "dm-sweatshop"
     s.add_development_dependency "ParseTree" # required by dm-sweatshop
     s.add_development_dependency "jeremymcanally-context"
+    s.add_development_dependency "jeremymcanally-matchy"
     s.add_development_dependency "jeremymcanally-pending"
     s.add_development_dependency "foca-storyteller"
   end
