@@ -237,8 +237,17 @@ class ProjectTest < Test::Unit::TestCase
            "Twitter" => {"username" => "john"}})
 
       assert_equal 2,         Notifier.count
+      assert_equal 2,         project.enabled_notifiers.count
       assert_equal "IRC",     project.notifiers.first.name
       assert_equal "Twitter", project.notifiers.last.name
+
+      project.update_notifiers(["Twitter"],
+          {"IRC"     => {"uri" => "irc://irc.freenode.net/integrity"},
+           "Twitter" => {"username" => "john"}})
+
+      assert_equal 2, Notifier.count
+      assert ! project.notifies?("IRC")
+      assert   project.notifies?("Twitter")
     end
 
     it "creates notifiers present in config even when they're disabled" do
@@ -309,13 +318,15 @@ class ProjectTest < Test::Unit::TestCase
       @project.config_for("IRC").should == {}
     end
 
-    specify "#notifies? is true if it uses the notifier" do
-      assert_equal false, @project.notifies?("UndefinedNotifier")
-      assert_equal false, @project.notifies?("IRC")
+    specify "#notifies? is true if the notifier exists and is enabled" do
+      assert ! @project.notifies?("UndefinedNotifier")
 
-      @project.update_attributes(:notifiers => [@irc])
+      @project.update_attributes(:notifiers =>
+        [ Notifier.gen(:irc, :enabled     => true),
+          Notifier.gen(:twitter, :enabled => false) ])
 
-      assert_equal true, @project.notifies?("IRC")
+      assert @project.notifies?("IRC")
+      assert ! @project.notifies?("Twitter")
     end
   end
 

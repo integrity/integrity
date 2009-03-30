@@ -3,7 +3,9 @@ module Integrity
     module Helpers
       module Notifiers
         def notifies?(notifier)
-          !! notifiers.first(:name => notifier)
+          return false unless notifier = notifiers.first(:name => notifier)
+
+          notifier.enabled?
         end
 
         def enabled_notifiers
@@ -16,25 +18,15 @@ module Integrity
         end
 
         def update_notifiers(to_enable, config)
-          disable_notifiers(to_enable)
-
           config.each_pair { |name, config|
             notifier = notifiers.first(:name => name)
             notifier ||= notifiers.new(:name => name)
 
-            notifier.enabled = true
+            notifier.enabled = to_enable.include?(name)
             notifier.config  = config
             notifier.save
           }
         end
-
-        private
-          def disable_notifiers(to_enable)
-            enabled_notifiers.select { |notifier|
-              ! to_enable.include?(notifier.name) }.
-                each { |notifier|
-                  notifier.update_attributes(:enabled => false) }
-          end
       end
     end
   end
