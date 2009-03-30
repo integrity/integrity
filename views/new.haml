@@ -29,8 +29,7 @@
     %input.hidden{ :name => "project_data[public]", :value => "0", :type => "hidden" }
     %input.checkbox#project_public{ checkbox("project_data[public]", @project.public?) }
 
-  - Integrity::Notifier.available.each do |notifier|
-    = notifier_form(notifier)
+  - notifier_form
 
   %p.submit
     %button.positive{ :type => "submit" }= @project.new_record? ? "Create Project" : "Update Project"

@@ -32,4 +32,21 @@ class IntegrityTest < Test::Unit::TestCase
     Integrity.config[:foo] = "bar"
     Integrity.config[:foo].should == "bar"
   end
+
+  describe "Registering a notifier" do
+    it "registers given notifier class" do
+      load "helpers/acceptance/textfile_notifier.rb"
+
+      Integrity.register_notifier(Integrity::Notifier::Textfile)
+      assert_equal Integrity::Notifier::Textfile, Integrity.notifiers["Textfile"]
+    end
+
+    it "raises ArgumentError if given class is not a valid notifier" do
+      assert_raise(ArgumentError) {
+        Integrity.register_notifier(Class.new)
+      }
+
+      assert Integrity.notifiers.empty?
+    end
+  end
 end

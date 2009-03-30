@@ -70,10 +70,11 @@ class Test::Unit::TestCase
   before(:each) do
     RR.reset
     DataMapper.auto_migrate!
-    Integrity.instance_variable_set(:@config, nil)
     Notifier.available.each { |n|
       Notifier.send(:remove_const, n.to_s.split(":").last.to_sym)
     }
+    Integrity.instance_variable_set(:@config, nil)
+    Integrity.instance_variable_set(:@notifiers, nil)
 
     repository(:default) do
       transaction = DataMapper::Transaction.new(repository)

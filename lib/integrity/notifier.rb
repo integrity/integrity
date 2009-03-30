@@ -14,8 +14,12 @@ module Integrity
     validates_is_unique :name, :scope => :project_id
     validates_present :project_id
 
+    def self.register(klass)
+      Integrity.register_notifier(klass)
+    end
+
     def self.available
-      constants.map { |name| const_get(name) }.select { |notifier| valid_notifier?(notifier) }
+      Integrity.notifiers
     end
 
     def notify_of_build(build)
@@ -23,14 +27,8 @@ module Integrity
     end
 
     private
-
       def to_const
-        self.class.module_eval(name)
+        self.class.available[name]
       end
-
-      def self.valid_notifier?(notifier)
-        notifier.respond_to?(:to_haml) && notifier.respond_to?(:notify_of_build) && notifier != Notifier::Base
-      end
-      private_class_method :valid_notifier?
   end
 end

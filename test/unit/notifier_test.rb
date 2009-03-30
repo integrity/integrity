@@ -66,18 +66,20 @@ class NotifierTest < Test::Unit::TestCase
     end
   end
 
-  it "knows which notifiers are available" do
+  test "managing available notifiers" do
     Notifier.gen(:irc)
-    Notifier.gen(:twitter)
-    Notifier.should have(2).available
-    Notifier.available.should include(Integrity::Notifier::IRC)
-    Notifier.available.should include(Integrity::Notifier::Twitter)
+    Notifier.register(Integrity::Notifier::IRC)
+
+    assert_equal 1, Notifier.available.size
   end
 
   it "knows how to notify the world of a build" do
-    irc   = Notifier.generate(:irc)
-    build = Integrity::Build.generate
-    Notifier::IRC.expects(:notify_of_build).with(build, irc.config)
+    irc   = Notifier.gen(:irc)
+    Notifier.register(Integrity::Notifier::IRC)
+    build = Build.gen
+
+    mock(Notifier::IRC).notify_of_build(build, irc.config) { nil }
+
     irc.notify_of_build(build)
   end
 end
