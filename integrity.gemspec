@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name    = "integrity"
-  s.version = "0.1.9.2"
-  s.date    = "2009-03-16"
+  s.version = "0.1.9.3"
+  s.date    = "2009-04-06"
 
   s.description = "Your Friendly Continuous Integration server. Easy, fun and painless!"
   s.summary     = "The easy and fun Continuous Integration server"
