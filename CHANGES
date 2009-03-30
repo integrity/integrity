@@ -1,10 +1,16 @@
-0.1.9.3 / unreleased
+0.1.9.3 / 2009-04-06
 ====================
 
-* Fix for when the commit identifier can't be retrieved
-  <http://integrity.lighthouseapp.com/projects/14308/tickets/116>
-* Fix two issues with MySQL
 * Fix one more URL issue
+* Fix that notifiers are always enabled
+* Fix for when the commit identifier can't be retrieved
+* Fix the schema to accept NULL commit author and message
+* Upgrade to DataMapper 0.9.11
+* Remove all of deprecation code, except on Notifier::Base
+* Notifiers were refactored and now require to be registered:
+    Integrity.register(Integrity::Notifier::IRC)
+* The installer do not migrate the database automagically after
+  a successful install anymore
 
 0.1.9.2 / 2009-03-28
 ====================
@@ -33,4 +39,4 @@
 * Fix the installer to work with the current Thor gem
 
 
-**There is no changelog for previous release :-)**
+(There is no changelog for previous release)
