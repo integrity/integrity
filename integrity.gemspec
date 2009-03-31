@@ -76,6 +76,9 @@ lib/integrity/notifier/test.rb
 lib/integrity/notifier/test/fixtures.rb
 lib/integrity/notifier/test/hpricot_matcher.rb
 lib/integrity/project.rb
+lib/integrity/project/deprecated.rb
+lib/integrity/project/notifiers.rb
+lib/integrity/project/push.rb
 lib/integrity/project_builder.rb
 lib/integrity/scm.rb
 lib/integrity/scm/git.rb
@@ -94,7 +97,6 @@ test/acceptance/error_page_test.rb
 test/acceptance/installer_test.rb
 test/acceptance/manual_build_project_test.rb
 test/acceptance/not_found_page_test.rb
-test/acceptance/notifier_test.rb
 test/acceptance/project_syndication_test.rb
 test/acceptance/stylesheet_test.rb
 test/acceptance/unauthorized_page_test.rb
@@ -102,6 +104,7 @@ test/helpers.rb
 test/helpers/acceptance.rb
 test/helpers/acceptance/email_notifier.rb
 test/helpers/acceptance/git_helper.rb
+test/helpers/acceptance/notifier_helper.rb
 test/helpers/acceptance/textfile_notifier.rb
 test/helpers/expectations.rb
 test/helpers/expectations/be_a.rb
@@ -115,6 +118,7 @@ test/unit/commit_test.rb
 test/unit/helpers_test.rb
 test/unit/integrity_test.rb
 test/unit/migrations_test.rb
+test/unit/notifier/base_test.rb
 test/unit/notifier/test_test.rb
 test/unit/notifier_test.rb
 test/unit/project_builder_test.rb
