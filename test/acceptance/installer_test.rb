@@ -24,7 +24,10 @@ class InstallerTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "Installing integrity into a given directory" do
-    assert install.include?("Awesome")
+    post_install_message = install
+
+    assert post_install_message.include?("Awesome")
+    assert post_install_message.include?("integrity migrate_db #{root.join("config.yml")}")
 
     assert root.join("builds").directory?
     assert root.join("log").directory?

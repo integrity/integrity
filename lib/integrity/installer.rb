@@ -21,7 +21,6 @@ module Integrity
         create_dir_structure
         copy_template_files
         edit_template_files
-        migrate_db(root.join("config.yml"))
         puts post_install_message
       end
     end
@@ -109,6 +108,11 @@ EOF
         <<EOF
 Awesome! Integrity was installed successfully!
 
+To complete the installation, please configure the `database_uri` in
+#{root.join("config.yml")} and install the matching DataMapper adapter if
+necessary. Then, run `integrity migrate_db #{root.join("config.yml")}
+
+== Notifiers
 If you want to enable notifiers, install the gems and then require them
 in #{root}/config.ru
 
