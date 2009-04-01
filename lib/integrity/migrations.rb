@@ -143,7 +143,8 @@ module Integrity
       end
 
       down do
-        modify_table(:integrity_notifiers) { remove_column :enabled }
+        # TODO: sqlite doesn't support DROP COLUMN ...
+        # modify_table(:integrity_notifiers) { drop_column :enabled }
       end
     end
   end

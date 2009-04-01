@@ -68,27 +68,20 @@ class Test::Unit::TestCase
   end
 
   before(:each) do
+    require "integrity/migrations"
+    [Project, Build, Commit, Notifier].each(&:auto_migrate_down!)
+    capture_stdout { Integrity.migrate_db }
+
     RR.reset
-    DataMapper.auto_migrate!
+
     Notifier.available.each { |n|
       Notifier.send(:remove_const, n.to_s.split(":").last.to_sym)
     }
     Integrity.instance_variable_set(:@config, nil)
     Integrity.instance_variable_set(:@notifiers, nil)
-
-    repository(:default) do
-      transaction = DataMapper::Transaction.new(repository)
-      transaction.begin
-      repository.adapter.push_transaction(transaction)
-    end
   end
 
   after(:each) do
-    repository(:default) do
-      while repository.adapter.current_transaction
-        repository.adapter.current_transaction.rollback
-        repository.adapter.pop_transaction
-      end
-    end
+    capture_stdout { Integrity::Migrations.migrate_down! }
   end
 end
