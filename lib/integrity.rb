@@ -29,13 +29,6 @@ require "integrity/notifier"
 require "integrity/helpers"
 require "integrity/app"
 
-# http://github.com/datamapper/dm-more/commit/13bbcc8592fc391d03d12383d1da6c280c33132a
-# http://integrity.lighthouseapp.com/projects/14308/tickets/92
-# http://datamapper.lighthouseapp.com/projects/20609/tickets/802
-class DataMapper::Types::URI
-  size 255
-end
-
 module Integrity
   def self.new(config=nil)
     if config.is_a?(String) && File.file?(config)
