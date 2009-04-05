@@ -11,7 +11,8 @@ module Integrity
     property :started_at,   DateTime
     property :completed_at, DateTime
 
-    belongs_to :commit, :class_name => "Integrity::Commit"
+    belongs_to :commit, :class_name => "Integrity::Commit",
+                        :child_key => [:commit_id]
 
     def self.pending
       all(:started_at => nil)
