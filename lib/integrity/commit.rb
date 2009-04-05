@@ -21,7 +21,8 @@ module Integrity
     end
 
     def author
-      attribute_get(:author) || Author.load('<Commit author not loaded> <<Commit author not loaded>>', :author)
+      attribute_get(:author) ||
+        Author.load('<Commit author not loaded> <<Commit author not loaded>>', :author)
     end
 
     def short_identifier

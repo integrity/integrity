@@ -32,6 +32,8 @@ class CommitTest < Test::Unit::TestCase
       commit.author.name.should == "Nicolás Sanguinetti"
       commit.author.email.should == "contacto@nicolassanguinetti.info"
       commit.author.full.should == "Nicolás Sanguinetti <contacto@nicolassanguinetti.info>"
+
+      Commit.gen(:author => nil).author.to_s.should =~ /not loaded/
     end
 
     it "raises ArgumentError with invalid author" do
@@ -41,6 +43,8 @@ class CommitTest < Test::Unit::TestCase
     it "has a commit message" do
       commit = Commit.gen(:message => "This commit rocks")
       commit.message.should == "This commit rocks"
+
+      Commit.gen(:message => nil).message.should =~ /not loaded/
     end
 
     it "has a commit date" do
