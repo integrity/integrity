@@ -121,7 +121,7 @@ module Integrity
     get "/:project/commits/:commit" do
       login_required unless current_project.public?
 
-      show :build, :title => ["projects", current_project.permalink, current_commit.short_commit_identifier]
+      show :build, :title => ["projects", current_project.permalink, current_commit.short_identifier]
     end
 
     get "/:project/builds/:commit" do

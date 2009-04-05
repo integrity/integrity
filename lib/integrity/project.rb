@@ -1,12 +1,10 @@
 require "integrity/project/notifiers"
 require "integrity/project/push"
-require "integrity/project/deprecated"
 
 module Integrity
   class Project
     include DataMapper::Resource
 
-    include Helpers::Deprecated
     include Helpers::Notifiers
     include Helpers::Push
 
