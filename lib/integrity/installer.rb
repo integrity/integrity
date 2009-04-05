@@ -44,6 +44,7 @@ module Integrity
 
       File.file?(options[:config].to_s) ?
         Integrity.new(options[:config]) : Integrity.new
+      Integrity.config[:base_uri] = "http://0.0.0.0:#{options[:port]}"
 
       DataMapper.auto_migrate!
 
