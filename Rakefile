@@ -11,15 +11,6 @@ end
 desc "Default: run all tests"
 task :default => :test
 
-desc "Install Integrity dependencies"
-task :setup do
-  puts "NOTE: assuming you have gems.github.com in your gem sources"
-
-  system "gem install " +
-    spec.dependencies.select { |dep| dep.type == :runtime }.
-      collect(&:name).join(" ")
-end
-
 desc "Launch Integrity real quick"
 task :launch do
   ruby "bin/integrity launch"
@@ -34,15 +25,6 @@ namespace :test do
 
   Rake::TestTask.new(:acceptance) do |t|
     t.test_files = FileList["test/acceptance/*_test.rb"]
-  end
-
-  desc "Install tests dependencies"
-  task :setup do
-    puts "NOTE: assuming you have gems.github.com in your gem sources"
-
-    system "gem install " +
-      spec.dependencies.select { |dep| dep.type  == :development }.
-        collect(&:name).join(" ")
   end
 end
 
