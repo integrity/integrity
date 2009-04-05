@@ -52,12 +52,5 @@ module Integrity
     def output
       build && build.output
     end
-
-    # Deprecation layer
-    alias :short_commit_identifier :short_identifier
-    alias :commit_identifier       :identifier
-    alias :commit_author           :author
-    alias :commit_message          :message
-    alias :commited_at             :committed_at
   end
 end
