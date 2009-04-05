@@ -10,8 +10,11 @@ module Integrity
     property :created_at,   DateTime
     property :updated_at,   DateTime
 
-    has 1,     :build,   :class_name => "Integrity::Build", :order => [:created_at.desc]
-    belongs_to :project, :class_name => "Integrity::Project"
+    has 1,     :build,   :class_name => "Integrity::Build",
+                         :order => [:created_at.desc]
+
+    belongs_to :project, :class_name => "Integrity::Project",
+                         :child_key => [:project_id]
 
     def message
       attribute_get(:message) || "<Commit message not loaded>"

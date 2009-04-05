@@ -6,10 +6,11 @@ module Integrity
 
     property :id,      Integer,  :serial => true
     property :name,    String,   :nullable => false
-    property :enabled, Boolean,  :nullable => false, :default  => false
-    property :config,  Yaml,     :nullable => false, :lazy => false
+    property :enabled, Boolean,  :nullable => false, :default => false
+    property :config,  Yaml,     :nullable => false, :lazy    => false
 
-    belongs_to :project, :class_name => "Integrity::Project"
+    belongs_to :project, :class_name => "Integrity::Project",
+                         :child_key => [:project_id]
 
     validates_is_unique :name, :scope => :project_id
     validates_present :project_id
