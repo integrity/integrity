@@ -77,8 +77,9 @@ class Test::Unit::TestCase
     Notifier.available.each { |n|
       Notifier.send(:remove_const, n.to_s.split(":").last.to_sym)
     }
+
+    Notifier.available.clear
     Integrity.instance_variable_set(:@config, nil)
-    Integrity.instance_variable_set(:@notifiers, nil)
   end
 
   after(:each) do

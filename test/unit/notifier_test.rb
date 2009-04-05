@@ -66,11 +66,23 @@ class NotifierTest < Test::Unit::TestCase
     end
   end
 
-  test "managing available notifiers" do
-    Notifier.gen(:irc)
-    Notifier.register(Integrity::Notifier::IRC)
+  describe "Registering a notifier" do
+    it "registers given notifier class" do
+      load "helpers/acceptance/textfile_notifier.rb"
 
-    assert_equal 1, Notifier.available.size
+      Notifier.register(Integrity::Notifier::Textfile)
+
+      assert_equal Integrity::Notifier::Textfile,
+        Notifier.available["Textfile"]
+    end
+
+    it "raises ArgumentError if given class is not a valid notifier" do
+      assert_raise(ArgumentError) {
+        Notifier.register(Class.new)
+      }
+
+      assert Notifier.available.empty?
+    end
   end
 
   it "knows how to notify the world of a build" do
