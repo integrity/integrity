@@ -352,13 +352,12 @@ class ProjectTest < Test::Unit::TestCase
       }.should change(Commit, :count).by(1)
 
       build = Build.all.last
-      build.commit.should be(@project.last_commit)
+      build.commit.should == @project.last_commit
 
       @project.last_commit.should be_pending
-      @project.last_commit.identifier.should be("FOOBAR")
-
+      @project.last_commit.identifier.should  == "FOOBAR"
       @project.last_commit.author.name.should == "<Commit author not loaded>"
-      @project.last_commit.message.should == "<Commit message not loaded>"
+      @project.last_commit.message.should     == "<Commit message not loaded>"
     end
   end
 end

@@ -84,8 +84,8 @@ module Integrity
         create_table :integrity_commits do
           column :id,           Integer,  :serial => true
           column :identifier,   String,   :nullable => false
-          column :message,      String,   :nullable => false, :length => 255
-          column :author,       String,   :nullable => false, :length => 255
+          column :message,      String,   :nullable => true, :length => 255
+          column :author,       String,   :nullable => true, :length => 255
           column :committed_at, DateTime, :nullable => false
           column :created_at,  DateTime
           column :updated_at,  DateTime
