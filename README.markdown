@@ -18,8 +18,11 @@ Try it!
 Run the test suite
 ------------------
 
-Install the test dependencies with `rake test:setup` and
-run the test suite with `rake test`.
+1. Ensure you have `gems.github.com` in your gem sources:
+   `gem sources -a http://gems.github.com`
+2. Install the runtime and development dependencies:
+   `gem build integrity.gemspec && gem install *.gem --development`.
+3. Run the test suite: `rake test`
 
 Thanks
 ------
