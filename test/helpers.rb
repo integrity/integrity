@@ -1,37 +1,30 @@
 $:.unshift File.dirname(__FILE__) + "/../lib", File.dirname(__FILE__)
 
-%w(test/unit
-context
-pending
-matchy
-storyteller
-webrat/sinatra
-rr
-mocha
-dm-sweatshop).each { |dependency|
-  begin
-    require dependency
-  rescue LoadError => e
-    puts "You're missing some gems required to run the tests."
-    puts "Please run `rake test:setup`"
-    puts "NOTE: You'll probably need to run that command as root or with sudo."
+require "rubygems"
 
-    puts "Thanks :)"
-    puts
+require "test/unit"
+require "rr"
+require "mocha"
+require "dm-sweatshop"
+require "webrat/sinatra"
 
-    raise
-  end
-}
+gem "jeremymcanally-context"
+gem "jeremymcanally-matchy"
+gem "jeremymcanally-pending"
+require "context"
+require "matchy"
+require "pending"
+
+require "integrity"
+require "integrity/notifier/test/fixtures"
+
+require "helpers/expectations"
 
 begin
   require "ruby-debug"
   require "redgreen"
 rescue LoadError
 end
-
-require "integrity"
-require "helpers/expectations"
-require "integrity/notifier/test/fixtures"
 
 module TestHelper
   def ignore_logs!
@@ -65,10 +58,11 @@ class Test::Unit::TestCase
 
   before(:all) do
     DataMapper.setup(:default, "sqlite3::memory:")
+
+    require "integrity/migrations"
   end
 
   before(:each) do
-    require "integrity/migrations"
     [Project, Build, Commit, Notifier].each(&:auto_migrate_down!)
     capture_stdout { Integrity.migrate_db }
 
