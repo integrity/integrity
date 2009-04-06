@@ -1,5 +1,4 @@
 require "rake/testtask"
-require "rake/clean"
 
 def spec
   @spec ||= begin
@@ -19,10 +18,12 @@ end
 desc "Run tests"
 task :test => %w(test:units test:acceptance)
 namespace :test do
+  desc "Run unit tests"
   Rake::TestTask.new(:units) do |t|
     t.test_files = FileList["test/unit/*_test.rb"]
   end
 
+  desc "Run acceptance tests"
   Rake::TestTask.new(:acceptance) do |t|
     t.test_files = FileList["test/acceptance/*_test.rb"]
   end
@@ -30,19 +31,14 @@ end
 
 begin
   require "mg"
-  MG.new("integrity.gemspec")
-rescue LoadError
-end
-
-begin
   require "metric_fu"
+
+  MG.new("integrity.gemspec")
 rescue LoadError
 end
 
 desc "Special task for running tests on <http://builder.integrityapp.com>"
 task :ci do
-  sh "git submodule update --init"
-
   Rake::Task["test"].invoke
 
   metrics = %w(flay flog:all reek roodi saikuro)
@@ -52,10 +48,10 @@ task :ci do
   mv "tmp/metric_fu", "/var/www/integrity-metrics"
 
   File.open("/var/www/integrity-metrics/index.html", "w") { |f|
-    f << "<ul>"
+    f.puts "<ul>"
     metrics.map { |m| m.split(":").first }.each { |m|
-      f << %Q(<li><a href="/#{m}">#{m}</a></li>)
+      f.puts %Q(<li><a href="/#{m}">#{m}</a></li>)
     }
-    f << "</ul>"
+    f.puts "</ul>"
   }
 end
