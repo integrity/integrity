@@ -43,7 +43,7 @@ Gem::Specification.new do |s|
   s.files = %w[
 .gitignore
 CHANGES
-README.markdown
+README.md
 Rakefile
 bin/integrity
 config/config.sample.ru
@@ -76,7 +76,6 @@ lib/integrity/notifier/test.rb
 lib/integrity/notifier/test/fixtures.rb
 lib/integrity/notifier/test/hpricot_matcher.rb
 lib/integrity/project.rb
-lib/integrity/project/deprecated.rb
 lib/integrity/project/notifiers.rb
 lib/integrity/project/push.rb
 lib/integrity/project_builder.rb
@@ -111,7 +110,6 @@ test/helpers/expectations/be_a.rb
 test/helpers/expectations/change.rb
 test/helpers/expectations/have.rb
 test/helpers/expectations/predicates.rb
-test/helpers/fixtures.rb
 test/helpers/initial_migration_fixture.sql
 test/unit/build_test.rb
 test/unit/commit_test.rb
