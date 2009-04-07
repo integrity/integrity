@@ -63,7 +63,7 @@ class Test::Unit::TestCase
   end
 
   before(:each) do
-    [Project, Build, Commit, Notifier].each(&:auto_migrate_down!)
+    [Project, Build, Commit, Notifier].each{ |i| i.auto_migrate_down! }
     capture_stdout { Integrity.migrate_db }
 
     RR.reset

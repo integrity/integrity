@@ -23,7 +23,7 @@ class MigrationsTest < Test::Unit::TestCase
   end
 
   before(:each) do
-    [Project, Build, Commit, Notifier].each(&:auto_migrate_down!)
+    [Project, Build, Commit, Notifier].each{ |i| i.auto_migrate_down! }
     database_adapter.execute("DROP TABLE migration_info")
     assert !table_exists?("migration_info") # just to be sure
   end
