@@ -17,7 +17,7 @@ module Integrity
 
     def initialize(project)
       @project = project
-      @scm = SCM.new(uri, branch, export_directory)
+      @scm     = SCM.new(uri, branch, export_directory)
     end
 
     def build(commit)
