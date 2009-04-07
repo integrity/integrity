@@ -56,14 +56,14 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
   include Webrat::Matchers
   include Webrat::HaveTagMatcher
 
-  # TODO: does this belongs in Webrat::SinatraSession?
   Webrat::Methods.delegate_to_session :response_code
 
   def app
-    Integrity::App.tap { |app|
-      app.set     :environment, :test
-      app.disable :raise_errors, :run, :reload
-    }
+    Integrity::App
+  end
+
+  before(:all) do
+    app.set(:environment, :test)
   end
 
   before(:each) do
@@ -79,5 +79,4 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
     destroy_all_git_repos
     rm_r export_directory if File.directory?(export_directory)
   end
-
 end
