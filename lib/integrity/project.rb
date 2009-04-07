@@ -4,9 +4,7 @@ require "integrity/project/push"
 module Integrity
   class Project
     include DataMapper::Resource
-
-    include Helpers::Notifiers
-    include Helpers::Push
+    include Notifiers, Push
 
     property :id,         Integer,  :serial => true
     property :name,       String,   :nullable => false
@@ -30,6 +28,7 @@ module Integrity
     def build(commit_identifier="HEAD")
       commit_identifier = head_of_remote_repo if commit_identifier == "HEAD"
       commit = find_or_create_commit_with_identifier(commit_identifier)
+
       Build.queue(commit)
     end
 
@@ -38,7 +37,8 @@ module Integrity
     end
 
     def previous_commits
-      commits.all(:project_id => id, :order => [:committed_at.desc]).tap {|commits| commits.shift }
+      commits.all(:project_id => id, :order => [:committed_at.desc]).
+        tap {|commits| commits.shift }
     end
 
     def status
@@ -57,7 +57,7 @@ module Integrity
     end
 
     private
-      def find_or_create_commit_with_identifier(commit_identifier)
+      def find_or_create_commit_with_identifier(identifier)
         # We abuse +committed_at+ here setting it to Time.now because we use it
         # to sort (for last_commit and previous_commits). I don't like this
         # very much, but for now it's the only solution I can find.
@@ -67,7 +67,8 @@ module Integrity
         #
         # This might also make your commit listings a little jumpy, if some
         # commits change place every time a build finishes =\
-        commits.first_or_create({ :identifier => commit_identifier, :project_id => id }, :committed_at => Time.now)
+        commits.first_or_create({:identifier => identifier, :project_id => id},
+          :committed_at => Time.now)
       end
 
       def head_of_remote_repo
@@ -75,15 +76,15 @@ module Integrity
       end
 
       def set_permalink
-        self.permalink = (name || "").downcase.
+        attribute_set(:permalink, (name || "").downcase.
           gsub(/'s/, "s").
           gsub(/&/, "and").
           gsub(/[^a-z0-9]+/, "-").
-          gsub(/-*$/, "")
+          gsub(/-*$/, ""))
       end
 
       def delete_working_directory
-        commits.all(:project_id => id).destroy!
+        commits.destroy!
         ProjectBuilder.delete_working_directory(self)
       rescue SCM::SCMUnknownError => error
         Integrity.log "Problem while trying to deleting code: #{error}"
