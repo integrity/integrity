@@ -29,16 +29,10 @@ namespace :test do
   end
 end
 
-begin
-  require "mg"
-  require "metric_fu"
-
-  MG.new("integrity.gemspec")
-rescue LoadError
-end
-
 desc "Special task for running tests on <http://builder.integrityapp.com>"
 task :ci do
+  require "metric_fu"
+
   Rake::Task["test"].invoke
 
   metrics = %w(flay flog:all reek roodi saikuro)
@@ -55,3 +49,10 @@ task :ci do
     f.puts "</ul>"
   }
 end
+
+begin
+  require "mg"
+  MG.new("integrity.gemspec")
+rescue LoadError
+end
+
