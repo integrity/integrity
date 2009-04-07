@@ -8,7 +8,7 @@ class ErrorPageTest < Test::Unit::AcceptanceTestCase
   EOS
 
   scenario "an error happen while I am browsing my Integrity install" do
-    stub(Project).only_public_unless(false) { raise ArgumentError }
+    stub(Project).all { raise ArgumentError }
     lambda { visit "/" }.should raise_error(Webrat::PageLoadError)
 
     response_code.should == 500
