@@ -27,14 +27,6 @@ module Integrity
 
     validates_is_unique :name
 
-    def self.only_public_unless(condition)
-      if condition
-        all
-      else
-        all(:public => true)
-      end
-    end
-
     def build(commit_identifier="HEAD")
       commit_identifier = head_of_remote_repo if commit_identifier == "HEAD"
       commit = find_or_create_commit_with_identifier(commit_identifier)

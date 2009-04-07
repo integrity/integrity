@@ -32,7 +32,7 @@ module Integrity
     end
 
     get "/?" do
-      @projects = Project.only_public_unless(authorized?)
+      @projects = authorized? ? Project.all : Project.all(:public => true)
       show :home, :title => "projects"
     end
 
