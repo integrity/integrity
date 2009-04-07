@@ -8,7 +8,7 @@ class NotFoundPageTest < Test::Unit::AcceptanceTestCase
   EOS
 
   scenario "chilling on some Integrity instance found via The Holy Hub" do
-    project = Project.gen
+    project = Project.gen(:public => true)
 
     visit "/42"
     assert_equal 404, response_code
