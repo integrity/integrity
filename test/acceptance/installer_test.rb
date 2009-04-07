@@ -53,6 +53,8 @@ class InstallerTest < Test::Unit::AcceptanceTestCase
 
     assert root.join("public").directory?
     assert root.join("tmp").directory?
+
+    assert ! root.join("thin.yml").file?
   end
 
   scenario "Installing Integrity for Thin" do
