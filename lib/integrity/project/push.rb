@@ -12,15 +12,16 @@ module Integrity
             [ payload["commits"].first ]
           end
 
-        commits.each do |commit_data|
-          create_commit_from(commit_data)
-          build(commit_data["id"])
-        end
+        commits.each { |commit_data|
+          commit = commit_from(commit_data)
+          commit.create
+          build(commit.identifier)
+        }
       end
 
       private
-        def create_commit_from(data)
-          commits.create(:identifier => data["id"],
+        def commit_from(data)
+          commits.new(:identifier => data["id"],
             :author  => "#{data["author"]["name"]} <#{data["author"]["email"]}>",
             :message => data["message"],
             :committed_at => data["timestamp"])
