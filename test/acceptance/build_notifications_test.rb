@@ -1,5 +1,7 @@
 require File.dirname(__FILE__) + "/../helpers/acceptance"
 require "helpers/acceptance/notifier_helper"
+require "helpers/acceptance/textfile_notifier"
+require "helpers/acceptance/email_notifier"
 
 class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
   include NotifierHelper
@@ -13,8 +15,6 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
   before(:each) do
     # This is needed before any available notifier is unset
     # in the global #before
-    load "helpers/acceptance/textfile_notifier.rb"
-    load "helpers/acceptance/email_notifier.rb"
     Notifier.register(Integrity::Notifier::Textfile)
     Notifier.register(Integrity::Notifier::Email)
   end

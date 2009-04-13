@@ -1,15 +1,11 @@
-require File.dirname(__FILE__) + "/../helpers"
+require File.dirname(__FILE__) + "/../helpers/acceptance"
 require "helpers/acceptance/email_notifier"
+require "helpers/acceptance/textfile_notifier"
 
 require "integrity/notifier/test"
 
 class NotifierTestTest < Test::Unit::TestCase
   include Integrity::Notifier::Test
-
-  before(:each) do
-    # Because we unset every notifier in global setup
-    load "helpers/acceptance/textfile_notifier.rb"
-  end
 
   def notifier
     "Textfile"
