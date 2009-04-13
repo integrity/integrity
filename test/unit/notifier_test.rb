@@ -1,4 +1,5 @@
 require File.dirname(__FILE__) + "/../helpers"
+require "helpers/acceptance/textfile_notifier"
 
 class NotifierTest < Test::Unit::TestCase
   specify "IRC fixture is valid and can be saved" do
@@ -68,8 +69,6 @@ class NotifierTest < Test::Unit::TestCase
 
   describe "Registering a notifier" do
     it "registers given notifier class" do
-      load "helpers/acceptance/textfile_notifier.rb"
-
       Notifier.register(Integrity::Notifier::Textfile)
 
       assert_equal Integrity::Notifier::Textfile,

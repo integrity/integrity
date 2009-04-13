@@ -65,13 +65,6 @@ class Test::Unit::TestCase
   before(:each) do
     [Project, Build, Commit, Notifier].each{ |i| i.auto_migrate_down! }
     capture_stdout { Integrity.migrate_db }
-
-    RR.reset
-
-    Notifier.available.each { |n|
-      Notifier.send(:remove_const, n.to_s.split(":").last.to_sym)
-    }
-
     Notifier.available.clear
     Integrity.instance_variable_set(:@config, nil)
   end
