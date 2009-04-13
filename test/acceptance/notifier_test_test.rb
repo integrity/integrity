@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/../../helpers"
+require File.dirname(__FILE__) + "/../helpers"
 require "helpers/acceptance/email_notifier"
 
 require "integrity/notifier/test"
