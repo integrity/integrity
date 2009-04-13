@@ -1,5 +1,5 @@
 require File.dirname(__FILE__) + "/../../helpers"
-require "helpers/acceptance/textfile_notifier"
+require "helpers/acceptance/email_notifier"
 
 require "integrity/notifier/test"
 
