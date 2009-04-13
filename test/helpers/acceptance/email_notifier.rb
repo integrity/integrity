@@ -1,6 +1,3 @@
-require 'rubygems'
-require 'integrity'
-
 module Integrity
   class Notifier
     class Email < Notifier::Base
