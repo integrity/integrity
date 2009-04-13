@@ -4,7 +4,6 @@ module Integrity
   module Helpers
     include Authorization
     include Breadcrumbs
-    include Forms
     include PrettyOutput
     include Rendering
     include Resources
