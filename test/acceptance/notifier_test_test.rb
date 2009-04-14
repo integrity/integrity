@@ -10,7 +10,6 @@ class NotifierTestTest < Test::Unit::TestCase
   setup do
     @notifier = Integrity::Notifier::Textfile
     @config   = {"file" => "/tmp/integrity.txt"}
-    @build    = Integrity::Build.gen(:successful)
 
     FileUtils.rm @config["file"] if File.exists?(@config["file"])
   end
@@ -20,16 +19,19 @@ class NotifierTestTest < Test::Unit::TestCase
   end
 
   test "it provides a formulary to configure options" do
-    assert_form_have_option("file", @config["file"])
+    assert provides_option?("file")
+    assert provides_option?("file", @config["file"])
   end
 
   test "it sends notification" do
-    @notifier.notify_of_build(@build, @config)
+    build = build(:successful)
+
+    @notifier.notify_of_build(build, @config)
 
     notification = File.read(@config["file"])
 
     assert notification.start_with?("===")
-    assert notification.include?(@build.commit.identifier)
+    assert notification.include?(build.commit.identifier)
     assert notification.include?("successful")
   end
 end
