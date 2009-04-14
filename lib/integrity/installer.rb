@@ -50,8 +50,7 @@ module Integrity
 
       Thin::Server.start("0.0.0.0", options[:port], Integrity::App)
     rescue LoadError => boom
-      missing_dependency = boom.message.split("--").last.lstrip
-      puts "Please install #{missing_dependency} to launch Integrity"
+      puts "Make sure thin and do_sqlite3 are insatalled"
     end
 
     private
