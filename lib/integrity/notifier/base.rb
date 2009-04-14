@@ -2,7 +2,7 @@ module Integrity
   class Notifier
     class Base
       def self.notify_of_build(build, config)
-        Integrity.log "Notifying of build #{build.commit.short_identifier} using the #{self.class} notifier"
+        Integrity.log "Notifying of build #{build.commit.short_identifier} using the #{to_s} notifier"
         Timeout.timeout(8) { new(build.commit, config).deliver! }
       rescue Timeout::Error
         Integrity.log "#{notifier.name} notifier timed out"
