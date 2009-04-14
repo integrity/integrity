@@ -39,7 +39,7 @@ module Integrity
     ensure
       build.complete!
       commit.update_attributes(scm.info(commit.identifier) || {})
-      project.notifiers.each { |notifier| notifier.notify_of_build(build) }
+      project.enabled_notifiers.each { |notifier| notifier.notify_of_build(build) }
     end
 
     def delete_code

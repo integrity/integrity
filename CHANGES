@@ -1,3 +1,9 @@
+0.1.9.4 / unreleased
+====================
+
+* Fix that notifications are sent to every notifiers,
+  including disabled ones
+
 0.1.9.3 / 2009-04-06
 ====================
 

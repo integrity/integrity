@@ -46,6 +46,25 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     notification.should =~ /Build Output:\n\nRunning tests...\n/
   end
 
+  scenario "an admin sets up the Textfile notifier but do not enable it" do
+    git_repo(:my_test_project).add_successful_commit
+    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
+    rm_f "/tmp/textfile_notifications.txt"
+
+    login_as "admin", "test"
+
+    visit "/my-test-project"
+
+    click_link "Edit Project"
+    uncheck "enabled_notifiers_textfile"
+    fill_in "File", :with => "/tmp/textfile_notifications.txt"
+    click_button "Update Project"
+
+    click_button "manual build"
+
+    assert ! File.file?("/tmp/textfile_notifications.txt")
+  end
+
   scenario "an admin can setup a notifier without enabling it" do
     Project.gen(:integrity)
 
