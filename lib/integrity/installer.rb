@@ -5,6 +5,11 @@ module Integrity
   class Installer < Thor
     include FileUtils
 
+    def self.database_path
+      File.join(ENV["HOME"], ".integrity.sqlite3")
+    end
+    private_class_method :database_path
+
     desc "install [PATH]",
        "Copy template files to PATH for desired deployement strategy
        (either Thin, Passenger or Heroku). Next, go there and edit them."
@@ -36,21 +41,24 @@ module Integrity
     end
 
     desc "launch [CONFIG]",
-         "Launch Integrity real quick."
-    method_options :config => :optional, :port => 4567
+         "Launch Integrity real quick. Database is saved in #{database_path}."
+    method_options :config => :optional, :port => :optional
     def launch
       require "thin"
       require "do_sqlite3"
 
-      File.file?(options[:config].to_s) ?
-        Integrity.new(options[:config]) : Integrity.new
-      Integrity.config[:base_uri] = "http://0.0.0.0:#{options[:port]}"
+      options[:port] ||= 4567
+      config = { :database_uri => "sqlite3://#{ENV["HOME"]}/.integrity.db",
+                 :base_uri     => "http://0.0.0.0:#{options[:port]}",
+                 :export_directory => "/tmp/integrity-exports"             }
+      config.merge!(YAML.load_file(options[:config])) if options[:config]
 
-      DataMapper.auto_migrate!
+      migrate_db(config)
 
       Thin::Server.start("0.0.0.0", options[:port], Integrity::App)
     rescue LoadError => boom
-      puts "Make sure thin and do_sqlite3 are insatalled"
+      $stderr << "Make sure thin and do_sqlite3 are insatalled\n\n"
+      raise
     end
 
     private
