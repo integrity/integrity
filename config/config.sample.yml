@@ -23,6 +23,10 @@
 # Path to the integrity log file
 :log: /var/log/integrity.log
 
+# If set to true integrity will do a build for each commit.  Otherwise
+# it will only do a build for each set of commits (i.e. each push)
+:build_all_commits: true
+
 # Enable or disable HTTP authentication for the app. BE AWARE that if you
 # disable this anyone can delete and alter projects, so do it only if your
 # app is running in a controlled environment (ie, behind your company's
