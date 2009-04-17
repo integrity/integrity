@@ -63,7 +63,6 @@ lib/integrity/core_ext/object.rb
 lib/integrity/helpers.rb
 lib/integrity/helpers/authorization.rb
 lib/integrity/helpers/breadcrumbs.rb
-lib/integrity/helpers/forms.rb
 lib/integrity/helpers/pretty_output.rb
 lib/integrity/helpers/rendering.rb
 lib/integrity/helpers/resources.rb
@@ -117,7 +116,6 @@ test/unit/helpers_test.rb
 test/unit/integrity_test.rb
 test/unit/migrations_test.rb
 test/unit/notifier/base_test.rb
-test/unit/notifier/test_test.rb
 test/unit/notifier_test.rb
 test/unit/project_builder_test.rb
 test/unit/project_test.rb
