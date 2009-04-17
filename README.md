@@ -27,7 +27,7 @@ Run the test suite
 Thanks
 ------
 
-Thanks to the fellowing people for their feedbacks, ideas and patches :
+Thanks to the following people for their feedbacks, ideas and patches :
 
 * [James Adam][james]
 * [Elliott Cable][ec]
