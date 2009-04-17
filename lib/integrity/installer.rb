@@ -107,6 +107,7 @@ Your Integrity install is ready to be deployed onto Heroku. Next steps:
 
   1. git init && git add . && git commit -am "Initial import"
   2. heroku create
+  3. Add heroku-given domain as :base_uri in integrity-config.rb
   3. git push heroku master
   4. heroku rake db:migrate
 EOF
