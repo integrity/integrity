@@ -70,7 +70,7 @@ class InstallerTest < Test::Unit::AcceptanceTestCase
   scenario "Installing Integrity for Heroku" do
     message = install("--heroku")
 
-    assert_equal "integrity --version 0.1.9.0", root.join(".gems").read.chomp
+    assert_equal "integrity --version 0.1.9.3", root.join(".gems").read.chomp
 
     assert root.join("Rakefile").file?
     assert root.join("integrity-config.rb").file?
