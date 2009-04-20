@@ -11,9 +11,9 @@ Integrity
 Try it!
 -------
 
-    $ git clone git://github.com/foca/integrity.git
+    $ git clone git://github.com/integrity/integrity.git
     $ rake launch
-    # Navigate to <http://0.0.0.0:4567>
+    $ open http://0.0.0.0:4567/
 
 Run the test suite
 ------------------
@@ -65,7 +65,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 [website]: http://integrityapp.com
 [demo]: http://builder.integrityapp.com
-[repo]: http://github.com/foca/integrity
+[repo]: http://github.com/integrity/integrity
 [lighthouse]: http://integrity.lighthouseapp.com/projects/14308-integrity
 [irc-channel]: irc://irc.freenode.net/integrity
 
