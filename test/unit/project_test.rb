@@ -145,6 +145,20 @@ class ProjectTest < Test::Unit::TestCase
     end
   end
 
+  describe "Finding any project" do
+    before(:each) do
+      @rails   = Project.gen(:name => "rails",   :public => true)
+      @merb    = Project.gen(:name => "merb",    :public => true)
+      @sinatra = Project.gen(:name => "sinatra", :public => true)
+      @camping = Project.gen(:name => "camping", :public => false)
+    end
+
+    it "should always be ordered by name" do
+      Project.all.should == [@camping, @merb, @rails, @sinatra]
+      Project.all(:public => true).should == [@merb, @rails, @sinatra]
+    end
+  end
+
   describe "When finding its previous builds" do
     before(:each) do
       @project = Project.generate(:commits => 5.of { Commit.gen })
