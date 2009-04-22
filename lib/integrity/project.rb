@@ -17,6 +17,8 @@ module Integrity
     property :created_at, DateTime
     property :updated_at, DateTime
 
+    default_scope(:default).update(:order => [:name.asc])
+
     has n, :commits, :class_name => "Integrity::Commit"
     has n, :notifiers, :class_name => "Integrity::Notifier"
 
