@@ -61,6 +61,13 @@ class BrowsePublicProjectsTest < Test::Unit::TestCase
       }
     end
 
+    test "build commit" do
+      assert_equal "/ci/foo-bar/commits/#{@commit.identifier}/builds",
+        @h.commit_path(@build.commit, :builds)
+      assert_equal "http://example.org/ci/foo-bar/commits/#{@commit.identifier}/builds",
+        @h.commit_url(@build.commit, :builds).to_s
+    end
+
     test "compat" do
       silence_warnings {
         assert_equal @h.build_path(@build), @h.commit_path(@build.commit)
