@@ -17,12 +17,12 @@ module Integrity
         project_url(project, path).path
       end
 
-      def commit_url(commit)
-        project_url(commit.project, "commits", commit.identifier)
+      def commit_url(commit, *path)
+        project_url(commit.project, ["commits", commit.identifier, *path].flatten)
       end
 
       def commit_path(commit, *path)
-        commit_url(commit).path
+        commit_url(commit, *path).path
       end
 
       def build_path(build, *path)
