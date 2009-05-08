@@ -53,7 +53,7 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
     click_button "Update Project"
 
     visit "/my-test-project"
-    click_button "Build the last commit"
+    click_button "Fetch and build"
 
     assert_have_tag("h1", :content => "success")
   end
