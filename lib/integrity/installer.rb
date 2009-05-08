@@ -47,7 +47,8 @@ module Integrity
       require "thin"
       require "do_sqlite3"
 
-      options[:port] ||= 4567
+      port = options[:port] || 4567
+
       config = { :database_uri => "sqlite3://#{ENV["HOME"]}/.integrity.db",
                  :base_uri     => "http://0.0.0.0:#{options[:port]}",
                  :export_directory => "/tmp/integrity-exports"             }
@@ -55,7 +56,7 @@ module Integrity
 
       migrate_db(config)
 
-      Thin::Server.start("0.0.0.0", options[:port], Integrity::App)
+      Thin::Server.start("0.0.0.0", port, Integrity::App)
     rescue LoadError => boom
       $stderr << "Make sure thin and do_sqlite3 are insatalled\n\n"
       raise
