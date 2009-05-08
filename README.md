@@ -24,10 +24,12 @@ Run the test suite
    `gem build integrity.gemspec && gem install *.gem --development`.
 3. Run the test suite: `rake test`
 
-Why We Do Not Require 'rubygems'
--------------------------------
+Why we don't `require "rubygems"`
+---------------------------------
 
-We do not require 'rubygems' directly in Integrity, instead leaving that choice up to the user.  For more information on this line of thinking, please see the article [Why "require 'rubygems'" In Your Library/App/Tests Is Wrong][rtomayko-rubygems] by Ryan Tomayko.
+We decided to leave that choice up to the user. For more information, please
+see [Why "require 'rubygems'" In Your Library/App/Tests Is Wrong][rubygems]
+by [Ryan Tomayko][rtomayko].
 
 Thanks
 ------
@@ -73,7 +75,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 [repo]: http://github.com/integrity/integrity
 [lighthouse]: http://integrity.lighthouseapp.com/projects/14308-integrity
 [irc-channel]: irc://irc.freenode.net/integrity
-[rtomayko-rubygems]: http://gist.github.com/54177
+[rubygems]: http://gist.github.com/54177
+[rtomayko]: http://tomayko.com/about
 
 
 [foca]: http://nicolassanguinetti.info/
