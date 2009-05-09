@@ -1,6 +1,5 @@
 require File.dirname(__FILE__) + "/../helpers/acceptance"
 require "helpers/acceptance/notifier_helper"
-require "helpers/acceptance/textfile_notifier"
 require "helpers/acceptance/email_notifier"
 
 class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
@@ -14,7 +13,11 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
 
   before(:each) do
     # This is needed before any available notifier is unset
-    # in the global #before
+    # in the global #before.
+    # But, we need the reload this one because we remove_const
+    # it in a test case. Sigh.
+    load "helpers/acceptance/textfile_notifier.rb"
+
     Notifier.register(Integrity::Notifier::Textfile)
     Notifier.register(Integrity::Notifier::Email)
   end
@@ -77,6 +80,27 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
 
     visit "/integrity/edit"
     assert_have_email_notifier
+  end
+
+  scenario "an admin enables the Textfile notifier and get rid of it later" do
+    git_repo(:my_test_project).add_successful_commit
+    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
+
+    login_as "admin", "test"
+    visit "/my-test-project"
+
+    click_link "Edit Project"
+    check "enabled_notifiers_textfile"
+    fill_in "File", :with => "/tmp/textfile_notifications.txt"
+    click_button "Update Project"
+
+    Notifier.send(:remove_const, :Textfile)
+    Notifier.available.clear
+    rm_f "/tmp/textfile_notifications.txt"
+
+    click_button "manual build"
+
+    assert ! File.file?("/tmp/textfile_notifications.txt")
   end
 
   scenario "an admin configures various notifiers accros multiple projects" do

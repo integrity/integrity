@@ -33,7 +33,7 @@ module Integrity
     private_class_method :valid?
 
     def notify_of_build(build)
-      to_const.notify_of_build(build, config)
+      to_const.notify_of_build(build, config) if to_const
     end
 
     private
