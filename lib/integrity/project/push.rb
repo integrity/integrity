@@ -13,9 +13,8 @@ module Integrity
           end
 
         commits.each { |commit_data|
-          commit = commit_from(commit_data)
-          commit.create
-          build(commit.identifier)
+          commit_from(commit_data).create
+          build(commit_data["id"])
         }
       end
 

@@ -29,7 +29,6 @@ Gem::Specification.new do |s|
 
   if s.respond_to?(:add_development_dependency)
     s.add_development_dependency "rr"
-    s.add_development_dependency "mocha"
     s.add_development_dependency "webrat"
     s.add_development_dependency "do_sqlite3"
     s.add_development_dependency "dm-sweatshop"

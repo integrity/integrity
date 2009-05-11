@@ -194,9 +194,8 @@ class ProjectTest < Test::Unit::TestCase
       @project = Project.generate(:commits => @commits)
     end
 
-    it "destroys itself and tell ProjectBuilder to delete the code from disk" do
+    it "destroys itself" do
       lambda do
-        stub.instance_of(ProjectBuilder).delete_code
         @project.destroy
       end.should change(Project, :count).by(-1)
     end
@@ -317,44 +316,6 @@ class ProjectTest < Test::Unit::TestCase
 
       assert @project.notifies?("IRC")
       assert ! @project.notifies?("Twitter")
-    end
-  end
-
-  describe "When building a commit" do
-    before(:each) do
-      @commits = 2.of { Commit.gen }
-      @project = Project.gen(:integrity, :commits => @commits)
-      stub.instance_of(ProjectBuilder).build { nil }
-    end
-
-    it "gets the specified commit and creates a pending build for it" do
-      commit = @commits.last
-
-      lambda {
-        @project.build(commit.identifier)
-      }.should change(Build, :count).by(1)
-
-      build = Build.all.last
-      build.commit.should be(commit)
-      build.should be_pending
-
-      commit.should be_pending
-    end
-
-    it "creates an empty commit with the head of the project if passed 'HEAD' (the default)" do
-      mock(@project).head_of_remote_repo { "FOOBAR" }
-
-      lambda {
-        @project.build("HEAD")
-      }.should change(Commit, :count).by(1)
-
-      build = Build.all.last
-      build.commit.should == @project.last_commit
-
-      @project.last_commit.should be_pending
-      @project.last_commit.identifier.should  == "FOOBAR"
-      @project.last_commit.author.name.should == "<Commit author not loaded>"
-      @project.last_commit.message.should     == "<Commit message not loaded>"
     end
   end
 end

@@ -114,7 +114,7 @@ module Integrity
     post "/:project/builds" do
       login_required
 
-      current_project.build
+      current_project.build(:head)
       redirect project_url(current_project).to_s
     end
 
