@@ -18,13 +18,6 @@ module Integrity
       all(:started_at => nil)
     end
 
-    def self.queue(commit)
-      commit.update_attributes(:build => new)
-
-      # Build on foreground (this will move away, I promise)
-      ProjectBuilder.build(commit)
-    end
-
     def pending?
       started_at.nil?
     end
@@ -39,14 +32,6 @@ module Integrity
       when successful? then :success
       when failed?     then :failed
       end
-    end
-
-    def start!(time=Time.now)
-      self.started_at = time
-    end
-
-    def complete!(time=Time.now)
-      self.completed_at = time
     end
   end
 end

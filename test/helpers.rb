@@ -4,7 +4,6 @@ require "rubygems"
 
 require "test/unit"
 require "rr"
-require "mocha"
 require "dm-sweatshop"
 require "webrat/sinatra"
 
@@ -29,6 +28,7 @@ end
 module TestHelper
   def ignore_logs!
     Integrity.config[:log] = "/tmp/integrity.test.log"
+    Bob.logger = Logger.new("/dev/null")
   end
 
   def capture_stdout
@@ -58,8 +58,9 @@ class Test::Unit::TestCase
 
   before(:all) do
     DataMapper.setup(:default, "sqlite3::memory:")
-
     require "integrity/migrations"
+
+    ignore_logs!
   end
 
   before(:each) do

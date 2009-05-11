@@ -48,25 +48,4 @@ class BuildTest < Test::Unit::TestCase
       Build.should have(3).pending
     end
   end
-
-  describe "Queueing a build" do
-    before(:each) do
-      @commit = Commit.gen
-      stub.instance_of(ProjectBuilder).build(@commit)
-    end
-
-    it "creates an empty Build" do
-      @commit.build.should be_nil
-      Build.queue(@commit)
-      @commit.build.should_not be_nil
-    end
-
-    it "ensures the build is saved" do
-      @commit.build.should be_nil
-      Build.queue(@commit)
-
-      commit = Commit.first(:identifier => @commit.identifier)
-      commit.build.should_not be_nil
-    end
-  end
 end
