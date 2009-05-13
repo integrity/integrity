@@ -226,8 +226,10 @@ class ProjectTest < Test::Unit::TestCase
 
       assert_equal 2,         Notifier.count
       assert_equal 2,         project.enabled_notifiers.count
-      assert_equal "IRC",     project.notifiers.first.name
-      assert_equal "Twitter", project.notifiers.last.name
+
+      notifier_names = project.notifiers.map { |n| n.name }
+      assert notifier_names.include?("IRC")
+      assert notifier_names.include?("Twitter")
 
       project.update_notifiers(["Twitter"],
           {"IRC"     => {"uri" => "irc://irc.freenode.net/integrity"},
