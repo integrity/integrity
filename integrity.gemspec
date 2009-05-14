@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.has_rdoc          = false
   s.rubygems_version  = "1.3.1"
 
-  s.add_dependency "sinatra", [">= 0.9.1.1"]
+  s.add_dependency "sinatra", ["= 0.9.1.1"]
   s.add_dependency "sinatra-authorization"
   s.add_dependency "haml",    [">= 2.0.0"]
   s.add_dependency "data_mapper", ["= 0.9.11"]
