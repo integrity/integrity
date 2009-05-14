@@ -31,19 +31,6 @@ We decided to leave that choice up to the user. For more information, please
 see [Why "require 'rubygems'" In Your Library/App/Tests Is Wrong][rubygems]
 by [Ryan Tomayko][rtomayko].
 
-Thanks
-------
-
-Thanks to the following people for their feedbacks, ideas and patches :
-
-* [James Adam][james]
-* [Elliott Cable][ec]
-* [Corey Donohoe][atmos]
-* [Kyle Hargraves][kyle]
-* [Pier-Hugues Pellerin][ph]
-* [Simon Rozet][sr]
-* [Scott Taylor][scott]
-
 [website]: http://integrityapp.com
 [demo]: http://builder.integrityapp.com
 [repo]: http://github.com/integrity/integrity
@@ -51,16 +38,3 @@ Thanks to the following people for their feedbacks, ideas and patches :
 [irc-channel]: irc://irc.freenode.net/integrity
 [rubygems]: http://gist.github.com/54177
 [rtomayko]: http://tomayko.com/about
-
-
-[foca]: http://nicolassanguinetti.info/
-[entp]: http://entp.com
-
-[james]: http://github.com/lazyatom
-[ec]: http://github.com/elliotcabble
-[atmos]: http://github.com/atmos
-[kyle]: http://github.com/pd
-[ph]: http://github.com/ph
-[sr]: http://purl.org/net/sr/
-[scott]: http://github.com/smtlaissezfaire
-
