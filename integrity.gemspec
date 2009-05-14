@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name    = "integrity"
-  s.version = "0.1.9.3"
-  s.date    = "2009-04-06"
+  s.version = "0.1.10"
+  s.date    = "2009-05-14"
 
   s.description = "Your Friendly Continuous Integration server. Easy, fun and painless!"
   s.summary     = "The easy and fun Continuous Integration server"
@@ -42,7 +42,9 @@ Gem::Specification.new do |s|
 
   s.files = %w[
 .gitignore
+AUTHORS
 CHANGES
+LICENSE
 README.md
 Rakefile
 bin/integrity
@@ -95,6 +97,7 @@ test/acceptance/error_page_test.rb
 test/acceptance/installer_test.rb
 test/acceptance/manual_build_project_test.rb
 test/acceptance/not_found_page_test.rb
+test/acceptance/notifier_test_test.rb
 test/acceptance/project_syndication_test.rb
 test/acceptance/stylesheet_test.rb
 test/acceptance/unauthorized_page_test.rb
