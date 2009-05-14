@@ -1,8 +1,26 @@
-0.1.9.4 / unreleased
+0.1.10 / 2009-05-14
 ====================
 
-* Fix that notifications are sent to every notifiers,
-  including disabled ones
+* Bundle the NULL commit author/message fix as a migration
+
+* Fix issue with stale notifier. See 693c95e for details
+
+* Rename the "Build the last commit" button to "Fetch and build"
+
+* Fix the rebuild button (Eric Mill)
+
+* Various improvements to the Heroku install (Miles Z. Sterrett)
+
+* Documentation to the default config.yml for the
+  :build_all_commits option. (Jeff Whitmire)
+
+* `integrity launch` now saves the database into $HOME/.integrity.sqlite3
+
+* Changed the Notifier::Test API. Notifiers tests are expected
+  to break. That API is still not defined and might change at
+  any time. See [#130] to discuss this.
+
+* Send notifications to enabled notifiers only
 
 0.1.9.3 / 2009-04-06
 ====================
