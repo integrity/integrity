@@ -6,7 +6,7 @@ module Integrity
     include DataMapper::Resource
     include Notifiers, Push
 
-    property :id,         Integer,  :serial => true
+    property :id,         Serial
     property :name,       String,   :nullable => false
     property :permalink,  String
     property :uri,        URI,      :nullable => false, :length => 255

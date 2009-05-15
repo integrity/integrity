@@ -2,7 +2,7 @@ module Integrity
   class Commit
     include DataMapper::Resource
 
-    property :id,           Integer,  :serial => true
+    property :id,           Serial
     property :identifier,   String,   :nullable => false
     property :message,      String,   :length => 255
     property :author,       Author,   :length => 255
