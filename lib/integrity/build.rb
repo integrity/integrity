@@ -6,10 +6,10 @@ module Integrity
     property :output,       Text,     :default => "", :lazy => false
     property :successful,   Boolean,  :default => false
     property :commit_id,    Integer,  :nullable => false
-    property :created_at,   DateTime
-    property :updated_at,   DateTime
     property :started_at,   DateTime
     property :completed_at, DateTime
+
+    timestamps :at
 
     belongs_to :commit, :class_name => "Integrity::Commit",
                         :child_key => [:commit_id]

@@ -14,8 +14,8 @@ module Integrity
     property :command,    String,   :nullable => false, :length => 255, :default => "rake"
     property :public,     Boolean,  :default => true
     property :building,   Boolean,  :default => false
-    property :created_at, DateTime
-    property :updated_at, DateTime
+
+    timestamps :at
 
     default_scope(:default).update(:order => [:name.asc])
 
