@@ -78,10 +78,6 @@ lib/integrity/notifier/test/hpricot_matcher.rb
 lib/integrity/project.rb
 lib/integrity/project/notifiers.rb
 lib/integrity/project/push.rb
-lib/integrity/project_builder.rb
-lib/integrity/scm.rb
-lib/integrity/scm/git.rb
-lib/integrity/scm/git/uri.rb
 public/buttons.css
 public/reset.css
 public/spinner.gif
@@ -119,9 +115,7 @@ test/unit/integrity_test.rb
 test/unit/migrations_test.rb
 test/unit/notifier/base_test.rb
 test/unit/notifier_test.rb
-test/unit/project_builder_test.rb
 test/unit/project_test.rb
-test/unit/scm_test.rb
 views/_commit_info.haml
 views/build.haml
 views/error.haml
