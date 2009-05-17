@@ -1,11 +1,7 @@
 require File.dirname(__FILE__) + '/../helpers'
 
 class BuildTest < Test::Unit::TestCase
-  before(:each) do
-    RR.reset
-  end
-
-  specify "fixture is valid and can be saved" do
+  test "fixture is valid and can be saved" do
     lambda do
       build = Build.gen
       build.save
@@ -15,37 +11,27 @@ class BuildTest < Test::Unit::TestCase
   end
 
   describe "Properties" do
-    before(:each) do
-      @build = Build.gen
-    end
-
     it "captures the build's STDOUT/STDERR" do
-      @build.output.should_not be_blank
+      assert ! Build.gen.output.empty?
     end
 
     it "knows if it failed or not" do
-      @build.successful = true
-      @build.should be_successful
-      @build.successful = false
-      @build.should be_failed
+      assert Build.gen(:successful => true).successful?
+      assert ! Build.gen(:successful => false).successful?
     end
 
     it "knows it's status" do
-      @build.successful = true
-      @build.status.should be(:success)
-      @build.successful = false
-      @build.status.should be(:failed)
+      assert_equal :success, Build.gen(:successful => true).status
+      assert_equal :failed, Build.gen(:successful => false).status
+
+      assert_equal :pending, Build.gen(:started_at => nil).status
     end
   end
 
-  describe "Pending builds" do
-    before(:each) do
-      3.of { Build.gen(:started_at => nil) }
-      2.of { Build.gen(:started_at => Time.mktime(2009, 1, 17, 23, 18)) }
-    end
+  it "finds pending builds" do
+    3.of { Build.gen(:started_at => nil) }
+    2.of { Build.gen(:started_at => Time.mktime(2009, 1, 17, 23, 18)) }
 
-    it "finds builds that need to be built" do
-      Build.should have(3).pending
-    end
+    Build.should have(3).pending
   end
 end
