@@ -14,7 +14,6 @@ module Integrity
     property :branch,     String,   :nullable => false, :default => "master"
     property :command,    String,   :nullable => false, :length => 255, :default => "rake"
     property :public,     Boolean,  :default => true
-    property :building,   Boolean,  :default => false
 
     timestamps :at
 
@@ -38,7 +37,6 @@ module Integrity
     alias_method :build_script, :command
 
     def start_building(commit_id, commit_info)
-      update_attributes(:building => true)
       @commit = commits.first_or_create({:identifier => commit_id},
         commit_info.update(:project_id => id))
       @build  = Build.new(:started_at => Time.now)
@@ -46,7 +44,6 @@ module Integrity
     end
 
     def finish_building(commit_id, status, output)
-      update_attributes(:building => false)
       @build.update_attributes(
         :successful => status, :output => output,
         :completed_at => Time.now) if @build
@@ -60,6 +57,10 @@ module Integrity
     def previous_commits
       commits.all(:project_id => id, :order => [:committed_at.desc]).
         tap {|commits| commits.shift }
+    end
+
+    def building?
+      commits.any? { |c| c.building? }
     end
 
     def status

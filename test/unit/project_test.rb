@@ -90,6 +90,12 @@ class ProjectTest < Test::Unit::TestCase
         Project.gen(:commits => 1.of{ Commit.gen(:pending) }).status
 
       assert Project.gen(:commits => []).status.nil?
+
+      assert_equal :building,
+        Project.gen(:commits => 1.of{ Commit.gen(:building) }).status
+
+      commits = 3.of{Commit.gen(:successful)} << Commit.gen(:building)
+      assert Project.gen(:commits => commits).building?
     end
 
     it "knows it's last commuit" do

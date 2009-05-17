@@ -168,5 +168,15 @@ module Integrity
         all_commits.each { |commit| Commit.create(commit.attributes) }
       end
     end
+
+=begin
+TODO: drop the :building column of the project table
+
+    migration 5, :remove_building_column do
+      up do
+        modify_table(:integrity_projects) { drop_column :building }
+      end
+    end
+=end
   end
 end
