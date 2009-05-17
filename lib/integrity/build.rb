@@ -22,6 +22,10 @@ module Integrity
       started_at.nil?
     end
 
+    def building?
+      ! started_at.nil? && completed_at.nil?
+    end
+
     def failed?
       !successful?
     end
@@ -29,6 +33,7 @@ module Integrity
     def status
       case
       when pending?    then :pending
+      when building?   then :building
       when successful? then :success
       when failed?     then :failed
       end

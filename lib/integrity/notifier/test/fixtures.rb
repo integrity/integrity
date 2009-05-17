@@ -24,8 +24,7 @@ Integrity::Project.fixture do
     :uri        => "git://github.com/#{/\w+/.gen}/#{name}.git",
     :branch     => ["master", "test-refactoring", "lh-34"].pick,
     :command    => ["rake", "make", "ant -buildfile test.xml"].pick,
-    :public     => [true, false].pick,
-    :building   => [true, false].pick }
+    :public     => [true, false].pick }
 end
 
 Integrity::Project.fixture(:integrity) do
@@ -33,8 +32,7 @@ Integrity::Project.fixture(:integrity) do
     :uri        => "git://github.com/foca/integrity.git",
     :branch     => "master",
     :command    => "rake",
-    :public     => true,
-    :building   => false }
+    :public     => true }
 end
 
 Integrity::Project.fixture(:my_test_project) do
@@ -42,8 +40,7 @@ Integrity::Project.fixture(:my_test_project) do
     :uri        => File.dirname(__FILE__) + "/../../",
     :branch     => "master",
     :command    => "./test",
-    :public     => true,
-    :building   => false }
+    :public     => true }
 end
 
 Integrity::Commit.fixture do
@@ -68,6 +65,10 @@ Integrity::Commit.fixture(:pending) do
   Integrity::Commit.generate_attributes.update(:build => Integrity::Build.gen(:pending))
 end
 
+Integrity::Commit.fixture(:building) do
+  Integrity::Commit.generate_attributes.update(:build => Integrity::Build.gen(:building))
+end
+
 Integrity::Build.fixture do
   commit = Integrity::Commit.first || Integrity::Commit.gen
 
@@ -89,6 +90,11 @@ end
 
 Integrity::Build.fixture(:pending) do
   Integrity::Build.generate_attributes.update(:successful => nil, :started_at => nil, :completed_at => nil)
+end
+
+Integrity::Build.fixture(:building) do
+  Integrity::Build.generate_attributes.update(:completed_at => nil,
+    :successful => nil, :output => nil)
 end
 
 Integrity::Notifier.fixture(:irc) do

@@ -30,8 +30,9 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
   scenario "a user can see the projects status on the home page" do
     integrity = Project.gen(:integrity, :commits => 3.of { Commit.gen(:successful) })
     test      = Project.gen(:my_test_project, :commits => 2.of { Commit.gen(:failed) })
-    no_build  = Project.gen(:public => true, :building => false)
-    building  = Project.gen(:public => true, :building => true)
+    no_build  = Project.gen(:name => "none yet", :public => true)
+    building  = Project.gen(:name => "building", :public => true,
+                            :commits => 1.of{ Commit.gen(:building) })
 
     visit "/"
 

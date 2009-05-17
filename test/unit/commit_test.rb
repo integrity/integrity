@@ -58,8 +58,18 @@ class CommitTest < Test::Unit::TestCase
       assert_match /^Built (.*?) and failed$/,
         Commit.gen(:failed).human_readable_status
 
-      assert_match /^(.*?) hasn\'t been built yet$/,
-        Commit.gen(:pending).human_readable_status
+      assert_match(/^(.*?) hasn\'t been built yet$/,
+        Commit.gen(:pending).human_readable_status)
+
+      assert_match(/^(.*?) is being build$/,
+        Commit.gen(:building).human_readable_status)
     end
+  end
+
+  it "knows its status" do
+    assert Commit.gen(:successful).successful?
+    assert Commit.gen(:failed).failed?
+    assert Commit.gen(:pending).pending?
+    assert Commit.gen(:building).building?
   end
 end
