@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../helpers'
 
 class CommitTest < Test::Unit::TestCase
-  specify "fixture is valid and can be saved" do
+  test "fixture is valid and can be saved" do
     lambda do
       commit = Commit.gen
       commit.save
@@ -12,39 +12,38 @@ class CommitTest < Test::Unit::TestCase
 
   describe "Properties" do
     before(:each) do
-      @commit = Commit.generate(:identifier => "658ba96cb0235e82ee720510c049883955200fa9",
-                                :author => "Nicolás Sanguinetti <contacto@nicolassanguinetti.info>")
+      @commit = Commit.gen(
+        :message    => "Initial commit",
+        :identifier => "658ba96cb0235e82ee720510c049883955200fa9",
+        :author     => "Nicolás Sanguinetti <contacto@nicolassanguinetti.info>")
     end
 
     it "has a commit identifier" do
-      @commit.identifier.should be("658ba96cb0235e82ee720510c049883955200fa9")
+      assert_equal "658ba96cb0235e82ee720510c049883955200fa9",
+        @commit.identifier
     end
 
     it "has a short commit identifier" do
-      @commit.short_identifier.should == "658ba96"
+      assert_equal "658ba96", @commit.short_identifier
 
       @commit.identifier = "402"
-      @commit.short_identifier.should == "402"
+      assert_equal "402", @commit.short_identifier
     end
 
     it "has a commit author" do
-      commit = Commit.gen(:author => "Nicolás Sanguinetti <contacto@nicolassanguinetti.info>")
-      commit.author.name.should == "Nicolás Sanguinetti"
-      commit.author.email.should == "contacto@nicolassanguinetti.info"
-      commit.author.full.should == "Nicolás Sanguinetti <contacto@nicolassanguinetti.info>"
+      assert_equal "Nicolás Sanguinetti", @commit.author.name
+      assert_equal "contacto@nicolassanguinetti.info", @commit.author.email
+      assert_equal "Nicolás Sanguinetti <contacto@nicolassanguinetti.info>",
+        @commit.author.to_s
 
-      Commit.gen(:author => nil).author.to_s.should =~ /not loaded/
-    end
-
-    it "raises ArgumentError with invalid author" do
-      lambda { Commit.gen(:author => "foo") }.should raise_error(ArgumentError)
+      assert_equal @commit.author.full, @commit.author.to_s
+      assert_match /not loaded/, Commit.gen(:author => nil).author.to_s
+      assert_raises(ArgumentError) { Commit.gen(:author => "foo") }
     end
 
     it "has a commit message" do
-      commit = Commit.gen(:message => "This commit rocks")
-      commit.message.should == "This commit rocks"
-
-      Commit.gen(:message => nil).message.should =~ /not loaded/
+      assert_equal "Initial commit", @commit.message
+      assert_match /not loaded/, Commit.gen(:message => nil).message
     end
 
     it "has a commit date" do
@@ -53,14 +52,14 @@ class CommitTest < Test::Unit::TestCase
     end
 
     it "has a human readable status" do
-      commit = Commit.gen(:successful, :identifier => "658ba96cb0235e82ee720510c049883955200fa9")
-      commit.human_readable_status.should be("Built 658ba96 successfully")
+      assert_match /^Built (.*?) successfully$/,
+        Commit.gen(:successful).human_readable_status
 
-      commit = Commit.gen(:failed, :identifier => "658ba96cb0235e82ee720510c049883955200fa9")
-      commit.human_readable_status.should be("Built 658ba96 and failed")
+      assert_match /^Built (.*?) and failed$/,
+        Commit.gen(:failed).human_readable_status
 
-      commit = Commit.gen(:pending, :identifier => "658ba96cb0235e82ee720510c049883955200fa9")
-      commit.human_readable_status.should be("658ba96 hasn't been built yet")
+      assert_match /^(.*?) hasn\'t been built yet$/,
+        Commit.gen(:pending).human_readable_status
     end
   end
 end
