@@ -64,7 +64,7 @@ module Integrity
     end
 
     def status
-      last_commit && last_commit.status
+      last_commit ? last_commit.status : :blank
     end
 
     def human_readable_status
