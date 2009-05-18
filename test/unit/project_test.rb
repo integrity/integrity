@@ -89,7 +89,7 @@ class ProjectTest < Test::Unit::TestCase
       assert_equal :pending,
         Project.gen(:commits => 1.of{ Commit.gen(:pending) }).status
 
-      assert Project.gen(:commits => []).status.nil?
+      assert_equal :blank, Project.gen(:commits => []).status
 
       assert_equal :building,
         Project.gen(:commits => 1.of{ Commit.gen(:building) }).status

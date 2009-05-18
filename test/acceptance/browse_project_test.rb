@@ -36,10 +36,15 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
 
     visit "/"
 
-    assert_contain("Built #{integrity.last_commit.short_identifier} successfully")
-    assert_contain("Built #{test.last_commit.short_identifier} and failed")
-    assert_contain("Never built yet")
-    assert_contain("Building!")
+    assert_have_tag("li[@class~=success]",
+      :content => "Built #{integrity.last_commit.short_identifier} successfully")
+
+    assert_have_tag("li[@class~=failed]",
+      :content => "Built #{test.last_commit.short_identifier} and failed")
+
+    assert_have_tag("li[@class~=blank]", :content => "Never built yet")
+
+    assert_have_tag("li[@class~=building]", :content => "Building!")
   end
 
   scenario "a user clicking through a link on the home page for a public project arrives at the project page" do

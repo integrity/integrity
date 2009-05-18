@@ -11,9 +11,10 @@
       %li{ :class => cycle("even", "odd") + ' ' + project.status.to_s }
         %a{ :href => project_path(project) }&= project.name
         .meta
-          - if project.building?
+          - case project.status
+          - when :building
             Building!
-          - elsif project.last_commit.nil?
+          - when :blank
             Never built yet
           - else
             = project.human_readable_status
