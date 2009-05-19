@@ -26,6 +26,18 @@ class IntegrityTest < Test::Unit::TestCase
 
       assert_equal "http://foo.org", Integrity.config[:base_uri]
     end
+
+    it "sets Bob's logger to the Integrity's one" do
+      Integrity.new
+
+      assert_same Bob.logger, Integrity.send(:logger)
+    end
+
+    it "sets Bob's export directory to Integrity's :export_directory option" do
+      Integrity.new
+
+      assert_same Bob.directory, Integrity.config[:export_directory]
+    end
   end
 
   specify "config is just a hash" do

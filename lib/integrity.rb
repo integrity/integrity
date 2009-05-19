@@ -38,6 +38,8 @@ module Integrity
     end
 
     DataMapper.setup(:default, self.config[:database_uri])
+    Bob.directory = self.config[:export_directory]
+    Bob.logger    = logger
   end
 
   def self.default_configuration
