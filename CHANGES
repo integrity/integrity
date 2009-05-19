@@ -1,6 +1,8 @@
 0.1.10 / 2009-05-14
 ====================
 
+* Projects are now sorted by name (Nick Quaranto)
+
 * Bundle the NULL commit author/message fix as a migration
 
 * Fix issue with stale notifier. See 693c95e for details
