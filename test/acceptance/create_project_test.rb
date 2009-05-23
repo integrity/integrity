@@ -15,9 +15,10 @@ class CreateProjectTest < Test::Unit::AcceptanceTestCase
     visit "/new"
 
     fill_in "Name",            :with => "Integrity"
-    fill_in "Git repository",  :with => "git://github.com/foca/integrity.git"
+    fill_in "Repository URI",  :with => "git://github.com/foca/integrity.git"
     fill_in "Branch to track", :with => "master"
     fill_in "Build script",    :with => "rake"
+    select  "Git",             :from => "project_scm"
     check   "Public project"
     click_button "Create Project"
 
@@ -39,7 +40,7 @@ class CreateProjectTest < Test::Unit::AcceptanceTestCase
     visit "/new"
 
     fill_in "Name",            :with => "Integrity"
-    fill_in "Git repository",  :with => "git://github.com/foca/integrity.git"
+    fill_in "Repository URI",  :with => "git://github.com/foca/integrity.git"
     fill_in "Branch to track", :with => "master"
     fill_in "Build script",    :with => "rake"
     uncheck "Public project"
@@ -67,7 +68,7 @@ class CreateProjectTest < Test::Unit::AcceptanceTestCase
     Project.first(:permalink => "integrity").should be_nil
 
     fill_in "Name",            :with => "Integrity"
-    fill_in "Git repository",  :with => "git://github.com/foca/integrity.git"
+    fill_in "Repository URI",  :with => "git://github.com/foca/integrity.git"
     click_button "Create Project"
 
     assert_have_tag("h1", :content => 'Integrity')

@@ -10,10 +10,11 @@ module NotifierHelper
 
   def fill_in_project_info(name, repo)
     fill_in "Name",            :with => name
-    fill_in "Git repository",  :with => repo
+    fill_in "Repository",      :with => repo
     fill_in "Branch to track", :with => "master"
     fill_in "Build script",    :with => "rake"
     check   "Public project"
+    select "Git",              :from => "project_scm"
 
     fill_in_email_notifier
   end
