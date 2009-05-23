@@ -169,6 +169,17 @@ module Integrity
       end
     end
 
+
+    migration 5, :add_scm_column do
+      up do
+        modify_table :integrity_projects do
+          add_column :scm, String, :default => "git"
+        end
+      end
+    end
+  end
+end
+
 =begin
 TODO: drop the :building column of the project table
 
@@ -178,5 +189,3 @@ TODO: drop the :building column of the project table
       end
     end
 =end
-  end
-end

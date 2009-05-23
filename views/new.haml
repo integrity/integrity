@@ -8,9 +8,15 @@
       &== Name #{errors_on @project, :name}
     %input.text#project_name{ :name => "project_data[name]", :type => "text", :value => h(@project.name) }
 
+  %p.required
+    %label{ :for => "project_scm" }
+      &== Repository SCM
+    %select#project_scm{ :name => "project_data[scm]"}
+      %option{:value => "git"} Git
+
   %p.required{ :class => error_class(@project, :uri) }
     %label{ :for => "project_repository" }<
-      &== Git repository #{errors_on @project, :uri}
+      &== Repository URI#{errors_on @project, :uri}
     %input.text#project_repository{ :name => "project_data[uri]", :type => "text", :value => h(@project.uri) }
 
   %p.normal{ :class => error_class(@project, :branch) }

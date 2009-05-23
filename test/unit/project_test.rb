@@ -40,6 +40,11 @@ class ProjectTest < Test::Unit::TestCase
         @project.uri.to_s
     end
 
+    it "has an SCM" do
+      @project.scm.should == "git"
+      Project.new.scm.should == "git"
+    end
+
     it "has a branch" do
       assert_equal "master", @project.branch
       assert_equal "master", Project.new.branch
@@ -118,6 +123,12 @@ class ProjectTest < Test::Unit::TestCase
     it "requires an URI" do
       lambda do
         Project.gen(:uri => nil).should_not be_valid
+      end.should_not change(Project, :count)
+    end
+
+    it "requires an SCM" do
+      lambda do
+        Project.gen(:scm => nil).should_not be_valid
       end.should_not change(Project, :count)
     end
 

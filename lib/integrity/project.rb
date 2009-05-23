@@ -11,6 +11,7 @@ module Integrity
     property :name,       String,   :nullable => false
     property :permalink,  String
     property :uri,        URI,      :nullable => false, :length => 255
+    property :scm,        String,   :nullable => false, :default => "git"
     property :branch,     String,   :nullable => false, :default => "master"
     property :command,    String,   :nullable => false, :length => 255, :default => "rake"
     property :public,     Boolean,  :default => true
@@ -30,11 +31,8 @@ module Integrity
 
     validates_is_unique :name
 
-    def kind
-      :git
-    end
-
     alias_method :build_script, :command
+    alias_method :kind,         :scm
 
     def start_building(commit_id, commit_info)
       @commit = commits.first_or_create({:identifier => commit_id},
