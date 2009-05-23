@@ -17,6 +17,8 @@
 !success_color = #337022
 !failed_bg     = #fba
 !failed_color  = #f10
+!building_bg   = #ccc
+!building_color = #777
 
 html
   :background-color = !page_bg
@@ -241,8 +243,6 @@ a
       :border-bottom = 1px solid !rule_color
       &.odd
         :background = !content_bg - #080808
-      &.building
-        :background transparent url(/spinner.gif) no-repeat scroll right
       a
         :font-size 2em
         :padding .25em
@@ -253,6 +253,8 @@ a
           :color = !success_color
         &.failed
           :color = !failed_color
+        &.building
+          :color = !building_color
       .meta
         :position absolute
         :right .6em
@@ -260,12 +262,12 @@ a
         :font-size 0.8em
         :color = !light_color
         :text-align right
-      &.building .meta
-        :right 1.6em
       &.success .meta
         :color = !success_color
       &.failed .meta
         :color = !failed_color
+      &.building .meta
+        :color = !building_color
 
 
   #previous_builds
@@ -300,6 +302,14 @@ a
           :color = !failed_bg - #444
         &:hover
           :background-color = !failed_bg + #222
+      &.building a
+        :background-color = !building_bg
+        :border-color = !building_bg - #222
+        :color = !building_color
+        .attribution
+          :color = !building_bg - #444
+        &:hover
+          :background-color = !building_bg + #222
 
 
   #build, #last_build
@@ -331,6 +341,16 @@ a
         :color = !failed_color
       .meta
         :color = !failed_bg - #444
+
+    &.building
+      h1, blockquote
+        :background-color = !building_bg
+        :border-color = (!building_bg - #222) (!building_bg + #111) (!building_bg + #111) (!building_bg - #222)
+      h1
+        :color = !building_color
+        :background transparent url(/spinner.gif) no-repeat scroll right
+      .meta
+        :color = !building_color - #444
 
     h1
       :margin-top .5em
