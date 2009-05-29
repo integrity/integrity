@@ -7,6 +7,10 @@ class ProjectSyndicationTest < Test::Unit::AcceptanceTestCase
     So I can know the status of my favorite projects while having my morning coffee
   EOS
 
+  def content_type
+    webrat_session.send(:response).headers["Content-Type"]
+  end
+
   scenario "a public project's page includes an autodiscovery link tag for the feed" do
     Project.gen(:integrity, :public => true)
     visit "/integrity"
@@ -20,7 +24,7 @@ class ProjectSyndicationTest < Test::Unit::AcceptanceTestCase
 
     visit "/integrity.atom"
 
-    # TODO: check for content-type
+    assert_equal "application/atom+xml; charset=utf-8", content_type
 
     assert_have_tag("feed title", :content => "Build history for Integrity")
     assert_have_tag("feed entry", :count => 11)
