@@ -11,8 +11,8 @@ Integrity
 Try it!
 -------
 
-    $ git clone git://github.com/integrity/integrity.git
-    $ rake launch
+    $ gem install integrity
+    $ integrity launch
     $ open http://0.0.0.0:4567/
 
 Run the test suite
