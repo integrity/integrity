@@ -20,13 +20,15 @@ end
 begin
   require "metric_fu"
 
-  desc "Special task for running tests on <http://builder.integrityapp.com>"
-  task :ci => :test do
+  task :metrics do
     metrics = [:churn, :flog, :flay, :reek, :roodi]
     MetricFu::Configuration.run { |c| c.metrics = metrics }
 
     Rake::Task["metrics:all"].invoke
+  end
 
+  desc "Special task for running tests on <http://builder.integrityapp.com>"
+  task :ci => [:test, :metrics] do
     rm_rf "/var/www/integrity-metrics"
     mv "tmp/metric_fu", "/var/www/integrity-metrics"
 
