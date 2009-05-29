@@ -22,25 +22,29 @@ namespace :test do
   end
 end
 
-desc "Special task for running tests on <http://builder.integrityapp.com>"
-task :ci do
+begin
   require "metric_fu"
 
-  Rake::Task["test"].invoke
+  desc "Special task for running tests on <http://builder.integrityapp.com>"
+  task :ci => :test do
+    metrics = [:churn, :flog, :flay, :reek, :roodi]
+    MetricFu::Configuration.run { |c| c.metrics = metrics }
 
-  metrics = %w(flay flog:all reek roodi saikuro)
-  metrics.each { |m| Rake::Task["metrics:#{m}"].invoke }
+    Rake::Task["metrics:all"].invoke
 
-  rm_rf "/var/www/integrity-metrics"
-  mv "tmp/metric_fu", "/var/www/integrity-metrics"
+    rm_rf "/var/www/integrity-metrics"
+    mv "tmp/metric_fu", "/var/www/integrity-metrics"
 
-  File.open("/var/www/integrity-metrics/index.html", "w") { |f|
-    f.puts "<ul>"
-    metrics.map { |m| m.split(":").first }.each { |m|
-      f.puts %Q(<li><a href="/#{m}">#{m}</a></li>)
+    File.open("/var/www/integrity-metrics/index.html", "w") { |f|
+      f.puts "<ul>"
+      metrics.map { |m| m.to_s.split(":").first }.each { |m|
+        f.puts %Q(<li><a href="/#{m}">#{m}</a></li>)
+      }
+      f.puts "</ul>"
     }
-    f.puts "</ul>"
-  }
+  end
+rescue LoadError
+  raise
 end
 
 begin
