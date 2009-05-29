@@ -1,12 +1,5 @@
 require "rake/testtask"
 
-def spec
-  @spec ||= begin
-    require "rubygems/specification"
-    eval(File.read("integrity.gemspec"))
-  end
-end
-
 desc "Default: run all tests"
 task :default => :test
 
