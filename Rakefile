@@ -3,11 +3,6 @@ require "rake/testtask"
 desc "Default: run all tests"
 task :default => :test
 
-desc "Launch Integrity real quick"
-task :launch do
-  ruby "bin/integrity launch"
-end
-
 desc "Run tests"
 task :test => %w(test:units test:acceptance)
 namespace :test do
