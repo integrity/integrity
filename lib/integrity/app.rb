@@ -65,7 +65,7 @@ module Integrity
 
     get "/:project.atom" do
       login_required unless current_project.public?
-      response["Content-Type"] = "application/rss+xml; charset=utf-8"
+      response["Content-Type"] = "application/atom+xml; charset=utf-8"
       builder :project
     end
 
