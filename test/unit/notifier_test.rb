@@ -93,4 +93,16 @@ class NotifierTest < Test::Unit::TestCase
 
     irc.notify_of_build(build)
   end
+
+  it "handles notifier timeouts" do
+    irc   = Notifier.gen(:irc)
+    Notifier.register(Integrity::Notifier::IRC)
+    build = Build.gen
+
+    stub.instance_of(Notifier::IRC).deliver! { raise Timeout::Error }
+    mock(Integrity).log(anything)
+    mock(Integrity).log("Integrity::Notifier::IRC notifier timed out") { nil }
+
+    irc.notify_of_build(build)
+  end
 end
