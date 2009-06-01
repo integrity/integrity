@@ -120,7 +120,7 @@ Awesome! Integrity was installed successfully!
 
 To complete the installation, please configure the `database_uri` in
 #{root.join("config.yml")} and install the matching DataMapper adapter if
-necessary. Then, run `integrity migrate_db #{root.join("config.yml")}
+necessary. Then, run `integrity migrate_db #{root.join("config.yml")}`
 
 == Notifiers
 If you want to enable notifiers, install the gems and then require them
