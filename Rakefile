@@ -34,7 +34,7 @@ begin
 
     File.open("/var/www/integrity-metrics/index.html", "w") { |f|
       f.puts "<ul>"
-      metrics.map { |m| m.to_s.split(":").first }.each { |m|
+      MetricFu.configuration.metrics.map { |m| m.to_s.split(":").first }.each { |m|
         f.puts %Q(<li><a href="/#{m}">#{m}</a></li>)
       }
       f.puts "</ul>"
