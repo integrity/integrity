@@ -7,10 +7,13 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     So that my project is built everytime I push to the Holy Hub
   EOF
 
-  def payload(after, branch="master", commits=[])
-    payload = { "after" => "#{after}", "ref" => "refs/heads/#{branch}" }
-    payload["commits"] = commits if commits.any?
-    payload.to_json
+  def payload(repo, branch="master")
+    commits = repo.commits.map { |commit|
+      commit.update(:id => commit.delete(:identifier))
+    }.reverse
+
+    { "after"   => repo.head, "ref" => "refs/heads/#{branch}",
+      "commits" => commits }.to_json
   end
 
   scenario "receiving a GitHub payload for a branch that is not monitored" do
@@ -18,7 +21,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     Project.gen(:my_test_project, :uri => repo.path, :branch => "wip")
 
     basic_authorize "admin", "test"
-    post "/my-test-project/push", :payload => payload(repo.head, "master", repo.commits)
+    post "/my-test-project/push", :payload => payload(repo)
 
     assert_equal 422, response_code
 
@@ -37,14 +40,11 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
         system "git add test-file &>/dev/null"
       end
     }
-    commits = repo.commits.map { |commit|
-      commit.update(:id => commit.delete(:identifier))
-    }.reverse
 
     Project.gen(:my_test_project, :uri => repo.path, :command => "true")
 
     basic_authorize "admin", "test"
-    post "/my-test-project/push", :payload => payload(repo.head, "master", commits)
+    post "/my-test-project/push", :payload => payload(repo)
     visit "/my-test-project"
 
     assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
@@ -58,14 +58,11 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     repo = git_repo(:my_test_project)
     repo.add_failing_commit
     repo.add_successful_commit
-    commits = repo.commits.map { |commit|
-      commit.update(:id => commit.delete(:identifier))
-    }.reverse
 
     Project.gen(:my_test_project, :uri => repo.path)
 
     basic_authorize "admin", "test"
-    post "/my-test-project/push", :payload => payload(repo.head, "master", commits)
+    post "/my-test-project/push", :payload => payload(repo)
 
     assert_equal 201, response_code
 
@@ -79,7 +76,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     repo = git_repo(:my_test_project)
     Project.gen(:my_test_project, :uri => repo.path)
 
-    post "/my-test-project/push", :payload => payload(repo.head, "master")
+    post "/my-test-project/push", :payload => payload(repo)
 
     response_code.should == 401
   end
