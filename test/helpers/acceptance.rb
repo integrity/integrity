@@ -42,11 +42,14 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
   Webrat::Methods.delegate_to_session :response_code
 
   def app
-    Integrity::App
+    Rack::Builder.new {
+      use Rack::Lint
+      run Integrity::App
+    }
   end
 
   before(:all) do
-    app.set(:environment, :test)
+    Integrity::App.set(:environment, :test)
 
     Webrat.configure { |c| c.mode = :rack }
   end
