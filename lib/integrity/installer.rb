@@ -50,7 +50,7 @@ module Integrity
       port = options[:port] || 4567
 
       config = { :database_uri => "sqlite3://#{ENV["HOME"]}/.integrity.db",
-                 :base_uri     => "http://0.0.0.0:#{options[:port]}",
+                 :base_uri     => "http://0.0.0.0:#{port}",
                  :export_directory => "/tmp/integrity-exports"             }
       config.merge!(YAML.load_file(options[:config])) if options[:config]
 
