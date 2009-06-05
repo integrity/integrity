@@ -26,7 +26,7 @@ module Integrity
         elsif days_away == 1
           "yesterday"
         else
-          strftime_with_ordinal(date_time, "on %b %d%o")
+          strftime_with_ordinal(date_time, "on %b %o")
         end
       end
 
@@ -38,7 +38,7 @@ module Integrity
           else                "th"
         end
 
-        date_time.strftime(format_string.gsub("%o", ordinal))
+        date_time.strftime(format_string.gsub("%o", date_time.day.to_s + ordinal))
       end
     end
   end
