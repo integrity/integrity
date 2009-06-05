@@ -41,7 +41,6 @@ begin
     }
   end
 rescue LoadError
-  raise
 end
 
 begin
