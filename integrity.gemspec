@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
   s.add_dependency "sinatra-authorization"
   s.add_dependency "haml",    [">= 2.0.0"]
   s.add_dependency "builder"
+  s.add_dependency "bob", [">= 0.1.1"]
   s.add_dependency "data_mapper", ["= 0.9.11"]
   s.add_dependency "uuidtools"   # required by dm-types
   s.add_dependency "bcrypt-ruby" # required by dm-types
