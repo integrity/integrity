@@ -54,7 +54,7 @@ module Integrity
       when :success; "Built #{short_identifier} successfully"
       when :failed;  "Built #{short_identifier} and failed"
       when :pending; "#{short_identifier} hasn't been built yet"
-      when :building; "#{short_identifier} is being build"
+      when :building; "#{short_identifier} is building"
       end
     end
 
