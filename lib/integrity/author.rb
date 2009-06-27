@@ -6,9 +6,11 @@ module Integrity
 
     class AuthorStruct < Struct.new(:name, :email)
       def self.parse(string)
-        raise ArgumentError.new("invalid author string") unless string =~ /^(.*) <(.*)>$/
-
-        new($1.strip, $2.strip)
+        if string =~ /^(.*) <(.*)>$/
+          new($1.strip, $2.strip)
+        else
+          new(string, "unknown")
+        end
       end
 
       def to_s
