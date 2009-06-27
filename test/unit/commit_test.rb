@@ -38,7 +38,9 @@ class CommitTest < Test::Unit::TestCase
 
       assert_equal @commit.author.full, @commit.author.to_s
       assert_match /not loaded/, Commit.gen(:author => nil).author.to_s
-      assert_raises(ArgumentError) { Commit.gen(:author => "foo") }
+
+      assert_equal "foo", Commit.new(:author => "foo").author.name
+      assert_equal "unknown", Commit.new(:author => "foo").author.email
     end
 
     it "has a commit message" do
