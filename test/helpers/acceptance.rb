@@ -3,13 +3,13 @@ require File.dirname(__FILE__) + "/../helpers"
 gem "foca-storyteller"
 require "storyteller"
 
-require "helpers/acceptance/git_helper"
+require "bob/test"
 
 module AcceptanceHelper
-  include FileUtils
+  include Bob::Test
 
-  def export_directory
-    File.dirname(__FILE__) + "/../../exports"
+  def git_repo(name)
+    GitRepo.new(name).tap(&:create)
   end
 
   def enable_auth!
@@ -35,12 +35,6 @@ module AcceptanceHelper
     Integrity.config[:use_basic_auth] = false
   end
 
-  def set_and_create_export_directory!
-    FileUtils.rm_r(export_directory) if File.directory?(export_directory)
-    FileUtils.mkdir(export_directory)
-    Integrity.config[:export_directory] = export_directory
-  end
-
   def setup_log!
     log_file = Pathname(File.dirname(__FILE__) + "/../../integrity.log")
     log_file.delete if log_file.exist?
@@ -49,9 +43,9 @@ module AcceptanceHelper
 end
 
 class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
+  include FileUtils
   include AcceptanceHelper
   include Test::Storyteller
-  include GitHelper
   include Webrat::Methods
   include Webrat::Matchers
   include Webrat::HaveTagMatcher
@@ -68,15 +62,14 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
 
   before(:each) do
     # ensure each scenario is run in a clean sandbox
+    Integrity.config[:export_directory] = Bob.directory
     Integrity.config[:base_uri] = "http://www.example.com"
     enable_auth!
     setup_log!
-    set_and_create_export_directory!
     log_out
   end
 
   after(:each) do
-    destroy_all_git_repos
-    rm_r export_directory if File.directory?(export_directory)
+    rm_r(Bob.directory) if File.directory?(Bob.directory)
   end
 end
