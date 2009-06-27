@@ -12,7 +12,7 @@ module Integrity
     property :permalink,  String
     property :uri,        URI,      :nullable => false, :length => 255
     property :scm,        String,   :nullable => false, :default => "git"
-    property :branch,     String,   :nullable => false, :default => "master"
+    property :branch,     String,   :nullable => true,  :default => ""
     property :command,    String,   :nullable => false, :length => 255, :default => "rake"
     property :public,     Boolean,  :default => true
 
