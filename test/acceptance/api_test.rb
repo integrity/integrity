@@ -36,7 +36,9 @@ class ApiTest < Test::Unit::AcceptanceTestCase
   scenario "receiving a build request with build_all_commits *enabled* builds all commits, most recent first" do
     Integrity.config[:build_all_commits] = true
 
-    repo = git_repo(:my_test_project) # initial commit && successful commit
+    repo = git_repo(:my_test_project)
+    repo.add_successful_commit
+
     3.times do |i|
       repo.add_commit("commit #{i}") do
         system "echo commit_#{i} >> test-file"
@@ -47,7 +49,11 @@ class ApiTest < Test::Unit::AcceptanceTestCase
     Project.gen(:my_test_project, :uri => repo.path, :command => "echo successful", :branch => "master")
 
     basic_auth "admin", "test"
-    post "/my-test-project/push", :payload => payload(repo.head, "master", repo.commits)
+
+    commits = git_repo(:my_test_project).commits.map { |commit|
+      commit.update(:id => commit.delete(:identifier))
+    }.reverse
+    post "/my-test-project/push", :payload => payload(repo.head, "master", commits)
 
     visit "/my-test-project"
 
@@ -67,7 +73,11 @@ class ApiTest < Test::Unit::AcceptanceTestCase
     head = git_repo(:my_test_project).head
 
     basic_auth "admin", "test"
-    post "/my-test-project/push", :payload => payload(head, "master", git_repo(:my_test_project).commits)
+
+    commits = git_repo(:my_test_project).commits.map { |commit|
+      commit.update(:id => commit.delete(:identifier))
+    }.reverse
+    post "/my-test-project/push", :payload => payload(head, "master", commits)
 
     response_code.should == 201
 

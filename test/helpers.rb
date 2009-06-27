@@ -68,6 +68,9 @@ class Test::Unit::TestCase
     capture_stdout { Integrity.migrate_db }
     Notifier.available.clear
     Integrity.instance_variable_set(:@config, nil)
+
+    Bob.engine    = Bob::Engine::Foreground
+    Bob.directory = File.expand_path(File.dirname(__FILE__) + "/../tmp")
   end
 
   after(:each) do
