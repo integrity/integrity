@@ -12,7 +12,8 @@
     %label{ :for => "project_scm" }
       &== Repository SCM
     %select#project_scm{ :name => "project_data[scm]"}
-      %option{:value => "git"} Git
+      - for scm in ["Git", "SVN"]
+        %option{:value => scm.downcase, :selected => (@project.scm == scm.downcase)}= scm
 
   %p.required{ :class => error_class(@project, :uri) }
     %label{ :for => "project_repository" }<

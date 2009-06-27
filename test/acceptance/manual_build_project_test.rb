@@ -79,4 +79,20 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
 
     assert_have_tag("button", :content => "Rebuild")
   end
+
+  scenario "building a Subversion repository" do
+    repo = SvnRepo.new(:my_svn_repo)
+    repo.create
+    repo.add_successful_commit
+
+    Project.gen(:name => "Project On SVN", :scm => "svn",
+      :uri  => "file://"+repo.remote, :command => "./test", :branch => "")
+
+    login_as "admin", "test"
+    visit "/"
+    click_link "Project On SVN"
+    click_button "manual build"
+
+    assert_have_tag("h1", :content => "success")
+  end
 end
