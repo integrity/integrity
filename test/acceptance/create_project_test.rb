@@ -32,6 +32,20 @@ class CreateProjectTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("h1", :content => "Integrity")
   end
 
+  scenario "an admin can create a SVN repository" do
+    login_as "admin", "test"
+    visit "/new"
+
+    fill_in "Name",           :with => "Rumbster"
+    fill_in "Repository URI", :with => "foo"
+    fill_in "Build script",   :with => "rake"
+    select "SVN", :from => "project_scm"
+    check "Public project"
+    click_button "Create Project"
+
+    assert Project.first(:name => "Rumbster")
+  end
+
   scenario "an admin can create a private project" do
     Project.first(:permalink => "integrity").should be_nil
 
