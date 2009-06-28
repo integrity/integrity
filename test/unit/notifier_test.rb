@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + "/../helpers"
 require "helpers/acceptance/textfile_notifier"
 
 class NotifierTest < Test::Unit::TestCase
-  specify "IRC fixture is valid and can be saved" do
+  test "IRC fixture is valid and can be saved" do
     lambda do
       Notifier.generate(:irc).tap do |project|
         project.should be_valid
@@ -11,7 +11,7 @@ class NotifierTest < Test::Unit::TestCase
     end.should change(Project, :count).by(1)
   end
 
-  specify "Twitter fixture is valid and can be saved" do
+  test "Twitter fixture is valid and can be saved" do
     lambda do
       Notifier.generate(:twitter).tap do |project|
         project.should be_valid
