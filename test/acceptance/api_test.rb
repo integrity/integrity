@@ -13,15 +13,11 @@ class ApiTest < Test::Unit::AcceptanceTestCase
     payload.to_json
   end
 
-  def post(path, data)
-    request_page(path, "post", data)
-  end
-
   scenario "it only build commits for the branch being monitored" do
     repo = git_repo(:my_test_project) # initial commit && successful commit
     Project.gen(:my_test_project, :uri => repo.path, :branch => "my-branch")
 
-    basic_auth "admin", "test"
+    basic_authorize "admin", "test"
 
     lambda do
       post "/my-test-project/push", :payload => payload(repo.head, "master", repo.commits)
@@ -48,7 +44,7 @@ class ApiTest < Test::Unit::AcceptanceTestCase
 
     Project.gen(:my_test_project, :uri => repo.path, :command => "echo successful", :branch => "master")
 
-    basic_auth "admin", "test"
+    basic_authorize "admin", "test"
 
     commits = git_repo(:my_test_project).commits.map { |commit|
       commit.update(:id => commit.delete(:identifier))
@@ -72,7 +68,7 @@ class ApiTest < Test::Unit::AcceptanceTestCase
     git_repo(:my_test_project).add_successful_commit
     head = git_repo(:my_test_project).head
 
-    basic_auth "admin", "test"
+    basic_authorize "admin", "test"
 
     commits = git_repo(:my_test_project).commits.map { |commit|
       commit.update(:id => commit.delete(:identifier))
@@ -99,7 +95,7 @@ class ApiTest < Test::Unit::AcceptanceTestCase
   scenario "receiving a build request with an invalid payload returns an Invalid Request error" do
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
 
-    basic_auth "admin", "test"
+    basic_authorize "admin", "test"
 
     post "/my-test-project/push", :payload => "foo"
     response_code.should == 422

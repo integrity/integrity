@@ -46,8 +46,4 @@ class DeleteProjectTest < Test::Unit::AcceptanceTestCase
 
     assert_have_tag("h1", :content => 'Integrity')
   end
-
-  def delete(path, data={})
-    webrat.request_page(path, :delete, data)
-  end
 end
