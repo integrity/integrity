@@ -31,10 +31,6 @@ module AcceptanceHelper
     @_webrat_session = Webrat::SinatraSession.new(self)
   end
 
-  def disable_auth!
-    Integrity.config[:use_basic_auth] = false
-  end
-
   def setup_log!
     log_file = Pathname(File.dirname(__FILE__) + "/../../integrity.log")
     log_file.delete if log_file.exist?
