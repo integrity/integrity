@@ -44,10 +44,6 @@ module TestHelper
 end
 
 class Test::Unit::TestCase
-  class << self
-    alias_method :specify, :test
-  end
-
   include RR::Adapters::TestUnit
   include Integrity
   include TestHelper

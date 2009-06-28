@@ -295,16 +295,16 @@ class ProjectTest < Test::Unit::TestCase
       assert_equal 1, project.enabled_notifiers.size
     end
 
-    specify "#config_for returns given notifier's configuration" do
+    test "#config_for returns given notifier's configuration" do
       @project.update_attributes(:notifiers => [@irc])
       @project.config_for("IRC").should == {:uri => "irc://irc.freenode.net/integrity"}
     end
 
-    specify "#config_for returns an empty hash for unknown notifier" do
+    test "#config_for returns an empty hash for unknown notifier" do
       @project.config_for("IRC").should == {}
     end
 
-    specify "#notifies? is true if the notifier exists and is enabled" do
+    test "#notifies? is true if the notifier exists and is enabled" do
       assert ! @project.notifies?("UndefinedNotifier")
 
       @project.update_attributes(:notifiers =>

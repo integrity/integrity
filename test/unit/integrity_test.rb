@@ -41,7 +41,7 @@ class IntegrityTest < Test::Unit::TestCase
     end
   end
 
-  specify "config is just a hash" do
+  test "config is just a hash" do
     Integrity.config[:foo] = "bar"
     Integrity.config[:foo].should == "bar"
   end
