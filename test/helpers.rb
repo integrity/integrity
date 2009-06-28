@@ -1,15 +1,16 @@
 $:.unshift File.dirname(__FILE__) + "/../lib", File.dirname(__FILE__)
 
-require "rubygems"
-
 require "test/unit"
 require "rr"
 require "dm-sweatshop"
 require "webrat/sinatra"
 
-gem "jeremymcanally-context"
-gem "jeremymcanally-matchy"
-gem "jeremymcanally-pending"
+if respond_to?(:gem)
+  gem "jeremymcanally-context"
+  gem "jeremymcanally-matchy"
+  gem "jeremymcanally-pending"
+end
+
 require "context"
 require "matchy"
 require "pending"
