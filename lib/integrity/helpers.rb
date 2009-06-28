@@ -7,12 +7,8 @@ require "integrity/helpers/urls"
 
 module Integrity
   module Helpers
-    include Authorization
-    include Breadcrumbs
-    include PrettyOutput
-    include Rendering
-    include Resources
-    include Urls
+    include Authorization, Breadcrumbs, PrettyOutput,
+      Rendering, Resources, Urls
 
     include Rack::Utils
     alias :h :escape_html
