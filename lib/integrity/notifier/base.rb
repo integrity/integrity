@@ -20,11 +20,6 @@ module Integrity
         @config = config
       end
 
-      def build
-        warn "Notifier::Base#build is deprecated, use Notifier::Base#commit instead (#{caller[0]})"
-        commit
-      end
-
       def deliver!
         raise NotImplementedError, "you need to implement this method in your notifier"
       end
@@ -54,20 +49,10 @@ EOM
         Integrity.config[:base_uri] / commit.project.permalink / "commits" / commit.identifier
       end
 
-      def build_url
-        warn "Notifier::Base#build_url is deprecated, use Notifier::Base#commit_url instead (#{caller[0]})"
-        commit_url
-      end
-
       private
 
         def stripped_commit_output
           commit.output.gsub("\e[0m", "").gsub(/\e\[3[1-7]m/, "")
-        end
-
-        def stripped_build_output
-          warn "Notifier::Base#stripped_build_output is deprecated, use Notifier::base#stripped_commit_output instead (#{caller[0]})"
-          stripped_commit_output
         end
     end
   end
