@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + "/../helpers"
 
-gem "foca-storyteller"
+gem "foca-storyteller" if respond_to?(:gem)
 require "storyteller"
 
 require "bob/test"
