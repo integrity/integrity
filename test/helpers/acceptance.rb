@@ -2,8 +2,7 @@ require File.dirname(__FILE__) + "/../helpers"
 
 gem "foca-storyteller" if respond_to?(:gem)
 require "storyteller"
-
-require "webrat/sinatra"
+require "webrat"
 require "bob/test"
 
 module AcceptanceHelper
@@ -42,6 +41,8 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
 
   before(:all) do
     app.set(:environment, :test)
+
+    Webrat.configure { |c| c.mode = :sinatra }
   end
 
   before(:each) do
