@@ -13,91 +13,83 @@ class ApiTest < Test::Unit::AcceptanceTestCase
     payload.to_json
   end
 
-  scenario "it only build commits for the branch being monitored" do
-    repo = git_repo(:my_test_project) # initial commit && successful commit
-    Project.gen(:my_test_project, :uri => repo.path, :branch => "my-branch")
+  scenario "receiving a GitHub payload for a branch that is not monitored" do
+    repo = git_repo(:my_test_project)
+    Project.gen(:my_test_project, :uri => repo.path, :branch => "wip")
 
     basic_authorize "admin", "test"
+    post "/my-test-project/push", :payload => payload(repo.head, "master", repo.commits)
 
-    lambda do
-      post "/my-test-project/push", :payload => payload(repo.head, "master", repo.commits)
-      response_code.should == 422
-    end.should_not change(Build, :count)
+    assert_equal 422, response_code
 
     visit "/my-test-project"
 
     assert_contain("No builds for this project")
   end
 
-  scenario "receiving a build request with build_all_commits *enabled* builds all commits, most recent first" do
+  scenario "receiving a GitHub payload with build_all_commits *enabled*" do
     Integrity.config[:build_all_commits] = true
 
     repo = git_repo(:my_test_project)
-    repo.add_successful_commit
-
-    3.times do |i|
+    3.times { |i|
       repo.add_commit("commit #{i}") do
         system "echo commit_#{i} >> test-file"
         system "git add test-file &>/dev/null"
       end
-    end
-
-    Project.gen(:my_test_project, :uri => repo.path, :command => "echo successful", :branch => "master")
-
-    basic_authorize "admin", "test"
-
-    commits = git_repo(:my_test_project).commits.map { |commit|
+    }
+    commits = repo.commits.map { |commit|
       commit.update(:id => commit.delete(:identifier))
     }.reverse
-    post "/my-test-project/push", :payload => payload(repo.head, "master", commits)
 
+    Project.gen(:my_test_project, :uri => repo.path, :command => "true")
+
+    basic_authorize "admin", "test"
+    post "/my-test-project/push", :payload => payload(repo.head, "master", commits)
     visit "/my-test-project"
 
-    assert_have_tag("h1", :content => "Built #{git_repo(:my_test_project).short_head} successfully")
+    assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
     assert_have_tag(".attribution", :content => "by John Doe")
-
-    assert_have_tag("#previous_builds li", :count => 4)
+    assert_have_tag("#previous_builds li", :count => 3)
   end
 
-  scenario "receiving a build request with build_all_commits *disabled* only builds the last commit passed" do
+  scenario "receiving a GitHub payload with build_all_commits *disabled*" do
     Integrity.config[:build_all_commits] = false
 
-    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
-
-    git_repo(:my_test_project).add_failing_commit
-    git_repo(:my_test_project).add_successful_commit
-    head = git_repo(:my_test_project).head
-
-    basic_authorize "admin", "test"
-
-    commits = git_repo(:my_test_project).commits.map { |commit|
+    repo = git_repo(:my_test_project)
+    repo.add_failing_commit
+    repo.add_successful_commit
+    commits = repo.commits.map { |commit|
       commit.update(:id => commit.delete(:identifier))
     }.reverse
-    post "/my-test-project/push", :payload => payload(head, "master", commits)
 
-    response_code.should == 201
+    Project.gen(:my_test_project, :uri => repo.path)
+
+    basic_authorize "admin", "test"
+    post "/my-test-project/push", :payload => payload(repo.head, "master", commits)
+
+    assert_equal 201, response_code
 
     visit "/my-test-project"
 
-    assert_have_tag("h1", :content => "Built #{git_repo(:my_test_project).short_head} successfully")
-
+    assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
     assert_have_no_tag("#previous_builds li")
   end
 
-  scenario "an unauthenticated request returns a 401" do
-    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
-    head = git_repo(:my_test_project).head
-    post "/my-test-project/push", :payload => payload(head, "master")
+  scenario "receiving a unauthenticated request" do
+    repo = git_repo(:my_test_project)
+    Project.gen(:my_test_project, :uri => repo.path)
+
+    post "/my-test-project/push", :payload => payload(repo.head, "master")
 
     response_code.should == 401
   end
 
-  scenario "receiving a build request with an invalid payload returns an Invalid Request error" do
+  scenario "receiving a build request with an invalid payload" do
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
 
     basic_authorize "admin", "test"
-
     post "/my-test-project/push", :payload => "foo"
-    response_code.should == 422
+
+    assert_equal 422, response_code
   end
 end
