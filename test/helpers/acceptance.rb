@@ -3,6 +3,7 @@ require File.dirname(__FILE__) + "/../helpers"
 gem "foca-storyteller" if respond_to?(:gem)
 require "storyteller"
 
+require "webrat/sinatra"
 require "bob/test"
 
 module AcceptanceHelper
