@@ -5,7 +5,7 @@ module Integrity
     enable :sessions
 
     include Integrity
-    include Integrity::Helpers
+    helpers Integrity::Helpers
 
     not_found do
       status 404
