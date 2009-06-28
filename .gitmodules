@@ -1,0 +1,3 @@
+[submodule "vendor/webrat"]
+	path = vendor/webrat
+	url = git://github.com/brynary/webrat

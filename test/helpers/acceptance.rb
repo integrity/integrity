@@ -1,3 +1,5 @@
+$LOAD_PATH.unshift(File.dirname(__FILE__) + "/../../vendor/webrat/lib")
+
 require File.dirname(__FILE__) + "/../helpers"
 
 gem "foca-storyteller" if respond_to?(:gem)
