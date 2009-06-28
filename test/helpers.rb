@@ -3,7 +3,6 @@ $:.unshift File.dirname(__FILE__) + "/../lib", File.dirname(__FILE__)
 require "test/unit"
 require "rr"
 require "dm-sweatshop"
-require "webrat/sinatra"
 
 if respond_to?(:gem)
   gem "jeremymcanally-context"
