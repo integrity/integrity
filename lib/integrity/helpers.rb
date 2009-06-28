@@ -1,4 +1,9 @@
-Dir["#{File.dirname(__FILE__)}/helpers/*.rb"].each &method(:require)
+require "integrity/helpers/authorization"
+require "integrity/helpers/breadcrumbs"
+require "integrity/helpers/pretty_output"
+require "integrity/helpers/rendering"
+require "integrity/helpers/resources"
+require "integrity/helpers/urls"
 
 module Integrity
   module Helpers
