@@ -7,13 +7,20 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     So that my project is built everytime I push to the Holy Hub
   EOF
 
+  before do
+    # Because Bobette::GitHub expects payload["repository"]["url"]
+    # to looks like http://github.com/foo/bar but here we feed it a path
+    Bobette::GitHub.class_eval { def uri(path); path; end }
+  end
+
   def payload(repo, branch="master")
     commits = repo.commits.map { |commit|
       commit.update(:id => commit.delete(:identifier))
     }.reverse
 
-    { "after"   => repo.head, "ref" => "refs/heads/#{branch}",
-      "commits" => commits }.to_json
+    { "after"      => repo.head, "ref" => "refs/heads/#{branch}",
+      "repository" => { "url" => repo.path },
+      "commits"    => commits }.to_json
   end
 
   scenario "receiving a GitHub payload for a branch that is not monitored" do
@@ -21,10 +28,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     Project.gen(:my_test_project, :uri => repo.path, :branch => "wip")
 
     basic_authorize "admin", "test"
-    post "/my-test-project/push", :payload => payload(repo)
-
-    assert_equal 422, response_code
-
+    post "/github", :payload => payload(repo)
     visit "/my-test-project"
 
     assert_contain("No builds for this project")
@@ -44,7 +48,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     Project.gen(:my_test_project, :uri => repo.path, :command => "true")
 
     basic_authorize "admin", "test"
-    post "/my-test-project/push", :payload => payload(repo)
+    post "/github", :payload => payload(repo)
     visit "/my-test-project"
 
     assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
@@ -62,9 +66,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     Project.gen(:my_test_project, :uri => repo.path)
 
     basic_authorize "admin", "test"
-    post "/my-test-project/push", :payload => payload(repo)
-
-    assert_equal 201, response_code
+    post "/github", :payload => payload(repo)
 
     visit "/my-test-project"
 
@@ -72,21 +74,12 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     assert_have_no_tag("#previous_builds li")
   end
 
-  scenario "receiving a unauthenticated request" do
-    repo = git_repo(:my_test_project)
-    Project.gen(:my_test_project, :uri => repo.path)
-
-    post "/my-test-project/push", :payload => payload(repo)
-
-    response_code.should == 401
-  end
-
   scenario "receiving a build request with an invalid payload" do
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
 
     basic_authorize "admin", "test"
-    post "/my-test-project/push", :payload => "foo"
+    post "/github", :payload => "foo"
 
-    assert_equal 422, response_code
+    assert last_response.client_error?
   end
 end

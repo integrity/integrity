@@ -96,19 +96,6 @@ module Integrity
       show :new, :title => ["projects", current_project.permalink, "edit"]
     end
 
-    post "/:project/push" do
-      login_required
-
-      content_type "text/plain"
-
-      begin
-        current_project.push(params[:payload])
-        201
-      rescue ArgumentError
-        [422, "Invalid Request"]
-      end
-    end
-
     post "/:project/builds" do
       login_required
 
