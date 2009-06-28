@@ -12,13 +12,6 @@ module AcceptanceHelper
     GitRepo.new(name).tap(&:create)
   end
 
-  def enable_auth!
-    Integrity.config[:use_basic_auth]      = true
-    Integrity.config[:admin_username]      = "admin"
-    Integrity.config[:admin_password]      = "test"
-    Integrity.config[:hash_admin_password] = false
-  end
-
   def login_as(user, password)
     def AcceptanceHelper.logged_in; true; end
     basic_auth user, password
@@ -58,9 +51,15 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
 
   before(:each) do
     # ensure each scenario is run in a clean sandbox
-    Integrity.config[:export_directory] = Bob.directory
-    Integrity.config[:base_uri] = "http://www.example.com"
-    enable_auth!
+    Integrity.config = {
+      :export_directory => Bob.directory,
+      :base_uri         => "http://www.example.com",
+      :use_basic_auth   => true,
+      :admin_username   => "admin",
+      :admin_password   => "test",
+      :hash_admin_password => false
+    }
+
     setup_log!
     log_out
   end
