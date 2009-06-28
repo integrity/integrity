@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + "/../helpers/acceptance"
 
-class ApiTest < Test::Unit::AcceptanceTestCase
+class GitHubTest < Test::Unit::AcceptanceTestCase
   story <<-EOF
     As a project owner,
     I want to be able to use GitHub as a build triggerer
