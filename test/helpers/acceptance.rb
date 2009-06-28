@@ -50,7 +50,10 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
   end
 
   before(:each) do
-    # ensure each scenario is run in a clean sandbox
+    Bob.directory = File.expand_path(File.dirname(__FILE__) + "/../tmp")
+    Bob.engine    = Bob::Engine::Foreground
+    Bob.logger    = Logger.new("/dev/null")
+
     Integrity.config = {
       :export_directory => Bob.directory,
       :base_uri         => "http://www.example.com",
