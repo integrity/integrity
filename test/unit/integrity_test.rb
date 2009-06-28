@@ -3,6 +3,7 @@ require File.dirname(__FILE__) + "/../helpers"
 class IntegrityTest < Test::Unit::TestCase
   describe "#new" do
     setup do
+      Integrity.instance_variable_set(:@config, nil)
       stub(DataMapper).setup { nil }
       @config_file = File.dirname(__FILE__) + "/../../config/config.sample.yml"
     end

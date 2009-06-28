@@ -27,10 +27,6 @@ rescue LoadError
 end
 
 module TestHelper
-  def ignore_logs!
-    Integrity.config[:log] = "/tmp/integrity.test.log"
-  end
-
   def capture_stdout
     output = StringIO.new
     $stdout = output
@@ -59,15 +55,16 @@ class Test::Unit::TestCase
   before(:all) do
     DataMapper.setup(:default, "sqlite3::memory:")
     require "integrity/migrations"
-
-    ignore_logs!
   end
 
   before(:each) do
     [Project, Build, Commit, Notifier].each{ |i| i.auto_migrate_down! }
     capture_stdout { Integrity.migrate_db }
+
     Notifier.available.clear
     Integrity.instance_variable_set(:@config, nil)
+
+    Integrity.config[:log] = "/dev/null"
   end
 
   after(:each) do
