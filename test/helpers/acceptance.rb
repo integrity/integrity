@@ -23,12 +23,6 @@ module AcceptanceHelper
     def AcceptanceHelper.logged_in; false; end
     @_webrat_session = Webrat::SinatraSession.new(self)
   end
-
-  def setup_log!
-    log_file = Pathname(File.dirname(__FILE__) + "/../../integrity.log")
-    log_file.delete if log_file.exist?
-    Integrity.config[:log] = log_file
-  end
 end
 
 class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
@@ -63,7 +57,6 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
       :hash_admin_password => false
     }
 
-    setup_log!
     log_out
   end
 
