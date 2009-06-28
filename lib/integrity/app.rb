@@ -4,7 +4,6 @@ module Integrity
     set :app_file, __FILE__
     enable :sessions
 
-    include Integrity
     helpers Integrity::Helpers
 
     not_found do
