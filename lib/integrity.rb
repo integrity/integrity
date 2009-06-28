@@ -1,6 +1,8 @@
 $:.unshift File.expand_path(File.dirname(__FILE__))
 
 require "bob"
+require "bobette"
+require "bobette/github"
 require "sinatra/base"
 require "json"
 require "haml"

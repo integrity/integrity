@@ -5,7 +5,7 @@ module Integrity
   class Project
     include DataMapper::Resource
     include Bob::Buildable
-    include Notifiers, Push
+    include Notifiers
 
     property :id,         Serial
     property :name,       String,   :nullable => false
@@ -33,6 +33,10 @@ module Integrity
 
     alias_method :build_script, :command
     alias_method :kind,         :scm
+
+    def self.from(payload)
+      first(:uri => payload["uri"], :branch => payload["branch"])
+    end
 
     def start_building(commit_id, commit_info)
       @commit = commits.first_or_create({:identifier => commit_id},

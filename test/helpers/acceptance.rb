@@ -43,8 +43,18 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
 
   def app
     Rack::Builder.new {
-      use Rack::Lint
-      run Integrity::App
+      map "/github" do
+        use Bobette::GitHub do
+          ! Integrity.config[:build_all_commits]
+        end
+
+        run Bobette.new(Integrity::Project)
+      end
+
+      map "/" do
+        use Rack::Lint
+        run Integrity::App
+      end
     }
   end
 
