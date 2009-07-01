@@ -32,9 +32,8 @@ module Integrity
     validates_is_unique :name
 
     alias_method :build_script, :command
-    alias_method :kind,         :scm
 
-    def self.from(payload)
+    def self.call(payload)
       first(:uri => payload["uri"], :branch => payload["branch"])
     end
 

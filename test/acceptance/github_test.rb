@@ -10,7 +10,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
   before do
     # Because Bobette::GitHub expects payload["repository"]["url"]
     # to looks like http://github.com/foo/bar but here we feed it a path
-    Bobette::GitHub.class_eval { def uri(path); path; end }
+    Bobette::GitHub.class_eval { def uri(repo); repo["url"]; end }
   end
 
   def payload(repo, branch="master")
