@@ -84,11 +84,9 @@ lib/integrity/notifier/test/fixtures.rb
 lib/integrity/notifier/test/hpricot_matcher.rb
 lib/integrity/project.rb
 lib/integrity/project/notifiers.rb
-lib/integrity/project/push.rb
 public/buttons.css
 public/reset.css
 public/spinner.gif
-test/acceptance/api_test.rb
 test/acceptance/browse_project_builds_test.rb
 test/acceptance/browse_project_test.rb
 test/acceptance/build_notifications_test.rb
@@ -96,6 +94,7 @@ test/acceptance/create_project_test.rb
 test/acceptance/delete_project_test.rb
 test/acceptance/edit_project_test.rb
 test/acceptance/error_page_test.rb
+test/acceptance/github_test.rb
 test/acceptance/installer_test.rb
 test/acceptance/manual_build_project_test.rb
 test/acceptance/not_found_page_test.rb
@@ -106,7 +105,6 @@ test/acceptance/unauthorized_page_test.rb
 test/helpers.rb
 test/helpers/acceptance.rb
 test/helpers/acceptance/email_notifier.rb
-test/helpers/acceptance/git_helper.rb
 test/helpers/acceptance/notifier_helper.rb
 test/helpers/acceptance/textfile_notifier.rb
 test/helpers/expectations.rb
