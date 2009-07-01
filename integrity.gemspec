@@ -42,7 +42,6 @@ Gem::Specification.new do |s|
   end
 
   s.files = %w[
-.gitignore
 AUTHORS
 CHANGES
 LICENSE
