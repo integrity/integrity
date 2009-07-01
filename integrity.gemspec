@@ -18,18 +18,24 @@ Gem::Specification.new do |s|
   s.has_rdoc          = false
   s.rubygems_version  = "1.3.1"
 
+  s.add_dependency "bob", [">= 0.2"]
+  s.add_dependency "bobette", [">= 0.0.3"]
+
   s.add_dependency "sinatra", ["= 0.9.1.1"]
   s.add_dependency "sinatra-authorization"
+
   s.add_dependency "haml",    [">= 2.0.0"]
   s.add_dependency "builder"
-  s.add_dependency "bob-the-builder", [">= 0.1.1"]
+  s.add_dependency "json"
+
   s.add_dependency "data_mapper", ["= 0.9.11"]
   s.add_dependency "uuidtools"   # required by dm-types
   s.add_dependency "bcrypt-ruby" # required by dm-types
-  s.add_dependency "json"
+
   s.add_dependency "thor"
 
   if s.respond_to?(:add_development_dependency)
+    s.add_development_dependency "bob-test", [">= 0.0.2"]
     s.add_development_dependency "rr"
     s.add_development_dependency "webrat"
     s.add_development_dependency "do_sqlite3"
