@@ -1,5 +1,4 @@
 require "integrity/project/notifiers"
-require "integrity/project/push"
 
 module Integrity
   class Project
