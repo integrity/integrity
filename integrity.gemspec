@@ -37,7 +37,6 @@ Gem::Specification.new do |s|
   if s.respond_to?(:add_development_dependency)
     s.add_development_dependency "bob-test", [">= 0.0.2"]
     s.add_development_dependency "rr"
-    s.add_development_dependency "webrat"
     s.add_development_dependency "do_sqlite3"
     s.add_development_dependency "dm-sweatshop"
     s.add_development_dependency "ParseTree" # required by dm-sweatshop
