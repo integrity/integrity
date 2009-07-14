@@ -5,6 +5,7 @@ require "rr"
 require "dm-sweatshop"
 
 if defined?(Gem)
+  gem "sinatra-sinatra", "0.10.1"
   gem "jeremymcanally-context"
   gem "jeremymcanally-matchy"
   gem "jeremymcanally-pending"
