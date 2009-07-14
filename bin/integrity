@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 gem "sinatra-sinatra", "0.10.1" if defined?(Gem)
 
-require File.dirname(__FILE__) + "/../lib/integrity/installer"
+require File.dirname(__FILE__) + "/../lib/integrity"
+require "integrity/installer"
+
 Integrity::Installer.start
