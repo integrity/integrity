@@ -4,7 +4,7 @@ require "test/unit"
 require "rr"
 require "dm-sweatshop"
 
-if respond_to?(:gem)
+if defined?(Gem)
   gem "jeremymcanally-context"
   gem "jeremymcanally-matchy"
   gem "jeremymcanally-pending"
