@@ -13,7 +13,9 @@ module AcceptanceHelper
   include Bob::Test
 
   def git_repo(name)
-    GitRepo.new(name).tap(&:create)
+    GitRepo.new(name).tap { |repo|
+      repo.create unless File.directory?(repo.path)
+    }
   end
 
   def login_as(user, password)
@@ -48,7 +50,7 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
           ! Integrity.config[:build_all_commits]
         end
 
-        run Bobette.new(Integrity::Project)
+        run Bobette.new(Integrity::BuildableProject)
       end
 
       map "/" do
@@ -65,9 +67,11 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
   end
 
   before(:each) do
-    Bob.directory = File.expand_path(File.dirname(__FILE__) + "/../tmp")
+    Bob.directory = File.expand_path(File.dirname(__FILE__) + "/../../tmp")
     Bob.engine    = Bob::Engine::Foreground
     Bob.logger    = Logger.new("/dev/null")
+
+    mkdir(Bob.directory)
 
     Integrity.config = {
       :export_directory => Bob.directory,
@@ -82,6 +86,6 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
   end
 
   after(:each) do
-    rm_r(Bob.directory) if File.directory?(Bob.directory)
+    rm_rf(Bob.directory)
   end
 end
