@@ -29,12 +29,8 @@ module Integrity
 
     validates_is_unique :name
 
-    def self.call(payload)
-      first(:uri => payload["uri"], :branch => payload["branch"])
-    end
-
     def build(commit)
-      BuildableProject.new(self).build(commit)
+      BuildableProject.new(self, commit).build
     end
 
     def last_commit

@@ -7,8 +7,22 @@ module Integrity
 
     alias_method :build_script, :command
 
-    def initialize(project)
+    def self.call(payload)
+      project = Project.first(:scm => payload["scm"],
+        :uri => payload["uri"],
+        :branch => payload["branch"]
+      )
+
+      return [] unless project
+
+      payload["commits"].map { |commit| new(project, commit["id"]) }
+    end
+
+    attr_reader :commit
+
+    def initialize(project, commit)
       @project = project
+      @commit  = commit
     end
 
     def start_building(commit_id, commit_info)
