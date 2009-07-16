@@ -20,10 +20,12 @@ require "digest/sha1"
 require "timeout"
 require "ostruct"
 require "pathname"
+require "forwardable"
 
 require "integrity/core_ext/object"
 
 require "integrity/project"
+require "integrity/buildable_project"
 require "integrity/author"
 require "integrity/commit"
 require "integrity/build"
