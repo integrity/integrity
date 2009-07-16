@@ -3,7 +3,6 @@ require "integrity/project/notifiers"
 module Integrity
   class Project
     include DataMapper::Resource
-    include Bob::Buildable
     include Notifiers
 
     property :id,         Serial
@@ -30,24 +29,12 @@ module Integrity
 
     validates_is_unique :name
 
-    alias_method :build_script, :command
-
     def self.call(payload)
       first(:uri => payload["uri"], :branch => payload["branch"])
     end
 
-    def start_building(commit_id, commit_info)
-      @commit = commits.first_or_create({:identifier => commit_id},
-        commit_info.update(:project_id => id))
-      @build  = Build.new(:started_at => Time.now)
-      @commit.update_attributes(:build => @build)
-    end
-
-    def finish_building(commit_id, status, output)
-      @build.update_attributes(
-        :successful => status, :output => output,
-        :completed_at => Time.now) if @build
-      enabled_notifiers.each { |notifier| notifier.notify_of_build(@build) }
+    def build(commit)
+      BuildableProject.new(self).build(commit)
     end
 
     def last_commit
