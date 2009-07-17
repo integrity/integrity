@@ -86,7 +86,7 @@ module Integrity
           column :identifier,   String,   :nullable => false
           column :message,      String,   :nullable => false, :length => 255
           column :author,       String,   :nullable => false, :length => 255
-          column :committed_at, DateTime, :nullable => false
+          column :committed_at, DateTime
           column :created_at,  DateTime
           column :updated_at,  DateTime
 
@@ -158,7 +158,7 @@ module Integrity
           column :identifier,   String,   :nullable => false
           column :message,      String,   :nullable => true, :length => 255
           column :author,       String,   :nullable => true, :length => 255
-          column :committed_at, DateTime, :nullable => false
+          column :committed_at, DateTime
           column :created_at,  DateTime
           column :updated_at,  DateTime
 
