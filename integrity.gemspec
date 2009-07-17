@@ -64,6 +64,7 @@ lib/integrity.rb
 lib/integrity/app.rb
 lib/integrity/author.rb
 lib/integrity/build.rb
+lib/integrity/buildable_project.rb
 lib/integrity/commit.rb
 lib/integrity/core_ext/object.rb
 lib/integrity/helpers.rb
