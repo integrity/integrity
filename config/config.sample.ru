@@ -2,15 +2,6 @@
 require "rubygems"
 require "integrity"
 
-# If you want to add any notifiers, install the gems and then require them here
-# For example, to enable the Email notifier: install the gem (from github:
-#
-#   sudo gem install -s http://gems.github.com foca-integrity-email
-#
-# And then uncomment the following line:
-#
-# require "notifier/email"
-
 # Load configuration and initialize Integrity
 Integrity.new(File.dirname(__FILE__) + "/config.yml")
 

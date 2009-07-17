@@ -122,19 +122,8 @@ To complete the installation, please configure the `database_uri` in
 #{root.join("config.yml")} and install the matching DataMapper adapter if
 necessary. Then, run `integrity migrate_db #{root.join("config.yml")}`
 
-== Notifiers
-If you want to enable notifiers, install the gems and then require them
-in #{root}/config.ru
-
-For example:
-
-    sudo gem install -s http://gems.github.com foca-integrity-email
-
-And then in #{root}/config.ru add:
-
-    require "notifier/email"
-
-Don't forget to tweak #{root / "config.yml"} to your needs.
+Please go to <http://integrityapp.com/#notifiers> for notifiers setup
+instructions.
 EOF
       end
 
