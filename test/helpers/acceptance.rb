@@ -67,7 +67,7 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
   end
 
   before(:each) do
-    Bob.directory = File.expand_path(File.dirname(__FILE__) + "/../../tmp")
+    Bob.directory = File.expand_path(File.dirname(__FILE__) + "/../../../tmp")
     Bob.engine    = Bob::Engine::Foreground
     Bob.logger    = Logger.new("/dev/null")
 
