@@ -18,10 +18,10 @@ Gem::Specification.new do |s|
   s.has_rdoc          = false
   s.rubygems_version  = "1.3.1"
 
-  s.add_dependency "integrity-bob", [">= 0.2"]
-  s.add_dependency "bobette", [">= 0.0.3"]
+  s.add_dependency "bob", [">= 0.3"]
+  s.add_dependency "bobette", [">= 0.0.4"]
 
-  s.add_dependency "sinatra-sinatra", ["= 0.10.1"]
+  s.add_dependency "sinatra", ["= 0.9.2"]
   s.add_dependency "sinatra-authorization"
 
   s.add_dependency "haml",    [">= 2.0.0"]
