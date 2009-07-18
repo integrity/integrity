@@ -45,7 +45,7 @@ class Test::Unit::TestCase
     Notifier.available.clear
     Integrity.instance_variable_set(:@config, nil)
 
-    Integrity.config[:log] = "/dev/null"
+    Integrity.config[:log] = "integrity.log"
   end
 
   after(:each) do
