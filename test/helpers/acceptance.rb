@@ -7,6 +7,8 @@ require "webrat"
 require "rack/test"
 require "bob/test"
 
+Rack::Test::DEFAULT_HOST.replace("www.example.com")
+
 module AcceptanceHelper
   include Bob::Test
 
@@ -73,7 +75,6 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
 
     Integrity.config = {
       :export_directory => Bob.directory,
-      :base_uri         => "http://www.example.com",
       :use_basic_auth   => true,
       :admin_username   => "admin",
       :admin_password   => "test",

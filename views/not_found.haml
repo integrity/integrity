@@ -1,7 +1,7 @@
 .error
   %h1
     Ehm, you seem a bit lost, sir. Maybe going to the
-    %a{ :href => root_path("/"), :rel => "home" } list of projects
+    %a{ :href => root_path, :rel => "home" } list of projects
     will help?
   %dl
     %dt Ouch. This is a 404 error-thingie, right?
@@ -14,7 +14,7 @@
         %strong DON'T PANIC
       / if you didn't get the reference you aren't as nerd as you should be
       You should probably just go back to
-      %a{ :href => root_path("/"), :rel => "home" } the projects list
+      %a{ :href => root_path, :rel => "home" } the projects list
       or, alternatively, go
       = succeed "." do
         %a{ :href => request.referer } back from whence you came

@@ -3,7 +3,7 @@ module Integrity
     set :root,     File.dirname(__FILE__) + "/../.."
     enable :methodoverride, :static, :sessions
 
-    helpers Integrity::Helpers
+    helpers Sinatra::UrlForHelper, Integrity::Helpers
 
     not_found do
       status 404
@@ -21,6 +21,8 @@ module Integrity
       # required to do so. This way we get the real values of +#logged_in?+ and
       # +#current_user+
       login_required if session[:user]
+
+      Integrity.config[:base_uri] ||= url_for("/", :full)
     end
 
     get "/integrity.css" do
