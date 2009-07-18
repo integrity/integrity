@@ -71,16 +71,6 @@ class EditProjectTest < Test::Unit::AcceptanceTestCase
     response_code.should == 401
   end
 
-  scenario "an admin can see the push URL on the edit page" do
-    login_as "admin", "test"
-    Project.generate(:my_test_project)
-
-    visit "/my-test-project"
-    click_link "Edit Project"
-
-    assert_have_tag("#push_url", :content => "http://admin:test@www.example.com/my-test-project/push")
-  end
-
   scenario "public projects have a ticked 'public' checkbox on edit form" do
     Project.generate(:my_test_project, :public => true)
 
