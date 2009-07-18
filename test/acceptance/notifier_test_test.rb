@@ -8,6 +8,8 @@ class NotifierTestTest < Test::Unit::TestCase
   include Integrity::Notifier::Test
 
   setup do
+    Integrity.config[:base_uri] = "http://example.org/"
+
     @notifier = Integrity::Notifier::Textfile
     @config   = {"file" => "/tmp/integrity.txt"}
 

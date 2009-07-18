@@ -2,27 +2,35 @@ module Integrity
   module Helpers
     module Urls
       def root_url
-        @url ||= Addressable::URI.parse(base_url)
+        @root_url ||= Addressable::URI.parse(url_for("/", :full))
       end
 
-      def root_path(path="")
-        url(path).path
+      def root_path
+        @root_path ||= Addressable::URI.parse(url_for("/", :path_only))
+      end
+
+      def url(*path)
+        root_url.join(path.join("/"))
+      end
+
+      def path(*path)
+        root_path.join(path.join("/"))
       end
 
       def project_url(project, *path)
-        url("/" << [project.permalink, *path].flatten.join("/"))
+        url(project.permalink, *path)
       end
 
       def project_path(project, *path)
-        project_url(project, path).path
+        path(project.permalink, *path)
       end
 
       def commit_url(commit, *path)
-        project_url(commit.project, ["commits", commit.identifier, *path].flatten)
+        project_url(commit.project, "commits", commit.identifier, *path)
       end
 
       def commit_path(commit, *path)
-        commit_url(commit, *path).path
+        project_path(commit.project, "commits", commit.identifier, *path)
       end
 
       def push_url_for(project)
@@ -34,16 +42,6 @@ module Integrity
           end
         end.to_s
       end
-
-      private
-        def url(path="")
-          root_url.dup.tap { |url| url.path = root_url.path + path }
-        end
-
-        def base_url
-          Integrity.config[:base_uri] || ((respond_to?(:request) &&
-            request.respond_to?(:url)) ? request.url : fail("set base_uri"))
-        end
     end
   end
 end

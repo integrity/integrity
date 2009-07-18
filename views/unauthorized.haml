@@ -1,10 +1,10 @@
 .error
   %h1
     So... you don't know the password? Hmm... You can
-    %a{ :href => root_path("/login") } try again
+    %a{ :href => path("/login") } try again
     or
     = succeed "." do
-      %a{ :href => root_path("/"), :rel => "home" } go back
+      %a{ :href => root_path, :rel => "home" } go back
 
   %dl
     %dt Er... So... I'm trying to login without a password...
@@ -19,12 +19,12 @@
     %dd
       This just means that you can't access some part of this Integrity
       server, but that shouldn't let you out of some of the
-      %a{ :href => root_path("/") } awesome projects
+      %a{ :href => root_path } awesome projects
       hosted here. If this was just a misunderstanding and you
       %strong do
       have a password, then
       = succeed "." do
-        %a{ :href => root_path("/login") } click here to try again
+        %a{ :href => path("/login") } click here to try again
 
     %dt
       So what the hell is

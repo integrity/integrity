@@ -4,6 +4,7 @@ require "bob"
 require "bobette"
 require "bobette/github"
 require "sinatra/base"
+require "sinatra/url_for"
 require "json"
 require "haml"
 require "sass"
@@ -50,7 +51,6 @@ module Integrity
     @defaults ||= { :database_uri      => "sqlite3::memory:",
                     :export_directory  => "/tmp/exports",
                     :log               => STDOUT,
-                    :base_uri          => "http://localhost:8910",
                     :use_basic_auth    => false,
                     :build_all_commits => true,
                     :log_debug_info    => false }

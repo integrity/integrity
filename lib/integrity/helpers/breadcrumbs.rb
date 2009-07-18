@@ -2,7 +2,7 @@ module Integrity
   module Helpers
     module Breadcrumbs
       def pages
-        @pages ||= [["projects", root_path("/")], ["new project", root_path("/new")]]
+        @pages ||= [["projects", root_path], ["new project", path("/new")]]
       end
 
       def breadcrumbs(*crumbs)
@@ -14,7 +14,6 @@ module Integrity
           end
         end + [crumbs.last]
       end
-
     end
   end
 end
