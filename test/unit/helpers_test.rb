@@ -66,36 +66,4 @@ class BrowsePublicProjectsTest < Test::Unit::TestCase
         @h.commit_url(@build.commit, :builds).to_s
     end
   end
-
-  describe "#push_url_for" do
-    before(:each) do
-      @project = Project.gen(:integrity)
-      Integrity.config[:admin_username] = "admin"
-      Integrity.config[:admin_password] = "test"
-      Integrity.config[:base_uri] = "http://integrity.example.org:1234"
-    end
-
-    test "with auth disabled" do
-      Integrity.config[:use_basic_auth] = false
-
-      assert_equal "http://integrity.example.org:1234/integrity/push",
-        @h.push_url_for(@project)
-    end
-
-    test "with auth and hashing enabled" do
-      Integrity.config[:use_basic_auth]      = true
-      Integrity.config[:hash_admin_password] = true
-
-      assert_equal "http://admin:<password>@integrity.example.org:1234/integrity/push",
-        @h.push_url_for(@project)
-    end
-
-    test "with auth enabled and hashing disabled" do
-      Integrity.config[:use_basic_auth]      = true
-      Integrity.config[:hash_admin_password] = false
-
-      assert_equal "http://admin:test@integrity.example.org:1234/integrity/push",
-        @h.push_url_for(@project)
-    end
-  end
 end
