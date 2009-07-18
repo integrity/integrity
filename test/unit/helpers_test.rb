@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + "/../helpers"
 
-class BrowsePublicProjectsTest < Test::Unit::TestCase
+class HelpersTest < Test::Unit::TestCase
   setup do
     @h = Module.new { extend Integrity::Helpers }
   end
