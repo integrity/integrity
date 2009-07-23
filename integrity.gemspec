@@ -25,7 +25,6 @@ Gem::Specification.new do |s|
   s.add_dependency "sinatra-authorization"
 
   s.add_dependency "haml",    [">= 2.0.0"]
-  s.add_dependency "builder"
   s.add_dependency "json"
 
   s.add_dependency "data_mapper", ["= 0.9.11"]
