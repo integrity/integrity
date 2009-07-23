@@ -1,5 +1,3 @@
-require File.dirname(__FILE__) + "/../../integrity"
-
 require "integrity/notifier/test/hpricot_matcher"
 require "integrity/notifier/test/fixtures"
 
