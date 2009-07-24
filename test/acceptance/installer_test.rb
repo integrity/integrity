@@ -11,11 +11,11 @@ class InstallerTest < Test::Unit::AcceptanceTestCase
   EOS
 
   before(:each) do
-    rm_rf root if File.directory?(root)
+    root.rmtree if root.directory?
   end
 
   def root
-    Pathname("/tmp/i-haz-integrity")
+    Pathname("tmp-integrity-install").expand_path
   end
 
   def install(option="")
