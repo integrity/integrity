@@ -8,18 +8,6 @@ Integrity
 * Join us on [#integrity][irc-channel] for ideas, help, patches or something
 * Get the code from [GitHub][repo]
 
-Try it
-------
-
-Integrity provides a quick and easy way to try it out locally. The database is
-saved into `$HOME/.integrity.db`.
-
-    $ gem install integrity thin do_sqlite3
-    $ integrity launch
-    $ open http://0.0.0.0:4567/
-
-Please see our [website][] for deployement instructions.
-
 Contributing
 ------------
 
