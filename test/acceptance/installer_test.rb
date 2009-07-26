@@ -34,10 +34,6 @@ class InstallerTest < Test::Unit::AcceptanceTestCase
     assert ! root.join("public").directory?
     assert ! root.join("tmp").directory?
 
-    assert ! root.join("Rakefile").file?
-    assert ! root.join("integrity.rb").file?
-    assert ! root.join(".gems").file?
-
     assert ! root.join("thin.yml").file?
     assert root.join("config.ru").file?
 
@@ -65,17 +61,5 @@ class InstallerTest < Test::Unit::AcceptanceTestCase
     config["pid"].should    == root.join("thin.pid").to_s
     config["rackup"].should == root.join("config.ru").to_s
     config["log"].should    == root.join("log/thin.log").to_s
-  end
-
-  scenario "Installing Integrity for Heroku" do
-    message = install("--heroku")
-
-    assert_equal "integrity --version 0.1.9.3", root.join(".gems").read.chomp
-
-    assert root.join("Rakefile").file?
-    assert root.join("integrity-config.rb").file?
-    assert root.join("config.ru").file?
-
-    assert message.include?("ready to be deployed onto Heroku")
   end
 end

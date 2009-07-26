@@ -51,10 +51,6 @@ Rakefile
 bin/integrity
 config/config.sample.ru
 config/config.sample.yml
-config/heroku/.gems
-config/heroku/Rakefile
-config/heroku/config.ru
-config/heroku/integrity-config.rb
 config/thin.sample.yml
 integrity.gemspec
 lib/integrity.rb
