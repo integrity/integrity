@@ -79,7 +79,7 @@ a
     :margin-bottom .75em
     :padding .25em 0
     :line-height 1.2
-    :border-bottom = 1px solid !rule_color
+    :border-bottom = 1px "solid" !rule_color
   h2
     :font-weight bold
     :font-size 1.5em
@@ -95,8 +95,8 @@ a
   code, pre, textarea, input
     :font-family = !monospace_fonts
   pre
-    margin .5em :0
-    padding .5em
+    :margin .5em
+    :padding .5em
 
   form
     p
@@ -160,7 +160,7 @@ a
     fieldset
       :padding-bottom 1em
       :margin-left 1.35em
-      :border-bottom = 1px solid !rule_color
+      :border-bottom = 1px "solid" !rule_color
       :margin-bottom 1em
       h3
         :margin-top 1em
@@ -228,17 +228,17 @@ a
 
     .backtrace
       :margin 1em 0
-      :overflow scroll
+      :overflow "scroll"
       :height 30em
-      :border = 1px solid !rule_color
+      :border = 1px "solid" !rule_color
       :line-height 1.6
 
   #projects
     :margin 1em 0 2em
-    :border-top = 1px solid !rule_color
+    :border-top = 1px "solid" !rule_color
     li
       :position relative
-      :border-bottom = 1px solid !rule_color
+      :border-bottom = 1px "solid" !rule_color
       &.odd
         :background = !content_bg - #080808
       &.building

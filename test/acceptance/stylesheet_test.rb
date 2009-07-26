@@ -14,7 +14,7 @@ class IntegrityStylesheetTest < Test::Unit::AcceptanceTestCase
 
     assert_contain("body {")
     # TODO: Check that it actually returns a 302
-    assert_equal %Q{"2465c472aacf302259dde5146a841e45"},
+    assert_equal %Q{"96f809c4dec9e7cfdd20542dfdeefaf2"},
       webrat_session.send(:response).headers["ETag"]
 
     visit "/reset.css"
