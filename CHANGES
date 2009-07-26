@@ -1,3 +1,31 @@
+0.1.11 / 2009-07-26
+===================
+
+* This release depends on Sinatra 0.9.4 and hence, Rack 1.0 (finally!)
+
+* The `integrity launch` command was removed. Please use a rackup
+  file and whatever server you want instead
+
+* The Heroku install was removed as it currently doesn't work.
+  A template-type repo ready to be pushed onto Heroku might be provided
+  in the future
+
+* Fix an error occuring when a notifier times out [#166 / Benny Wong]
+
+* Fix pretty_date helpers showing a leading zero for days < 10
+  [Douglas F Shearer]
+
+* Add a missing backstick to the post install message [Douglas F Shearer]
+
+* Fix a missing dependency on builder [#177]
+
+* Fix the Content-Type of the Atom feed
+
+* Get rid of all mention of foca-integrity from generated files
+
+* Fix all Sass deprecation warnings
+
+
 0.1.10 / 2009-05-14
 ====================
 
