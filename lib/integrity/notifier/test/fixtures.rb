@@ -28,6 +28,11 @@ Integrity::Project.fixture do
     :public     => [true, false].pick }
 end
 
+Integrity::Commit.fixture(:with_project) do
+  project = Integrity::Project.first || Integrity::Project.gen
+  Integrity::Commit.generate_attributes.update(:project_id => project.id)
+end
+
 Integrity::Project.fixture(:integrity) do
   { :name       => "Integrity",
     :scm        => "git",
@@ -47,13 +52,10 @@ Integrity::Project.fixture(:my_test_project) do
 end
 
 Integrity::Commit.fixture do
-  project = Integrity::Project.first || Integrity::Project.gen
-
   { :identifier =>   Digest::SHA1.hexdigest(/[:paragraph:]/.gen),
     :message =>      /[:sentence:]/.gen,
     :author =>       /\w+ \w+ <\w+@example.org>/.gen,
-    :committed_at => unique {|i| Time.mktime(2008, 12, 15, 18, (59 - i) % 60) },
-    :project_id =>   project.id }
+    :committed_at => unique {|i| Time.mktime(2008, 12, 15, 18, (59 - i) % 60)} }
 end
 
 Integrity::Commit.fixture(:successful) do
@@ -73,7 +75,7 @@ Integrity::Commit.fixture(:building) do
 end
 
 Integrity::Build.fixture do
-  commit = Integrity::Commit.first || Integrity::Commit.gen
+  commit = Integrity::Commit.first || Integrity::Commit.gen(:with_project)
 
   { :output       => /[:paragraph:]/.gen,
     :successful   => true,

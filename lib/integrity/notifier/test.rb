@@ -10,7 +10,7 @@ module Integrity
       end
 
       def build(state=:successful)
-        Integrity::Build.gen(state)
+        Integrity::Build.gen(state, :commit => Commit.gen(:with_project))
       end
 
       def notifier_class
