@@ -11,24 +11,16 @@ Integrity
 Contributing
 ------------
 
-The canonical repository for Integrity is <git://github.com/integrity/integrity.git>.
+The canonical repository for Integrity is `git://github.com/integrity/integrity.git`.
 
 The development version (the `master` branch) of Integrity often requires edgy
 code. To help handle this situation, a [Rip][] file is included. To start hacking:
 
 1. [Setup Rip](http://hellorip.com/install.html) if necessary
-2. Install the runtimes dependencies via RubyGems:
-   `rake install && gem install do_sqlite3 randexp`
-3. Create a new Rip environement: `rip env create integrity-hacking`
-4. Install the development and edgy runtime dependencies: `rip install hack.rip`
-5. Run the test suite: `RUBYOPT=rubygems rake`
+2. `rip install deps.rip && rip install hack.rb`
+3. Hack and `rake` as usual
 
-In case following these steps doesn't work, please [let us known][lighthouse];
-that's a bug.
-
-__NOTE:__ Ideally, RubyGems wouldn't be necessary and `rip install hack.rip`
-would just work. Unfortunately, that is not currently possible due to some
-limitations of Rip.
+Finally, push your changes and let us known where we can pull from.
 
 Why we don't `require "rubygems"`
 ---------------------------------
