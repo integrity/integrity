@@ -1,5 +1,11 @@
 $:.unshift File.dirname(__FILE__) + "/../lib", File.dirname(__FILE__)
 
+# Work arounds for using Rip
+if ENV["RIPDIR"]
+  require "parse_tree"
+  require "helpers/rip"
+end
+
 require "test/unit"
 require "rr"
 require "dm-sweatshop"
