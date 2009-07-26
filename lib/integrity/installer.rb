@@ -40,28 +40,6 @@ module Integrity
       Integrity.migrate_db
     end
 
-    desc "launch [CONFIG]",
-         "Launch Integrity real quick. Database is saved in #{database_path}."
-    method_options :config => :optional, :port => :optional
-    def launch
-      require "thin"
-      require "do_sqlite3"
-
-      port = options[:port] || 4567
-
-      config = { :database_uri => "sqlite3://#{ENV["HOME"]}/.integrity.db",
-                 :base_uri     => "http://0.0.0.0:#{port}",
-                 :export_directory => "/tmp/integrity-exports"             }
-      config.merge!(YAML.load_file(options[:config])) if options[:config]
-
-      migrate_db(config)
-
-      Thin::Server.start("0.0.0.0", port, Integrity::App)
-    rescue LoadError => boom
-      $stderr << "Make sure thin and do_sqlite3 are insatalled\n\n"
-      raise
-    end
-
     private
       attr_reader :root
 
