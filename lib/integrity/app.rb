@@ -1,6 +1,6 @@
 module Integrity
   class App < Sinatra::Base
-    set :root,     File.dirname(__FILE__) + "/../.."
+    set :root, File.dirname(__FILE__) + "/../.."
     enable :methodoverride, :static, :sessions
 
     helpers Sinatra::UrlForHelper, Integrity::Helpers
