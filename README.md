@@ -17,7 +17,7 @@ The development version (the `master` branch) of Integrity often requires edgy
 code. To help handle this situation, a [Rip][] file is included. To start hacking:
 
 1. [Setup Rip](http://hellorip.com/install.html) if necessary
-2. `rip install deps.rip && rip install hack.rb`
+2. `rip install deps.rip && rip install hack.rip`
 3. Hack and `rake` as usual
 
 Finally, push your changes and let us known where we can pull from.
