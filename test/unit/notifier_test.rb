@@ -74,14 +74,6 @@ class NotifierTest < Test::Unit::TestCase
       assert_equal Integrity::Notifier::Textfile,
         Notifier.available["Textfile"]
     end
-
-    it "raises ArgumentError if given class is not a valid notifier" do
-      assert_raise(ArgumentError) {
-        Notifier.register(Class.new)
-      }
-
-      assert Notifier.available.empty?
-    end
   end
 
   it "knows how to notify the world of a build" do

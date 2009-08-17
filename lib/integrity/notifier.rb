@@ -21,16 +21,8 @@ module Integrity
     end
 
     def self.register(klass)
-      raise ArgumentError unless valid?(klass)
-
       available[klass.to_s.split(":").last] = klass
     end
-
-    def self.valid?(notifier)
-      notifier.respond_to?(:to_haml) && notifier.respond_to?(:notify_of_build) &&
-        notifier != Notifier::Base
-    end
-    private_class_method :valid?
 
     def notify_of_build(build)
       to_const.notify_of_build(build, config) if to_const
