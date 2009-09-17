@@ -1,5 +1,34 @@
 require "dm-migrations"
-require "migration_runner"
+require "dm-migrations/migration_runner"
+
+class SQL::TableCreator::Column
+  def build_type(type_class)
+    schema = { :name => @name, :quote_column_name => quoted_name }.merge(@opts)
+
+    unless schema.key?(:nullable)
+      schema[:nullable] = !schema[:not_null]
+    end
+
+    schema[:length] ||= schema.delete(:size) if schema.key?(:size)
+
+    if type_class.kind_of?(String)
+      schema[:primitive] = type_class
+    else
+      primitive = type_class.respond_to?(:primitive) ? type_class.primitive : type_class
+      options   = @adapter.class.type_map[primitive].dup
+
+      if type_class.respond_to?(:options) && type_class.respond_to?(:update)
+        options.update(type_class.options)
+      end
+
+      schema = options.update(schema)
+    end
+
+    @adapter.send(:with_connection) do |connection|
+      @adapter.property_schema_statement(connection, schema)
+    end
+  end
+end
 
 module Integrity
   def self.migrate_db

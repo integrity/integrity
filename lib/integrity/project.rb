@@ -18,8 +18,8 @@ module Integrity
 
     default_scope(:default).update(:order => [:name.asc])
 
-    has n, :commits, :class_name => "Integrity::Commit"
-    has n, :notifiers, :class_name => "Integrity::Notifier"
+    has n, :commits,   :model => "Integrity::Commit"
+    has n, :notifiers, :model => "Integrity::Notifier"
 
     before :save, :set_permalink
 
@@ -34,12 +34,11 @@ module Integrity
     end
 
     def last_commit
-      commits.first(:project_id => id, :order => [:committed_at.desc])
+      commits.first(:order => [:committed_at.desc])
     end
 
     def previous_commits
-      commits.all(:project_id => id, :order => [:committed_at.desc]).
-        tap {|commits| commits.shift }
+      commits.all(:id.not => last_commit.id, :order => [:committed_at.desc])
     end
 
     def building?

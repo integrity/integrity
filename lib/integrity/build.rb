@@ -11,7 +11,7 @@ module Integrity
 
     timestamps :at
 
-    belongs_to :commit, :class_name => "Integrity::Commit",
+    belongs_to :commit, :model     => "Integrity::Commit",
                         :child_key => [:commit_id]
 
     def self.pending

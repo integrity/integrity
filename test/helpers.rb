@@ -8,6 +8,7 @@ end
 
 require "test/unit"
 require "rr"
+require "extlib"
 require "dm-sweatshop"
 require "context"
 require "matchy"
