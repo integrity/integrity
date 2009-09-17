@@ -1,5 +1,5 @@
-%form{ :method => "post", :action => (@project.new_record? ? root_path : project_path(@project)) }
-  - unless @project.new_record?
+%form{ :method => "post", :action => (@project.new? ? root_path : project_path(@project)) }
+  - unless @project.new?
     .hidden
       %input{ :name => "_method", :type => "hidden", :value => "put" }
 
@@ -39,9 +39,15 @@
   - notifier_form
 
   %p.submit
-    %button.positive{ :type => "submit" }= @project.new_record? ? "Create Project" : "Update Project"
+    %button.positive{ :type => "submit" }= @project.new? ? "Create Project" : "Update Project"
 
-- unless @project.new_record?
+- unless @project.new?
+  %h2 Push URL
+  %p
+    You can use this Push URL with your GitHub project to enable automated continuous integration.
+  %p
+    %code#push_url= h(push_url_for(@project))
+
   %form{ :method => "post", :action => project_path(@project) }
     .hidden
       %input{ :name => "_method", :type => "hidden", :value => "delete" }

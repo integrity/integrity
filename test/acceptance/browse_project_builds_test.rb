@@ -25,7 +25,7 @@ class BrowseProjectBuildsTest < Test::Unit::AcceptanceTestCase
 
     visit "/integrity"
 
-    assert_have_tag("#last_build")
+    assert_have_tag("#last_build[@class='success']")
 
     within("ul#previous_builds") do
       assert_have_tag("li.pending", :count => 2)
@@ -39,7 +39,9 @@ class BrowseProjectBuildsTest < Test::Unit::AcceptanceTestCase
                                      :author       => "Nicolas Sanguinetti <contacto@nicolassanguinetti.info>",
                                      :message      => "No more pending tests :)",
                                      :committed_at => Time.mktime(2008, 12, 15, 18))
-    commit.build.update_attributes(:output => "This is the build output")
+    # TODO
+    commit.build.output = "This is the build output"
+    commit.save
     Project.gen(:integrity, :public => true, :commits => [commit])
 
     visit "/integrity"

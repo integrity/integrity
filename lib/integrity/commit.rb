@@ -10,10 +10,10 @@ module Integrity
 
     timestamps :at
 
-    has 1,     :build,   :class_name => "Integrity::Build",
+    has 1,     :build,   :model => "Integrity::Build",
                          :order => [:created_at.desc]
 
-    belongs_to :project, :class_name => "Integrity::Project",
+    belongs_to :project, :model     => "Integrity::Project",
                          :child_key => [:project_id]
 
     def message

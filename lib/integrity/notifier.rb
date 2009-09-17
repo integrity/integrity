@@ -4,12 +4,12 @@ module Integrity
   class Notifier
     include DataMapper::Resource
 
-    property :id,      Integer,  :serial => true
+    property :id,      Serial
     property :name,    String,   :nullable => false
     property :enabled, Boolean,  :nullable => false, :default => false
     property :config,  Yaml,     :nullable => false, :lazy    => false
 
-    belongs_to :project, :class_name => "Integrity::Project",
+    belongs_to :project, :model     => "Integrity::Project",
                          :child_key => [:project_id]
 
     validates_is_unique :name, :scope => :project_id

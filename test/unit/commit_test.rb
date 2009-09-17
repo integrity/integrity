@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/../helpers'
 class CommitTest < Test::Unit::TestCase
   test "fixture is valid and can be saved" do
     lambda do
-      commit = Commit.gen
+      commit = Commit.gen(:with_project)
       commit.save
 
       commit.should be_valid

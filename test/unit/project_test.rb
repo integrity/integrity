@@ -296,7 +296,7 @@ class ProjectTest < Test::Unit::TestCase
     end
 
     test "#config_for returns given notifier's configuration" do
-      @project.update_attributes(:notifiers => [@irc])
+      @project.update(:notifiers => [@irc])
       @project.config_for("IRC").should == {:uri => "irc://irc.freenode.net/integrity"}
     end
 
@@ -307,7 +307,7 @@ class ProjectTest < Test::Unit::TestCase
     test "#notifies? is true if the notifier exists and is enabled" do
       assert ! @project.notifies?("UndefinedNotifier")
 
-      @project.update_attributes(:notifiers =>
+      @project.update(:notifiers =>
         [ Notifier.gen(:irc, :enabled     => true),
           Notifier.gen(:twitter, :enabled => false) ])
 

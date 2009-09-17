@@ -71,7 +71,7 @@ module Integrity
     put "/:project" do
       login_required
 
-      if current_project.update_attributes(params[:project_data])
+      if current_project.update(params[:project_data])
         update_notifiers_of(current_project)
         redirect project_url(current_project).to_s
       else
