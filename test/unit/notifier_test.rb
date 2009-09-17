@@ -67,25 +67,6 @@ class NotifierTest < Test::Unit::TestCase
     end
   end
 
-  describe "Registering a notifier" do
-    it "registers given notifier class" do
-      Notifier.register(Integrity::Notifier::Textfile)
-
-      assert_equal Integrity::Notifier::Textfile,
-        Notifier.available["Textfile"]
-    end
-  end
-
-  it "knows how to notify the world of a build" do
-    irc   = Notifier.gen(:irc)
-    Notifier.register(Integrity::Notifier::IRC)
-    build = Build.gen
-
-    mock(Notifier::IRC).notify_of_build(build, irc.config) { nil }
-
-    irc.notify_of_build(build)
-  end
-
   it "handles notifier timeouts" do
     irc   = Notifier.gen(:irc)
     Notifier.register(Integrity::Notifier::IRC)
