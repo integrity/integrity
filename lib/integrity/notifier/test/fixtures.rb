@@ -8,17 +8,6 @@ class Array
   end
 end
 
-def create_notifier!(name)
-  klass = Class.new(Integrity::Notifier::Base) do
-    def self.to_haml; "";   end
-    def deliver!;     nil;  end
-  end
-
-  unless Integrity::Notifier.const_defined?(name)
-    Integrity::Notifier.const_set(name, klass)
-  end
-end
-
 Integrity::Project.fixture do
   { :name       => (name = unique { /\w+/.gen }),
     :scm        => "git",
@@ -103,16 +92,12 @@ Integrity::Build.fixture(:building) do
 end
 
 Integrity::Notifier.fixture(:irc) do
-  create_notifier! "IRC"
-
   { :project => Integrity::Project.generate,
     :name => "IRC",
     :config => { :uri => "irc://irc.freenode.net/integrity" }}
 end
 
 Integrity::Notifier.fixture(:twitter) do
-  create_notifier! "Twitter"
-
   { :project => Integrity::Project.generate,
     :name => "Twitter",
     :config => { :email => "foo@example.org", :pass => "secret" }}

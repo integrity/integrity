@@ -22,10 +22,7 @@ module Integrity
     has n, :notifiers, :model => "Integrity::Notifier"
 
     before :save, :set_permalink
-
-    before :destroy do
-      commits.destroy!
-    end
+    before :destroy do commits.destroy! end
 
     validates_is_unique :name
 

@@ -33,6 +33,16 @@ module TestHelper
     $stdout = STDOUT
     output
   end
+
+  def assert_change(object, method, difference=1)
+    initial_value = object.send(method)
+    yield
+    assert_equal initial_value + difference, object.send(method)
+  end
+
+  def assert_no_change(object, method, &block)
+    assert_change(object, method, 0, &block)
+  end
 end
 
 class Test::Unit::TestCase
