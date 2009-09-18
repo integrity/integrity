@@ -1,27 +1,16 @@
 require File.dirname(__FILE__) + "/../helpers"
 
 class ProjectTest < Test::Unit::TestCase
-  test "default fixture is valid and can be saved" do
-    lambda do
-      Project.generate.tap do |project|
-        project.should be_valid
-        project.save
-      end
-    end.should change(Project, :count).by(1)
-  end
-
-  test "integrity fixture is valid and can be saved" do
-    lambda do
-      Project.generate(:integrity).tap do |project|
-        project.should be_valid
-        project.save
-      end
-    end.should change(Project, :count).by(1)
+  test "fixture is valid and can be saved" do
+    assert_change(Project, :count) {
+      project = Project.gen
+      assert project.valid? && project.save
+    }
   end
 
   describe "Properties" do
     before(:each) do
-      @project = Project.generate(:integrity)
+      @project = Project.gen(:integrity)
     end
 
     it "has a name" do
@@ -41,8 +30,8 @@ class ProjectTest < Test::Unit::TestCase
     end
 
     it "has an SCM" do
-      @project.scm.should == "git"
-      Project.new.scm.should == "git"
+      assert_equal "git", @project.scm
+      assert_equal "git", Project.new.scm
     end
 
     it "has a branch" do
@@ -51,19 +40,11 @@ class ProjectTest < Test::Unit::TestCase
     end
 
     it "has a command" do
-      # TODO: rename to build_command
       assert_equal "rake", @project.command
       assert_equal "rake", Project.new.command
     end
 
-    it "knows wheter it is being built" do
-      assert ! @project.building?
-    end
-
     it "knows it's visibility" do
-      # TODO: rename Project#public property to visibility
-      # TODO: and have utility method to query its state instead
-
       assert Project.new.public?
 
       assert @project.public?
@@ -102,106 +83,71 @@ class ProjectTest < Test::Unit::TestCase
       commits = 3.of{Commit.gen(:successful)} << Commit.gen(:building)
       assert Project.gen(:commits => commits).building?
     end
-
-    it "knows it's last commuit" do
-      assert Project.gen(:commits => []).last_commit.nil?
-
-      commits = 5.of { Commit.gen(:successful) }
-      project = Project.gen(:commits => commits)
-      assert_equal commits.sort_by {|c| c.committed_at }.last,
-        project.last_commit
-    end
   end
 
   describe "Validation" do
     it "requires a name" do
-      lambda do
-        Project.gen(:name => nil).should_not be_valid
-      end.should_not change(Project, :count)
-    end
-
-    it "requires an URI" do
-      lambda do
-        Project.gen(:uri => nil).should_not be_valid
-      end.should_not change(Project, :count)
-    end
-
-    it "requires an SCM" do
-      lambda do
-        Project.gen(:scm => nil).should_not be_valid
-      end.should_not change(Project, :count)
-    end
-
-    it "requires a command" do
-      lambda do
-        Project.gen(:command => nil).should_not be_valid
-      end.should_not change(Project, :count)
+      assert_no_change(Project, :count) {
+        assert ! Project.gen(:name => nil).valid?
+      }
     end
 
     it "ensures its name is unique" do
       Project.gen(:name => "Integrity")
-      lambda do
-        Project.gen(:name => "Integrity").should_not be_valid
-      end.should_not change(Project, :count)
+
+      assert_no_change(Project, :count) {
+        assert ! Project.gen(:name => "Integrity").valid?
+      }
+    end
+
+    it "requires an URI" do
+      assert_no_change(Project, :count) {
+        assert ! Project.gen(:uri => nil).valid?
+      }
+    end
+
+    it "requires an SCM" do
+      assert_no_change(Project, :count) {
+        ! Project.gen(:scm => nil).valid?
+      }
+    end
+
+    it "requires a command" do
+      assert_no_change(Project, :count) {
+        assert ! Project.gen(:command => nil).valid?
+      }
     end
   end
 
   it "orders projects by name" do
-    @rails   = Project.gen(:name => "rails",   :public => true)
-    @merb    = Project.gen(:name => "merb",    :public => true)
-    @sinatra = Project.gen(:name => "sinatra", :public => true)
-    @camping = Project.gen(:name => "camping", :public => false)
+    rails   = Project.gen(:name => "rails",   :public => true)
+    merb    = Project.gen(:name => "merb",    :public => true)
+    sinatra = Project.gen(:name => "sinatra", :public => true)
+    camping = Project.gen(:name => "camping", :public => false)
 
-    Project.all.should == [@camping, @merb, @rails, @sinatra]
-    Project.all(:public => true).should == [@merb, @rails, @sinatra]
+    assert_equal [camping, merb, rails, sinatra], Project.all
+    assert_equal [merb, rails, sinatra], Project.all(:public => true)
   end
 
-  describe "When finding its previous builds" do
-    before(:each) do
-      @project = Project.generate(:commits => 5.of { Commit.gen })
-      @commits = @project.commits.sort_by {|c| c.committed_at }.reverse
-    end
+  test "destroying itself" do
+    project = Project.generate(:commits => 7.of{ Commit.gen })
 
-    it "has 4 previous builds" do
-      @project.should have(4).previous_commits
-    end
-
-    it "returns the builds ordered chronogicaly (desc) by creation date" do
-      @project.previous_commits.should == @commits[1..-1]
-    end
-
-    it "excludes the last build" do
-      @project.previous_commits.should_not include(@project.last_commit)
-    end
-
-    it "returns an empty array if it has only one build" do
-      project = Project.gen(:commits => 1.of { Integrity::Commit.gen })
-      project.should have(:no).previous_commits
-    end
-
-    it "returns an empty array if there are no builds" do
-      project = Project.gen(:commits => [])
-      project.should have(:no).previous_commits
-    end
+    assert_change(Commit, :count, -7) {  project.destroy }
+    assert ! Project[project.id]
   end
 
-  describe "When getting destroyed" do
-    before(:each) do
-      @commits  = 7.of { Commit.gen }
-      @project = Project.generate(:commits => @commits)
-    end
+  test "finding its previous builds" do
+    project = Project.gen(:commits => 5.of{ Commit.gen })
 
-    it "destroys itself" do
-      lambda do
-        @project.destroy
-      end.should change(Project, :count).by(-1)
-    end
+    assert_equal 4,  project.previous_commits.count
+    assert_equal [], Project.gen(:commits => [Commit.gen]).previous_commits
+    assert_equal [], Project.gen(:commits => []).previous_commits
 
-    it "destroys its builds" do
-      lambda do
-        @project.destroy
-      end.should change(Commit, :count).by(-7)
-    end
+    assert project.previous_commits.first.committed_at >
+      project.previous_commits.last.committed_at
+
+    assert ! Project.gen(:commits => []).last_commit
+    assert ! project.previous_commits.include?(project.last_commit)
   end
 
   describe "When updating its notifiers" do
@@ -266,18 +212,19 @@ class ProjectTest < Test::Unit::TestCase
     end
 
     it "does nothing if given nil as the list of notifiers to enable" do
-      lambda { Project.gen.update_notifiers(nil, {}) }.should_not change(Notifier, :count)
+      assert_no_change(Notifier, :count) {
+        Project.gen.update_notifiers(nil, {})
+      }
     end
 
     it "doesn't destroy any of the other notifiers that exist for other projects" do
-      irc = Notifier.generate(:irc)
-
+      irc     = Notifier.generate(:irc)
       project = Project.gen
       project.update_notifiers("IRC", {"IRC" => irc.config})
 
-      lambda {
+      assert_no_change(project.notifiers, :count) {
         Project.gen.update_notifiers("IRC", {"IRC" => irc.config})
-      }.should_not change(project.notifiers, :count)
+      }
     end
   end
 
@@ -297,11 +244,12 @@ class ProjectTest < Test::Unit::TestCase
 
     test "#config_for returns given notifier's configuration" do
       @project.update(:notifiers => [@irc])
-      @project.config_for("IRC").should == {:uri => "irc://irc.freenode.net/integrity"}
+      assert_equal({:uri => "irc://irc.freenode.net/integrity"},
+        @project.config_for("IRC"))
     end
 
     test "#config_for returns an empty hash for unknown notifier" do
-      @project.config_for("IRC").should == {}
+      assert_equal({}, @project.config_for("IRC"))
     end
 
     test "#notifies? is true if the notifier exists and is enabled" do

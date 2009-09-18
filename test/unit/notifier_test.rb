@@ -1,81 +1,50 @@
+# TODO
 require File.dirname(__FILE__) + "/../helpers"
 require "helpers/acceptance/textfile_notifier"
 
 class NotifierTest < Test::Unit::TestCase
-  test "IRC fixture is valid and can be saved" do
-    lambda do
-      Notifier.generate(:irc).tap do |project|
-        project.should be_valid
-        project.save
-      end
-    end.should change(Project, :count).by(1)
+  test "fixture is valid and can be saved" do
+    assert_change(Notifier, :count) {
+      notifier = Notifier.gen(:irc)
+      assert notifier.valid? && notifier.save
+    }
   end
 
-  test "Twitter fixture is valid and can be saved" do
-    lambda do
-      Notifier.generate(:twitter).tap do |project|
-        project.should be_valid
-        project.save
-      end
-    end.should change(Project, :count).by(1)
+  test "properties" do
+    notifier = Notifier.gen(:irc)
+
+    assert_equal "IRC", notifier.name
+    assert_equal({:uri => "irc://irc.freenode.net/integrity"}, notifier.config)
   end
 
-  describe "Properties" do
-    before(:each) do
-      @notifier = Notifier.generate(:irc)
-    end
-
-    it "has a name" do
-      @notifier.name.should == "IRC"
-    end
-
-    it "has a config" do
-      @notifier.config.should == {:uri => "irc://irc.freenode.net/integrity"}
-    end
+  it "requires a name" do
+    assert_no_change(Notifier, :count) { Notifier.gen(:irc, :name => nil) }
   end
 
-  describe "Validation" do
-    it "requires a name" do
-      lambda do
-        Notifier.generate(:irc, :name => nil)
-      end.should_not change(Notifier, :count)
-    end
+  it "requires a config" do
+    assert_no_change(Notifier, :count) { Notifier.gen(:irc, :config => nil) }
+  end
 
-    it "requires a config" do
-      lambda do
-        Notifier.generate(:irc, :config => nil)
-      end.should_not change(Notifier, :count)
-    end
+  it "requires an unique name in project scope" do
+    project = Project.gen
+    irc     = Notifier.gen(:irc, :project => project)
 
-    it "requires a project" do
-      lambda do
-        Notifier.generate(:irc, :project => nil)
-      end.should_not change(Notifier, :count)
-    end
-
-    it "requires an unique name in project scope" do
-      project = Project.generate
-      irc     = Notifier.gen(:irc, :project => project)
-
-      project.tap { |project| project.notifiers << irc }.save
-
-      lambda do
-        project.tap { |project| project.notifiers << irc }.save
-      end.should_not change(project.notifiers, :count).from(1).to(2)
-
-      lambda { Notifier.gen(:irc) }.should change(Notifier, :count).to(2)
-    end
+    assert_no_change(project.notifiers, :count) {
+      project.notifiers << irc
+    }
   end
 
   it "handles notifier timeouts" do
-    irc   = Notifier.gen(:irc)
-    Notifier.register(Integrity::Notifier::IRC)
-    build = Build.gen
+    pending("Move to acceptance tests") {
+      irc   = Notifier.gen(:irc)
+      Notifier.register(Integrity::Notifier::IRC)
+      build = Build.gen
 
-    stub.instance_of(Notifier::IRC).deliver! { raise Timeout::Error }
-    mock(Integrity).log(anything)
-    mock(Integrity).log("Integrity::Notifier::IRC notifier timed out") { nil }
+      stub.instance_of(Notifier::IRC).deliver! { raise Timeout::Error }
+      mock(Integrity).log(anything)
+      mock(Integrity).log("Integrity::Notifier::IRC notifier timed out") { nil }
 
-    irc.notify_of_build(build)
+      irc.notify_of_build(build)
+    }
   end
 end

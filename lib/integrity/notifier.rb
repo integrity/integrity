@@ -13,7 +13,6 @@ module Integrity
                          :child_key => [:project_id]
 
     validates_is_unique :name, :scope => :project_id
-    validates_present :project_id
 
     def self.available
       @@_notifiers ||= {}

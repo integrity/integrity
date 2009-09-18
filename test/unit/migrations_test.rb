@@ -31,8 +31,8 @@ class MigrationsTest < Test::Unit::TestCase
   test "upgrading a pre migration database" do
     capture_stdout { Integrity.migrate_db }
 
-    current_migrations.should == ["initial", "add_commits", "add_enabled_column",
-      "nil_commit_metadata", "add_scm_column"]
+    assert_equal ["initial", "add_commits", "add_enabled_column",
+      "nil_commit_metadata", "add_scm_column"], current_migrations
     assert table_exists?("integrity_projects")
     assert table_exists?("integrity_builds")
     assert table_exists?("integrity_notifiers")
@@ -43,17 +43,17 @@ class MigrationsTest < Test::Unit::TestCase
     load_initial_migration_fixture
     capture_stdout { Integrity.migrate_db }
 
-    current_migrations.should == ["initial", "add_commits", "add_enabled_column",
-      "nil_commit_metadata", "add_scm_column"]
+    assert_equal %w[initial add_commits add_enabled_column
+      nil_commit_metadata add_scm_column], current_migrations
 
     sinatra = Project.first(:name => "Sinatra")
-    sinatra.should have(1).commits
-    sinatra.commits.first.should be_successful
-    sinatra.commits.first.output.should =~ /sinatra/
+    assert sinatra.commits.first.successful?
+    assert_equal 1, sinatra.commits.count
+    assert_match /sinatra/, sinatra.commits.first.output
 
     shout_bot = Project.first(:name => "Shout Bot")
-    shout_bot.should have(1).commits
-    shout_bot.commits.first.should be_failed
-    shout_bot.commits.first.output.should =~ /shout-bot/
+    assert shout_bot.commits.first.failed?
+    assert_equal 1, shout_bot.commits.count
+    assert_match /shout-bot/, shout_bot.commits.first.output
   end
 end
