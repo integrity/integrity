@@ -70,4 +70,13 @@ class CommitTest < Test::Unit::TestCase
     assert Commit.gen(:pending).pending?
     assert Commit.gen(:building).building?
   end
+
+  it "requires a unique identifier in project scope" do
+    project = Project.gen(:commits => [Commit.gen(:identifier => "foo")])
+
+    assert_no_change(project.commits, :count) {
+      project.commits << Commit.gen(:identifier => "foo")
+      project.save
+    }
+  end
 end
