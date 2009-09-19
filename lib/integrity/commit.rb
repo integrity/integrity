@@ -16,6 +16,8 @@ module Integrity
     belongs_to :project, :model     => "Integrity::Project",
                          :child_key => [:project_id]
 
+    validates_is_unique :identifier, :scope => :project
+
     def message
       attribute_get(:message) || "<Commit message not loaded>"
     end
