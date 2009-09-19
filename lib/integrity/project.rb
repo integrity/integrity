@@ -31,7 +31,7 @@ module Integrity
     end
 
     def last_commit
-      commits.first(:order => [:committed_at.desc])
+      commits.first(:order => [:committed_at.desc, :created_at.desc])
     end
 
     def previous_commits
