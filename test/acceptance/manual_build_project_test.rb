@@ -36,6 +36,21 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("blockquote p", :content => "This commit will fail")
   end
 
+  scenario "Rebuilding three times" do
+    git_repo(:my_test_project).add_successful_commit
+    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
+
+    login_as "admin", "test"
+
+    visit "/my-test-project"
+    click_button "manual build"
+    click_button "Fetch and build"
+    click_button "Fetch and build"
+
+    assert_have_tag "h1", :content => "success"
+    assert_have_no_tag "#previous_builds"
+  end
+
   scenario "fixing the build command and then rebuilding result in a successful build" do
     git_repo(:my_test_project).add_successful_commit
     Project.gen(:my_test_project,

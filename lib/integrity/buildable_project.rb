@@ -8,8 +8,9 @@ module Integrity
     alias_method :build_script, :command
 
     def self.call(payload)
-      project = Project.first(:scm => payload["scm"],
-        :uri => payload["uri"],
+      project = Project.first(
+        :scm    => payload["scm"],
+        :uri    => payload["uri"],
         :branch => payload["branch"]
       )
 
@@ -29,18 +30,23 @@ module Integrity
     end
 
     def start_building
-      @commit.update(:build => Build.new(:started_at => Time.now))
+      @build = Build.create(:commit => @commit, :started_at => Time.now)
     end
 
     def finish_building(commit_info, status, output)
+      if commit == :head
+        @project.commits.first(:identifier => "head").destroy
+        @commit = @project.commits.first_or_create(:identifier => commit_info["identifier"])
+      end
+
       @commit.update(commit_info)
-      @commit.build.update(
+      @build.update(
+        :commit       => @commit,
         :successful   => status,
         :output       => output,
         :completed_at => Time.now
       )
-      @commit.build.save
-      @project.enabled_notifiers.each { |n| n.notify_of_build(@commit.build) }
+      @project.enabled_notifiers.each { |n| n.notify_of_build(@build) }
     end
   end
 end
