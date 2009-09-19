@@ -30,7 +30,8 @@ class NotifierTest < Test::Unit::TestCase
     irc     = Notifier.gen(:irc, :project => project)
 
     assert_no_change(project.notifiers, :count) {
-      project.notifiers << irc
+      project.notifiers << Notifier.gen(:irc, :config => "foo")
+      project.save
     }
   end
 
