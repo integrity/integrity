@@ -12,7 +12,7 @@ module Integrity
     belongs_to :project, :model     => "Integrity::Project",
                          :child_key => [:project_id]
 
-    validates_is_unique :name, :scope => :project_id
+    validates_is_unique :name, :scope => :project
 
     def self.available
       @@_notifiers ||= {}
