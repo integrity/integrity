@@ -32,9 +32,7 @@ class IntegrityTest < Test::Unit::TestCase
   end
 
   it "sets Bob's export directory to Integrity's :export_directory option" do
-    pending {
-      Integrity.new
-      assert_same Bob.directory, Integrity.config[:export_directory]
-    }
+    Integrity.new
+    assert_equal Bob.directory.to_s, Integrity.config[:export_directory]
   end
 end
