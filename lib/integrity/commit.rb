@@ -27,6 +27,10 @@ module Integrity
         Author.load('<Commit author not loaded> <<Commit author not loaded>>', :author)
     end
 
+    def committed_at
+      attribute_get(:committed_at) || DateTime.new
+    end
+
     def short_identifier
       identifier.to_s[0..6]
     end
