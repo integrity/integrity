@@ -1,10 +1,6 @@
 $:.unshift File.dirname(__FILE__) + "/../lib", File.dirname(__FILE__)
 
-# Work arounds for using Rip
-if ENV["RIPDIR"]
-  require "parse_tree"
-  require "helpers/rip"
-end
+module Haml;module Version;@@version="2.2.2" end end if ENV["RIPDIR"]
 
 require "test/unit"
 require "rr"
