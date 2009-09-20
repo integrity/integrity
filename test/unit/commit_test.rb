@@ -48,6 +48,7 @@ class CommitTest < Test::Unit::TestCase
   it "has a committed date" do
     assert_kind_of DateTime,
       Commit.gen(:committed_at => Time.utc(2008, 10, 12, 14, 18, 20)).committed_at
+    assert_kind_of DateTime, Commit.gen(:committed_at => nil).committed_at
   end
 
   it "has a human readable status" do
