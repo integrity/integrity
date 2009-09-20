@@ -18,14 +18,13 @@ module AcceptanceHelper
 
   def login_as(user, password)
     def AcceptanceHelper.logged_in; true; end
-    basic_authorize user, password
+    rack_test_session.basic_authorize(user, password)
     Integrity::App.before { login_required if AcceptanceHelper.logged_in }
   end
 
   def log_out
     def AcceptanceHelper.logged_in; false; end
-    rack_test_session.header("HTTP_AUTHORIZATION", nil)
-    @_webrat_session = Webrat::Session.new(Webrat::RackSession.new(self))
+    rack_test_session.header("Authorization", nil)
   end
 end
 
