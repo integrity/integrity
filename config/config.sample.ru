@@ -9,7 +9,7 @@ Bob.engine = Bob::Engine::Threaded.new(20)
 
 map "/github/SECRET_TOKEN" do
   use Bobette::GitHub
-  run Bobette.new(Bobette::BuildableProject)
+  run Bobette.new(Integrity::BuildableProject)
 end
 
 map "/" do
