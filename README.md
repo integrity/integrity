@@ -131,26 +131,26 @@ Integrity gives you a modular notification's system for this.
 With Integrity, you can receive your notifications in a few different ways.
 Currently, we maintain three notifiers:
 
-- [Email](http://github.com/integrity/integrity-email),
+- [Email](http://github.com/integrity/integrity-email)
   by [Nicolás Sanguinetti](http://nicolassanguinetti.info)
-- [Campfire](http://github.com/integrity/integrity-campfire),
+- [Campfire](http://github.com/integrity/integrity-campfire)
   by [Chris Wanstrath](http://ozmm.org)
-- [IRC](http://github.com/integrity/integrity-irc),
+- [IRC](http://github.com/integrity/integrity-irc)
   by [Simon Rozet](http://atonie.org)
 
 There are other available notifiers as well, but we do not maintain them,
 which mean they might not work.
 
-- [Tumblr](http://github.com/matflores/integrity-tumblr),
+- [Tumblr](http://github.com/matflores/integrity-tumblr)
   by [Matías A. Flores](http://matflores.com)
-- [Jabber](http://github.com/hukl/integrity-jabber),
+- [Jabber](http://github.com/hukl/integrity-jabber)
   by [Pier-Hugues Pellerin](http://heykimo.com)
-- [Twitter](http://github.com/cwsaylor/integrity-twitter),
+- [Twitter](http://github.com/cwsaylor/integrity-twitter)
   by [Chris Saylor](http://justhack.com)
-- [Basecamp](http://github.com/pyrat/integrity-basecamp), by
-  [Alastair Brunton](http://www.simplyexcited.co.uk)
-- [Yammer](http://github.com/jstewart/integrity-yammer/tree), by
-  [Jason Stewart](http://github.com/jstewart)
+- [Basecamp](http://github.com/pyrat/integrity-basecamp)
+  by [Alastair Brunton](http://www.simplyexcited.co.uk)
+- [Yammer](http://github.com/jstewart/integrity-yammer/tree)
+  by [Jason Stewart](http://github.com/jstewart)
 
 ## Writing a notifier
 
@@ -197,18 +197,9 @@ But does it work with *&lt;insert tech here&gt;*?
 environment and that it returns a *zero* status code for success and
 *non-zero* for failure, then integrity works for you.
 
-Read more about [Exit status](http://en.wikipedia.org/wiki/Exit_status#Unix)
+Read more about [exit status](http://en.wikipedia.org/wiki/Exit_status#Unix)
 on Wikipedia.
 
-How do I use metric\_fu with Integrity?
----------------------------------------
-
-Use [Nick Quaranto][qrush]'s [report\_card][] which provide automatic
-building and reporting to Campfire of metrics with metric\_fu through
-Integrity. Checkout the [demo](http://metrics.thoughtbot.com/).
-
-[qrush]: http://litanyagainstfear.com
-[report_card]: http://github.com/thoughtbot/report_card
 
 How to handle database.yml and similar unversioned files?
 ---------------------------------------------------------
@@ -235,24 +226,6 @@ Or use a Rake task. Example:
       end
     end
 
-My project won't build!
------------------------
-
-The most common causes are:
-
-* You've installed `foca-integrity` (directly or via an outdated notifier). If
-  so, uninstall it or make sure the `integrity` gem is loaded.
-
-* The build directory isn't writeable by the user that runs Integrity.
-
-* `git` isn't in said user's `PATH`.
-
-* If you're trying to build a private repository (`git@example.org:repo.git`
-  for example), be sure to setup [ssh-agent] or [keychain][].
-
-[keychain]: http://www.gentoo.org/proj/en/keychain/
-[ssh-agent]: http://en.wikipedia.org/wiki/Ssh-agent
-
 How do I use git submodules with Integrity?
 -------------------------------------------
 
@@ -262,27 +235,49 @@ It'll fetch and update the submodules everytime the project is build.
 How to use Integrity with a local repository?
 ---------------------------------------------
 
-Set the project URI's to point to the `.git` directory of the
-repository: `/home/sr/code/integrity/.git`
+Set the project URI's to point to the `.git` directory of the repository.
+Example: `/home/sr/src/integrity/.git`
 
-Related projects and external resources
-=======================================
+My project won't build!
+-----------------------
 
-* [Integrity Menu](http://integrity-menu.com) -- a dashboard widget for Mac OS X
+The most common causes are:
+
+* You've installed `foca-integrity` (directly or via an outdated notifier). If
+  so, uninstall it or make sure the `integrity` gem is loaded.
+* The build directory isn't writeable by the user that runs Integrity.
+* `git` isn't in said user's `PATH`.
+* If you're trying to build a private repository (`git@example.org:repo.git`
+  for example), be sure to setup [ssh-agent] or [keychain][].
+
+[keychain]: http://www.gentoo.org/proj/en/keychain/
+[ssh-agent]: http://en.wikipedia.org/wiki/Ssh-agent
+
+How do I use metric\_fu with Integrity?
+---------------------------------------
+
+Use [Nick Quaranto][qrush]'s [report_card][] which provide automatic
+building and reporting to Campfire of metrics with metric\_fu through
+Integrity. Checkout the [demo](http://metrics.thoughtbot.com/).
+
+[qrush]: http://litanyagainstfear.com
+[report_card]: http://github.com/thoughtbot/report_card
+
+See also
+========
+
+* [Integrity Menu](http://integrity-menu.com) — a dashboard widget for Mac OS X
   that shows the current status of projects being managed by Integrity.
-* [Integritray](http://github.com/jfrench/integritray) -- Adds a
-  CruiseControl.rb-style XML feed to Integrity (integrityapp.com) for use with
-  CCMenu and other tray items.
-* [report\_card](http://giantrobots.thoughtbot.com/2009/7/24/enforcer-and-report_card) --
-  metrics for Integrity.
-
+* [Integritray](http://github.com/jfrench/integritray) — Adds a
+  CruiseControl.rb-style XML feed to Integrity use with CCMenu and other tray
+  items.
+* [report_card][report_card] — metrics for Integrity.
 * [Continuous Integration Testing for Ruby on Rails with Integrity](http://elabs.se/blog/7-continuous-integration-testing-for-ruby-on-rails-with-integrity)
 * [Local Continuous Integration with Integrity](http://morethanseven.net/2008/12/28/local-continuous-integration-integrity/)
 * [Integrity CI on Passenger 2.2.2 with Ruby Enterprise Edition on Ubuntu 8.04](http://blog.smartlogicsolutions.com/2009/04/26/integrity-ci-on-passenger-222-with-ruby-enterprise-edition-on-ubuntu-804/)
 * [deploy Integrity CI with deprec](http://deprec.failmode.com/2009/03/17/deploy-integrity-ci-with-deprec/)
 
-Please feel free to [fork](http://github.com/integrity/integrity-website) this
-website and add your project, article, etc to this list.
+Please feel free to add your project, article, etc to this list.
 
 Support / Contributing
 ======================
