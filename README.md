@@ -1,21 +1,25 @@
 Integrity
 =========
 
-Integrity is the angel watching over your shoulder while you code. As soon
-as you push your commits, it builds, runs your tests, and makes sure
-everything works fine.
+Integrity is your friendly automated Continuous Integration server. As soon as
+you push your commits, it builds your code, run your tests and makes sure
+everything works fine. It then reports the build status using various notifiers
+back to you and your team so everyone is on the same page and any problem can
+be fixed right away.
 
-It then reports the build status using [various notifiers][notifiers]
-back to your team so everyone's on the same page, and if there's a problem,
-you can get it fixed right away.
+Read more about about Continuous Integration on [Martin Fowler's website][mfci]
+and [Wikipedia][wpci].
 
-Read more about [Continuous Integration][ci] on Wikipedia.
+[mfci]: http://martinfowler.com/articles/continuousIntegration.html
+[wpci]: http://en.wikipedia.org/wiki/Continuous_Integration
 
 Live demo
 =========
 
 See how integrity works for yourself on [our own install][demo], watching
-Integrity itself and the [various notifiers][notifiers].
+Integrity itself and the various notifiers.
+
+[demo]: http://ci.atonie.org
 
 Installation and deployment
 ===========================
@@ -31,9 +35,10 @@ This will create a couple files on your server, mainly `config.yml`
 and `config.ru`. Then, edit `config.yml` to your liking and run
 `integrity migrate_db config.yml` to create the database.
 
-**NOTE:** Currently, only SQLite3 is supported. Please see ticket
-[#92](http://integrity.lighthouseapp.com/projects/14308/tickets/92) for
-details.
+**NOTE:** Currently, only SQLite3 is supported. See [this ticket][t92] for
+more details.
+
+[t92]: http://integrity.lighthouseapp.com/projects/14308/tickets/92
 
 The installer provides special configuration files for [Thin][]
 and [Passenger][].
@@ -58,11 +63,14 @@ Thin
         $ integrity install --thin ~www-data/integrity
         $ cd ~www-data/integrity`
 
-3. Tweak `thin.yml` to your need if necessary.
+3. Tweak `thin.yml` to your needs
 
-4. Then, to start the Thin server, just do this:
+4. Finally start the Thin server:
 
         $ thin -C thin.yml -R config.ru start
+
+[Thin]: http://code.macournoyer.com/thin
+[Passenger]: http://www.modrails.com/
 
 Configure a web proxy
 ---------------------
@@ -104,34 +112,31 @@ Configure a web proxy
       </Location>
     </VirtualHost>
 
-If you run Integrity behind Passenger, or other deployment strategy, drop
+**NOTE:** If you run Integrity with another deployment strategy please drop us
 us a line at <info@integrityapp.com> and let us know what config worked
-for you so we can include it here :-)
+for you so we can include it here.
 
 Configuration
 =============
 
-This step should be pretty pretty stepforward. You only need to touch one file:
-
-    /path/to/integrity/config.yml
-
-All options are explained in the file. In case you want to see them anyway,
-you can see the [source file on GitHub][configsrc].
+This step should be pretty pretty stepforward. You only need to touch one file,
+`config.yml` where all options are explained.
 
 Notifiers
 =========
 
-After a build is finished, you want to know the status __immediately.__
+After a build is finished, you want to know the status **immediately.**
 Integrity gives you a modular notification's system for this.
 
 With Integrity, you can receive your notifications in a few different ways.
 Currently, we maintain three notifiers:
 
 - [Email](http://github.com/integrity/integrity-email),
-  by [Nicolás Sanguinetti][foca]
+  by [Nicolás Sanguinetti](http://nicolassanguinetti.info)
 - [Campfire](http://github.com/integrity/integrity-campfire),
   by [Chris Wanstrath](http://ozmm.org)
-- [IRC](http://github.com/integrity/integrity-irc), by [Simon Rozet][sr]
+- [IRC](http://github.com/integrity/integrity-irc),
+  by [Simon Rozet](http://atonie.org)
 
 There are other available notifiers as well, but we do not maintain them,
 which mean they might not work.
@@ -147,12 +152,15 @@ which mean they might not work.
 - [Yammer](http://github.com/jstewart/integrity-yammer/tree), by
   [Jason Stewart](http://github.com/jstewart)
 
-If you'd like to write a notifier, checkout [this guide][howto] by
-[Matías A. Flores](http://matflores.com) which explains it all. Be sure to
-[let us know](mailto:info@integrityapp.com) when you're done and we'll add you
-here :)
+## Writing a notifier
+
+Checkout [this guide][howto] by [Matías A. Flores][maf] which explains it all.
+Once you're done, be sure to add it to the README and [let us know][mail] where
+we can pull from.
 
 [howto]: http://matflores.com/2009/09/21/continuous-notification-with-integrity.html
+[maf]: http://matflores.com
+[mail]: mailto:info@integrityapp.com
 
 Setting up your notifier
 ------------------------
@@ -163,9 +171,7 @@ Also a piece of cake. For example, for email notifications:
 
 And then edit the `config.ru` file in your Integrity install directory:
 
-    require "rubygems"
     require "integrity"
-
     # You need to add the following line:
     require "integrity/notifier/email"
 
@@ -176,11 +182,10 @@ Finally, restart Integrity. That's it. Now you can browse to
 to be registered. However, all notifiers haven't been updated yet,
 so you might have to do it yourself into the `config.ru` file:
 
-    require "rubygems"
     require "integrity"
-    require "integrity/notifier/email"
+    require "integrity/notifier/foo"
 
-    Integrity::Notifier.register(Integrity::Notifier::Email)
+    Integrity::Notifier.register(Integrity::Notifier::Foo)
 
 FAQ
 ===
@@ -188,20 +193,19 @@ FAQ
 But does it work with *&lt;insert tech here&gt;*?
 -------------------------------------------------
 
-Short answer: __Yeah!__
+**Absolutely!** As long as your build process can be run from an UNIX-y
+environment and that it returns a *zero* status code for success and
+*non-zero* for failure, then integrity works for you.
 
-Slightly longer answer: as long as your build process can be run from an unix-y
-environment __and__ it returns a *zero* status code for
-success and _non-zero_ for failure, then integrity works for you.
+Read more about [Exit status](http://en.wikipedia.org/wiki/Exit_status#Unix)
+on Wikipedia.
 
 How do I use metric\_fu with Integrity?
 ---------------------------------------
 
 Use [Nick Quaranto][qrush]'s [report\_card][] which provide automatic
 building and reporting to Campfire of metrics with metric\_fu through
-Integrity.
-
-Checkout the [demo](http://metrics.thoughtbot.com/) if you're not convinced.
+Integrity. Checkout the [demo](http://metrics.thoughtbot.com/).
 
 [qrush]: http://litanyagainstfear.com
 [report_card]: http://github.com/thoughtbot/report_card
@@ -211,7 +215,7 @@ How to handle database.yml and similar unversioned files?
 
 Integrity is dumb. it takes a repository URL and a command to run in a
 working copy of the former. It then reports success or failure depending on
-the [exit status][exit] of the command.
+the exit status of the command.
 
 While this is very simplistic, it allows for great flexibility: you can use
 whatever you want as the build command.
@@ -261,8 +265,6 @@ How to use Integrity with a local repository?
 Set the project URI's to point to the `.git` directory of the
 repository: `/home/sr/code/integrity/.git`
 
-[git-sub]: http://www.kernel.org/pub/software/scm/git/docs/git-submodule.html
-
 Related projects and external resources
 =======================================
 
@@ -282,59 +284,34 @@ Related projects and external resources
 Please feel free to [fork](http://github.com/integrity/integrity-website) this
 website and add your project, article, etc to this list.
 
-Support / Development
-=====================
+Support / Contributing
+======================
 
-[#integrity]: irc://irc.freenode.net:6667/integrity
-You can get in touch via IRC at [#integrity][] on freenode. If no one happens
-to be around the IRC channel, you can ask in our [Google Group][ml].
+You can get in touch via IRC at [#integrity on freenode][irc]. If no one
+happens to be around, you can ask in our [mailing list][ml].
 
-If you find a bug, or want to give us a feature request, drop by our
-[Lighthouse][] tracker.
+If you find a bug, or want to give us a feature request, log it into our
+[bug tracker][bts].
 
-If you want to check out the code, you can do so at our [GitHub project][src]
+To start hacking, grab the code from our git repository at
+`git://github.com/integrity/integrity.git` and [setup Rip][rip] which we
+use to manage development dependencies. Then:
 
-[configure]: /#configure
-[notifiers]: /#notifiers
-[demo]: http://builder.integrityapp.com
-[src]: http://github.com/integrity/integrity
-[lighthouse]: http://integrity.lighthouseapp.com
+* Create a new rip env: `rip env create integrity`
+* Install the dependencies: `for f in $(ls *.rip); do rip install $f; done`
+* Finally, hack and `rake` as usual ;-)
+
+Once you're done, make sure to rebase your changes on top of the `master`
+branch if necessary and let us know where we can pull from by opening a new
+ticket on our [bug tracker][bts].
+
+**NOTE:** You might be tempted to stick in `require "rubygems"` in case you get
+`LoadError` exceptions. Please don't. See
+[Why "require 'rubygems'" In Your Library/App/Tests Is Wrong][gem] by
+[Ryan Tomayko](http://tomayko.com/about).
+
+[irc]: irc://irc.freenode.net:6667/integrity
 [ml]: http://groups.google.com/group/integrityapp
-[configsrc]: http://github.com/integrity/integrity/blob/3d1ba4b8cde7241dacd641eb40e9f26c49fbea35/config/config.sample.yml
-[Thin]: http://code.macournoyer.com/thin
-[Passenger]: http://www.modrails.com/
-[nginx]: http://nginx.net
-[ci]: http://en.wikipedia.org/wiki/Continuous_Integration
-[exit]: http://en.wikipedia.org/wiki/Exit_status#Unix
-[foca]: http://nicolassanguinetti.info
-[sr]: http://atonie.org
-
-Contributing
-------------
-
-The canonical repository for Integrity is `git://github.com/integrity/integrity.git`.
-
-The development version (the `master` branch) of Integrity often requires edgy
-code. To help handle this situation, a [Rip][] file is included. To start hacking:
-
-1. [Setup Rip](http://hellorip.com/install.html) if necessary
-2. `rip install deps.rip && rip install hack.rip`
-3. Hack and `rake` as usual
-
-Finally, push your changes and let us known where we can pull from.
-
-Why we don't `require "rubygems"`
----------------------------------
-
-We decided to leave that choice up to the user. For more information, please
-see [Why "require 'rubygems'" In Your Library/App/Tests Is Wrong][rubygems]
-by [Ryan Tomayko][rtomayko].
-
-[website]: http://integrityapp.com
-[demo]: http://builder.integrityapp.com
-[repo]: http://github.com/integrity/integrity
-[lighthouse]: http://integrity.lighthouseapp.com/projects/14308-integrity
-[irc-channel]: irc://irc.freenode.net/integrity
-[rubygems]: http://gist.github.com/54177
-[rtomayko]: http://tomayko.com/about
-[Rip]: http://hellorip.com
+[bts]: http://integrity.lighthouseapp.com
+[rip]: http://hellorip.com
+[gem]: http://gist.github.com/54177
