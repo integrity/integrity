@@ -35,10 +35,10 @@ module Integrity
 
       def push_url_for(project)
         Addressable::URI.parse(project_url(project, "push")).tap do |url|
-          if Integrity.config[:use_basic_auth]
-            url.user     = Integrity.config[:admin_username]
-            url.password = Integrity.config[:hash_admin_password] ?
-              "<password>" : Integrity.config[:admin_password]
+          if Integrity.config.protect?
+            url.user     = Integrity.config.user
+            url.password = Integrity.config.hash_pass? ?
+              "<password>" : Integrity.config.pass
           end
         end.to_s
       end

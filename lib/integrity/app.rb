@@ -22,7 +22,7 @@ module Integrity
       # +#current_user+
       login_required if session[:user]
 
-      Integrity.config[:base_uri] ||= url_for("/", :full)
+      Integrity.config.base_uri ||= url_for("/", :full)
     end
 
     get "/integrity.css" do

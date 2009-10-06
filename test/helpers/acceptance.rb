@@ -54,7 +54,7 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
     Rack::Builder.new {
       map "/github" do
         use Bobette::GitHub do
-          ! Integrity.config[:build_all_commits]
+          ! Integrity.config.build_all?
         end
 
         run Bobette.new(Integrity::BuildableProject)
@@ -69,29 +69,16 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
 
   before(:all) do
     Integrity::App.set(:environment, :test)
-
     Webrat.configure { |c| c.mode = :rack }
+    Integrity.config.builder = ::BuilderStub
   end
 
   before(:each) do
-    Bob.directory = File.expand_path(File.dirname(__FILE__) + "/../../../tmp")
-    Bob.engine    = ::BuilderStub
-    Bob.logger    = Logger.new("/dev/null")
-
-    mkdir(Bob.directory)
-
-    Integrity.config = {
-      :export_directory => Bob.directory,
-      :use_basic_auth   => true,
-      :admin_username   => "admin",
-      :admin_password   => "test",
-      :hash_admin_password => false
-    }
-
+    Integrity.config.directory.mkdir
     log_out
   end
 
   after(:each) do
-    rm_rf(Bob.directory)
+    Integrity.config.directory.rmtree
   end
 end

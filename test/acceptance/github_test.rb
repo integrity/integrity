@@ -35,7 +35,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "receiving a GitHub payload with build_all_commits *enabled*" do
-    Integrity.config[:build_all_commits] = true
+    Integrity.config.build_all = true
 
     repo = git_repo(:my_test_project)
     3.times { |i|
@@ -57,7 +57,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "receiving a GitHub payload with build_all_commits *disabled*" do
-    Integrity.config[:build_all_commits] = false
+    Integrity.config.build_all = false
 
     repo = git_repo(:my_test_project)
     repo.add_failing_commit
