@@ -26,7 +26,7 @@ module Integrity
     end
   end
 
-  class Builder < Bob::Builder
+  class ProjectBuilder < Bob::Builder
     def started(metadata)
       @project = Project.for(@buildable)
       @build = Build.new(:started_at => Time.now)
