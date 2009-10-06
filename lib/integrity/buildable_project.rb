@@ -22,7 +22,7 @@ module Integrity
     end
 
     def build
-      Bob.engine.new(@buildable).build
+      Integrity.config.builder.new(@buildable).build
     end
   end
 

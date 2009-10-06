@@ -45,8 +45,8 @@ EOM
       end
 
       def commit_url
-        raise if Integrity.config[:base_uri].nil?
-        Integrity.config[:base_uri] / commit.project.permalink / "commits" / commit.identifier
+        raise if Integrity.config.base_uri.nil?
+        Integrity.config.base_uri / commit.project.permalink / "commits" / commit.identifier
       end
 
       private

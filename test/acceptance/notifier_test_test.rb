@@ -8,7 +8,13 @@ class NotifierTestTest < Test::Unit::TestCase
   include Integrity::Notifier::Test
 
   setup do
-    Integrity.config[:base_uri] = "http://example.org/"
+    Integrity.configure { |c|
+      c.database = "sqlite3::memory:"
+      c.base_uri = "http://example.org/"
+      c.log      = "/dev/null"
+    }
+
+    DataMapper.auto_migrate!
 
     @notifier = Integrity::Notifier::Textfile
     @config   = {"file" => "/tmp/integrity.txt"}

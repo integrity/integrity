@@ -47,21 +47,16 @@ class Test::Unit::TestCase
   include TestHelper
 
   before(:all) do
-    DataMapper.setup(:default, "sqlite3::memory:")
-    require "integrity/migrations"
+    Integrity.configure { |c|
+      c.database  = "sqlite3::memory:"
+      c.directory = File.expand_path(File.dirname(__FILE__) + "/../../../tmp")
+      c.log  = "/dev/null"
+      c.user = "admin"
+      c.pass = "test"
+    }
   end
 
   before(:each) do
-    [Project, Build, Commit, Notifier].each{ |i| i.auto_migrate_down! }
-    capture_stdout { Integrity.migrate_db }
-
-    Notifier.available.clear
-    Integrity.instance_variable_set(:@config, nil)
-
-    Integrity.config[:log] = "integrity.log"
-  end
-
-  after(:each) do
-    capture_stdout { Integrity::Migrations.migrate_down! }
+    DataMapper.auto_migrate!
   end
 end

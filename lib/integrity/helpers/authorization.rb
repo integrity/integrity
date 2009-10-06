@@ -10,18 +10,15 @@ module Integrity
       end
 
       def authorized?
-        return true unless Integrity.config[:use_basic_auth]
+        return true unless Integrity.config.protect?
         !!request.env["REMOTE_USER"]
       end
 
       def authorize(user, password)
-        if Integrity.config[:hash_admin_password]
-          password = Digest::SHA1.hexdigest(password)
-        end
+        return true unless Integrity.config.protect?
 
-        !Integrity.config[:use_basic_auth] ||
-        (Integrity.config[:admin_username] == user &&
-          Integrity.config[:admin_password] == password)
+        password = Digest::SHA1.hexdigest(password) if Integrity.config.hash_pass?
+        (Integrity.config.user == user && Integrity.config.pass == password)
       end
 
       def unauthorized!(realm=authorization_realm)
