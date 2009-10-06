@@ -26,17 +26,18 @@ module AcceptanceHelper
     def AcceptanceHelper.logged_in; false; end
     rack_test_session.header("Authorization", nil)
   end
+
+  class BuilderStub
+    def initialize(buildable)
+      @buildable = buildable
+    end
+
+    def build
+      Integrity::ProjectBuilder.new(@buildable).build
+    end
+  end
 end
 
-class BuilderStub
-  def initialize(buildable)
-    @buildable = buildable
-  end
-
-  def build
-    Integrity::ProjectBuilder.new(@buildable).build
-  end
-end
 
 class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
   include FileUtils
@@ -70,7 +71,7 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
   before(:all) do
     Integrity::App.set(:environment, :test)
     Webrat.configure { |c| c.mode = :rack }
-    Integrity.config.builder(::BuilderStub)
+    Integrity.config.builder(BuilderStub)
   end
 
   before(:each) do
