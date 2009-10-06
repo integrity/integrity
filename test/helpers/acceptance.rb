@@ -11,8 +11,8 @@ module AcceptanceHelper
   include Bob::Test
 
   def git_repo(name)
-    GitRepo.new(name).tap { |repo|
-      repo.create unless File.directory?(repo.path)
+    GitRepo.new(name.to_s).tap { |repo|
+      repo.create unless File.directory?(repo.uri)
     }
   end
 
@@ -25,6 +25,16 @@ module AcceptanceHelper
   def log_out
     def AcceptanceHelper.logged_in; false; end
     rack_test_session.header("Authorization", nil)
+  end
+end
+
+class BuilderStub
+  def initialize(buildable)
+    @buildable = buildable
+  end
+
+  def build
+    Integrity::Builder.new(@buildable).build
   end
 end
 
@@ -65,7 +75,7 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
 
   before(:each) do
     Bob.directory = File.expand_path(File.dirname(__FILE__) + "/../../../tmp")
-    Bob.engine    = Bob::Engine::Foreground
+    Bob.engine    = ::BuilderStub
     Bob.logger    = Logger.new("/dev/null")
 
     mkdir(Bob.directory)

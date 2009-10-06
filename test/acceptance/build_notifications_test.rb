@@ -24,7 +24,7 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
 
   scenario "an admin sets up a notifier and issue a manual build" do
     git_repo(:my_test_project).add_successful_commit
-    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
+    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
     rm_f "/tmp/textfile_notifications.txt"
 
     login_as "admin", "test"
@@ -51,7 +51,7 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
 
   scenario "an admin sets up the Textfile notifier but do not enable it" do
     git_repo(:my_test_project).add_successful_commit
-    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
+    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
     rm_f "/tmp/textfile_notifications.txt"
 
     login_as "admin", "test"
@@ -84,7 +84,7 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
 
   scenario "an admin enables the Textfile notifier and get rid of it later" do
     git_repo(:my_test_project).add_successful_commit
-    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
+    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
 
     login_as "admin", "test"
     visit "/my-test-project"

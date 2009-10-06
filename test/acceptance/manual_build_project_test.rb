@@ -9,7 +9,7 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
 
   scenario "clicking on 'Manual Build' triggers a successful build" do
     git_repo(:my_test_project).add_successful_commit
-    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
+    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
     login_as "admin", "test"
 
     visit "/my-test-project"
@@ -25,7 +25,7 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
 
   scenario "clicking on 'Manual Build' triggers a failed build" do
     git_repo(:my_test_project).add_failing_commit
-    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
+    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
     login_as "admin", "test"
 
     visit "/my-test-project"
@@ -38,7 +38,7 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
 
   scenario "Rebuilding three times" do
     git_repo(:my_test_project).add_successful_commit
-    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
+    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
 
     login_as "admin", "test"
 
@@ -54,7 +54,7 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
   scenario "fixing the build command and then rebuilding result in a successful build" do
     git_repo(:my_test_project).add_successful_commit
     Project.gen(:my_test_project,
-                :uri => git_repo(:my_test_project).path,
+                :uri => git_repo(:my_test_project).uri,
                 :command => "exit 1")
 
     login_as "admin", "test"
@@ -75,7 +75,7 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
 
   scenario "Successful builds should not display the 'Rebuild' button" do
     git_repo(:my_test_project).add_successful_commit
-    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
+    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
     login_as "admin", "test"
 
     visit "/my-test-project"
@@ -86,7 +86,7 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
 
   scenario "Failed builds should display the 'Rebuild' button" do
     git_repo(:my_test_project).add_failing_commit
-    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
+    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
     login_as "admin", "test"
 
     visit "/my-test-project"
@@ -96,12 +96,12 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "building a Subversion repository" do
-    repo = SvnRepo.new(:my_svn_repo)
+    repo = SvnRepo.new("my_svn_repo")
     repo.create
     repo.add_successful_commit
 
     Project.gen(:name => "Project On SVN", :scm => "svn",
-      :uri  => "file://"+repo.remote, :command => "./test", :branch => "")
+      :uri  => repo.uri, :command => "./test", :branch => "")
 
     login_as "admin", "test"
     visit "/"

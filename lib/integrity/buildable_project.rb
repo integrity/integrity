@@ -1,51 +1,45 @@
 module Integrity
+  class Project
+    def self.for(buildable)
+      first(
+        :scm    => buildable["scm"],
+        :uri    => buildable["uri"],
+        :branch => buildable["branch"]
+      )
+    end
+  end
+
   class BuildableProject
-    extend Forwardable
-    include Bob::Buildable
-
-    def_delegators :@project, :scm, :uri, :branch, :command
-
-    alias_method :build_script, :command
-
     def self.call(payload)
-      project = Project.first(
-        :scm    => payload["scm"],
-        :uri    => payload["uri"],
-        :branch => payload["branch"]
-      )
-
-      return [] unless project
-
-      payload["commits"].map { |commit| new(project, commit["id"]) }
+      return [] unless project = Project.for(payload)
+      payload["commits"].map { |c| new(project, c["id"]) }
     end
 
-    def initialize(project, commit_id)
-      @project   = project
-      @commit    = project.commits.first_or_create(:identifier => commit_id)
-      @commit_id = commit_id
+    def initialize(project, commit)
+      @buildable = project.attributes.inject({}) { |h, (k,v)|
+        h.update(k.to_s => v)
+      }.merge("commit" => commit)
     end
 
-    def commit
-      @commit_id
+    def build
+      Bob.engine.new(@buildable).build
+    end
+  end
+
+  class Builder < Bob::Builder
+    def started(metadata)
+      @project = Project.for(@buildable)
+      @build = Build.new(:started_at => Time.now)
+      commit = @project.commits.
+        first_or_create({:identifier => metadata["identifier"]}, metadata)
+      commit.update(:build => @build)
     end
 
-    def start_building
-      @build = Build.create(:commit => @commit, :started_at => Time.now)
-    end
-
-    def finish_building(commit_info, status, output)
-      if commit == :head
-        @project.commits.first(:identifier => "head").destroy
-        @commit = @project.commits.first_or_create(:identifier => commit_info["identifier"])
-      end
-
-      @commit.update(commit_info)
-      @build.update(
-        :commit       => @commit,
-        :successful   => status,
-        :output       => output,
-        :completed_at => Time.now
-      )
+    def completed(status, output)
+      @build.completed_at = Time.now
+      @build.successful   = status
+      @build.output       = output
+      @build.save
       @project.enabled_notifiers.each { |n| n.notify_of_build(@build) }
     end
   end
