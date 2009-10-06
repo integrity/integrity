@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/../helpers/acceptance"
+require "helper/acceptance"
 
 class GitHubTest < Test::Unit::AcceptanceTestCase
   story <<-EOF

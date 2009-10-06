@@ -1,9 +1,9 @@
-require File.dirname(__FILE__) + "/../helpers"
-
 require "storyteller"
 require "webrat"
 require "rack/test"
 require "bob/test"
+
+require "helper"
 
 Rack::Test::DEFAULT_HOST.replace("www.example.com")
 

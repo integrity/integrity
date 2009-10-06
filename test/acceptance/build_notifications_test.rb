@@ -1,6 +1,6 @@
-require File.dirname(__FILE__) + "/../helpers/acceptance"
-require "helpers/acceptance/notifier_helper"
-require "helpers/acceptance/email_notifier"
+require "helper/acceptance"
+require "helper/acceptance/notifier_helper"
+require "helper/acceptance/email_notifier"
 
 class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
   include NotifierHelper
@@ -16,7 +16,7 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     # in the global #before.
     # But, we need the reload this one because we remove_const
     # it in a test case. Sigh.
-    load "helpers/acceptance/textfile_notifier.rb"
+    load "helper/acceptance/textfile_notifier.rb"
 
     Notifier.register(Integrity::Notifier::Textfile)
     Notifier.register(Integrity::Notifier::Email)

@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/../helpers/acceptance"
+require "helper/acceptance"
 
 class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
   story <<-EOS

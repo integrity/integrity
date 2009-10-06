@@ -1,6 +1,4 @@
-# TODO
-require File.dirname(__FILE__) + "/../helpers"
-require "helpers/acceptance/textfile_notifier"
+require "helper/acceptance/textfile_notifier"
 
 class NotifierTest < Test::Unit::TestCase
   test "fixture is valid and can be saved" do
