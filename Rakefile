@@ -18,32 +18,6 @@ namespace :test do
 end
 
 begin
-  require "metric_fu"
-
-  task :metrics do
-    metrics = [:churn, :flog, :flay, :reek, :roodi]
-    MetricFu::Configuration.run { |c| c.metrics = metrics }
-
-    Rake::Task["metrics:all"].invoke
-  end
-
-  desc "Special task for running tests on <http://builder.integrityapp.com>"
-  task :ci => [:test, :metrics] do
-    rm_rf "/var/www/integrity-metrics"
-    mv "tmp/metric_fu", "/var/www/integrity-metrics"
-
-    File.open("/var/www/integrity-metrics/index.html", "w") { |f|
-      f.puts "<ul>"
-      MetricFu.configuration.metrics.map { |m| m.to_s.split(":").first }.each { |m|
-        f.puts %Q(<li><a href="/#{m}">#{m}</a></li>)
-      }
-      f.puts "</ul>"
-    }
-  end
-rescue LoadError
-end
-
-begin
   require "mg"
   MG.new("integrity.gemspec")
 rescue LoadError
