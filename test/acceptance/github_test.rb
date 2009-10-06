@@ -19,13 +19,13 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     }.reverse
 
     { "after"      => repo.head, "ref" => "refs/heads/#{branch}",
-      "repository" => { "url" => repo.path },
+      "repository" => { "url" => repo.uri },
       "commits"    => commits }.to_json
   end
 
   scenario "receiving a GitHub payload for a branch that is not monitored" do
     repo = git_repo(:my_test_project)
-    Project.gen(:my_test_project, :uri => repo.path, :branch => "wip")
+    Project.gen(:my_test_project, :uri => repo.uri, :branch => "wip")
 
     basic_authorize "admin", "test"
     post "/github", :payload => payload(repo)
@@ -45,7 +45,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
       end
     }
 
-    Project.gen(:my_test_project, :uri => repo.path, :command => "true")
+    Project.gen(:my_test_project, :uri => repo.uri, :command => "true")
 
     basic_authorize "admin", "test"
     post "/github", :payload => payload(repo)
@@ -63,7 +63,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     repo.add_failing_commit
     repo.add_successful_commit
 
-    Project.gen(:my_test_project, :uri => repo.path)
+    Project.gen(:my_test_project, :uri => repo.uri)
 
     basic_authorize "admin", "test"
     post "/github", :payload => payload(repo)
@@ -75,7 +75,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "receiving a build request with an invalid payload" do
-    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).path)
+    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
 
     basic_authorize "admin", "test"
     post "/github", :payload => "foo"
