@@ -47,4 +47,17 @@ module Integrity
   def self.log(message, &block)
     config.logger.info(message, &block)
   end
+
+  def self.app
+    Rack::Builder.new {
+      config = Integrity.config
+
+      map "/push/#{config.push.last}" do
+        use config.push.first do ! Integrity.config.build_all? end
+        run Bobette.new(Integrity::BuildableProject)
+      end
+
+      map "/" do run Integrity::App end
+    }
+  end
 end

@@ -23,12 +23,16 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
       "commits"    => commits }.to_json
   end
 
+  def github_post(payload)
+    post "/push/#{Integrity.config.push.last}", :payload => payload
+  end
+
   scenario "receiving a GitHub payload for a branch that is not monitored" do
     repo = git_repo(:my_test_project)
     Project.gen(:my_test_project, :uri => repo.uri, :branch => "wip")
 
     basic_authorize "admin", "test"
-    post "/github", :payload => payload(repo)
+    github_post payload(repo)
     visit "/my-test-project"
 
     assert_contain("No builds for this project")
@@ -48,7 +52,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     Project.gen(:my_test_project, :uri => repo.uri, :command => "true")
 
     basic_authorize "admin", "test"
-    post "/github", :payload => payload(repo)
+    github_post payload(repo)
     visit "/my-test-project"
 
     assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
@@ -66,7 +70,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     Project.gen(:my_test_project, :uri => repo.uri)
 
     basic_authorize "admin", "test"
-    post "/github", :payload => payload(repo)
+    github_post payload(repo)
 
     visit "/my-test-project"
 
@@ -78,7 +82,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
 
     basic_authorize "admin", "test"
-    post "/github", :payload => "foo"
+    github_post "foo"
 
     assert last_response.client_error?
   end

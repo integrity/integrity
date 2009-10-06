@@ -30,6 +30,10 @@ module Integrity
       end
     end
 
+    def push(*args)
+      @push ||= Array(args)
+    end
+
     def log=(log)
       @logger = Logger.new(log)
       Bob.logger = @logger
