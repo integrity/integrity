@@ -1,6 +1,6 @@
-require File.dirname(__FILE__) + "/../helpers/acceptance"
-require "helpers/acceptance/email_notifier"
-require "helpers/acceptance/textfile_notifier"
+require "helper/acceptance"
+require "helper/acceptance/email_notifier"
+require "helper/acceptance/textfile_notifier"
 
 require "integrity/notifier/test"
 

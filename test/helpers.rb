@@ -1,5 +1,3 @@
-$:.unshift File.dirname(__FILE__) + "/../lib", File.dirname(__FILE__)
-
 module Haml;module Version;@@version="2.2.2" end end if ENV["RIPDIR"]
 
 require "test/unit"
@@ -13,7 +11,7 @@ require "pending"
 require "integrity"
 require "integrity/notifier/test/fixtures"
 
-require "helpers/expectations"
+require "helper/expectations"
 
 begin
   require "ruby-debug"
