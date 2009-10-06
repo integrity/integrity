@@ -110,4 +110,36 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
 
     assert_have_tag("h1", :content => "success")
   end
+
+  class ThreadedBuilderBlock < Integrity::ThreadedBuilder
+    def build
+      super
+      self.class.pool.wait!
+    end
+  end
+
+  scenario "Building with ThreadedBuilder" do
+    old_builder = Integrity.config.builder
+
+    begin
+      Integrity.config.instance_variable_set(:@builder, nil)
+      Integrity.config.builder(ThreadedBuilderBlock, :size => 4)
+
+      # TODO unit test?
+      assert_equal 4, ThreadedBuilderBlock.pool.instance_variable_get(:@pool).
+        instance_variable_get(:@workers).size
+
+      git_repo(:my_test_project).add_successful_commit
+      Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
+      login_as "admin", "test"
+
+      visit "/my-test-project"
+      click_button "manual build"
+
+      assert_have_tag("h1", :content =>
+        "Built #{git_repo(:my_test_project).short_head} successfully")
+    ensure
+      Integrity.config.instance_variable_set(:@builder, old_builder)
+    end
+  end
 end

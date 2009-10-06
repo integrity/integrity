@@ -43,4 +43,22 @@ module Integrity
       @project.enabled_notifiers.each { |n| n.notify_of_build(@build) }
     end
   end
+
+  class ThreadedBuilder
+    class << self
+      attr_accessor :pool
+    end
+
+    def self.setup(opts={})
+      self.pool = Bob::Engine::Threaded.new(opts[:size] || 2)
+    end
+
+    def initialize(buildable)
+      @buildable = buildable
+    end
+
+    def build
+      self.class.pool.call(proc { ProjectBuilder.new(@buildable).build })
+    end
+  end
 end
