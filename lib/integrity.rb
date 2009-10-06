@@ -37,6 +37,7 @@ require "integrity/app"
 module Integrity
   def self.configure(&block)
     @config ||= Configurator.new(&block)
+    @config.tap { |c| block.call(c) if block }
   end
 
   class << self
