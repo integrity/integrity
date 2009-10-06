@@ -71,7 +71,7 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
   before(:all) do
     Integrity::App.set(:environment, :test)
     Webrat.configure { |c| c.mode = :rack }
-    Integrity.config.builder(BuilderStub)
+    Integrity.configure { |c| c.builder(BuilderStub) }
   end
 
   before(:each) do
