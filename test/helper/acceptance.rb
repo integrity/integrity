@@ -51,27 +51,16 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
 
   Webrat::Methods.delegate_to_session :response_code
 
-  def app
-    Rack::Builder.new {
-      map "/github" do
-        use Bobette::GitHub do
-          ! Integrity.config.build_all?
-        end
-
-        run Bobette.new(Integrity::BuildableProject)
-      end
-
-      map "/" do
-        use Rack::Lint
-        run Integrity::App
-      end
-    }
-  end
+  attr_reader :app
 
   before(:all) do
     Integrity::App.set(:environment, :test)
     Webrat.configure { |c| c.mode = :rack }
-    Integrity.configure { |c| c.builder(BuilderStub) }
+    Integrity.configure { |c|
+      c.builder BuilderStub
+      c.push Bobette::GitHub, "SECRET"
+    }
+    @app = Integrity.app
   end
 
   before(:each) do
