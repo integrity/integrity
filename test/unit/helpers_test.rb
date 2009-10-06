@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/../helpers"
+require "helper"
 
 class HelpersTest < Test::Unit::TestCase
   test "pretty_date" do

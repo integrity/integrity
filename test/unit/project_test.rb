@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/../helpers"
+require "helper"
 
 class ProjectTest < Test::Unit::TestCase
   test "fixture is valid and can be saved" do
