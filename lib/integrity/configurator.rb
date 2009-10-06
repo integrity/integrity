@@ -19,8 +19,15 @@ module Integrity
       Bob.directory
     end
 
-    def builder=(builder)
-      @builder = builder
+    def builder(*args)
+      @builder ||= begin
+        case args.size
+        when 1 then args.first
+        when 2 then args.first.tap { |b| b.setup(args.last) }
+        else
+          raise ArgumentError
+        end
+      end
     end
 
     def log=(log)
