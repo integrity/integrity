@@ -34,7 +34,7 @@ class BuilderStub
   end
 
   def build
-    Integrity::Builder.new(@buildable).build
+    Integrity::ProjectBuilder.new(@buildable).build
   end
 end
 
