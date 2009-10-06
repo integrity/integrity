@@ -1,3 +1,4 @@
+__END__
 require File.dirname(__FILE__) + "/../helpers"
 
 class MigrationsTest < Test::Unit::TestCase
