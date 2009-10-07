@@ -144,4 +144,41 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
       Integrity.config.instance_variable_set(:@builder, old_builder)
     end
   end
+
+  scenario "Building with DelayedBuilder" do
+    old_builder = Integrity.config.builder
+
+    begin
+      require "integrity/dj"
+
+      Integrity.config.instance_variable_set(:@builder, nil)
+      FileUtils.rm_f("dj.db")
+
+      Integrity.configure { |c|
+        c.builder Integrity::DelayedBuilder,
+          :adapter  => "sqlite3",
+          :database => "dj.db"
+      }
+
+      repo = git_repo(:my_test_project)
+      repo.add_successful_commit
+      Project.gen(:my_test_project, :uri => repo.uri)
+
+      login_as "admin", "test"
+      visit "/my-test-project"
+      click_button "manual build"
+
+      assert_have_tag("h1", :content => "hasn't been built yet")
+
+      Delayed::Job.work_off
+      reload
+
+      assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
+      assert_have_no_tag("#previous_builds")
+    rescue LoadError
+      warn "Couldn't load DJ. Skipping test"
+    ensure
+      Integrity.config.instance_variable_set(:@builder, old_builder)
+    end
+  end
 end

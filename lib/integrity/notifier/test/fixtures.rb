@@ -3,7 +3,7 @@ require "dm-sweatshop"
 class Array
   def pick
     self[rand(self.length)]
-  end
+  end unless method_defined?(:pick)
 end
 
 module Integrity
