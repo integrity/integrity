@@ -29,8 +29,13 @@ module Integrity
   class ProjectBuilder < Bob::Builder
     def started(metadata)
       @project = Project.for(@buildable)
-      @build = @project.builds.create(
-        :started_at => Time.now, :commit => Commit.new(metadata))
+      @build =
+        if build_id = @buildable["build"]
+          Build.get(build_id)
+        else
+         @project.builds.create
+        end
+      @build.update(:started_at => Time.now, :commit => Commit.new(metadata))
     end
 
     def completed(status, output)
