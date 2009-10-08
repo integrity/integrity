@@ -57,31 +57,17 @@ class ProjectTest < Test::Unit::TestCase
       assert ! Project.gen(:public => nil).public?
     end
 
-    it "has created_at and updated_at timestamps" do
+    it "has created_at and updated_at datetimes" do
       assert_kind_of DateTime, @project.created_at
       assert_kind_of DateTime, @project.updated_at
     end
 
     it "knows it's status" do
-      assert_equal :success,
-        Project.gen(:commits => 1.of{ Commit.gen(:successful) }).status
-
-      assert_equal :success,
-        Project.gen(:commits => 2.of{ Commit.gen(:successful) }).status
-
-      assert_equal :failed,
-        Project.gen(:commits => 2.of{ Commit.gen(:failed) }).status
-
-      assert_equal :pending,
-        Project.gen(:commits => 1.of{ Commit.gen(:pending) }).status
-
-      assert_equal :blank, Project.gen(:commits => []).status
-
-      assert_equal :building,
-        Project.gen(:commits => 1.of{ Commit.gen(:building) }).status
-
-      commits = 3.of{Commit.gen(:successful)} << Commit.gen(:building)
-      assert Project.gen(:commits => commits).building?
+      assert_equal :success,  Project.gen(:successful).status
+      assert_equal :failed,   Project.gen(:failed).status
+      assert_equal :pending,  Project.gen(:pending).status
+      assert_equal :blank,    Project.gen(:blank).status
+      assert_equal :building, Project.gen(:building).status
     end
   end
 
@@ -130,24 +116,24 @@ class ProjectTest < Test::Unit::TestCase
   end
 
   test "destroying itself" do
-    project = Project.generate(:commits => 7.of{ Commit.gen })
+    project = Project.gen(:builds => 7.of{Build.gen})
 
-    assert_change(Commit, :count, -7) {  project.destroy }
-    assert ! Project[project.id]
+    assert_change(Build, :count, -7) { project.destroy }
+    assert ! Project.get(project.id)
   end
 
   test "finding its previous builds" do
-    project = Project.gen(:commits => 5.of{ Commit.gen })
+    project = Project.gen(:builds => 5.of{Build.gen})
 
-    assert_equal 4,  project.previous_commits.count
-    assert_equal [], Project.gen(:commits => [Commit.gen]).previous_commits
-    assert_equal [], Project.gen(:commits => []).previous_commits
+    assert_equal 4,  project.previous_builds.count
+    assert_equal [], Project.gen(:builds => 1.of{Build.gen}).previous_builds
+    assert_equal [], Project.gen(:blank).previous_builds
 
-    assert project.previous_commits.first.committed_at >
-      project.previous_commits.last.committed_at
+    assert project.previous_builds.first.created_at >
+      project.previous_builds.last.created_at
 
-    assert ! Project.gen(:commits => []).last_commit
-    assert ! project.previous_commits.include?(project.last_commit)
+    assert ! Project.gen(:blank).last_build
+    assert ! project.previous_builds.include?(project.last_build)
   end
 
   describe "When updating its notifiers" do

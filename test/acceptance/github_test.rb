@@ -15,7 +15,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
 
   def payload(repo, branch="master")
     commits = repo.commits.map { |commit|
-      commit.update(:id => commit.delete("identifier"))
+      commit.update("id" => commit.delete("identifier"))
     }.reverse
 
     { "after"      => repo.head, "ref" => "refs/heads/#{branch}",

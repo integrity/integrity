@@ -1,29 +1,29 @@
 #administrative
   %a{ :href => project_path(@project, :edit) } Edit Project
 
-- if @project.commits.empty?
+- if @project.builds.empty?
   %form.blank_slate{ :action => project_path(@project, :builds), :method => :post }
     %p No builds for this project, buddy
     %h1
       You can request a
       %button{ :type => :submit } manual build
 - else
-  - @commit = @project.last_commit
-  #last_build{ :class => @commit.status }
-    = partial(:commit_info, :commit => @commit)
+  - @build = @project.last_build
+  #last_build{ :class => @build.status }
+    = partial(:build_info, :build => @build)
 
   %form{ :action => project_path(@project, :builds), :method => :post }
     %p.submit.manual-build
       %button{ :type => :submit, :title => "Fetch the last commit from the remote repository and build it" }<
         Fetch and build
 
-  - unless @project.previous_commits.empty?
+  - unless @project.previous_builds.empty?
     %h2 Previous builds
     %ul#previous_builds
-      - @project.previous_commits.each do |commit|
-        %li{ :class => commit.status }
-          %a{ :href => commit_path(commit) }
+      - @project.previous_builds.each do |build|
+        %li{ :class => build.status }
+          %a{ :href => build_path(build) }
             %strong.build<
-              &== Build #{commit.short_identifier}
+              &== Build #{build.commit.short_identifier}
             %span.attribution<
-              == by #{commit.author.name}, #{pretty_date commit.committed_at}
+              == by #{build.commit.author.name}, #{pretty_date build.commit.committed_at}

@@ -3,16 +3,16 @@ module Integrity
     include DataMapper::Resource
 
     property :id,           Serial
+    property :project_id,   Integer   # TODO :nullable => false
     property :output,       Text,     :default => "", :lazy => false
     property :successful,   Boolean,  :default => false
-    property :commit_id,    Integer,  :nullable => false
     property :started_at,   DateTime
     property :completed_at, DateTime
 
     timestamps :at
 
-    belongs_to :commit, :model     => "Integrity::Commit",
-                        :child_key => [:commit_id]
+    belongs_to :project
+    has 1,     :commit
 
     def self.pending
       all(:started_at => nil)
@@ -36,6 +36,15 @@ module Integrity
       when building?   then :building
       when successful? then :success
       when failed?     then :failed
+      end
+    end
+
+    def human_readable_status
+      case status
+      when :success  then "Built #{commit.short_identifier} successfully"
+      when :failed   then "Built #{commit.short_identifier} and failed"
+      when :pending  then "#{commit.short_identifier} hasn't been built yet"
+      when :building then "#{commit.short_identifier} is building"
       end
     end
   end
