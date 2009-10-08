@@ -3,6 +3,7 @@ module Integrity
     include DataMapper::Resource
 
     property :id,           Serial
+    property :build_id,     Integer
     property :identifier,   String,   :nullable => false
     property :message,      String,   :length => 255
     property :author,       Author,   :length => 255
@@ -10,13 +11,7 @@ module Integrity
 
     timestamps :at
 
-    has 1,     :build,   :model => "Integrity::Build",
-                         :order => [:created_at.desc]
-
-    belongs_to :project, :model     => "Integrity::Project",
-                         :child_key => [:project_id]
-
-    validates_is_unique :identifier, :scope => :project
+    belongs_to :build
 
     def message
       attribute_get(:message) || "<Commit message not loaded>"
@@ -55,14 +50,6 @@ module Integrity
       status == :building
     end
 
-    def human_readable_status
-      case status
-      when :success; "Built #{short_identifier} successfully"
-      when :failed;  "Built #{short_identifier} and failed"
-      when :pending; "#{short_identifier} hasn't been built yet"
-      when :building; "#{short_identifier} is building"
-      end
-    end
 
     def output
       build && build.output

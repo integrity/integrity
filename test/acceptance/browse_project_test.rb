@@ -28,19 +28,20 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "a user can see the projects status on the home page" do
-    integrity = Project.gen(:integrity, :commits => 3.of { Commit.gen(:successful) })
-    test      = Project.gen(:my_test_project, :commits => 2.of { Commit.gen(:failed) })
-    no_build  = Project.gen(:name => "none yet", :public => true)
-    building  = Project.gen(:name => "building", :public => true,
-                            :commits => 1.of{ Commit.gen(:building) })
+    integrity = Project.gen(:integrity,
+      :builds => 3.of{Build.gen(:successful)})
+    test = Project.gen(:my_test_project, :builds => 2.of{Build.gen(:failed)})
+    no_build = Project.gen(:name => "none yet", :public => true)
+    building = Project.gen(:name => "building", :public => true,
+      :builds => 1.of{Build.gen(:building) })
 
     visit "/"
 
     assert_have_tag("li[@class~=success]",
-      :content => "Built #{integrity.last_commit.short_identifier} successfully")
+      :content => "Built #{integrity.last_build.commit.short_identifier} successfully")
 
     assert_have_tag("li[@class~=failed]",
-      :content => "Built #{test.last_commit.short_identifier} and failed")
+      :content => "Built #{test.last_build.commit.short_identifier} and failed")
 
     assert_have_tag("li[@class~=blank]", :content => "Never built yet")
 

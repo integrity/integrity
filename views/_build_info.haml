@@ -1,0 +1,24 @@
+%h1&= build.human_readable_status
+
+- if build.failed?
+  %form{ :action => project_path(build.project, :builds), :method => :post }
+    %p.submit
+      %button{ :type => :submit, :title => "Rebuild this commit" }<
+        Rebuild
+
+%blockquote
+  %p&= build.commit.message
+  %p.meta<
+    %span.who<
+      &== by: #{build.commit.author.name}
+    |
+    %span.when{ :title => build.commit.committed_at }<
+      &= pretty_date build.commit.committed_at
+    |
+    %span.what<
+      &== commit: #{build.commit.identifier}
+
+%h2 Build Output:
+%pre.output
+  :preserve
+    #{bash_color_codes h(build.output)}

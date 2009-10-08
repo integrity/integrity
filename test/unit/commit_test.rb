@@ -3,7 +3,7 @@ require "helper"
 class CommitTest < Test::Unit::TestCase
   test "fixture is valid and can be saved" do
     assert_change(Commit, :count) {
-      commit = Commit.gen(:with_project)
+      commit = Commit.gen
       assert commit.valid? && commit.save
     }
   end
@@ -49,35 +49,5 @@ class CommitTest < Test::Unit::TestCase
     assert_kind_of DateTime,
       Commit.gen(:committed_at => Time.utc(2008, 10, 12, 14, 18, 20)).committed_at
     assert_kind_of DateTime, Commit.gen(:committed_at => nil).committed_at
-  end
-
-  it "has a human readable status" do
-    assert_match /^Built (.*?) successfully$/,
-      Commit.gen(:successful).human_readable_status
-
-    assert_match /^Built (.*?) and failed$/,
-      Commit.gen(:failed).human_readable_status
-
-    assert_match(/^(.*?) hasn\'t been built yet$/,
-      Commit.gen(:pending).human_readable_status)
-
-    assert_match(/^(.*?) is building$/,
-      Commit.gen(:building).human_readable_status)
-  end
-
-  it "has a status" do
-    assert Commit.gen(:successful).successful?
-    assert Commit.gen(:failed).failed?
-    assert Commit.gen(:pending).pending?
-    assert Commit.gen(:building).building?
-  end
-
-  it "requires a unique identifier in project scope" do
-    project = Project.gen(:commits => [Commit.gen(:identifier => "foo")])
-
-    assert_no_change(project.commits, :count) {
-      project.commits << Commit.gen(:identifier => "foo")
-      project.save
-    }
   end
 end

@@ -25,12 +25,12 @@ module Integrity
         path(project.permalink, *path)
       end
 
-      def commit_url(commit, *path)
-        project_url(commit.project, "commits", commit.identifier, *path)
+      def build_url(build, *path)
+        project_url(build.project, "builds", build.id, *path)
       end
 
-      def commit_path(commit, *path)
-        project_path(commit.project, "commits", commit.identifier, *path)
+      def build_path(build, *path)
+        project_path(build.project, "builds", build.id, *path)
       end
 
       def push_url_for(project)

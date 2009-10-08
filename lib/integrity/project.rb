@@ -12,17 +12,17 @@ module Integrity
     property :scm,        String,   :nullable => false, :default => "git"
     property :branch,     String,   :nullable => true,  :default => ""
     property :command,    String,   :nullable => false, :length => 255, :default => "rake"
-    property :public,     Boolean,  :default => true
+    property :public,     Boolean,  :default  => true
 
     timestamps :at
 
     default_scope(:default).update(:order => [:name.asc])
 
-    has n, :commits,   :model => "Integrity::Commit"
-    has n, :notifiers, :model => "Integrity::Notifier"
+    has n, :builds
+    has n, :notifiers
 
     before :save, :set_permalink
-    before :destroy do commits.destroy! end
+    before :destroy do builds.destroy! end
 
     validates_is_unique :name
 
@@ -30,24 +30,24 @@ module Integrity
       BuildableProject.new(self, commit).build
     end
 
-    def last_commit
-      commits.first(:order => [:committed_at.desc])
+    def last_build
+      builds.first(:order => [:created_at.desc])
     end
 
-    def previous_commits
-      commits.all(:id.not => last_commit.id, :order => [:committed_at.desc])
+    def previous_builds
+      builds.all(:id.not => last_build.id, :order => [:created_at.desc])
     end
 
     def building?
-      commits.any? { |c| c.building? }
+      builds.any? { |b| b.building? }
     end
 
     def status
-      last_commit ? last_commit.status : :blank
+      last_build ? last_build.status : :blank
     end
 
     def human_readable_status
-      last_commit && last_commit.human_readable_status
+      last_build && last_build.human_readable_status
     end
 
     def public=(flag)

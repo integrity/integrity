@@ -99,14 +99,10 @@ module Integrity
       redirect project_url(current_project).to_s
     end
 
-    get "/:project/commits/:commit" do
+    get "/:project/builds/:build" do
       login_required unless current_project.public?
 
-      show :build, :title => ["projects", current_project.permalink, current_commit.short_identifier]
-    end
-
-    get "/:project/builds/:commit" do
-      redirect "/#{params[:project]}/commits/#{params[:commit]}", 301
+      show :build, :title => ["projects", current_project.permalink, current_build.commit.identifier]
     end
 
     post "/:project/commits/:commit/builds" do
