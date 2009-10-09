@@ -32,16 +32,6 @@ module Integrity
       def build_path(build, *path)
         project_path(build.project, "builds", build.id, *path)
       end
-
-      def push_url_for(project)
-        Addressable::URI.parse(project_url(project, "push")).tap do |url|
-          if Integrity.config.protect?
-            url.user     = Integrity.config.user
-            url.password = Integrity.config.hash_pass? ?
-              "<password>" : Integrity.config.pass
-          end
-        end.to_s
-      end
     end
   end
 end
