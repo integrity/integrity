@@ -1,6 +1,6 @@
 require "helper/acceptance"
 
-class EditProjectTest < Test::Unit::AcceptanceTestCase
+class EditTest < Test::Unit::AcceptanceTestCase
   story <<-EOS
     As an administrator,
     I want to be able to edit a project

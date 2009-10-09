@@ -1,6 +1,6 @@
 require "helper/acceptance"
 
-class BrowseProjectBuildsTest < Test::Unit::AcceptanceTestCase
+class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
   story <<-EOS
     As a user,
     I want to browse the builds of a project in Integrity

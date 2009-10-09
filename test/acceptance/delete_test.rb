@@ -1,12 +1,11 @@
 require "helper/acceptance"
 
-class DeleteProjectTest < Test::Unit::AcceptanceTestCase
+class DeleteTest < Test::Unit::AcceptanceTestCase
   story <<-EOS
     As an administrator,
     I want to delete projects I don't care about anymore
     So that Integrity isn't cluttered with unimportant projects
   EOS
-
 
   scenario "Deleting a project from the edit page" do
     Project.gen(:integrity)

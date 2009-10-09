@@ -1,6 +1,6 @@
 require "helper/acceptance"
 
-class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
+class ManualBuildTest < Test::Unit::AcceptanceTestCase
   story <<-EOS
     As an administrator,
     I want to manually build my project
