@@ -26,16 +26,16 @@ class BuildTest < Test::Unit::TestCase
 
   it "has a human readable status" do
     assert_match /^Built (.*?) successfully$/,
-      Build.gen(:successful).human_readable_status
+      Build.gen(:successful).human_status
 
     assert_match /^Built (.*?) and failed$/,
-      Build.gen(:failed).human_readable_status
+      Build.gen(:failed).human_status
 
     assert_match(/^(.*?) hasn\'t been built yet$/,
-      Build.gen(:pending).human_readable_status)
+      Build.gen(:pending).human_status)
 
     assert_match(/^(.*?) is building$/,
-      Build.gen(:building).human_readable_status)
+      Build.gen(:building).human_status)
   end
 
   it "finds pending builds" do

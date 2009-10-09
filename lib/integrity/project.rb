@@ -50,8 +50,8 @@ module Integrity
       blank? ? :blank : last_build.status
     end
 
-    def human_readable_status
-      last_build && last_build.human_readable_status
+    def human_status
+      last_build && last_build.human_status
     end
 
     def public=(flag)

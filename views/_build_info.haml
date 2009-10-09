@@ -1,4 +1,4 @@
-%h1&= build.human_readable_status
+%h1&= build.human_status
 
 - if build.failed?
   %form{ :action => project_path(build.project, :builds), :method => :post }

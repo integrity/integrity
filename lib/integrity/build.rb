@@ -39,7 +39,7 @@ module Integrity
       end
     end
 
-    def human_readable_status
+    def human_status
       case status
       when :success  then "Built #{commit.short_identifier} successfully"
       when :failed   then "Built #{commit.short_identifier} and failed"
