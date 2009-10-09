@@ -39,7 +39,7 @@ module Integrity
     end
 
     def building?
-      builds.any? { |b| b.building? }
+      builds.count(:started_at.not => nil, :completed_at => nil)
     end
 
     def status
