@@ -42,8 +42,12 @@ module Integrity
       builds.count(:started_at.not => nil, :completed_at => nil)
     end
 
+    def blank?
+      builds.count.zero?
+    end
+
     def status
-      last_build ? last_build.status : :blank
+      blank? ? :blank : last_build.status
     end
 
     def human_readable_status
