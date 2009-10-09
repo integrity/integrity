@@ -7,52 +7,39 @@ class CreateProjectTest < Test::Unit::AcceptanceTestCase
     So that I can know their status whenever I push code
   EOS
 
-  scenario "an admin can create a public project" do
-    Project.first(:permalink => "integrity").should be_nil
+  setup do login_as "admin", "test" end
 
-    login_as "admin", "test"
-
+  scenario "Creating a public project" do
     visit "/new"
-
     fill_in "Name",            :with => "Integrity"
     fill_in "Repository URI",  :with => "git://github.com/foca/integrity.git"
     fill_in "Branch to track", :with => "master"
     fill_in "Build script",    :with => "rake"
-    select  "Git",             :from => "project_scm"
+    select  "Git",             :from => "Repository SCM"
     check   "Public project"
     click_button "Create Project"
-
-    Project.first(:permalink => "integrity").should_not be_nil
 
     assert_have_tag("h1", :content => "Integrity")
 
     log_out
-    visit "/integrity"
+    visit "/"
 
-    assert_have_tag("h1", :content => "Integrity")
+    assert_have_tag("#projects a", :content => "Integrity")
   end
 
-  scenario "an admin can create a SVN repository" do
-    login_as "admin", "test"
+  scenario "Creating a SVN repository" do
     visit "/new"
-
     fill_in "Name",           :with => "Rumbster"
     fill_in "Repository URI", :with => "foo"
     fill_in "Build script",   :with => "rake"
-    select "SVN", :from => "project_scm"
-    check "Public project"
+    select  "SVN",            :from => "Repository SCM"
     click_button "Create Project"
 
     assert Project.first(:name => "Rumbster")
   end
 
-  scenario "an admin can create a private project" do
-    Project.first(:permalink => "integrity").should be_nil
-
-    login_as "admin", "test"
-
+  scenario "Creating a private project" do
     visit "/new"
-
     fill_in "Name",            :with => "Integrity"
     fill_in "Repository URI",  :with => "git://github.com/foca/integrity.git"
     fill_in "Branch to track", :with => "master"
@@ -61,48 +48,36 @@ class CreateProjectTest < Test::Unit::AcceptanceTestCase
     click_button "Create Project"
 
     assert_have_tag("h1", :content => "Integrity")
-    Project.first(:permalink => "integrity").should_not be_nil
-
-    log_out
-    visit "/integrity"
-
-    response_code.should == 401
-    assert_have_tag("h1", :content => "know the password?")
+    assert ! Project.first(:name => "Integrity").public?
   end
 
-  scenario "creating a project without required fields re-renders the new project form" do
-    Project.first(:permalink => "integrity").should be_nil
-
-    login_as "admin", "test"
-
+  scenario "Creating a project without filling-in required fields" do
     visit "/new"
     click_button "Create Project"
 
     assert_have_tag(".with_errors label", :content => "Name must not be blank")
-    Project.first(:permalink => "integrity").should be_nil
 
     fill_in "Name",            :with => "Integrity"
     fill_in "Repository URI",  :with => "git://github.com/foca/integrity.git"
     click_button "Create Project"
 
-    assert_have_tag("h1", :content => 'Integrity')
-    Project.first(:permalink => "integrity").should_not be_nil
+    assert_have_tag("h1", :content => "Integrity")
   end
 
-  scenario "a user can't see the new project form" do
+  scenario "Browsing to the creation formulary as a user" do
+    log_out
     visit "/new"
-    response_code.should == 401
+    assert_equal 401, last_response.status
     assert_have_tag("h1", :content => "know the password?")
   end
 
-  scenario "a user can't post the project data (bypassing the form)" do
+  scenario "POST-ing direcly" do
+    log_out
     post "/", "project_data[name]"    => "Integrity",
               "project_data[uri]"     => "git://github.com/foca/integrity.git",
               "project_data[branch]"  => "master",
               "project_data[command]" => "rake"
-
-    response_code.should == 401
+    assert_equal 401, last_response.status
     assert_have_tag("h1", :content => "know the password?")
-    Project.first(:permalink => "integrity").should be_nil
   end
 end

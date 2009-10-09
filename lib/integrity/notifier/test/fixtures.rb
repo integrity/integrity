@@ -15,7 +15,7 @@ module Integrity
       :uri     => "git://github.com/#{/\w+/.gen}/#{name}.git",
       :branch  => %w[master test-refactoring lh-34].pick,
       :command => %w[rake make ant test.xml].pick,
-      :public  => [true, false].pick }
+      :public  => true }
   end
 
   Project.fixture(:integrity) do
@@ -34,6 +34,22 @@ module Integrity
       :branch  => "master",
       :command => "./test",
       :public  => true }
+  end
+
+  Project.fixture(:misc_builds) do
+    Project.gen_attrs.update(:builds => \
+      2.of { Build.gen(:failed) }     +
+      2.of { Build.gen(:pending) }    +
+      1.of { Build.gen(:building) }   +
+      3.of { Build.gen(:successful) })
+  end
+
+  Project.fixture(:svn) do
+    Project.gen_attrs(:my_test_project).update(:scm => "svn", :branch => "")
+  end
+
+  Project.fixture(:blank) do
+    Project.gen_attrs.update(:builds => [])
   end
 
   Project.fixture(:successful) do

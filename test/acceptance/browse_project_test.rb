@@ -1,23 +1,13 @@
 require "helper/acceptance"
 
-class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
+class BrowseProjectsTest < Test::Unit::AcceptanceTestCase
   story <<-EOS
     As a user,
     I want to browse public projects on Integrity,
-    So I can follow the status of my favorite OSS projects
+    So I can follow the status of my various projects
   EOS
 
-  scenario "a user can see a public project listed on the home page" do
-    Project.gen(:integrity, :public => true)
-    Project.gen(:my_test_project, :public => true)
-
-    visit "/"
-
-    assert_have_tag("a", :content => "Integrity")
-    assert_have_tag("a", :content => "My Test Project")
-  end
-
-  scenario "a user can't see a private project listed on the home page" do
+  scenario "Private projects aren't shown" do
     Project.gen(:my_test_project, :public => false)
     Project.gen(:integrity, :public => true)
 
@@ -27,24 +17,17 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("a", :content => "Integrity")
   end
 
-  scenario "a user can see the projects status on the home page" do
-    integrity = Project.gen(:integrity,
-      :builds => 3.of{Build.gen(:successful)})
-    test = Project.gen(:my_test_project, :builds => 2.of{Build.gen(:failed)})
-    no_build = Project.gen(:name => "none yet", :public => true)
-    building = Project.gen(:name => "building", :public => true,
-      :builds => 1.of{Build.gen(:building) })
+  scenario "I can see the state of my various projects" do
+    Project.gen(:successful)
+    Project.gen(:failed)
+    Project.gen(:building)
+    Project.gen(:blank)
 
     visit "/"
 
-    assert_have_tag("li[@class~=success]",
-      :content => "Built #{integrity.last_build.commit.short_identifier} successfully")
-
-    assert_have_tag("li[@class~=failed]",
-      :content => "Built #{test.last_build.commit.short_identifier} and failed")
-
-    assert_have_tag("li[@class~=blank]", :content => "Never built yet")
-
+    assert_have_tag("li[@class~=success]",  :content => "successfully")
+    assert_have_tag("li[@class~=failed]",   :content => "and failed")
+    assert_have_tag("li[@class~=blank]",    :content => "Never built yet")
     assert_have_tag("li[@class~=building]", :content => "Building!")
   end
 
@@ -61,46 +44,26 @@ class BrowsePublicProjectsTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("a", :content => "My Test Project")
   end
 
-  scenario "a user gets a 404 when browsing to an unexisting project" do
-    visit "/who-are-you"
-
-    response_code.should == 404
+  scenario "Browsing to an unknown project" do
+    visit "/foobiz"
+    assert last_response.not_found?
     assert_have_tag("h1", :content => "you seem a bit lost, sir")
   end
 
-  scenario "a user browsing to the url of a private project gets a 401" do
-    Project.gen(:my_test_project, :public => false)
+  scenario "Browsing to a private project" do
+    Project.gen(:name => "Secret", :public => false)
 
-    visit "/my-test-project"
-
-    response_code.should == 401
+    visit "/secret"
+    assert_equal 401, last_response.status
     assert_have_tag("h1", :content => "know the password?")
   end
 
-  scenario "an admin can browse to a private project just fine" do
+  scenario "Signing-in as an admin and browsing to a private project" do
     Project.gen(:my_test_project, :public => false)
 
     login_as "admin", "test"
-
     visit "/"
     click_link "My Test Project"
-
     assert_have_tag("h1", :content => "My Test Project")
-  end
-
-  scenario "a user browsing to a public project with no build see a friendly message" do
-    project = Project.gen(:my_test_project, :public => true)
-
-    visit "/my-test-project"
-    assert_contain("No builds for this project, buddy")
-  end
-
-  scenario "an admin browsing to a private project with no build see a friendly message" do
-    Project.gen(:my_test_project, :public => false)
-
-    login_as "admin", "test"
-    visit "/my-test-project"
-
-    assert_contain("No builds for this project, buddy")
   end
 end

@@ -7,8 +7,9 @@ class BrowseProjectBuildsTest < Test::Unit::AcceptanceTestCase
     So I can see the history of a project
   EOS
 
-  scenario "a project with no builds should say so in a friendly manner" do
-    Project.gen(:integrity, :public => true, :builds => [])
+  scenario "Browsing to a project with not builds" do
+    Project.gen(:blank, :name => "Integrity")
+
 
     visit "/integrity"
 
@@ -17,8 +18,8 @@ class BrowseProjectBuildsTest < Test::Unit::AcceptanceTestCase
     assert_contain("No builds for this project, buddy")
   end
 
-  scenario "a user can see the last build and the list of previous builds on a project page" do
-    Project.gen(:integrity, :public => true, :builds => \
+  scenario "Browsing to a project with all kind of builds" do
+    Project.gen(:integrity, :builds => \
                 2.of { Build.gen(:failed) }     +
                 2.of { Build.gen(:pending) }    +
                 3.of { Build.gen(:successful) })
@@ -34,7 +35,7 @@ class BrowseProjectBuildsTest < Test::Unit::AcceptanceTestCase
     end
   end
 
-  scenario "a user can see details about the last build on the project page" do
+  scenario "Looking for details on the last build" do
     build = Build.gen(:successful, :output => "This is the build output")
     build.commit.update(
       :identifier => "7fee3f0014b529e2b76d591a8085d76eab0ff923",
@@ -42,19 +43,19 @@ class BrowseProjectBuildsTest < Test::Unit::AcceptanceTestCase
       :message => "No more pending tests :)",
       :committed_at => Time.mktime(2008, 12, 15, 18)
     )
-    Project.gen(:integrity, :public => true, :builds => [build])
+    Project.gen(:integrity, :builds => [build])
 
     visit "/integrity"
 
-    assert_have_tag("h1", :content => "Built 7fee3f0 successfully")
+    assert_have_tag("h1",           :content => "Built 7fee3f0 successfully")
     assert_have_tag("blockquote p", :content => "No more pending tests")
     assert_have_tag("span.who",     :content => "by: Nicolas Sanguinetti")
     assert_have_tag("span.when",    :content => "Dec 15th")
     assert_have_tag("pre.output",   :content => "This is the build output")
   end
 
-  scenario "a user can browse to individual build pages" do
-    Project.gen(:integrity, :public => true, :builds => [
+  scenario "Browsing to an individual build pages" do
+    Project.gen(:integrity, :builds => [
       Build.gen(:successful, :commit => Commit.gen(:identifier => "87e673a")),
       Build.gen(:successful, :commit => Commit.gen(:identifier => "7fee3f0"))
     ])
