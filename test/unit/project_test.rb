@@ -204,7 +204,7 @@ class ProjectTest < Test::Unit::TestCase
     end
 
     it "doesn't destroy any of the other notifiers that exist for other projects" do
-      irc     = Notifier.generate(:irc)
+      irc     = Notifier.gen(:irc)
       project = Project.gen
       project.update_notifiers("IRC", {"IRC" => irc.config})
 
@@ -217,7 +217,7 @@ class ProjectTest < Test::Unit::TestCase
   describe "When retrieving state about its notifier" do
     before(:each) do
       @project = Project.gen
-      @irc     = Notifier.generate(:irc)
+      @irc     = Notifier.gen(:irc)
     end
 
     it "knows which notifiers are enabled" do
