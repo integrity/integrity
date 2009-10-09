@@ -10,11 +10,10 @@ class ErrorPageTest < Test::Unit::AcceptanceTestCase
   before { Integrity::App.disable :raise_errors }
   after  { Integrity::App.enable  :raise_errors }
 
-  scenario "an error happen while I am browsing my Integrity install" do
+  scenario "Something horrible happens" do
     stub(Project).all { raise ArgumentError }
-    lambda { visit "/" }.should raise_error(Webrat::PageLoadError)
-
-    response_code.should == 500
+    assert_raise(Webrat::PageLoadError) { visit "/" }
+    assert last_response.server_error?
     assert_have_tag("h1", :content => "Whatever you do")
     assert_have_tag("strong", :content => "ArgumentError")
   end

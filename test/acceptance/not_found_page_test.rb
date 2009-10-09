@@ -7,22 +7,19 @@ class NotFoundPageTest < Test::Unit::AcceptanceTestCase
     So that I DON'T HAVE TO THINK.
   EOS
 
-  scenario "chilling on some Integrity instance found via The Holy Hub" do
-    project = Project.gen(:public => true)
-
+  scenario "Browsing some Integrity install" do
+    Project.gen(:name => "The Holy Hub")
     visit "/42"
-    assert_equal 404, response_code
+    assert last_response.not_found?
 
     click_link "list of projects"
-    assert_contain(project.name)
+    assert_contain("The Holy Hub")
 
     visit "/42"
-
     click_link "the projects list"
-    assert_contain(project.name)
+    assert_contain("The Holy Hub")
 
     visit "/42"
-
     click_link "back from whence you came"
     assert_contain("Add a new project")
   end
