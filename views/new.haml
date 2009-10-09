@@ -42,12 +42,6 @@
     %button.positive{ :type => "submit" }= @project.new? ? "Create Project" : "Update Project"
 
 - unless @project.new?
-  %h2 Push URL
-  %p
-    You can use this Push URL with your GitHub project to enable automated continuous integration.
-  %p
-    %code#push_url= h(push_url_for(@project))
-
   %form{ :method => "post", :action => project_path(@project) }
     .hidden
       %input{ :name => "_method", :type => "hidden", :value => "delete" }
