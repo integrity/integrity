@@ -1,3 +1,4 @@
+__END__
 require "helper/acceptance"
 require "helper/acceptance/notifier_helper"
 require "helper/acceptance/email_notifier"
