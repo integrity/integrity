@@ -1,6 +1,6 @@
 require "helper/acceptance"
 
-class CreateProjectTest < Test::Unit::AcceptanceTestCase
+class CreateTest < Test::Unit::AcceptanceTestCase
   story <<-EOS
     As an administrator,
     I want to add projects to Integrity,

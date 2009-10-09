@@ -1,9 +1,9 @@
 require "helper/acceptance"
 
-class BrowseProjectsTest < Test::Unit::AcceptanceTestCase
+class HomepageTest < Test::Unit::AcceptanceTestCase
   story <<-EOS
     As a user,
-    I want to browse public projects on Integrity,
+    I want to browse my project from Integrity's homepage
     So I can follow the status of my various projects
   EOS
 
