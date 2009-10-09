@@ -69,9 +69,9 @@ class ManualBuildProjectTest < Test::Unit::AcceptanceTestCase
     fill_in "Build script", :with => "./test"
     click_button "Update Project"
 
-    visit "/my-test-project"
-    click_button "Fetch and build"
+    sleep 1
 
+    click_button "Fetch and build"
     assert_have_tag("h1", :content => "success")
   end
 
