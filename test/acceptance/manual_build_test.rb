@@ -16,6 +16,8 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     visit "/my-test-project"
     click_button "manual build"
 
+    assert_have_no_tag("button", :content => "Rebuild")
+
     assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
     assert_have_tag("blockquote p", :content => "This commit will work")
     assert_have_tag("span.who",     :content => "by: John Doe")
@@ -31,6 +33,8 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     login_as "admin", "test"
     visit "/my-test-project"
     click_button "manual build"
+
+    assert_have_tag("button", :content => "Rebuild")
 
     assert_have_tag("h1", :content => "Built #{repo.short_head} and failed")
     assert_have_tag("blockquote p", :content => "This commit will fail")
@@ -95,30 +99,6 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("h1", :content => "Built #{commit} successfully")
     assert_have_tag("#previous_builds li", :count => 1)
     assert_have_tag("#previous_builds li[@class='failed']", :content => commit)
-  end
-
-  scenario "Successful builds should not display the 'Rebuild' button" do
-    repo = git_repo(:my_test_project)
-    repo.add_successful_commit
-    Project.gen(:my_test_project, :uri => repo.uri)
-
-    login_as "admin", "test"
-    visit "/my-test-project"
-    click_button "manual build"
-
-    assert_have_no_tag("button", :content => "Rebuild")
-  end
-
-  scenario "Failed builds should display the 'Rebuild' button" do
-    repo = git_repo(:my_test_project)
-    repo.add_failing_commit
-    Project.gen(:my_test_project, :uri => repo.uri)
-
-    login_as "admin", "test"
-    visit "/my-test-project"
-    click_button "manual build"
-
-    assert_have_tag("button", :content => "Rebuild")
   end
 
   scenario "Building a Subversion repository" do
