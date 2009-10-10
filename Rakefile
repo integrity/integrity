@@ -19,6 +19,11 @@ namespace :test do
   end
 end
 
+task :db do
+  require "init"
+  DataMapper.auto_migrate!
+end
+
 begin
   require "mg"
   MG.new("integrity.gemspec")
