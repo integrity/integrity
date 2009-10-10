@@ -1,0 +1,239 @@
+Integrity
+=========
+
+Integrity is your friendly automated Continuous Integration server. As soon
+as you push your commits, it builds your code, run your tests and makes sure
+everything works fine. It then reports the build status using various notifiers
+back to you and your team so everyone is on the same page and problems can be
+fixed right away.
+
+Read more about about Continuous Integration on
+http://martinfowler.com/articles/continuousIntegration.html[Martin Fowler's
+website] and http://en.wikipedia.org/wiki/Continuous_Integration[Wikipedia].
+
+== Installation
+.Make sure you meet theses requirements:
+* Ruby >= 1.8.X
+* RubyGems >= 1.3.5
+* git >= 1.6
+
+[source, shell]
+git clone git://github.com/integrity/integrity
+gem install bundler
+gem bundle
+
+If you want give it a quick try before going any further, run `./bin/rake db &&
+./bin/rackup` and navigate to http://0.0.0.0:9292.
+
+== Configuration
+The configuration is done into the `init.rb` file. We'll go through each
+option one by one but first of all here is the default configuration as
+an example:
+
+[source, ruby]
+----
+Integrity.configure do |c|
+  c.database  = "sqlite3:integrity.db"
+  c.directory = "builds"
+  c.log       = "integrity.log"
+  c.build_all = true
+  c.push    :github, "MY TOKEN"
+  c.builder :threaded, :size => 5
+end
+----
+
+=== Basic settings
+database:: Any valid database URI as defined by
+http://datamapper.rubyforge.org/dm-core/DataMapper.html[DataMapper], such as:
+* `sqlite3:integrity.db`
+* `mysql://user:password@localhost/integrity`
+* `postgres://user:password@localhost/integrity`
+
+IMPORTANT: You'll need to install the apropriate `data_objects` adapter as well.
+The SQLite3 adapter (`do_sqlite3`) is installed by default.
+
+directory:: This is where your projects' code will be checked out. Make sure it
+is writeable by the user that runs Integrity.
+log:: Path to the Integrity log file. Contains mostly debug info.
+build_all:: Wheter every commit included into post-receive hooks are build
+or just the newest. Either `true` or `false`.
+
+=== Automating builds
+Continuous integration must be automatic, ortherwise you probably won't be
+doing it. You can either setup http://github.com[GitHub] to notify Integrity
+of new commits or a http://en.wikipedia.org/wiki/Cron[Cron] job that polls the
+the repository for update.
+
+==== GitHub
+Setup a
+http://github.com/guides/post-receive-hooks[Post-Receive Hook] on your
+repository pointing to http://ci.example.org/gitub/TOKEN and add this line to
+your configuration:
+[source, ruby]
+c.push :github, "TOKEN"
+
+NOTE: Patches to add support for other services are very welcome.
+
+==== Polling
+Here is an example that triggers a build only when the git repository has new
+commits:
+[source, ruby]
+----
+require "init"
+Integrity::Project.all.each { |project|
+  project.build("HEAD") if project.blank? || `git ls-remote #{project.uri}`.
+    include?("#{project.last_build.commit.identifier}\tHEAD")
+}
+----
+
+=== Choosing a build engine
+Integrity ships with two ways to build your codes in parallel.
+
+==== Threaded
+It uses a pool of threads. The `:size` argument is the number of threads that
+should be created. It works great for most the cases and don't require any
+external process or additional dependency.
+[source, ruby]
+c.builder :threaded, :size => 5
+
+==== Queued
+The build jobs are queued into the database and then later processed by a
+a number of workers. It relies on http://github.com/tobi/delayed_job[DelayedJob]
+which needs to be installed. To do so, uncomment the two bottom lines of the
+`Gemfile` file and run `gem bundle` again.
+[source, ruby]
+c.builder :dj, :adapter => "sqlite3", :database => "dj.db"
+
+To start a worker process, run `rake jobs:work`.
+
+== Notification
+After a build status is available, you want to know it **immediately**,
+especially if it is a failure. Integrity currently supports three notification
+mediums: Email, http://en.wikipedia.org/wiki/IRC[IRC] and
+http://campfirenow.com[Campfire]. To setup and use a notifier:
+
+1. Open the `Gemfile`, uncomment the relevant lines and run `gem bundle` to
+   install the notifier's dependencies.
+2. Edit the `init.rb` file to require it. Example for the Email notifier:
++
+[source, ruby]
+----
+require "integrity"
+# You need to add this line:
+require "integrity/notifier/email"
+----
++
+3. Restart Integrity and go to the project settings screen where you can enable
+   and configure the notifier.
+
+== Deployement
+=== http://heroku.com[Heroku]
+Heroku is the easiest and fastest way to deploy Integrity.
+
+[source, shell]
+$ cp doc/heroku.rb init.rb
+$ git commit -am "Configured for Heroku"
+$ gem install heroku
+$ heroku create
+$ git push heroku master
+$ heroku rake db
+$ heroku open
+
+NOTE: It isn't possible to access repositories over SSH due to Heroku's
+      architecture.
+
+=== http://modrails.com[Phusion Passenger]
+Please see Passenger's documentation for
+http://www.modrails.com/documentation/Users%20guide%20Apache.html[Apache] and
+http://www.modrails.com/documentation/Users%20guide%20Nginx.html[Nginx].
+
+=== http://code.macournoyer.com/thin/[Thin]
+[source, shell]
+$ gem install thin
+$ $EDITOR doc/thin.yml
+$ thin -C doc/thin.yml start
+
+Then, configure a web proxy. Examples:
+
+.Nginx as a reverse-proxy
+----
+http {
+  upstream builder-integrityapp-com {
+  server 127.0.0.1:8910;
+  server 127.0.0.1:8911;
+}
+
+server {
+  server_name builder.integrityapp.com;
+  location / {
+    proxy_pass http://builder-integrityapp-com;
+  }
+}
+----
+
+.Apache acting as reverse proxy to a cluster of thin instances
+----
+<VirtualHost *>
+  <Proxy>
+    Order deny,allow
+    Allow from all
+  </Proxy>
+
+  RedirectMatch ^/integrity$ /integrity/
+  ProxyRequests Off
+  ProxyPass /integrity/ http://localhost:8910/
+  ProxyHTMLURLMap http://localhost:8910 /integrity
+
+  <Location /integrity>
+    ProxyPassReverse /
+    SetOutputFilter proxy-html
+    ProxyHTMLURLMap / /integrity/
+    ProxyHTMLURLMap /integrity/ /integrity
+  </Location>
+</VirtualHost>
+----
+
+NOTE: If you run Integrity with another deployment strategy please drop us
+      us a line at <info@integrityapp.com> and let us know what config
+      worked for you so we can include it here.
+
+== Support / Contributing
+You can get in touch via IRC at irc://irc.freenode.net/integrity[#integrity on
+freenode]. If no one happens to be around, you can ask in our
+http://groups.google.com/group/integrityapp[mailing list].
+
+If you find a bug, or want to give us a feature request, log it into our
+http://github.com/integrity/integrity/issues[bug tracker].
+
+To start hacking, grab the code from our git repository at
+`git://github.com/integrity/integrity.git` and setup the dependencies with
+`gem bundle -m test/Gemfile`. Finally, hack and `./bin/rake` as usual ;-)
+
+Once you're done, make sure that changes are rebased on on top of the `master`
+branch and open a new ticket in our bug tracker to let us know where we
+can pull from.
+
+== See Also
+* http://integrity-menu.com[Integrity Menu] — a dashboard widget for Mac OS X
+  that shows the current status of projects being managed by Integrity.
+* http://github.com/thoughtbot/report_card[report_card] by
+  http://litanyagainstfear.com[Nick Quaranto] provides automatic building
+  and reporting to Campfire of code metrics with
+  http://metric-fu.rubyforge.org[metric_fu].
+* http://devver.net/caliper[Caliper], a service of http://devver.net[Devver]
+  that provides easy Ruby metrics.
+
+== FAQ
+=== Does it support Subversion or any other code SCM?
+[[faq-scm]]
+In short, no. Everything needed to support it is already here but it has been
+removed as we're missing actual people using it. If you need it, please do
+`git revert f1dc4bf` and tell us how it go. Bonus for patches, of course.
+
+=== But does it work with <insert tech here>?
+[[faq-tech]]
+**Absolutely!** As long as your build process can be run from an UNIX-y
+environment and that it returns a *zero* status code for success and
+*non-zero* for failure, then Integrity works for you.
+
+// vim: set syntax=asciidoc:
