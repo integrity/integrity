@@ -4,7 +4,7 @@ module Integrity
 
     property :id,           Serial
     property :build_id,     Integer
-    property :identifier,   String,   :nullable => false
+    property :identifier,   String
     property :message,      String,   :length => 255
     property :author,       Author,   :length => 255
     property :committed_at, DateTime
@@ -12,6 +12,14 @@ module Integrity
     timestamps :at
 
     belongs_to :build
+
+    def identifier
+      attribute_get(:identifier) || ""
+    end
+
+    def short_identifier
+      identifier.to_s[0..6]
+    end
 
     def message
       attribute_get(:message) || "<Commit message not loaded>"
@@ -24,10 +32,6 @@ module Integrity
 
     def committed_at
       attribute_get(:committed_at) || DateTime.new
-    end
-
-    def short_identifier
-      identifier.to_s[0..6]
     end
   end
 end

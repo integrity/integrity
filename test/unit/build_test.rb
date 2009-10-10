@@ -31,11 +31,11 @@ class BuildTest < Test::Unit::TestCase
     assert_match /^Built (.*?) and failed$/,
       Build.gen(:failed).human_status
 
-    assert_match(/^(.*?) hasn\'t been built yet$/,
-      Build.gen(:pending).human_status)
+    assert_match /^(.*?) is building$/,
+      Build.gen(:building).human_status
 
-    assert_match(/^(.*?) is building$/,
-      Build.gen(:building).human_status)
+    assert_equal "This commit hasn't been built yet",
+      Build.gen(:pending).human_status
   end
 
   it "finds pending builds" do

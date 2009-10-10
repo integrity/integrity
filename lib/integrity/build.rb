@@ -43,7 +43,7 @@ module Integrity
       case status
       when :success  then "Built #{commit.short_identifier} successfully"
       when :failed   then "Built #{commit.short_identifier} and failed"
-      when :pending  then "#{commit.short_identifier} hasn't been built yet"
+      when :pending  then "This commit hasn't been built yet"
       when :building then "#{commit.short_identifier} is building"
       end
     end
