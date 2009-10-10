@@ -53,7 +53,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     }
   end
 
-  scenario "Fixing the build command and then rebuilding" do
+  scenario "Fixing the build command and then rebuilding HEAD" do
     repo = git_repo(:my_test_project)
     repo.add_successful_commit
     Project.gen(:my_test_project, :uri => repo.uri, :command => "exit 1")
@@ -71,6 +71,30 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     click_button "Fetch and build"
 
     assert_have_tag("h1", :content => "success")
+  end
+
+  scenario "Fixing the build command and then rebuilding the failed build" do
+    repo = git_repo(:my_test_project)
+    repo.add_successful_commit
+    commit = repo.short_head
+    Project.gen(:my_test_project, :uri => repo.uri, :command => "exit 1")
+
+    login_as "admin", "test"
+    visit "/my-test-project"
+    click_button "manual build"
+    assert_have_tag("h1", :content => "failed")
+
+    repo.add_failing_commit
+    sleep 1
+
+    click_link "Edit Project"
+    fill_in "Build script", :with => "./test"
+    click_button "Update Project"
+    click_button "Rebuild"
+
+    assert_have_tag("h1", :content => "Built #{commit} successfully")
+    assert_have_tag("#previous_builds li", :count => 1)
+    assert_have_tag("#previous_builds li[@class='failed']", :content => commit)
   end
 
   scenario "Successful builds should not display the 'Rebuild' button" do
