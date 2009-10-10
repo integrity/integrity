@@ -15,7 +15,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
   end
 
   def payload(repo)
-    commits = repo.commits.map { |c| c.update("id" => c.delete("identifier")) }
+    commits = repo.commits.collect { |c| c["identifier"] }
     { "after"      => repo.head, "ref" => "refs/heads/#{repo.branch}",
       "repository" => { "url" => repo.uri },
       "commits"    => commits.reverse }.to_json

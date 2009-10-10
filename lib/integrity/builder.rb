@@ -12,7 +12,7 @@ module Integrity
   class BuildableProject
     def self.call(payload)
       return [] unless project = Project.for(payload)
-      payload["commits"].map { |c| new(project, c["id"]) }
+      payload["commits"].collect { |commit| new(project, commit) }
     end
 
     def initialize(project, commit)
