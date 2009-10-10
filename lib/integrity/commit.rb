@@ -29,30 +29,5 @@ module Integrity
     def short_identifier
       identifier.to_s[0..6]
     end
-
-    def status
-      build.nil? ? :pending : build.status
-    end
-
-    def successful?
-      status == :success
-    end
-
-    def failed?
-      status == :failed
-    end
-
-    def pending?
-      status == :pending
-    end
-
-    def building?
-      status == :building
-    end
-
-
-    def output
-      build && build.output
-    end
   end
 end
