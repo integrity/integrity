@@ -7,7 +7,7 @@ module Integrity
       end
 
       def current_build
-        @build ||= current_project.builds.first(:id => params[:build]) or
+        @build ||= current_project.builds.get(params[:build]) or
           raise Sinatra::NotFound
       end
 

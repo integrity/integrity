@@ -106,11 +106,11 @@ module Integrity
         current_build.commit.identifier]
     end
 
-    post "/:project/commits/:commit/builds" do
+    post "/:project/builds/:build" do
       login_required
 
-      current_project.build(params[:commit])
-      redirect commit_url(current_commit).to_s
+      current_project.build(current_build.commit.identifier)
+      redirect project_url(current_project).to_s
     end
   end
 end

@@ -1,7 +1,7 @@
 %h1&= build.human_status
 
 - if build.failed?
-  %form{ :action => project_path(build.project, :builds), :method => :post }
+  %form{ :action => build_path(build), :method => :post }
     %p.submit
       %button{ :type => :submit, :title => "Rebuild this commit" }<
         Rebuild
