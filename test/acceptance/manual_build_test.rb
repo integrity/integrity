@@ -114,9 +114,9 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
   end
 
   class ThreadedBuilderBlock < Integrity::ThreadedBuilder
-    def build
+    def self.build(build)
       super
-      self.class.pool.wait!
+      pool.wait!
     end
   end
 
