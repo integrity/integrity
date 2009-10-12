@@ -95,8 +95,8 @@ module Integrity
     post "/:project/builds" do
       login_required
 
-      current_project.build("HEAD")
-      redirect project_url(current_project).to_s
+      build = current_project.build("HEAD")
+      redirect build_url(build).to_s
     end
 
     get "/:project/builds/:build" do
@@ -109,8 +109,8 @@ module Integrity
     post "/:project/builds/:build" do
       login_required
 
-      current_project.build(current_build.commit.identifier)
-      redirect project_url(current_project).to_s
+      build = current_project.build(current_build.commit.identifier)
+      redirect build_url(build).to_s
     end
   end
 end
