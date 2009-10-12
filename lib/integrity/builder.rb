@@ -33,11 +33,15 @@ module Integrity
     end
 
     def started(metadata)
+      Integrity.log "Started building %s at %s" % [@build.project.uri,
+        metadata["identifier"]]
       @build.update(:started_at => Time.now)
       @build.commit.update(metadata)
     end
 
     def completed(status, output)
+      Integrity.log "Completed build %s. Exited with %s, got:\n %s" % [
+        @build.commit.identifier, status, output]
       @build.completed_at = Time.now
       @build.successful   = status
       @build.output       = output
