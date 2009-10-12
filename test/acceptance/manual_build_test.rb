@@ -7,6 +7,20 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     So that I know if it builds properly
   EOS
 
+  before(:all) do
+    @builder = Integrity.config.builder
+    Integrity.config.instance_variable_set(:@builder, nil)
+    Integrity.config { |c| c.builder(ThreadedBuilder, :size => 4) }
+  end
+
+  after(:all) do
+    Integrity.config.instance_variable_set(:@builder, @builder)
+  end
+
+  def build
+    ThreadedBuilder.pool.wait!
+  end
+
   scenario "Triggering a successful build" do
     repo = git_repo(:my_test_project)
     repo.add_successful_commit
@@ -16,8 +30,12 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     visit "/my-test-project"
     click_button "manual build"
 
-    assert_have_no_tag("button", :content => "Rebuild")
+    assert_have_tag("#last_build h1", :content => "hasn't been built yet")
 
+    build
+    reload
+
+    assert_have_no_tag("button", :content => "Rebuild")
     assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
     assert_have_tag("blockquote p", :content => "This commit will work")
     assert_have_tag("span.who",     :content => "by: John Doe")
@@ -34,25 +52,38 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     visit "/my-test-project"
     click_button "manual build"
 
-    assert_have_tag("button", :content => "Rebuild")
+    assert_have_tag("#last_build h1", :content => "hasn't been built yet")
 
+    build
+    reload
+
+    assert_have_tag("button", :content => "Rebuild")
     assert_have_tag("h1", :content => "Built #{repo.short_head} and failed")
     assert_have_tag("blockquote p", :content => "This commit will fail")
   end
 
-  scenario "Rebuilding three times" do
+  scenario "Rebuilding two times" do
     git_repo(:my_test_project).add_successful_commit
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
 
     login_as "admin", "test"
-
     visit "/my-test-project"
     click_button "manual build"
+
+    assert_have_tag("#last_build h1", :content => "hasn't been built yet")
+
+    build
+    reload
+
     click_button "Fetch and build"
-    click_button "Fetch and build"
+    sleep 1
+    assert_have_tag("#last_build h1", :content => "hasn't been built yet")
+
+    build
+    reload
 
     assert_have_tag "h1", :content => "success"
-    assert_have_tag "#previous_builds li", :count => 2
+    assert_have_tag "#previous_builds li", :count => 1
   end
 
   scenario "Fixing the build command and then rebuilding HEAD" do
@@ -63,14 +94,20 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     login_as "admin", "test"
     visit "/my-test-project"
     click_button "manual build"
-    assert_have_tag("h1", :content => "failed")
 
-    sleep 1
+    assert_have_tag("#last_build h1", :content => "hasn't been built yet")
+
+    build
+    reload
+
+    assert_have_tag("h1", :content => "failed")
 
     click_link "Edit Project"
     fill_in "Build script", :with => "./test"
     click_button "Update Project"
     click_button "Fetch and build"
+    build
+    reload
 
     assert_have_tag("h1", :content => "success")
   end
@@ -84,15 +121,22 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     login_as "admin", "test"
     visit "/my-test-project"
     click_button "manual build"
-    assert_have_tag("h1", :content => "failed")
 
+    assert_have_tag("#last_build h1", :content => "hasn't been built yet")
+
+    build
+    reload
     repo.add_failing_commit
-    sleep 1
+
+    assert_have_tag("h1", :content => "failed")
 
     click_link "Edit Project"
     fill_in "Build script", :with => "./test"
     click_button "Update Project"
     click_button "Rebuild"
+
+    build
+    reload
 
     assert_have_tag("h1", :content => "Built #{commit} successfully")
     assert_have_tag("#previous_builds li", :count => 1)
@@ -110,39 +154,12 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     click_link "My Subversion Project"
     click_button "manual build"
 
+    assert_have_tag("#last_build h1", :content => "hasn't been built yet")
+
+    build
+    reload
+
     assert_have_tag("h1", :content => "success")
-  end
-
-  class ThreadedBuilderBlock < Integrity::ThreadedBuilder
-    def self.build(build)
-      super
-      pool.wait!
-    end
-  end
-
-  scenario "Building with ThreadedBuilder" do
-    old_builder = Integrity.config.builder
-
-    begin
-      Integrity.config.instance_variable_set(:@builder, nil)
-      Integrity.config { |c| c.builder(ThreadedBuilderBlock, :size => 4) }
-
-      # TODO unit test?
-      assert_equal 4, ThreadedBuilderBlock.pool.instance_variable_get(:@pool).
-        instance_variable_get(:@workers).size
-
-      git_repo(:my_test_project).add_successful_commit
-      Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
-      login_as "admin", "test"
-
-      visit "/my-test-project"
-      click_button "manual build"
-
-      assert_have_tag("h1", :content =>
-        "Built #{git_repo(:my_test_project).short_head} successfully")
-    ensure
-      Integrity.config.instance_variable_set(:@builder, old_builder)
-    end
   end
 
   scenario "Building with DelayedBuilder" do
