@@ -28,12 +28,8 @@ module AcceptanceHelper
   end
 
   class BuilderStub
-    def initialize(buildable)
-      @buildable = buildable
-    end
-
-    def build
-      Integrity::ProjectBuilder.new(@buildable).build
+    def self.build(build)
+      Integrity::Builder.new(build).build
     end
   end
 end

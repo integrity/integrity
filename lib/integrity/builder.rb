@@ -1,41 +1,41 @@
 module Integrity
-  class Project
-    def self.for(buildable)
-      first(
-        :scm    => buildable["scm"],
-        :uri    => buildable["uri"],
+  class BuildableProject
+    def self.call(buildable)
+      return [] unless project = Project.first(:scm => buildable["scm"],
+        :uri => buildable["uri"],
         :branch => buildable["branch"]
       )
-    end
-  end
-
-  class BuildableProject
-    def self.call(payload)
-      return [] unless project = Project.for(payload)
-      payload["commits"].collect { |commit| new(project, commit) }
+      buildable["commits"].collect { |id| new(project, id) }
     end
 
     def initialize(project, commit)
-      @buildable = project.attributes.inject({}) { |h, (k,v)|
-        h.update(k.to_s => v)
-      }.merge("commit" => commit)
+      @project = project
+      @commit  = commit
     end
 
     def build
-      Integrity.config.builder.new(@buildable).build
+      build = @project.builds.
+        create(:commit => Commit.new(:identifier => @commit))
+      Integrity.config.builder.build(build)
+      build
     end
   end
 
-  class ProjectBuilder < Bob::Builder
+  class Builder < Bob::Builder
+    def initialize(build)
+      @buildable = {
+        "scm"     => build.project.scm,
+        "uri"     => build.project.uri.to_s,
+        "branch"  => build.project.branch,
+        "commit"  => build.commit.identifier,
+        "command" => build.project.command
+      }
+      @build = build
+    end
+
     def started(metadata)
-      @project = Project.for(@buildable)
-      @build =
-        if build_id = @buildable["build"]
-          Build.get(build_id)
-        else
-         @project.builds.create
-        end
-      @build.update(:started_at => Time.now, :commit => Commit.new(metadata))
+      @build.update(:started_at => Time.now)
+      @build.commit.update(metadata)
     end
 
     def completed(status, output)
@@ -43,7 +43,7 @@ module Integrity
       @build.successful   = status
       @build.output       = output
       @build.save
-      @project.enabled_notifiers.each { |n| n.notify_of_build(@build) }
+      @build.project.enabled_notifiers.each { |n| n.notify_of_build(@build) }
     end
   end
 
@@ -56,12 +56,8 @@ module Integrity
       self.pool = Bob::Engine::Threaded.new(opts[:size] || 2)
     end
 
-    def initialize(buildable)
-      @buildable = buildable
-    end
-
-    def build
-      self.class.pool.call(proc { ProjectBuilder.new(@buildable).build })
+    def self.build(build)
+      self.pool.call(proc { Builder.new(build).build })
     end
   end
 end

@@ -1,7 +1,7 @@
 require "delayed_job"
 
 module Integrity
-  class DelayedBuilder
+  module DelayedBuilder
     def self.setup(options)
       ActiveRecord::Base.establish_connection(options)
       ActiveRecord::Schema.define {
@@ -26,17 +26,18 @@ module Integrity
       }
     end
 
-    def initialize(buildable)
-      build = Project.for(buildable).builds.create(:commit => Commit.new)
-      @buildable = buildable.update("build" => build.id)
+    def self.build(build)
+      Delayed::Job.enqueue(BuildJob.new(build))
     end
 
-    def build
-      Delayed::Job.enqueue(self)
-    end
+    class BuildJob
+      def initialize(build)
+        @build = build.id
+      end
 
-    def perform
-      ProjectBuilder.new(@buildable).build
+      def perform
+        Builder.new(Build.get(@build)).build
+      end
     end
   end
 end
