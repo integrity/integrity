@@ -31,6 +31,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     click_button "manual build"
 
     assert_have_tag("#build h1", :content => "hasn't been built yet")
+    assert_have_no_tag("button", :content => "Rebuild")
 
     build
     reload
@@ -96,6 +97,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     click_button "manual build"
 
     assert_have_tag("#build h1", :content => "hasn't been built yet")
+    assert_have_no_tag("button", :content => "Rebuild")
 
     build
     reload
@@ -123,6 +125,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     click_button "manual build"
 
     assert_have_tag("#build h1", :content => "hasn't been built yet")
+    assert_have_no_tag("button", :content => "Rebuild")
 
     build
     reload
@@ -137,6 +140,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     click_button "Rebuild"
 
     assert_have_tag("#build h1", :content => "hasn't been built yet")
+    assert_have_no_tag("button", :content => "Rebuild")
 
     build
     reload
