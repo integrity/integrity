@@ -14,23 +14,22 @@ module Integrity
     end
 
     def build
-      build = @project.builds.
-        create(:commit => Commit.new(:identifier => @commit))
-      Integrity.config.builder.build(build)
-      build
+      b = @project.builds.create(:commit => Commit.new(:identifier => @commit))
+      Integrity.config.builder.build(b)
+      b
     end
   end
 
   class Builder < Bob::Builder
-    def initialize(build)
+    def initialize(b)
       @buildable = {
-        "scm"     => build.project.scm,
-        "uri"     => build.project.uri.to_s,
-        "branch"  => build.project.branch,
-        "commit"  => build.commit.identifier,
-        "command" => build.project.command
+        "scm"     => b.project.scm,
+        "uri"     => b.project.uri.to_s,
+        "branch"  => b.project.branch,
+        "commit"  => b.commit.identifier,
+        "command" => b.project.command
       }
-      @build = build
+      @build = b
     end
 
     def started(metadata)
