@@ -44,4 +44,9 @@ class BuildTest < Test::Unit::TestCase
 
     assert_equal 3, Build.pending.count
   end
+
+  test "being destroyed" do
+    build = Build.gen
+    assert_change(Commit, :count, -1) { build.destroy }
+  end
 end

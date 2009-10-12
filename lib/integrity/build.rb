@@ -14,6 +14,8 @@ module Integrity
     belongs_to :project
     has 1,     :commit
 
+    before :destroy do commit.destroy! end
+
     def self.pending
       all(:started_at => nil)
     end
