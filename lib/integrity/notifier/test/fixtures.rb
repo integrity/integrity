@@ -63,7 +63,7 @@ module Integrity
   end
 
   Project.fixture(:pending) do
-    Project.gen_attrs.update(:builds => 2.of{Build.gen} +
+    Project.gen_attrs.update(:builds => 1.of{Build.gen} +
       1.of{Build.gen(:pending)})
   end
 
