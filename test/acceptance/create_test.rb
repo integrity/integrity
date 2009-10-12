@@ -15,7 +15,6 @@ class CreateTest < Test::Unit::AcceptanceTestCase
     fill_in "Repository URI",  :with => "git://github.com/foca/integrity.git"
     fill_in "Branch to track", :with => "master"
     fill_in "Build script",    :with => "rake"
-    select  "Git",             :from => "Repository SCM"
     check   "Public project"
     click_button "Create Project"
 
@@ -28,14 +27,16 @@ class CreateTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "Creating a SVN repository" do
-    visit "/new"
-    fill_in "Name",           :with => "Rumbster"
-    fill_in "Repository URI", :with => "foo"
-    fill_in "Build script",   :with => "rake"
-    select  "SVN",            :from => "Repository SCM"
-    click_button "Create Project"
+    pending "SVN is disabled" do
+      visit "/new"
+      fill_in "Name",           :with => "Rumbster"
+      fill_in "Repository URI", :with => "foo"
+      fill_in "Build script",   :with => "rake"
+      select  "SVN",            :from => "Repository SCM"
+      click_button "Create Project"
 
-    assert Project.first(:name => "Rumbster")
+      assert Project.first(:name => "Rumbster")
+    end
   end
 
   scenario "Creating a private project" do
