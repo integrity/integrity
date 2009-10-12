@@ -36,7 +36,7 @@ class ProjectTest < Test::Unit::TestCase
 
     it "has a branch" do
       assert_equal "master", @project.branch
-      assert_equal "",       Project.new.branch
+      assert_equal "master",       Project.new.branch
     end
 
     it "has a command" do
