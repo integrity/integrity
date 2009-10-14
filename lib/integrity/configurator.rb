@@ -19,6 +19,10 @@ module Integrity
       Bob.directory
     end
 
+    def base_uri=(uri)
+      @base_uri = Addressable::URI.parse(uri)
+    end
+
     def builder(*args)
       @builder ||= begin
         case args.size
