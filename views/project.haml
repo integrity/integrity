@@ -8,9 +8,8 @@
       You can request a
       %button{ :type => :submit } manual build
 - else
-  - @build = @project.last_build
-  #last_build{ :class => @build.status }
-    = partial(:build_info, :build => @build)
+  #last_build{ :class => @project.last_build.status }
+    = partial(:build_info, :build => @project.last_build)
 
   %form{ :action => project_path(@project, :builds), :method => :post }
     %p.submit.manual-build
