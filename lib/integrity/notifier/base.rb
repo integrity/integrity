@@ -2,8 +2,8 @@ module Integrity
   class Notifier
     class Base
       def self.notify_of_build(build, config)
-        Integrity.log "Notifying of build #{build.commit.short_identifier} using the #{to_s} notifier"
-        Timeout.timeout(8) { new(build.commit, config).deliver! }
+        Integrity.log "Notifying of build #{build.commit.short_identifier} with #{to_s}"
+        Timeout.timeout(8) { new(build, config).deliver! }
       rescue Timeout::Error
         Integrity.log "#{to_s} notifier timed out"
         false
@@ -13,10 +13,10 @@ module Integrity
         raise NotImplementedError, "you need to implement this method in your notifier"
       end
 
-      attr_reader :commit
+      attr_reader :build
 
-      def initialize(commit, config)
-        @commit = commit
+      def initialize(build, config)
+        @build  = build
         @config = config
       end
 
@@ -25,34 +25,35 @@ module Integrity
       end
 
       def short_message
-        commit.human_readable_status
+        build.human_status
       end
 
       def full_message
         <<-EOM
-"Build #{commit.identifier} #{commit.successful? ? "was successful" : "failed"}"
+#{short_message}
 
-Commit Message: #{commit.message}
-Commit Date: #{commit.committed_at}
-Commit Author: #{commit.author.name}
+Commit Message: #{build.commit.message}
+Commit Date: #{build.commit.committed_at}
+Commit Author: #{build.commit.author.name}
 
-Link: #{commit_url}
+Link: #{build_url}
 
 Build Output:
 
-#{stripped_commit_output}
+#{escape(build.output)}
 EOM
       end
 
-      def commit_url
+      def build_url
         raise if Integrity.config.base_uri.nil?
-        Integrity.config.base_uri / commit.project.permalink / "commits" / commit.identifier
+        Integrity.config.base_uri.
+          join("/#{build.project.permalink}/builds/#{build.id}")
       end
 
       private
 
-        def stripped_commit_output
-          commit.output.gsub("\e[0m", "").gsub(/\e\[3[1-7]m/, "")
+        def escape(s)
+          s.gsub("\e[0m", "").gsub(/\e\[3[1-7]m/, "")
         end
     end
   end
