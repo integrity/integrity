@@ -30,7 +30,7 @@ module Integrity
 
       def full_message
         <<-EOM
-#{short_message}
+== #{short_message}
 
 Commit Message: #{build.commit.message}
 Commit Date: #{build.commit.committed_at}
@@ -38,7 +38,7 @@ Commit Author: #{build.commit.author.name}
 
 Link: #{build_url}
 
-Build Output:
+== Build Output:
 
 #{escape(build.output)}
 EOM
