@@ -10,3 +10,4 @@ exports
 *.swp
 .aggregated_coverage_report
 tmp/
+webrat.log
