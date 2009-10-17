@@ -29,9 +29,9 @@ class IRCNotificationTest < Test::Unit::AcceptanceTestCase
     stub(TCPSocket).open(anything, anything) {@socket}
   end
 
-  scenario "Notifying a successful build" do
+  def build(status)
     repo = git_repo(:my_test_project)
-    repo.add_successful_commit
+    status.zero? ? repo.add_successful_commit : repo.add_failing_commit
     Project.gen(:my_test_project, :uri => repo.uri)
 
     login_as "admin", "test"
@@ -43,30 +43,23 @@ class IRCNotificationTest < Test::Unit::AcceptanceTestCase
     click_button "Update"
     click_button "Manual Build"
 
+    repo.short_head
+  end
+
+  scenario "Notifying a successful build" do
+    head = build(0)
     2.times{ @server.gets }
 
-    assert @server.gets.include?("#{repo.short_head} successfully")
+    assert @server.gets.include?("#{head} successfully")
     assert @server.gets.
       include?("http://www.example.com/my-test-project/builds/1")
   end
 
   scenario "Notifying a failed build" do
-    repo = git_repo(:my_test_project)
-    repo.add_failing_commit
-    Project.gen(:my_test_project, :uri => repo.uri)
-
-    login_as "admin", "test"
-    visit "/my-test-project"
-    click_link "Edit Project"
-
-    check "enabled_notifiers_irc"
-    fill_in "Send to", :with => "irc://irc.example.org/foo"
-    click_button "Update"
-    click_button "Manual Build"
-
+    head = build(1)
     2.times{ @server.gets }
 
-    assert @server.gets.include?("#{repo.short_head} and failed")
+    assert @server.gets.include?("#{head} and failed")
     assert @server.gets.
       include?("http://www.example.com/my-test-project/builds/1")
   end
