@@ -60,7 +60,7 @@ Thin
 
 2. Run the installer:
 
-        $ integrity install --thin ~www-data/integrity
+        $ integrity install ~www-data/integrity --thin
         $ cd ~www-data/integrity`
 
 3. Tweak `thin.yml` to your needs
