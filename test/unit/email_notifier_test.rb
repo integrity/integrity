@@ -37,6 +37,10 @@ class IntegrityEmailTest < Test::Unit::TestCase
     Integrity::Commit.gen(status)
   end
 
+  def build(status=:successful)
+    Integrity::Build.gen(status)
+  end
+
   def teardown
     @server.stop
   end
@@ -61,8 +65,8 @@ class IntegrityEmailTest < Test::Unit::TestCase
                "to"   => "you@example.org",
                "from" => "me@example.org"  }
 
-    successful = commit(:successful)
-    failed     = commit(:failed)
+    successful = build(:successful)
+    failed     = build(:failed)
 
     Integrity::Notifier::Email.new(successful, config.dup).deliver!
     Integrity::Notifier::Email.new(failed,     config).deliver!
@@ -74,8 +78,8 @@ class IntegrityEmailTest < Test::Unit::TestCase
     assert_equal ["you@example.org"], mail.destinations
     assert_equal ["me@example.org"],  mail.from
     assert mail.subject.include?("successful")
-    assert mail.body.include?(successful.committed_at.to_s)
-    assert mail.body.include?(successful.author.name)
+    assert mail.body.include?(successful.commit.committed_at.to_s)
+    assert mail.body.include?(successful.commit.author.name)
     assert mail.body.include?(successful.output)
   end
 
@@ -85,7 +89,7 @@ class IntegrityEmailTest < Test::Unit::TestCase
     config = { "sendmail" => sendmail_path,
                "to"   => "sendmail@example.org",
                "from" => "me@example.org"  }
-    successful = commit(:successful)
+    successful = build(:successful)
 
     Integrity::Notifier::Email.new(successful, config)
 

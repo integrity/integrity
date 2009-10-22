@@ -82,7 +82,8 @@ module Integrity
       :started_at   => unique {|i| Time.mktime(2008, 12, 15, 18, i % 60) },
       :created_at   => unique {|i| Time.mktime(2008, 12, 15, 18, i % 60) },
       :completed_at => unique {|i| Time.mktime(2008, 12, 15, 18, i % 60) },
-      :commit       => Commit.gen }
+      :commit       => Commit.gen,
+      :project      => Project.gen }
   end
 
   Build.fixture(:successful) do
