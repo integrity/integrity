@@ -110,6 +110,24 @@ module Integrity
         unique{|i| Time.mktime(2008, 12, 15, 18, (59 - i) % 60)} }
   end
 
+  Commit.fixture(:successful) do
+    { :identifier => Digest::SHA1.hexdigest(/[:paragraph:]/.gen),
+      :message    => /[:sentence:]/.gen,
+      :author     => /\w+ \w+ <\w+@example.org>/.gen,
+      :committed_at =>
+        unique{|i| Time.mktime(2008, 12, 15, 18, (59 - i) % 60)},
+      :build => Build.gen_attrs.update(:successful => true) }
+  end
+
+  Commit.fixture(:failed) do
+    { :identifier => Digest::SHA1.hexdigest(/[:paragraph:]/.gen),
+      :message    => /[:sentence:]/.gen,
+      :author     => /\w+ \w+ <\w+@example.org>/.gen,
+      :committed_at =>
+        unique{|i| Time.mktime(2008, 12, 15, 18, (59 - i) % 60)},
+      :build => Build.gen_attrs.update(:successful => false) }
+  end
+
   Notifier.fixture(:irc) do
     { :project => Project.gen,
       :name => "IRC",
