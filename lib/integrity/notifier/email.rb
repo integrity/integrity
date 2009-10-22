@@ -9,10 +9,10 @@ module Integrity
         File.read(File.dirname(__FILE__) + "/config.haml")
       end
 
-      def initialize(commit, config={})
+      def initialize(build, config={})
         @to     = config.delete("to")
         @from   = config.delete("from")
-        super(commit, config)
+        super(build, config)
         configure_mailer
       end
 
@@ -30,7 +30,7 @@ module Integrity
       end
 
       def subject
-        "[Integrity] #{commit.project.name}: #{short_message}"
+        "[Integrity] #{build.project.name}: #{short_message}"
       end
 
       alias_method :body, :full_message
