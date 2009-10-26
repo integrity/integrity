@@ -16,3 +16,6 @@ http://github.com/sr/shout-bot/raw/master/lib/shout-bot.rb
 rumbster
 tmail
 sinatra-ditties
+mocha
+tinder
+builder
