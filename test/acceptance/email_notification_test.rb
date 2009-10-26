@@ -1,0 +1,67 @@
+require "helper/acceptance"
+require "rumbster"
+require "message_observers"
+
+class EmailNotificationTest < Test::Unit::AcceptanceTestCase
+  story <<-EOS
+    As an administrator,
+    I want to setup the email notifiers on my projects
+    So that I get alerts with every build
+  EOS
+
+  before(:each) do
+    # Because notifiers are remove_const'd in the global #before.
+    load "integrity/notifier/email.rb"
+  end
+
+  scenario "Sending the notification via SMTP" do
+    Net::SMTP.disable_tls
+    server   = Rumbster.new(10_000)
+    observer = MailMessageObserver.new
+    server.add_observer(observer)
+    server.start
+
+    repo    = git_repo(:my_test_project)
+    project = Project.gen(:my_test_project, :uri => repo.uri)
+    repo.add_successful_commit
+
+    login_as "admin", "test"
+    visit "/my-test-project"
+    click_link "Edit Project"
+
+    check "enabled_notifiers_email"
+    fill_in "email_notifier_host", :with => "127.0.0.1"
+    fill_in "email_notifier_port", :with => 10_000
+    fill_in "email_notifier_to",   :with => "hacker@example.org"
+    fill_in "email_notifier_from", :with => "ci@example.org"
+    click_button "Update"
+    click_button "Manual Build"
+
+    mail = observer.messages.first
+    assert_equal ["hacker@example.org"], mail.destinations
+    assert_equal ["ci@example.org"],  mail.from
+    assert mail.subject.include?("successful")
+
+    server.stop
+  end
+
+  scenario "Sending the notification via sendmail" do
+    stub.instance_of(Integrity::Notifier::Email).deliver! { nil }
+    repo    = git_repo(:my_test_project)
+    project = Project.gen(:my_test_project, :uri => repo.uri)
+    repo.add_successful_commit
+
+    login_as "admin", "test"
+    visit "/my-test-project"
+    click_link "Edit Project"
+
+    check "enabled_notifiers_email"
+    fill_in "email_notifier_to",   :with => "hacker@example.org"
+    fill_in "email_notifier_from", :with => "ci@example.org"
+    fill_in "email_notifier_sendmail", :with => "/usr/local/bin/sendmail"
+    click_button "Update"
+    click_button "Manual Build"
+
+    assert_equal :sendmail, Sinatra::Mailer.delivery_method
+  end
+end
