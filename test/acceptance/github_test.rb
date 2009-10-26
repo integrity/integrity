@@ -42,7 +42,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     Integrity.config { |c| c.build_all = true }
 
     repo = git_repo(:my_test_project)
-    3.times{|i| i.odd? ? repo.add_successful_commit : repo.add_failing_commit}
+    3.times{|i| i % 2 == 1 ? repo.add_successful_commit : repo.add_failing_commit}
     Project.gen(:my_test_project, :uri => repo.uri, :command => "true")
 
     github_post payload(repo)
