@@ -1,0 +1,23 @@
+%p.normal
+  %label{ :for => "campfire_notifier_account" } Subdomain
+  %input.text#campfire_notifier_account{ :name => "notifiers[Campfire][account]", :type => "text", :value => config["account"] }
+
+%p.normal
+  %label{ :for => "campfire_notifier_use_ssl" } SSL?
+  %input#campfire_notifier_use_ssl{ :name => "notifiers[Campfire][use_ssl]", :type => "checkbox", :checked => config["use_ssl"], :value => "1" }
+
+%p.normal
+  %label{ :for => "campfire_notifier_room" } Room Name
+  %input.text#campfire_notifier_room{ :name => "notifiers[Campfire][room]", :type => "text", :value => config["room"] }
+
+%p.normal
+  %label{ :for => "campfire_notifier_user" } User
+  %input.text#campfire_notifier_user{ :name => "notifiers[Campfire][user]", :value => config["user"], :type => "text" }
+
+%p.normal
+  %label{ :for => "campfire_notifier_pass" } Password
+  %input.text#campfire_notifier_pass{ :name => "notifiers[Campfire][pass]", :value => config["pass"], :type => "text" }
+
+%p.normal
+  %label{ :for => "campfire_notifier_announce_success" } Notify on success?
+  %input#campfire_notifier_announce_success{ :name => "notifiers[Campfire][announce_success]", :type => "checkbox", :checked => config['announce_success'], :value => "1" }
