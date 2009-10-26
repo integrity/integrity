@@ -6,7 +6,7 @@ module Integrity
       attr_reader :to, :from
 
       def self.to_haml
-        File.read(File.dirname(__FILE__) + "/config.haml")
+        File.read(File.dirname(__FILE__) + "/email.haml")
       end
 
       def initialize(build, config={})
