@@ -307,6 +307,6 @@ ticket on our [bug tracker][bts].
 
 [irc]: irc://irc.freenode.net:6667/integrity
 [ml]: http://groups.google.com/group/integrityapp
-[bts]: http://integrity.lighthouseapp.com
+[bts]: http://github.com/integrity/integrity/issues
 [rip]: http://hellorip.com
 [gem]: http://gist.github.com/54177
