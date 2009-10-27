@@ -34,6 +34,9 @@ class EmailNotificationTest < Test::Unit::AcceptanceTestCase
     fill_in "email_notifier_port", :with => 10_000
     fill_in "email_notifier_to",   :with => "hacker@example.org"
     fill_in "email_notifier_from", :with => "ci@example.org"
+
+    select "plain", :from => "Auth type"
+
     click_button "Update"
     click_button "Manual Build"
 
@@ -64,4 +67,6 @@ class EmailNotificationTest < Test::Unit::AcceptanceTestCase
 
     assert_equal :sendmail, Sinatra::Mailer.delivery_method
   end
+
+
 end
