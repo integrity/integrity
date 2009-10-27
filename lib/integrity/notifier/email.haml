@@ -24,7 +24,9 @@
 
 %p.normal
   %label{ :for => "email_notifier_auth" } Auth type
-  %input.text#email_notifier_auth{ :name => "notifiers[Email][auth]", :value => (config["auth"] || "plain"), :type => "text" }
+  %select#email_notifier_auth{ :name => "notifiers[Email][auth]"}
+    - %w[plain login cram_md5].each do |auth_type|
+      %option{ :value => auth_type }= auth_type
 
 %p.normal
   %label{ :for => "email_notifier_domain" } Domain
