@@ -35,15 +35,18 @@ class EmailNotificationTest < Test::Unit::AcceptanceTestCase
     fill_in "email_notifier_to",   :with => "hacker@example.org"
     fill_in "email_notifier_from", :with => "ci@example.org"
 
-    select "plain", :from => "Auth type"
+    select "cram_md5", :from => "Auth type"
 
     click_button "Update"
     click_button "Manual Build"
 
     mail = observer.messages.first
+
     assert_equal ["hacker@example.org"], mail.destinations
     assert_equal ["ci@example.org"],  mail.from
     assert mail.subject.include?("successful")
+
+    assert_equal "cram_md5", Sinatra::Mailer.config[:auth]
 
     server.stop
   end
