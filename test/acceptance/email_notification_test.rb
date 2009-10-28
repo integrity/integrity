@@ -47,8 +47,11 @@ class EmailNotificationTest < Test::Unit::AcceptanceTestCase
     assert mail.subject.include?("successful")
 
     assert_equal "cram_md5", Sinatra::Mailer.config[:auth]
-
     server.stop
+    
+    visit "/my-test-project"
+    click_link "Edit Project"
+    assert_have_tag("select#email_notifier_auth option[@value='cram_md5'][@selected='selected']")
   end
 
   scenario "Sending the notification via sendmail" do
