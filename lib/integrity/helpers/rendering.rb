@@ -36,6 +36,14 @@ module Integrity
         attrs.update(extras)
       end
 
+      def dropdown(name, id, options, selected_value=nil)
+        options_html = options.map do |opt_html, opt_value|
+          selected_attr = ( opt_value == selected_value ) ? %(selected="selected") : ""
+          %(<option value="#{opt_value}" #{selected_attr}>#{opt_html}</option>)
+        end
+        %(<select id="#{id}" name="#{name}">#{options_html}</select>)
+      end
+
       def notifier_form
         Notifier.available.each_pair { |name, klass|
           haml_concat haml(klass.to_haml, :layout => :notifier, :locals => {
