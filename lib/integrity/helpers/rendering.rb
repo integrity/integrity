@@ -37,6 +37,7 @@ module Integrity
       end
 
       def dropdown(name, id, options, selected_value=nil)
+        selected_value = '' if selected_value.nil?
         options_html = options.map do |opt_html, opt_value|
           selected_attr = ( opt_value == selected_value ) ? %(selected="selected") : ""
           %(<option value="#{opt_value}" #{selected_attr}>#{opt_html}</option>)
