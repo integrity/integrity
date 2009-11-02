@@ -34,8 +34,7 @@ class EmailNotificationTest < Test::Unit::AcceptanceTestCase
     fill_in "email_notifier_port", :with => 10_000
     fill_in "email_notifier_to",   :with => "hacker@example.org"
     fill_in "email_notifier_from", :with => "ci@example.org"
-
-    select "cram_md5", :from => "Auth type"
+    select  "cram_md5",            :from => "Auth type"
 
     click_button "Update"
     click_button "Manual Build"
@@ -48,7 +47,7 @@ class EmailNotificationTest < Test::Unit::AcceptanceTestCase
 
     assert_equal "cram_md5", Sinatra::Mailer.config[:auth]
     server.stop
-    
+
     visit "/my-test-project"
     click_link "Edit Project"
     assert_have_tag("select#email_notifier_auth option[@value='cram_md5'][@selected='selected']")
@@ -73,6 +72,4 @@ class EmailNotificationTest < Test::Unit::AcceptanceTestCase
 
     assert_equal :sendmail, Sinatra::Mailer.delivery_method
   end
-
-
 end
