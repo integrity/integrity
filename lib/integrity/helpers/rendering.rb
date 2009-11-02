@@ -36,13 +36,12 @@ module Integrity
         attrs.update(extras)
       end
 
-      def dropdown(name, id, options, selected_value=nil)
-        selected_value = '' if selected_value.nil?
-        options_html = options.map do |opt_html, opt_value|
-          selected_attr = ( opt_value == selected_value ) ? %(selected="selected") : ""
-          %(<option value="#{opt_value}" #{selected_attr}>#{opt_html}</option>)
+      def dropdown(name, id, options, selected="")
+        haml_tag :select, :id => id, :name => name do
+          options.each { |opt|
+            haml_tag :option, opt, :value => opt, :selected => (opt == selected)
+          }
         end
-        %(<select id="#{id}" name="#{name}">#{options_html}</select>)
       end
 
       def notifier_form
