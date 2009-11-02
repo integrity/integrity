@@ -1,4 +1,5 @@
-require File.expand_path("./lib/integrity")
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "lib"))
+require "integrity"
 
 Integrity.configure { |c|
   c.database  = "sqlite3:integrity.db"
