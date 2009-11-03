@@ -22,7 +22,7 @@ end
 desc "Generate documentation using asciidoc"
 task :doc do
   sh "asciidoc -a stylesdir=#{File.dirname(__FILE__)}/doc/stylesheets \
-    -a theme=bare doc/integrity.txt"
+    -a theme=bare -o doc/integrity.html README"
 end
 
 task :db do
