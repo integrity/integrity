@@ -53,7 +53,7 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
     Integrity::App.set(:environment, :test)
     Webrat.configure { |c| c.mode = :rack }
     Integrity.configure { |c|
-      c.builder BuilderStub
+      c.builder = BuilderStub
       c.push Bobette::GitHub, "SECRET"
     }
     @app = Integrity.app

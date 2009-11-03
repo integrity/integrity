@@ -10,7 +10,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
   before(:all) do
     @builder = Integrity.config.builder
     Integrity.config.instance_variable_set(:@builder, nil)
-    Integrity.config { |c| c.builder(ThreadedBuilder, :size => 1) }
+    Integrity.config { |c| c.builder :threaded, :size => 1 }
   end
 
   after(:all) do
@@ -176,15 +176,11 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     old_builder = Integrity.config.builder
 
     begin
-      require "integrity/dj"
-
       Integrity.config.instance_variable_set(:@builder, nil)
       FileUtils.rm_f("dj.db")
 
       Integrity.configure { |c|
-        c.builder Integrity::DelayedBuilder,
-          :adapter  => "sqlite3",
-          :database => "dj.db"
+        c.builder :dj, :adapter => "sqlite3", :database => "dj.db"
       }
 
       repo = git_repo(:my_test_project)
