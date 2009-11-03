@@ -4,10 +4,13 @@ config/deploy.rb
 config/config.yml
 dist
 coverage
-integrity.db
 exports
+*.db
 *.gem
 *.swp
+*.log
 .aggregated_coverage_report
 tmp/
-webrat.log
+bin
+vendor
+doc/integrity.html
