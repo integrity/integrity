@@ -21,3 +21,11 @@ gem "sinatra", "0.9.4"
 gem "bob", "0.4.1"
 gem "bobette", "0.0.5"
 gem "sinatra-url-for", :git => "git://github.com/emk/sinatra-url-for.git"
+
+# These are dependencies for the various notifiers. Uncomment as appropriate.
+# = Email
+# gem "sinatra-ditties"
+# = IRC
+# gem "shout-bot"
+# = Campfire
+# gem "tinder"
