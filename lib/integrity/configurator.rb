@@ -25,9 +25,10 @@ module Integrity
 
     def builder(*args)
       @builder ||= begin
+        klass = builder_class(args.first)
         case args.size
-        when 1 then args.first
-        when 2 then args.first.tap { |b| b.setup(args.last) }
+        when 1 then klass
+        when 2 then klass.tap { |b| b.setup(args.last) }
         else
           raise ArgumentError
         end
@@ -54,5 +55,17 @@ module Integrity
     def build_all?
       !! build_all
     end
+
+    private
+      def builder_class(name)
+        case name
+        when :threaded then Integrity::ThreadedBuilder
+        when :dj
+          require "integrity/dj"
+          Integrity::DelayedBuilder
+        else
+          fail "Unknown builder #{name}"
+        end
+      end
   end
 end
