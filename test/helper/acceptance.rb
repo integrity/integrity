@@ -54,7 +54,7 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
     Webrat.configure { |c| c.mode = :rack }
     Integrity.configure { |c|
       c.builder = BuilderStub
-      c.push Bobette::GitHub, "SECRET"
+      c.push :github, "SECRET"
     }
     @app = Integrity.app
   end

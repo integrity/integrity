@@ -36,7 +36,7 @@ module Integrity
     end
 
     def push(*args)
-      @push ||= Array(args)
+      @push ||= [push_class(args.first), args.last]
     end
 
     def log=(log)
@@ -65,6 +65,14 @@ module Integrity
           Integrity::DelayedBuilder
         else
           fail "Unknown builder #{name}"
+        end
+      end
+
+      def push_class(name)
+        case name
+        when :github then Bobette::GitHub
+        else
+          fail "Unknown push service #{name}"
         end
       end
   end
