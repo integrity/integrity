@@ -30,3 +30,7 @@ gem "bobette", "0.0.5"
 # gem "shout-bot"
 # = Campfire
 # gem "tinder"
+
+# = Dependencies for the :dj builder
+# gem "activerecord"
+# gem "delayed_job", :git => "git://github.com/tobi/delayed_job.git"
