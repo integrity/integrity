@@ -1,3 +1,25 @@
+0.2.0 / unreleased
+==================
+
+* Support for asynchronous and parallel builds, either using a thread pool
+  or a queue (delayed_job).
+
+* Integrity won't be available as a gem anymore. Use git or grab a tarball.
+
+* Dependencies are managed with Bundler. See http://github.com/wycats/bundler
+
+* The installer has been removed.
+
+* Heroku is supported again.
+
+* The Email, IRC and Campfire notifiers now ship as part of Integrity.
+
+* Some changes to Integrity::Notifier::Base probably breaks other notifiers;
+  a deprecation layer might be added in a future release.
+
+* Support for Subversion is mostly there, it just needs testing. Please see
+  http://github.com/integrity/integrity/commit/f1dc4bf6dbbf85d333fd4e006f040588102b5538
+
 0.1.11 / 2009-07-26
 ===================
 
@@ -24,7 +46,6 @@
 * Get rid of all mention of foca-integrity from generated files
 
 * Fix all Sass deprecation warnings
-
 
 0.1.10 / 2009-05-14
 ====================
