@@ -93,7 +93,7 @@ the repository for update.
 ==== GitHub
 Setup a
 http://github.com/guides/post-receive-hooks[Post-Receive Hook] on your
-repository pointing to http://ci.example.org/gitub/TOKEN and add this line to
+repository pointing to http://ci.example.org/github/TOKEN and add this line to
 your configuration:
 [source, ruby]
 c.push :github, "TOKEN"
@@ -116,7 +116,7 @@ Integrity::Project.all.each { |project|
 Integrity ships with two ways to build your codes in parallel.
 
 ==== Threaded
-It uses a pool of threads. The `:size` argument is the number of threads that
+It uses a pool of threads. The second argument is the number of threads that
 should be created. It works great for most the cases and don't require any
 external process or additional dependency.
 [source, ruby]
