@@ -16,9 +16,7 @@ module Integrity
 
       def authorize(user, password)
         return true unless Integrity.config.protect?
-
-        password = Digest::SHA1.hexdigest(password) if Integrity.config.hash_pass?
-        (Integrity.config.user == user && Integrity.config.pass == password)
+        Integrity.config.user == user && Integrity.config.pass == password
       end
 
       def unauthorized!(realm=authorization_realm)
