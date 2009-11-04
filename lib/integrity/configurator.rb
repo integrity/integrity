@@ -1,7 +1,6 @@
 module Integrity
   class Configurator
-    attr_accessor :builder, :logger, :base_uri,
-      :user, :pass, :hash_pass, :build_all
+    attr_accessor :builder, :logger, :base_uri, :user, :pass, :build_all
 
     def initialize
       yield(self)
@@ -46,10 +45,6 @@ module Integrity
 
     def protect?
       user && pass
-    end
-
-    def hash_pass?
-      !! hash_pass
     end
 
     def build_all?
