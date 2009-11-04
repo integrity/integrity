@@ -45,9 +45,9 @@ EOM
       end
 
       def build_url
-        raise if Integrity.config.base_uri.nil?
-        Integrity.config.base_uri.
-          join("/#{build.project.permalink}/builds/#{build.id}")
+        base_uri = Integrity.config.base_uri ||
+          Addressable::URI.parse("http://example.org")
+        base_uri.join("/#{build.project.permalink}/builds/#{build.id}")
       end
 
       private
