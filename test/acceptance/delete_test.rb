@@ -23,6 +23,6 @@ class DeleteTest < Test::Unit::AcceptanceTestCase
     log_out
     Project.gen(:integrity)
     delete "/integrity"
-    response_code.should == 401
+    assert_equal 401, last_response.status
   end
 end
