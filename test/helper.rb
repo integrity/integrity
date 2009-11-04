@@ -1,5 +1,3 @@
-module Haml;module Version;@@version="2.2.2" end end if ENV["RIPDIR"]
-
 require "test/unit"
 require "rr"
 require "extlib"
@@ -16,7 +14,22 @@ begin
 rescue LoadError
 end
 
-module TestHelper
+class Test::Unit::TestCase
+  include RR::Adapters::TestUnit
+  include Integrity
+
+  before(:all) do
+    Integrity.configure { |c|
+      c.database  = "sqlite3::memory:"
+      c.directory = File.expand_path(File.dirname(__FILE__) + "/../tmp")
+      c.log  = "/dev/null"
+      c.user = "admin"
+      c.pass = "test"
+    }
+  end
+
+  before(:each) do DataMapper.auto_migrate! end
+
   def capture_stdout
     output = StringIO.new
     $stdout = output
@@ -33,25 +46,5 @@ module TestHelper
 
   def assert_no_change(object, method, &block)
     assert_change(object, method, 0, &block)
-  end
-end
-
-class Test::Unit::TestCase
-  include RR::Adapters::TestUnit
-  include Integrity
-  include TestHelper
-
-  before(:all) do
-    Integrity.configure { |c|
-      c.database  = "sqlite3::memory:"
-      c.directory = File.expand_path(File.dirname(__FILE__) + "/../tmp")
-      c.log  = "/dev/null"
-      c.user = "admin"
-      c.pass = "test"
-    }
-  end
-
-  before(:each) do
-    DataMapper.auto_migrate!
   end
 end
