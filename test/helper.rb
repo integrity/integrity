@@ -9,7 +9,7 @@ require "matchy"
 require "pending"
 
 require "integrity"
-require "integrity/notifier/test/fixtures"
+require "fixtures"
 
 require "helper/expectations"
 
