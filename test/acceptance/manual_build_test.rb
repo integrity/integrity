@@ -10,7 +10,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
   before(:all) do
     @builder = Integrity.config.builder
     Integrity.config.instance_variable_set(:@builder, nil)
-    Integrity.config { |c| c.builder :threaded, :size => 1 }
+    Integrity.config { |c| c.builder :threaded, 1 }
   end
 
   after(:all) do

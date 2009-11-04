@@ -55,8 +55,8 @@ module Integrity
       attr_accessor :pool
     end
 
-    def self.setup(opts={})
-      self.pool = Bob::Engine::Threaded.new(opts[:size] || 2)
+    def self.setup(size)
+      self.pool = Bob::Engine::Threaded.new(size)
     end
 
     def self.build(build)
