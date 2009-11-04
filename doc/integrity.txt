@@ -12,18 +12,35 @@ http://martinfowler.com/articles/continuousIntegration.html[Martin Fowler's
 website] and http://en.wikipedia.org/wiki/Continuous_Integration[Wikipedia].
 
 == Installation
-.Make sure you meet theses requirements:
-* Ruby >= 1.8.X
+Make sure you meet theses requirements first:
+
+* Ruby >= 1.8.6
 * RubyGems >= 1.3.5
 * git >= 1.6
 
+Then grab Integrity via git and install its dependencies:
 [source, shell]
-git clone git://github.com/integrity/integrity
-gem install bundler
-gem bundle
+$ git clone git://github.com/integrity/integrity
+$ gem install --prerelease bundler
+$ cd integrity
+$ gem bundle
 
 If you want give it a quick try before going any further, run `./bin/rake db &&
 ./bin/rackup` and navigate to http://0.0.0.0:9292.
+
+[TIP]
+=====
+We suggest you to do everything that fellows in a separate branch and use
+the `master` branch solely to track upstream changes. That way, updating
+your installation is as simple as doing this:
+[source, shell]
+----
+$ git checkout master
+$ git pull
+$ git checkout deploy
+$ git merge master
+----
+====
 
 == Configuration
 The configuration is done into the `init.rb` file. We'll go through each
@@ -38,7 +55,7 @@ Integrity.configure do |c|
   c.log       = "integrity.log"
   c.build_all = true
   c.push    :github, "MY TOKEN"
-  c.builder :threaded, :size => 5
+  c.builder :threaded, 5
 end
 ----
 
@@ -57,6 +74,15 @@ is writeable by the user that runs Integrity.
 log:: Path to the Integrity log file. Contains mostly debug info.
 build_all:: Wheter every commit included into post-receive hooks are build
 or just the newest. Either `true` or `false`.
+HTTP authentication:: If both `user` and `pass` are set, only the logged in
+users can see private projects, create and delete projects and request manual
+build.
++
+[source, ruby]
+----
+c.user = "admin"
+c.pass = "password"
+----
 
 === Automating builds
 Continuous integration must be automatic, ortherwise you probably won't be
@@ -94,7 +120,7 @@ It uses a pool of threads. The `:size` argument is the number of threads that
 should be created. It works great for most the cases and don't require any
 external process or additional dependency.
 [source, ruby]
-c.builder :threaded, :size => 5
+c.builder :threaded, 5
 
 ==== Queued
 The build jobs are queued into the database and then later processed by a
