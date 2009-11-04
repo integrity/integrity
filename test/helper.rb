@@ -5,13 +5,10 @@ require "rr"
 require "extlib"
 require "dm-sweatshop"
 require "context"
-require "matchy"
 require "pending"
 
 require "integrity"
 require "fixtures"
-
-require "helper/expectations"
 
 begin
   require "ruby-debug"
