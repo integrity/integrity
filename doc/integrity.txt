@@ -152,7 +152,7 @@ require "integrity/notifier/email"
 3. Restart Integrity and go to the project settings screen where you can enable
    and configure the notifier.
 
-== Deployement
+== Deployment
 === http://heroku.com[Heroku]
 Heroku is the easiest and fastest way to deploy Integrity.
 
