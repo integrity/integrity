@@ -25,6 +25,27 @@ task :db do
   DataMapper.auto_migrate!
 end
 
+# Add something like the following (replacing the /path/to/ section in each of
+# the paths with appropriate values for your system) to your crontab to
+# automatically build any oustanding commits of your projects every few
+# minutes.
+#
+# */2 * * * * cd /path/to/integrity && /path/to/ruby ./bin/rake build_new_commits >> /path/to/cron.log 2>$
+desc "Will build the latest commit for any project that has already been built and the latest commit has not already been built"
+task :build_new_commits do
+  require "init"
+  Integrity.log("Checking for new commits at #{Time.now}")
+  Integrity::Project.all.each do |project|
+    # Don't build if project is just being set up, or a build of 'HEAD' is already outstanding or the latest commit has already
+    # been built.
+    unless project.blank? ||
+        project.last_build.commit.identifier == 'HEAD' ||
+        (head = Integrity::Repository.new(project.uri, project.branch, 'HEAD').head) == project.last_build.commit.identifier
+      project.build(head)
+    end
+  end
+end
+
 namespace :jobs do
   desc "Clear the delayed_job queue."
   task :clear do
