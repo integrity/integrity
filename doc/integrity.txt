@@ -30,7 +30,7 @@ If you want give it a quick try before going any further, run `./bin/rake db &&
 
 [TIP]
 =====
-We suggest you to do everything that fellows in a separate branch and use
+We suggest you to do everything that follows in a separate branch and use
 the `master` branch solely to track upstream changes. That way, updating
 your installation is as simple as doing this:
 [source, shell]
@@ -44,7 +44,7 @@ $ git merge master
 
 == Configuration
 The configuration is done into the `init.rb` file. We'll go through each
-option one by one but first of all here is the default configuration as
+option one by one, but first here is the default configuration as
 an example:
 
 [source, ruby]
@@ -66,15 +66,15 @@ http://datamapper.rubyforge.org/dm-core/DataMapper.html[DataMapper], such as:
 * `mysql://user:password@localhost/integrity`
 * `postgres://user:password@localhost/integrity`
 
-IMPORTANT: You'll need to install the apropriate `data_objects` adapter as well.
+IMPORTANT: You'll need to install the appropriate `data_objects` adapter as well.
 The SQLite3 adapter (`do_sqlite3`) is installed by default.
 
 directory:: This is where your projects' code will be checked out. Make sure it
-is writeable by the user that runs Integrity.
+is writable by the user that runs Integrity.
 log:: Path to the Integrity log file. Contains mostly debug info.
-build_all:: Wheter every commit included into post-receive hooks are build
+build_all:: Whether every commit included into post-receive hooks are built
 or just the newest. Either `true` or `false`.
-HTTP authentication:: If both `user` and `pass` are set, only the logged in
+HTTP authentication:: If both `user` and `pass` are set, only the logged-in
 users can see private projects, create and delete projects and request manual
 build.
 +
@@ -85,8 +85,8 @@ c.pass = "password"
 ----
 
 === Automating builds
-Continuous integration must be automatic, ortherwise you probably won't be
-doing it. You can either setup http://github.com[GitHub] to notify Integrity
+Continuous integration must be automatic, ortherwise you probably won't
+do it. You can either setup http://github.com[GitHub] to notify Integrity
 of new commits or a http://en.wikipedia.org/wiki/Cron[Cron] job that polls the
 the repository for update.
 
@@ -117,7 +117,7 @@ Integrity ships with two ways to build your codes in parallel.
 
 ==== Threaded
 It uses a pool of threads. The second argument is the number of threads that
-should be created. It works great for most the cases and don't require any
+should be created. It works great for most cases and doesn't require any
 external process or additional dependency.
 [source, ruby]
 c.builder :threaded, 5
@@ -254,7 +254,7 @@ can pull from.
 [[faq-scm]]
 In short, no. Everything needed to support it is already here but it has been
 removed as we're missing actual people using it. If you need it, please do
-`git revert f1dc4bf` and tell us how it go. Bonus for patches, of course.
+`git revert f1dc4bf` and tell us how it goes. Bonus for patches, of course.
 
 === But does it work with <insert tech here>?
 [[faq-tech]]
