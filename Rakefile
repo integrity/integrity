@@ -19,12 +19,6 @@ namespace :test do
   end
 end
 
-desc "Generate documentation using asciidoc"
-task :doc do
-  sh "asciidoc -a stylesdir=#{File.dirname(__FILE__)}/doc/stylesheets \
-    -a theme=bare doc/integrity.txt"
-end
-
 task :db do
   require "init"
   DataMapper.auto_migrate!
