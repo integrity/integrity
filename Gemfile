@@ -34,3 +34,28 @@ gem "bobette", "0.0.6"
 # = Dependencies for the :dj builder
 # gem "activerecord"
 # gem "delayed_job", :git => "git://github.com/tobi/delayed_job.git"
+
+# = Development dependencies.
+only :test do
+  source "http://gems.github.com"
+  gem "sqlite3-ruby"
+  gem "activerecord"
+  gem "delayed_job", :git => "git://github.com/tobi/delayed_job.git"
+  gem "rr"
+  gem "mocha"
+  gem "redgreen"
+  gem "dm-sweatshop"
+  gem "ParseTree"
+  gem "randexp"
+  gem "rack-test", "0.5.0"
+  gem "rumbster"
+  gem "nokogiri"
+  gem "hpricot"
+  gem "jeremymcanally-pending"
+  gem "jeremymcanally-context"
+  gem "foca-storyteller"
+  gem "webrat"
+  gem "shout-bot"
+  gem "sinatra-ditties"
+  gem "tinder"
+end
