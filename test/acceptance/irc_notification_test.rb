@@ -50,17 +50,17 @@ class IRCNotificationTest < Test::Unit::AcceptanceTestCase
     head = build(0)
     2.times{ @server.gets }
 
-    assert @server.gets.include?("#{head} successfully")
-    assert @server.gets.
-      include?("http://www.example.com/my-test-project/builds/1")
+    msg = @server.gets
+    assert msg.include?("#{head} successfully")
+    assert msg.include?("http://www.example.com/my-test-project/builds/1")
   end
 
   scenario "Notifying a failed build" do
     head = build(1)
     2.times{ @server.gets }
 
-    assert @server.gets.include?("#{head} and failed")
-    assert @server.gets.
-      include?("http://www.example.com/my-test-project/builds/1")
+    msg = @server.gets
+    assert msg.include?("#{head} and failed")
+    assert msg.include?("http://www.example.com/my-test-project/builds/1")
   end
 end
