@@ -39,10 +39,3 @@ namespace :jobs do
     Delayed::Worker.new.start
   end
 end
-
-begin
-  require "mg"
-  MG.new("integrity.gemspec")
-rescue LoadError
-end
-
