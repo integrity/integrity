@@ -5,7 +5,7 @@ module Integrity
         :uri => buildable["uri"],
         :branch => buildable["branch"]
       )
-      buildable["commits"].collect { |id| new(project, id) }
+      buildable["commits"].collect { |c| new(project, c["id"]) }
     end
 
     def initialize(project, commit)
@@ -36,7 +36,10 @@ module Integrity
       Integrity.log "Started building %s at %s" % [@build.project.uri,
         metadata["identifier"]]
       @build.update(:started_at => Time.now)
-      @build.commit.update(metadata)
+      @build.commit.update(:identifier => metadata["id"],
+        :message => metadata["message"],
+        :author  => metadata["author"],
+        :committed_at => metadata["timestamp"])
     end
 
     def completed(status, output)
