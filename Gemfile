@@ -1,4 +1,4 @@
-disable_rubygems
+disable_system_gems
 source "http://gemcutter.org"
 gem "dm-core", "0.10.0"
 gem "dm-timestamps", "0.10.0"
