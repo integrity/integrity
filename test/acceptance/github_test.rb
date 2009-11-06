@@ -1,6 +1,8 @@
 require "helper/acceptance"
 
 class GitHubTest < Test::Unit::AcceptanceTestCase
+  include DataMapper::Sweatshop::Unique
+
   story <<-EOF
     As a project owner,
     I want to be able to use GitHub as a build triggerer
@@ -37,6 +39,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "Receiving a payload with build_all option *enabled*" do
+    stub(Time).now { unique { |i| Time.mktime(2009, 12, 15, i / 60, i % 60) } }
     Integrity.config { |c| c.build_all = true }
 
     repo = git_repo(:my_test_project)
