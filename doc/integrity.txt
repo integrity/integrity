@@ -24,7 +24,7 @@ $ gem install bundler
 $ git clone git://github.com/integrity/integrity
 $ cd integrity
 $ git checkout -b deploy v0.2.0
-$ gem bundle
+$ gem bundle --only default
 $ ./bin/rake db
 
 If you want give it a quick try before going any further, run `./bin/rackup`
@@ -221,7 +221,7 @@ http://github.com/integrity/integrity/issues[bug tracker].
 
 To start hacking, grab the code from our git repository at
 `git://github.com/integrity/integrity.git` and setup the dependencies with
-`gem bundle -m test/Gemfile`. Finally, hack and `./bin/rake` as usual ;-)
+`gem bundle`. Finally, hack and `./bin/rake` as usual ;-)
 
 Once you're done, make sure that changes are rebased on on top of the `master`
 branch and open a new ticket in our bug tracker to let us know where we
