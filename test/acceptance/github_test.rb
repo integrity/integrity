@@ -17,10 +17,9 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
   end
 
   def payload(repo)
-    commits = repo.commits.collect { |c| c["identifier"] }
     { "after"      => repo.head, "ref" => "refs/heads/#{repo.branch}",
       "repository" => { "url" => repo.uri },
-      "commits"    => commits.reverse }.to_json
+      "commits"    => repo.commits }.to_json
   end
 
   def github_post(payload)
