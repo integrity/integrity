@@ -22,6 +22,7 @@ require "forwardable"
 require "integrity/core_ext/object"
 
 require "integrity/configurator"
+require "integrity/bootstrapper"
 require "integrity/project"
 require "integrity/buildable_project"
 require "integrity/author"
@@ -44,6 +45,10 @@ module Integrity
   def self.configure(&block)
     @config ||= Configurator.new(&block)
     @config.tap { |c| block.call(c) if block }
+  end
+
+  def self.bootstrap(&block)
+    Bootstrapper.new(&block)
   end
 
   def self.log(message, &block)
