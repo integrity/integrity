@@ -1,4 +1,3 @@
-disable_system_gems
 source "http://gemcutter.org"
 gem "dm-core", "0.10.1"
 gem "dm-timestamps", "0.10.1"
