@@ -1,7 +1,7 @@
 begin
   require "shout-bot"
 rescue LoadError
-  abort "Please install shout-bot to use the IRC notifier"
+  abort "Install shout-bot to use the IRC notifier"
 end
 
 module Integrity

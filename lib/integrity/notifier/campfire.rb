@@ -1,4 +1,8 @@
-require "tinder"
+begin
+  require "tinder"
+rescue LoadError
+  abort "Install shout-bot to use the Campfire notifier"
+end
 
 module Integrity
   class Notifier

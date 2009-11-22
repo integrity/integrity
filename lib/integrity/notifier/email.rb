@@ -1,4 +1,8 @@
-require "sinatra/ditties/mailer"
+begin
+  require "sinatra/ditties/mailer"
+rescue LoadError
+  abort "Install sinatra-ditties to use the Email notifier"
+end
 
 module Integrity
   class Notifier
