@@ -6,7 +6,7 @@ module Integrity
       attr_reader :config
 
       def self.to_haml
-        File.read(File.dirname(__FILE__) + "/campfire.haml")
+        @haml ||= File.read(File.dirname(__FILE__) + "/campfire.haml")
       end
 
       def deliver!

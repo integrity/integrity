@@ -31,17 +31,17 @@ module Integrity
       end
 
       def checkbox(name, condition, extras={})
-        attrs = { :name => name, :type => "checkbox", :value => "1" }
+        attrs = {:name => name, :type => "checkbox", :value => "1"}
         attrs[:checked] = !!condition
         attrs.update(extras)
       end
 
       def dropdown(name, id, options, selected="")
-        haml_tag :select, :id => id, :name => name do
+        haml_tag(:select, :id => id, :name => name) {
           options.each { |opt|
             haml_tag :option, opt, :value => opt, :selected => (opt == selected)
           }
-        end
+        }
       end
 
       def notifier_form
