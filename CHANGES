@@ -1,131 +1,136 @@
-0.2.1 / 2009-11-22
-==================
+= 0.2.1 / 2009-11-22
 
-* Do not disable_rubygems in the Gemfile as it was suprising a lot of people
+ * Do not disable_rubygems in the Gemfile as it was suprising a lot of people
 
-* Fix various spelling and grammar errors in the documentation [Michael Erb]
+ * Fix various spelling and grammar errors in the documentation [Michael Erb]
 
-* Shorten IRC notification message
+ * Shorten IRC notification message
 
-* Upgrade to DataMapper 0.10.1
+ * Upgrade to DataMapper 0.10.1
 
-* Upgrade to Bob 0.5.0 and Bobette 0.0.6
+ * Upgrade to Bob 0.5.0 and Bobette 0.0.6
 
-0.2.0 / 2009-11-04
-==================
+= 0.2.0 / 2009-11-04
 
-* Support for asynchronous and parallel builds, either using a thread pool
-  or a queue (delayed_job).
+ * Support for asynchronous and parallel builds, either using a thread pool
+   or a queue (delayed_job).
 
-* Integrity won't be available as a gem anymore. Use git or grab a tarball
-  from GitHub.
+ * Integrity won't be available as a gem anymore. Use git or grab a tarball
+   from GitHub.
 
-* Dependencies are managed with Bundler. See <http://github.com/wycats/bundler>
+ * Dependencies are managed with Bundler. See <http://github.com/wycats/bundler>
 
-* The installer has been removed.
+ * The installer has been removed.
 
-* Heroku is supported again.
+ * Heroku is supported again.
 
-* The Email, IRC and Campfire notifiers now ship as part of Integrity.
+ * The Email, IRC and Campfire notifiers now ship as part of Integrity.
 
-* Some changes to Integrity::Notifier::Base probably breaks other notifiers;
- a deprecation layer might be added in a future release.
+ * Some changes to Integrity::Notifier::Base probably breaks other notifiers;
+  a deprecation layer might be added in a future release.
 
-* Support for Subversion is mostly there, it just needs testing. Please see
-  <http://github.com/integrity/integrity/commit/f1dc4bf6dbbf85d333fd4e006f040588102b5538>
+ * Support for Subversion is mostly there, it just needs testing. Please see
+   <http://github.com/integrity/integrity/commit/f1dc4bf6dbbf85d333fd4e006f040588102b5538>
 
-0.1.11 / 2009-07-26
-===================
+= 0.1.11 / 2009-07-26
 
-* This release depends on Sinatra 0.9.4 and hence, Rack 1.0 (finally!)
+ * This release depends on Sinatra 0.9.4 and hence, Rack 1.0 (finally!)
 
-* The `integrity launch` command was removed. Please use a rackup
-  file and whatever server you want instead
+ * The `integrity launch` command was removed. Please use a rackup
+   file and whatever server you want instead
 
-* The Heroku install was removed as it currently doesn't work.
-  A template-type repo ready to be pushed onto Heroku might be provided
-  in the future
+ * The Heroku install was removed as it currently doesn't work.
+   A template-type repo ready to be pushed onto Heroku might be provided
+   in the future
 
-* Fix an error occuring when a notifier times out [#166 / Benny Wong]
+ * Fix an error occuring when a notifier times out [#166 / Benny Wong]
 
-* Fix pretty_date helpers showing a leading zero for days < 10
-  [Douglas F Shearer]
+ * Fix pretty_date helpers showing a leading zero for days < 10
+   [Douglas F Shearer]
 
-* Add a missing backstick to the post install message [Douglas F Shearer]
+ * Add a missing backstick to the post install message [Douglas F Shearer]
 
-* Fix a missing dependency on builder [#177]
+ * Fix a missing dependency on builder [#177]
 
-* Fix the Content-Type of the Atom feed
+ * Fix the Content-Type of the Atom feed
 
-* Get rid of all mention of foca-integrity from generated files
+ * Get rid of all mention of foca-integrity from generated files
 
-* Fix all Sass deprecation warnings
+ * Fix all Sass deprecation warnings
 
-0.1.10 / 2009-05-14
-====================
+= 0.1.10 / 2009-05-14
 
-* Projects are now sorted by name (Nick Quaranto)
+ * Projects are now sorted by name (Nick Quaranto)
 
-* Bundle the NULL commit author/message fix as a migration
+ * Bundle the NULL commit author/message fix as a migration
 
-* Fix issue with stale notifier. See 693c95e for details
+ * Fix issue with stale notifier. See 693c95e for details
 
-* Rename the "Build the last commit" button to "Fetch and build"
+ * Rename the "Build the last commit" button to "Fetch and build"
 
-* Fix the rebuild button (Eric Mill)
+ * Fix the rebuild button (Eric Mill)
 
-* Various improvements to the Heroku install (Miles Z. Sterrett)
+ * Various improvements to the Heroku install (Miles Z. Sterrett)
 
-* Documentation to the default config.yml for the
-  :build_all_commits option. (Jeff Whitmire)
+ * Documentation to the default config.yml for the
+   :build_all_commits option. (Jeff Whitmire)
 
-* `integrity launch` now saves the database into $HOME/.integrity.sqlite3
+ * `integrity launch` now saves the database into $HOME/.integrity.sqlite3
 
-* Changed the Notifier::Test API. Notifiers tests are expected
-  to break. That API is still not defined and might change at
-  any time. See [#130] to discuss this.
+ * Changed the Notifier::Test API. Notifiers tests are expected
+   to break. That API is still not defined and might change at
+   any time. See [#130] to discuss this.
 
-* Send notifications to enabled notifiers only
+ * Send notifications to enabled notifiers only
 
-0.1.9.3 / 2009-04-06
-====================
+= 0.1.9.3 / 2009-04-06
 
-* Fix one more URL issue
-* Fix that notifiers are always enabled
-* Fix for when the commit identifier can't be retrieved
-* Fix the schema to accept NULL commit author and message
-* Upgrade to DataMapper 0.9.11
-* Remove all of deprecation code, except on Notifier::Base
-* Notifiers were refactored and now require to be registered:
-    Integrity.register(Integrity::Notifier::IRC)
-* The installer do not migrate the database automagically after
-  a successful install anymore
+ * Fix one more URL issue
 
-0.1.9.2 / 2009-03-28
-====================
+ * Fix that notifiers are always enabled
 
-* Add development dependencies to gemspec
-* Fix and improve deprecation (Josh Nichols)
-* Fix a typo in post install message (Josh Nichols)
-* Fix URLs issues (hopefully)
-  * Calculate URLs using base_uri option instead of the request.url
-  * Fix and use the URLs generation helpers in views. (Will Leinweber)
-* Depend on sinatra-authorization (which has no dependency) instead
-  of sinatra-ditties.
-* Use [mg](http://github.com/sr/mg) to manage release
-* Various tweaks to the bootstraping Rake tasks. I am not happy
-  with them, though.
-  <http://integrity.lighthouseapp.com/projects/14308/tickets/126>
+ * Fix for when the commit identifier can't be retrieved
 
-0.1.9.1 / 2009-03-16
-====================
+ * Fix the schema to accept NULL commit author and message
 
-* Add the Integrity::Notifier::Test mixin, aimed at helping
-  writing test for notifiers.
-    NOTE: The API is not fixed yet. See the following ticket
-    <http://integrity.lighthouseapp.com/projects/14308-integrity/tickets/130>
-* Add support for Heroku as a deployment option
-* Fix the installer to work with the current Thor gem
+ * Upgrade to DataMapper 0.9.11
 
+ * Remove all of deprecation code, except on Notifier::Base
 
-(There is no changelog for previous release)
+ * Notifiers were refactored and now require to be registered:
+     Integrity.register(Integrity::Notifier::IRC)
+
+ * The installer do not migrate the database automagically after
+   a successful install anymore
+
+= 0.1.9.2 / 2009-03-28
+
+ * Add development dependencies to gemspec
+
+ * Fix and improve deprecation (Josh Nichols)
+
+ * Fix a typo in post install message (Josh Nichols)
+
+ * Fix URLs issues (hopefully)
+   * Calculate URLs using base_uri option instead of the request.url
+   * Fix and use the URLs generation helpers in views. (Will Leinweber)
+
+ * Depend on sinatra-authorization (which has no dependency) instead
+   of sinatra-ditties.
+
+ * Use [mg](http://github.com/sr/mg) to manage release
+
+ * Various tweaks to the bootstraping Rake tasks. I am not happy
+   with them, though.
+   <http://integrity.lighthouseapp.com/projects/14308/tickets/126>
+
+= 0.1.9.1 / 2009-03-16
+
+ * Add the Integrity::Notifier::Test mixin, aimed at helping
+   writing test for notifiers.
+     NOTE: The API is not fixed yet. See the following ticket
+     <http://integrity.lighthouseapp.com/projects/14308-integrity/tickets/130>
+
+ * Add support for Heroku as a deployment option
+
+ * Fix the installer to work with the current Thor gem
