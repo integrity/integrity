@@ -1,3 +1,16 @@
+0.2.1 / 2009-11-22
+==================
+
+* Do not disable_rubygems in the Gemfile as it was suprising a lot of people
+
+* Fix various spelling and grammar errors in the documentation [Michael Erb]
+
+* Shorten IRC notification message
+
+* Upgrade to DataMapper 0.10.1
+
+* Upgrade to Bob 0.5.0 and Bobette 0.0.6
+
 0.2.0 / 2009-11-04
 ==================
 
