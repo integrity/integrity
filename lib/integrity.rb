@@ -29,6 +29,7 @@ require "integrity/commit"
 require "integrity/build"
 require "integrity/builder"
 require "integrity/notifier"
+require "integrity/notifier/base"
 require "integrity/helpers"
 require "integrity/app"
 

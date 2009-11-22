@@ -1,5 +1,3 @@
-require File.dirname(__FILE__) + "/notifier/base"
-
 module Integrity
   class Notifier
     include DataMapper::Resource
@@ -9,14 +7,12 @@ module Integrity
     property :enabled, Boolean,  :nullable => false, :default => false
     property :config,  Yaml,     :nullable => false, :lazy    => false
 
-    belongs_to :project, :model     => "Integrity::Project",
-                         :child_key => [:project_id]
+    belongs_to :project
 
     validates_is_unique :name, :scope => :project
 
     def self.available
-      @@_notifiers ||= {}
-      @@_notifiers
+      @notifiers ||= {}
     end
 
     def self.register(klass)
