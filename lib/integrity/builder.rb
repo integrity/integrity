@@ -14,6 +14,7 @@ module Integrity
     def started(metadata)
       Integrity.log "Started building %s at %s" % [@build.project.uri,
         metadata["identifier"]]
+
       @build.update(
         :started_at => Time.now,
         :commit     => {
@@ -28,11 +29,13 @@ module Integrity
     def completed(status, output)
       Integrity.log "Completed build %s. Exited with %s, got:\n %s" % [
         @build.commit.identifier, status, output]
+
       @build.update!(
         :completed_at   => Time.now,
         :successful     => status,
         :output         => output
       )
+
       @build.project.enabled_notifiers.each { |n| n.notify_of_build(@build) }
     end
 
@@ -47,11 +50,13 @@ module Integrity
     end
 
     def script
-      "(cd #{scm.dir_for(@build.commit.identifier)} && #{@build.project.command} 2>&1)"
+      "(cd #{scm.dir_for(@build.commit.identifier)} && " \
+        "#{@build.project.command} 2>&1)"
     end
 
     def scm
-      @scm ||= SCM.new(@build.project.scm, @build.project.uri, @build.project.branch)
+      @scm ||= SCM.new(@build.project.scm, @build.project.uri,
+        @build.project.branch)
     end
   end
 end
