@@ -48,7 +48,7 @@ module Integrity
       @build.completed_at = Time.now
       @build.successful   = status
       @build.output       = output
-      @build.save
+      @build.save!
       @build.project.enabled_notifiers.each { |n| n.notify_of_build(@build) }
     end
   end
