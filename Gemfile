@@ -19,7 +19,6 @@ gem "json", "1.1.9"
 gem "sinatra", "0.9.4"
 gem "sinatra-authorization", "1.0.0"
 gem "sinatra-url-for", :git => "git://github.com/emk/sinatra-url-for.git"
-gem "bob", "0.5.0"
 gem "bobette", "0.0.6"
 
 # These are dependencies for the various notifiers. Uncomment as appropriate.

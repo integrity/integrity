@@ -1,15 +1,14 @@
 module Integrity
-  class Builder < Bob::Builder
-    def initialize(buildable)
-      @build = buildable
+  class Builder
+    def initialize(build)
+      @build = build
+    end
 
-      super(
-        "scm"     => @build.project.scm,
-        "uri"     => @build.project.uri.to_s,
-        "branch"  => @build.project.branch,
-        "commit"  => @build.commit.identifier,
-        "command" => @build.project.command
-      )
+    def build
+      scm.with_commit(@build.commit.identifier) { |commit|
+        started(scm.metadata(commit))
+        completed(*run)
+      }
     end
 
     def started(metadata)
@@ -36,19 +35,23 @@ module Integrity
       )
       @build.project.enabled_notifiers.each { |n| n.notify_of_build(@build) }
     end
-  end
 
-  class ThreadedBuilder
-    class << self
-      attr_accessor :pool
+    def run
+      output = ""
+      status = false
+
+      IO.popen(script, "r") { |io| output = io.read }
+      status = $?.success?
+
+      [status, output]
     end
 
-    def self.setup(size)
-      self.pool = Bob::Engine::Threaded.new(size)
+    def script
+      "(cd #{scm.dir_for(@build.commit.identifier)} && #{@build.project.command} 2>&1)"
     end
 
-    def self.build(build)
-      self.pool.call(proc { Builder.new(build).build })
+    def scm
+      @scm ||= SCM.new(@build.project.scm, @build.project.uri, @build.project.branch)
     end
   end
 end

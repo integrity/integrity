@@ -1,4 +1,4 @@
-require "bob"
+require "addressable/uri"
 require "bobette"
 require "bobette/github"
 require "sinatra/base"
@@ -33,6 +33,10 @@ require "integrity/notifier"
 require "integrity/notifier/base"
 require "integrity/helpers"
 require "integrity/app"
+require "integrity/scm"
+require "integrity/scm/abstract"
+require "integrity/builder"
+require "integrity/builder/threaded"
 
 module Integrity
   def self.configure(&block)

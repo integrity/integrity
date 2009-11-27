@@ -1,6 +1,7 @@
 module Integrity
   class Configurator
-    attr_accessor :builder, :logger, :base_uri, :user, :pass, :build_all
+    attr_accessor :directory, :builder, :logger, :base_uri, :user, :pass,
+      :build_all
 
     def initialize
       yield(self)
@@ -11,11 +12,7 @@ module Integrity
     end
 
     def directory=(dir)
-      Bob.directory = dir
-    end
-
-    def directory
-      Bob.directory
+      @directory = Pathname(dir)
     end
 
     def base_uri=(uri)
@@ -40,7 +37,6 @@ module Integrity
 
     def log=(log)
       @logger = Logger.new(log)
-      Bob.logger = @logger
     end
 
     def protect?
