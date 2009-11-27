@@ -1,14 +1,15 @@
 require "storyteller"
 require "webrat"
 require "rack/test"
-require "bob/test"
 
 require "helper"
+require "helper/acceptance/builder_stub"
+require "helper/acceptance/repo"
 
 Rack::Test::DEFAULT_HOST.replace("www.example.com")
 
 module AcceptanceHelper
-  include Bob::Test
+  include IntegrityTest
 
   def git_repo(name)
     GitRepo.new(name.to_s).tap { |repo|
@@ -33,7 +34,6 @@ module AcceptanceHelper
     end
   end
 end
-
 
 class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
   include FileUtils
