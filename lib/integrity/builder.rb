@@ -14,7 +14,7 @@ module Integrity
     end
 
     def build
-      b = @project.builds.create(:commit => Commit.new(:identifier => @commit))
+      b = @project.builds.create(:commit => {:identifier => @commit})
       Integrity.config.builder.build(b)
       b
     end
@@ -35,20 +35,25 @@ module Integrity
     def started(metadata)
       Integrity.log "Started building %s at %s" % [@build.project.uri,
         metadata["identifier"]]
-      @build.update(:started_at => Time.now)
-      @build.commit.update(:identifier => metadata["id"],
-        :message => metadata["message"],
-        :author  => metadata["author"],
-        :committed_at => metadata["timestamp"])
+      @build.update(
+        :started_at => Time.now,
+        :commit     => {
+          :identifier   => metadata["id"],
+          :message      => metadata["message"],
+          :author       => metadata["author"],
+          :committed_at => metadata["timestamp"]
+        }
+      )
     end
 
     def completed(status, output)
       Integrity.log "Completed build %s. Exited with %s, got:\n %s" % [
         @build.commit.identifier, status, output]
-      @build.completed_at = Time.now
-      @build.successful   = status
-      @build.output       = output
-      @build.save!
+      @build.update!(
+        :completed_at   => Time.now,
+        :successful     => status,
+        :output         => output
+      )
       @build.project.enabled_notifiers.each { |n| n.notify_of_build(@build) }
     end
   end
