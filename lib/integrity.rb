@@ -24,6 +24,7 @@ require "integrity/core_ext/object"
 
 require "integrity/configurator"
 require "integrity/project"
+require "integrity/buildable_project"
 require "integrity/author"
 require "integrity/commit"
 require "integrity/build"
