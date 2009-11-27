@@ -1,8 +1,9 @@
 module Integrity
   class BuildableProject
     def self.call(buildable)
-      return [] unless project = Project.first(:scm => buildable["scm"],
-        :uri => buildable["uri"],
+      return [] unless project = Project.first(
+        :scm    => buildable["scm"],
+        :uri    => buildable["uri"],
         :branch => buildable["branch"]
       )
       buildable["commits"].collect { |c| new(project, c["id"]) }
@@ -21,15 +22,16 @@ module Integrity
   end
 
   class Builder < Bob::Builder
-    def initialize(b)
-      @buildable = {
-        "scm"     => b.project.scm,
-        "uri"     => b.project.uri.to_s,
-        "branch"  => b.project.branch,
-        "commit"  => b.commit.identifier,
-        "command" => b.project.command
-      }
-      @build = b
+    def initialize(buildable)
+      @build = buildable
+
+      super(
+        "scm"     => @build.project.scm,
+        "uri"     => @build.project.uri.to_s,
+        "branch"  => @build.project.branch,
+        "commit"  => @build.commit.identifier,
+        "command" => @build.project.command
+      )
     end
 
     def started(metadata)
