@@ -52,7 +52,7 @@ module Integrity
         case name
         when :threaded then Integrity::ThreadedBuilder
         when :dj
-          require "integrity/delayed_builder"
+          require "integrity/builder/delayed"
           Integrity::DelayedBuilder
         else
           fail "Unknown builder #{name}"

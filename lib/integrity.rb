@@ -36,7 +36,7 @@ require "integrity/app"
 require "integrity/scm"
 require "integrity/scm/abstract"
 require "integrity/builder"
-require "integrity/threaded_builder"
+require "integrity/builder/threaded"
 
 module Integrity
   def self.configure(&block)
