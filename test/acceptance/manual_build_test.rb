@@ -18,7 +18,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
   end
 
   def build
-    ThreadedBuilder.pool.wait!
+    Integrity.config.builder.wait!
   end
 
   scenario "Triggering a successful build" do

@@ -1,23 +1,9 @@
 require "thread"
 
 module Integrity
-  class ThreadedBuilder
-    class << self
-      attr_accessor :pool
-    end
-
-    def self.setup(size)
-      self.pool = Threaded.new(size)
-    end
-
-    def self.build(build)
-      self.pool.call(proc { Builder.new(build).build })
-    end
-  end
-
   # A thread pool based build engine. This engine simply adds jobs to an
   # in-memory queue, and processes them as soon as possible.
-  class Threaded
+  class ThreadedBuilder
     # The optional pool size controls how many threads will be created.
     def initialize(pool_size = 2, logger = Integrity.config.logger)
       @pool   = ThreadPool.new(pool_size, logger)
@@ -25,8 +11,8 @@ module Integrity
     end
 
     # Adds a job to the queue.
-    def call(job)
-      @pool << job
+    def call(build)
+      @pool << proc { Builder.build(build) }
     end
 
     # The number of jobs currently in the queue.

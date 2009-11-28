@@ -23,8 +23,8 @@ module Integrity
       @builder ||= begin
         klass = builder_class(args.first)
         case args.size
-        when 1 then klass
-        when 2 then klass.tap { |b| b.setup(args.last) }
+        when 1 then klass.new
+        when 2 then klass.new(args.last)
         else
           raise ArgumentError
         end

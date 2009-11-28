@@ -1,5 +1,9 @@
 module Integrity
   class Builder
+    def self.build(b)
+      new(b).build
+    end
+
     def initialize(build)
       @build = build
     end
@@ -31,9 +35,9 @@ module Integrity
         @build.commit.identifier, status, output]
 
       @build.update!(
-        :completed_at   => Time.now,
-        :successful     => status,
-        :output         => output
+        :completed_at => Time.now,
+        :successful   => status,
+        :output       => output
       )
 
       @build.project.enabled_notifiers.each { |n| n.notify_of_build(@build) }
