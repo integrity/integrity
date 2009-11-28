@@ -4,7 +4,7 @@ module Integrity
       :build_all
 
     def initialize
-      yield(self)
+      yield self
     end
 
     def database=(uri)
@@ -15,56 +15,37 @@ module Integrity
       @directory = Pathname(dir)
     end
 
+    def log=(log)
+      @logger = Logger.new(log)
+    end
+
     def base_uri=(uri)
       @base_uri = Addressable::URI.parse(uri)
     end
 
     def builder(*args)
-      @builder ||= begin
-        klass = builder_class(args.first)
-        case args.size
-        when 1 then klass.new
-        when 2 then klass.new(args.last)
+      @builder ||= case args.first
+        when :threaded
+          Integrity::ThreadedBuilder.new(args.last)
+        when :dj
+          require "integrity/builder/delayed"
+          Integrity::DelayedBuilder.new(args.last)
         else
-          raise ArgumentError
+          fail "Unknown builder #{name}"
         end
-      end
     end
 
     def push(*args)
-      @push ||= [push_class(args.first), args.last]
-    end
-
-    def log=(log)
-      @logger = Logger.new(log)
+      @push ||= begin
+        fail "Unknown push service" unless args.first == :github
+        [Bobette::GitHub, args.last]
+      end
     end
 
     def protect?
       user && pass
     end
 
-    def build_all?
-      !! build_all
-    end
-
-    private
-      def builder_class(name)
-        case name
-        when :threaded then Integrity::ThreadedBuilder
-        when :dj
-          require "integrity/builder/delayed"
-          Integrity::DelayedBuilder
-        else
-          fail "Unknown builder #{name}"
-        end
-      end
-
-      def push_class(name)
-        case name
-        when :github then Bobette::GitHub
-        else
-          fail "Unknown push service #{name}"
-        end
-      end
+    alias_method :build_all?, :build_all
   end
 end
