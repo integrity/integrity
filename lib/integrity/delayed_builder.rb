@@ -1,22 +1,25 @@
 require "delayed_job"
 
 module Integrity
-  module DelayedBuilder
-    def self.setup(options)
+  class DelayedBuilder
+    def initialize(options)
       ActiveRecord::Base.establish_connection(options)
-      ActiveRecord::Schema.define {
-        create_table :delayed_jobs, :force => true do |table|
-          table.integer  :priority, :default => 0
-          table.integer  :attempts, :default => 0
-          table.text     :handler
-          table.text     :last_error
-          table.datetime :run_at
-          table.datetime :locked_at
-          table.datetime :failed_at
-          table.string   :locked_by
-          table.timestamps
-        end
-      } unless Delayed::Job.table_exists?
+
+      unless Delayed::Job.table_exists?
+        ActiveRecord::Schema.define {
+          create_table :delayed_jobs, :force => true do |table|
+            table.integer  :priority, :default => 0
+            table.integer  :attempts, :default => 0
+            table.text     :handler
+            table.text     :last_error
+            table.datetime :run_at
+            table.datetime :locked_at
+            table.datetime :failed_at
+            table.string   :locked_by
+            table.timestamps
+          end
+        }
+      end
 
       # TODO
       Delayed::Job.class_eval {
@@ -26,7 +29,7 @@ module Integrity
       }
     end
 
-    def self.build(build)
+    def call(build)
       Delayed::Job.enqueue(BuildJob.new(build))
     end
 
@@ -36,7 +39,7 @@ module Integrity
       end
 
       def perform
-        Builder.new(Build.get(@build)).build
+        Builder.build Build.get(@build)
       end
     end
   end

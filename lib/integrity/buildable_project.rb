@@ -10,14 +10,11 @@ module Integrity
     end
 
     def initialize(project, commit)
-      @project = project
-      @commit  = commit
+      @build = project.builds.create(:commit => {:identifier => commit})
     end
 
     def build
-      b = @project.builds.create(:commit => {:identifier => @commit})
-      Integrity.config.builder.build(b)
-      b
+      @build.tap { |b| Integrity.config.builder.call(b) }
     end
   end
 end

@@ -3,7 +3,6 @@ require "webrat"
 require "rack/test"
 
 require "helper"
-require "helper/acceptance/builder_stub"
 require "helper/acceptance/repo"
 
 Rack::Test::DEFAULT_HOST.replace("www.example.com")
@@ -27,12 +26,6 @@ module AcceptanceHelper
     def AcceptanceHelper.logged_in; false; end
     rack_test_session.header("Authorization", nil)
   end
-
-  class BuilderStub
-    def self.build(build)
-      Integrity::Builder.new(build).build
-    end
-  end
 end
 
 class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
@@ -53,7 +46,7 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
     Integrity::App.set(:environment, :test)
     Webrat.configure { |c| c.mode = :rack }
     Integrity.configure { |c|
-      c.builder = BuilderStub
+      c.builder = lambda { |build| Builder.new(build).build }
       c.push :github, "SECRET"
     }
     @app = Integrity.app
