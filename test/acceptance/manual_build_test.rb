@@ -153,25 +153,6 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("#previous_builds li[@class='failed']", :content => commit)
   end
 
-  scenario "Building a Subversion repository" do
-    repo = SvnRepo.new("my_svn_repo")
-    repo.create
-    repo.add_successful_commit
-    Project.gen(:svn, :name => "My Subversion Project", :uri => repo.uri)
-
-    login_as "admin", "test"
-    visit "/"
-    click_link "My Subversion Project"
-    click_button "manual build"
-
-    assert_have_tag("#build h1", :content => "hasn't been built yet")
-
-    build
-    reload
-
-    assert_have_tag("h1", :content => "success")
-  end
-
   scenario "Building with DelayedBuilder" do
     old_builder = Integrity.config.builder
 

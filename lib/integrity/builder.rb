@@ -9,8 +9,8 @@ module Integrity
     end
 
     def build
-      scm.with_commit(@build.commit.identifier) { |commit|
-        started(scm.metadata(commit))
+      repo.with_commit(@build.commit.identifier) { |commit|
+        started(repo.metadata(commit))
         completed(*run)
       }
     end
@@ -54,13 +54,12 @@ module Integrity
     end
 
     def script
-      "(cd #{scm.dir_for(@build.commit.identifier)} && " \
+      "(cd #{repo.dir_for(@build.commit.identifier)} && " \
         "#{@build.project.command} 2>&1)"
     end
 
-    def scm
-      @scm ||= SCM.new(@build.project.scm, @build.project.uri,
-        @build.project.branch)
+    def repo
+      @repo ||= Repository.new(@build.project.uri, @build.project.branch)
     end
   end
 end
