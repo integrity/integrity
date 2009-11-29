@@ -26,19 +26,6 @@ class CreateTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("#projects a", :content => "Integrity")
   end
 
-  scenario "Creating a SVN repository" do
-    pending "SVN is disabled" do
-      visit "/new"
-      fill_in "Name",           :with => "Rumbster"
-      fill_in "Repository URI", :with => "foo"
-      fill_in "Build script",   :with => "rake"
-      select  "SVN",            :from => "Repository SCM"
-      click_button "Create Project"
-
-      assert Project.first(:name => "Rumbster")
-    end
-  end
-
   scenario "Creating a private project" do
     visit "/new"
     fill_in "Name",            :with => "Integrity"
