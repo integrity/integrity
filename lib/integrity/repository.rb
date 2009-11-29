@@ -1,7 +1,7 @@
 module Integrity
   class Repository
     def initialize(uri, branch, commit)
-      @uri    = Addressable::URI.parse(uri)
+      @uri    = uri
       @branch = branch
       @commit = commit == "HEAD" ? head : commit
     end
