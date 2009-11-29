@@ -46,12 +46,9 @@ module Integrity
     end
 
     def run
-      IO.popen(script, "r") { |io| @output = io.read }
+      cmd = "(cd #{repo.directory} && #{@build.project.command} 2>&1)"
+      IO.popen(cmd, "r") { |io| @output = io.read }
       @status = $?.success?
-    end
-
-    def script
-      "(cd #{repo.directory} && #{@build.project.command} 2>&1)"
     end
 
     def repo

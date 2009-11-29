@@ -3,7 +3,7 @@ module Integrity
     def initialize(uri, branch, commit)
       @uri    = Addressable::URI.parse(uri)
       @branch = branch
-      @commit = resolve(commit)
+      @commit = commit == "HEAD" ? head : commit
     end
 
     def checkout
@@ -44,13 +44,9 @@ module Integrity
 
       def path
         @path ||= "#{@uri}-#{@branch}".
-          gsub(/[^\w_ \-]+/i, '-').# Remove unwanted chars.
-          gsub(/[ \-]+/i, '-').    # No more than one of the separator in a row.
-          gsub(/^\-|\-$/i, '')     # Remove leading/trailing separator.
-      end
-
-      def resolve(commit)
-        commit == "HEAD" ? head : commit
+          gsub(/[^\w_ \-]+/i, "-").# Remove unwanted chars.
+          gsub(/[ \-]+/i, "-").    # No more than one of the separator in a row.
+          gsub(/^\-|\-$/i, "")     # Remove leading/trailing separator.
       end
   end
 end
