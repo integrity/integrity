@@ -5,19 +5,22 @@ module Integrity
     end
 
     def initialize(build)
-      @build = build
+      @build  = build
+      @status = false
+      @output = ""
     end
 
     def build
-      repo.with_commit(@build.commit.identifier) { |commit|
-        started(repo.metadata(commit))
-        completed(*run)
-      }
+      repo.checkout(commit)
+      start
+      run
+      complete
     end
 
-    def started(metadata)
-      Integrity.log "Started building %s at %s" % [@build.project.uri,
-        metadata["identifier"]]
+    def start
+      Integrity.log "Started building #{@build.project.uri} at #{commit}"
+
+      metadata = repo.metadata(commit)
 
       @build.update(
         :started_at => Time.now,
@@ -30,36 +33,33 @@ module Integrity
       )
     end
 
-    def completed(status, output)
-      Integrity.log "Completed build %s. Exited with %s, got:\n %s" % [
-        @build.commit.identifier, status, output]
+    def complete
+      Integrity.log "Build #{commit} exited with #{@status} got:\n #{@output}"
 
       @build.update!(
         :completed_at => Time.now,
-        :successful   => status,
-        :output       => output
+        :successful   => @status,
+        :output       => @output
       )
 
       @build.project.enabled_notifiers.each { |n| n.notify_of_build(@build) }
     end
 
     def run
-      output = ""
-      status = false
-
-      IO.popen(script, "r") { |io| output = io.read }
-      status = $?.success?
-
-      [status, output]
+      IO.popen(script, "r") { |io| @output = io.read }
+      @status = $?.success?
     end
 
     def script
-      "(cd #{repo.dir_for(@build.commit.identifier)} && " \
-        "#{@build.project.command} 2>&1)"
+      "(cd #{repo.dir_for(commit)} && #{@build.project.command} 2>&1)"
     end
 
     def repo
       @repo ||= Repository.new(@build.project.uri, @build.project.branch)
+    end
+
+    def commit
+      @build.commit.identifier
     end
   end
 end
