@@ -1,7 +1,5 @@
 module Integrity
   class Repository
-    attr_reader :uri, :branch
-
     def initialize(uri, branch)
       @uri    = Addressable::URI.parse(uri)
       @branch = branch
@@ -24,7 +22,7 @@ module Integrity
     end
 
     def head
-      `git ls-remote --heads #{uri} #{branch} | cut -f1`.chomp
+      `git ls-remote --heads #{@uri} #{@branch} | cut -f1`.chomp
     end
 
     def dir_for(commit)
@@ -33,9 +31,9 @@ module Integrity
 
     private
       def checkout(commit)
-        run "git clone #{uri} #{dir_for(commit)}" unless cloned?(commit)
+        run "git clone #{@uri} #{dir_for(commit)}" unless cloned?(commit)
         run "git fetch origin", dir_for(commit)
-        run "git checkout origin/#{branch}", dir_for(commit)
+        run "git checkout origin/#{@branch}", dir_for(commit)
         run "git reset --hard #{commit}", dir_for(commit)
       end
 
@@ -50,7 +48,7 @@ module Integrity
       end
 
       def path
-        @path ||= "#{uri}-#{branch}".
+        @path ||= "#{@uri}-#{@branch}".
           gsub(/[^\w_ \-]+/i, '-').# Remove unwanted chars.
           gsub(/[ \-]+/i, '-').    # No more than one of the separator in a row.
           gsub(/^\-|\-$/i, '')     # Remove leading/trailing separator.
