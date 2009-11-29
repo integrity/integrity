@@ -1,3 +1,12 @@
+= 0.2.2 / 2009-11-29
+
+ * Fix GitHub post-receive not working when the project URI doesn't have a
+   trailing ".git"
+
+ * Allow bigger build output [Joel Chippindale]
+
+ * Fail loudly when a build can't be saved
+
 = 0.2.1 / 2009-11-22
 
  * Do not disable_rubygems in the Gemfile as it was suprising a lot of people
