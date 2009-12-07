@@ -46,18 +46,18 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
     Integrity::App.set(:environment, :test)
     Webrat.configure { |c| c.mode = :rack }
     Integrity.configure { |c|
-      c.builder = lambda { |build| Builder.new(build).build }
       c.push :github, "SECRET"
     }
+    Integrity.builder = lambda { |build| Builder.new(build).build }
     @app = Integrity.app
   end
 
   before(:each) do
-    Integrity.config.directory.mkdir
+    Integrity.directory.mkdir
     log_out
   end
 
   after(:each) do
-    Integrity.config.directory.rmtree
+    Integrity.directory.rmtree
   end
 end

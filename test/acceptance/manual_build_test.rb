@@ -8,17 +8,16 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
   EOS
 
   before(:all) do
-    @builder = Integrity.config.builder
-    Integrity.config.instance_variable_set(:@builder, nil)
-    Integrity.config { |c| c.builder :threaded, 1 }
+    @builder = Integrity.builder
+    Integrity.config { |c| c.builder :threaded }
   end
 
   after(:all) do
-    Integrity.config.instance_variable_set(:@builder, @builder)
+    Integrity.builder = @builder
   end
 
   def build
-    Integrity.config.builder.wait!
+    Integrity.builder.wait!
   end
 
   scenario "Triggering a successful build" do
@@ -154,7 +153,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "Building with DelayedBuilder" do
-    old_builder = Integrity.config.builder
+    old_builder = Integrity.builder
 
     begin
       Integrity.config.instance_variable_set(:@builder, nil)
@@ -182,7 +181,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     rescue LoadError
       warn "Couldn't load DJ. Skipping test"
     ensure
-      Integrity.config.instance_variable_set(:@builder, old_builder)
+      Integrity.builder = old_builder
     end
   end
 end

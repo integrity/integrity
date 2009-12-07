@@ -44,11 +44,12 @@ module Integrity
   end
 
   class << self
+    attr_accessor :builder, :directory, :base_uri, :logger
     alias_method :config, :configure
   end
 
   def self.log(message, &block)
-    config.logger.info(message, &block)
+    logger.info(message, &block)
   end
 
   def self.app
