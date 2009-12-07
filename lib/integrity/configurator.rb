@@ -26,7 +26,7 @@ module Integrity
       Integrity.builder =
         case name
         when :threaded
-          Integrity::ThreadedBuilder.new(args)
+          Integrity::ThreadedBuilder.new(args || 2, Integrity.logger)
         when :dj
           require "integrity/builder/delayed"
           Integrity::DelayedBuilder.new(args)
