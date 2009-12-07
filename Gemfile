@@ -36,6 +36,7 @@ gem "bobette", "0.0.6"
 # = Development dependencies.
 only :test do
   source "http://gems.github.com"
+  gem "ruby-debug"
   gem "sqlite3-ruby"
   gem "activerecord"
   gem "delayed_job", :git => "git://github.com/tobi/delayed_job.git"
