@@ -28,7 +28,7 @@ module Integrity
     end
 
     def directory
-      @directory ||= Integrity.config.directory.join(path, @commit)
+      @directory ||= Integrity.directory.join(path, @commit)
     end
 
     private
@@ -38,7 +38,7 @@ module Integrity
 
       def run(cmd, cd=true)
         cmd = "(#{cd ? "cd #{directory} && " : ""}#{cmd} > /dev/null 2>&1)"
-        Integrity.config.logger.debug(cmd)
+        Integrity.logger.debug(cmd)
         system(cmd) || fail("Couldn't run `#{cmd}`")
       end
 

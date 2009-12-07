@@ -1,7 +1,6 @@
 module Integrity
   class Configurator
-    attr_accessor :directory, :builder, :logger, :base_uri, :user, :pass,
-      :build_all
+    attr_accessor :user, :pass, :build_all
 
     def initialize
       yield self
@@ -12,26 +11,27 @@ module Integrity
     end
 
     def directory=(dir)
-      @directory = Pathname(dir)
-    end
-
-    def log=(log)
-      @logger = Logger.new(log)
+      Integrity.directory = Pathname(dir)
     end
 
     def base_uri=(uri)
-      @base_uri = Addressable::URI.parse(uri)
+      Integrity.base_uri = Addressable::URI.parse(uri)
     end
 
-    def builder(*args)
-      @builder ||= case args.first
+    def log=(log)
+      Integrity.logger = Logger.new(log)
+    end
+
+    def builder(name, args=nil)
+      Integrity.builder =
+        case name
         when :threaded
-          Integrity::ThreadedBuilder.new(args.last)
+          Integrity::ThreadedBuilder.new(args)
         when :dj
           require "integrity/builder/delayed"
-          Integrity::DelayedBuilder.new(args.last)
+          Integrity::DelayedBuilder.new(args)
         else
-          fail "Unknown builder #{name}"
+          raise ArgumentError, "Unknown builder #{name}"
         end
     end
 
