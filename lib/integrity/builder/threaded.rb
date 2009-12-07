@@ -5,9 +5,8 @@ module Integrity
   # in-memory queue, and processes them as soon as possible.
   class ThreadedBuilder
     # The optional pool size controls how many threads will be created.
-    def initialize(pool_size = 2, logger = Integrity.logger)
-      @pool   = ThreadPool.new(pool_size, logger)
-      @logger = logger
+    def initialize(pool_size, logger)
+      @pool = ThreadPool.new(pool_size, logger)
     end
 
     # Adds a job to the queue.
@@ -86,8 +85,7 @@ module Integrity
       end
 
       # Default pool size is 2 threads.
-      def initialize(size = nil, logger = Integrity.config.logger)
-        size ||= 2
+      def initialize(size, logger)
         @jobs    = Queue.new
         @njobs   = Incrementor.new
         @workers = Array.new(size) { spawn }
