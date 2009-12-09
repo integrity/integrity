@@ -20,14 +20,9 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "Without any configured endpoint" do
-    Integrity.instance_variable_set(:@config, nil)
-    Integrity.configure { |c| c.database = "sqlite3::memory:" }
-    DataMapper.auto_migrate!
-
     @_rack_mock_sessions = nil
     @_rack_test_sessions = nil
-    @app = Integrity.app
-    @app.disable(:github_token)
+    Integrity.app.disable(:github_token)
 
     repo = git_repo(:my_test_project)
     Project.gen(:my_test_project, :uri => repo.uri)
@@ -48,7 +43,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
 
   scenario "Receiving a payload with build_all option *enabled*" do
     stub(Time).now { unique { |i| Time.mktime(2009, 12, 15, i / 60, i % 60) } }
-    Integrity.config { |c| c.build_all = true }
+    Integrity.configure { |c| c.build_all = true }
 
     repo = git_repo(:my_test_project)
     3.times{|i| i % 2 == 1 ? repo.add_successful_commit : repo.add_failing_commit}
@@ -65,7 +60,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "Receiving a payload with build_all option *disabled*" do
-    Integrity.config { |c| c.build_all = false }
+    Integrity.configure { |c| c.build_all = false }
 
     repo = git_repo(:my_test_project)
     repo.add_failing_commit

@@ -73,11 +73,7 @@ module Integrity
     end
 
     def build_all!
-      @build_all = true
-    end
-
-    def build_all?
-      @build_all == true
+      Integrity.app.enable(:build_all)
     end
 
     def build_all=(v)

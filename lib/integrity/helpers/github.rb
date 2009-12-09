@@ -21,7 +21,7 @@ module Integrity
       uri = repository["url"] if options.test?
 
       commits =
-        if Integrity.config.build_all?
+        if options.build_all?
           payload.delete("commits")
         else
           [payload["commits"].detect { |c| c["id"] == payload["after"] }]
