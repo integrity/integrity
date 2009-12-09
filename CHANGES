@@ -1,3 +1,28 @@
+= 0.2.9 / unreleased
+
+ * Fix that Integrity was failing to boot when no push endpoint was configured
+
+ * Support for other SCM than git is discontinued. The vast majority of our
+   users are using git and I don't want to try to be supporting features I
+   don't use.
+
+ * The /push endpoint URL is deprecated in favor of /github. The initial plan
+   was to support other post-receive payload formats but, like for other SCM
+   support, it introduces complexity for something that most people do not
+   need, including myself. However, /push will be re-introduced in the next
+   release, featuring an easier to use payload format.
+
+ * The configuration option `push :github, "TOKEN"` is deprecated in favor
+   of `github_token "TOKEN"` to match the endpoint change.
+
+ * More DSL-ish configurator. The old configuration accessors are deprecated
+   and will be removed in the next release. However, it is safe to wait until
+   then and resolve the conflicts occuring in init.rb.
+      Example: Integrity.configure { c.database "sqlite }
+
+ * Bob & Bobette are now part of Integrity itself, meaning less code and
+   easier hacking.
+
 = 0.2.2 / 2009-11-29
 
  * Fix GitHub post-receive not working when the project URI doesn't have a
