@@ -26,4 +26,12 @@ class ConfiguratorTest < Test::Unit::TestCase
       instance_variable_get(:@logdev).
       instance_variable_get(:@dev).path
   end
+
+  test "push and github_token" do
+    Integrity.configure { |c| c.push :github, "MY_TOKEN" }
+    assert_equal "MY_TOKEN", Integrity::App.github_token
+
+    Integrity.configure { |c| c.github_token = "HOLY_HUB" }
+    assert_equal "HOLY_HUB", Integrity::App.github_token
+  end
 end
