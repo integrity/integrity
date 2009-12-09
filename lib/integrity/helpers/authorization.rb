@@ -1,5 +1,3 @@
-require "sinatra/authorization"
-
 module Integrity
   module Helpers
     module Authorization
