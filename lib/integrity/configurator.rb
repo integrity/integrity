@@ -35,8 +35,15 @@ module Integrity
         end
     end
 
+    def github_token=(token)
+      Integrity::App.set(:github_token, token)
+    end
+
     def push(*args)
       @push ||= begin
+        warn "`c.push :github, 'TOKEN'` is deprecated; " \
+         "use `c.github_token = 'token'` instead"
+        self.github_token = args.last
         [Bobette::GitHub, args.last]
       end
     end
