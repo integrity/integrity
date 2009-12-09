@@ -1,6 +1,4 @@
 require "addressable/uri"
-require "bobette"
-require "bobette/github"
 require "sinatra/base"
 require "sinatra/url_for"
 require "sinatra/authorization"
@@ -54,17 +52,6 @@ module Integrity
   end
 
   def self.app
-    Rack::Builder.new {
-      config = Integrity.config
-
-      if config.push.last
-        map "/push/#{config.push.last}" do
-          use config.push.first do ! Integrity.config.build_all? end
-          run Bobette.new(Integrity::BuildableProject)
-        end
-      end
-
-      map "/" do run Integrity::App end
-    }
+    Integrity::App
   end
 end

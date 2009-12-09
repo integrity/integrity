@@ -1,3 +1,5 @@
+require "integrity/helpers/github"
+
 module Integrity
   class App < Sinatra::Base
     set :root, File.expand_path("../../..", __FILE__)
@@ -23,6 +25,14 @@ module Integrity
       login_required if session[:user]
 
       Integrity.configure { |c| c.base_uri = url_for("/", :full) }
+    end
+
+    post "/push/:token" do
+      halt(404) unless github_enabled?
+      halt(403) unless params[:token] == options.github_token
+      halt(400) unless payload = github_payload
+
+      BuildableProject.call(payload).each { |b| b.build }.size.to_s
     end
 
     get "/integrity.css" do
