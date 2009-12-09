@@ -25,15 +25,21 @@ module Integrity
       login_required if session[:user]
 
       Integrity.configure { |c| c.base_uri = url_for("/", :full) }
+
+      if request.path_info =~ /^\/push/
+        Integrity.log "WARN: The /push URL is deprecated; use /github instead"
+      end
     end
 
-    post "/push/:token" do
-      halt(404) unless github_enabled?
-      halt(403) unless params[:token] == options.github_token
-      halt(400) unless payload = github_payload
+    %w[/push/:token /github/:token].each { |route|
+      post route do
+        halt(404) unless github_enabled?
+        halt(403) unless params[:token] == options.github_token
+        halt(400) unless payload = github_payload
 
-      BuildableProject.call(payload).each { |b| b.build }.size.to_s
-    end
+        BuildableProject.call(payload).each { |b| b.build }.size.to_s
+      end
+    }
 
     get "/integrity.css" do
       response["Content-Type"] = "text/css; charset=utf-8"
