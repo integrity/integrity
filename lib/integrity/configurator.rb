@@ -37,7 +37,6 @@ module Integrity
 
     def push(*args)
       @push ||= begin
-        fail "Unknown push service" unless args.first == :github
         [Bobette::GitHub, args.last]
       end
     end
