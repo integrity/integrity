@@ -26,6 +26,22 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     post "/push/#{Integrity.config.push.last}", :payload => payload
   end
 
+  scenario "Without any configured endpoint" do
+    Integrity.instance_variable_set(:@config, nil)
+    Integrity.configure { |c| c.database = "sqlite3::memory:" }
+    DataMapper.auto_migrate!
+
+    @_rack_mock_sessions = nil
+    @_rack_test_sessions = nil
+    @app = Integrity.app
+
+    repo = git_repo(:my_test_project)
+    Project.gen(:my_test_project, :uri => repo.uri)
+
+    post("/push/foo", :payload => payload(repo)) { |r| assert r.not_found? }
+    post("/push/",    :payload => payload(repo)) { |r| assert r.not_found? }
+  end
+
   scenario "Receiving a payload for a branch that is not monitored" do
     repo = git_repo(:my_test_project)
     Project.gen(:my_test_project, :uri => repo.uri, :branch => "wip")
