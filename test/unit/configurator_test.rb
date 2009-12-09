@@ -21,6 +21,9 @@ class ConfiguratorTest < Test::Unit::TestCase
 
     Integrity.configure { |c| c.base_url = "http://foo.com" }
     assert_equal "http://foo.com", Integrity.base_url.to_s
+
+    Integrity.base_url = nil
+    assert_nothing_raised { Integrity.app }
   end
 
   test "log" do
