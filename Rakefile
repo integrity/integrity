@@ -1,4 +1,5 @@
 require "rake/testtask"
+require "rake/clean"
 
 desc "Default: run all tests"
 task :default => :test
@@ -39,3 +40,12 @@ namespace :jobs do
     Delayed::Worker.new.start
   end
 end
+
+desc "Generate HTML documentation."
+file "doc/integrity.html" => ["doc/htmlize",
+  "doc/integrity.txt",
+  "doc/integrity.css"] do |f|
+  sh "cat doc/integrity.txt | doc/htmlize > #{f.name}"
+end
+
+CLOBBER.include("doc/integrity.html")
