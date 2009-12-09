@@ -9,7 +9,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
 
   before(:all) do
     @builder = Integrity.builder
-    Integrity.config { |c| c.builder :threaded }
+    Integrity.configure { |c| c.builder :threaded }
   end
 
   after(:all) do
@@ -156,7 +156,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     old_builder = Integrity.builder
 
     begin
-      Integrity.config.instance_variable_set(:@builder, nil)
+      Integrity.builder = nil
       FileUtils.rm_f("dj.db")
 
       Integrity.configure { |c|

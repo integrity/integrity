@@ -37,14 +37,13 @@ require "integrity/builder"
 require "integrity/builder/threaded"
 
 module Integrity
+  class << self
+    attr_accessor :builder, :directory, :base_url, :logger
+  end
+
   def self.configure(&block)
     @config ||= Configurator.new(&block)
     @config.tap { |c| block.call(c) if block }
-  end
-
-  class << self
-    attr_accessor :builder, :directory, :base_url, :logger
-    alias_method :config, :configure
   end
 
   def self.log(message, &block)

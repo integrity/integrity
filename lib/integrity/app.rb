@@ -2,8 +2,9 @@ require "integrity/helpers/github"
 
 module Integrity
   class App < Sinatra::Base
-    set :root, File.expand_path("../../..", __FILE__)
-    enable :methodoverride, :static, :sessions
+    set     :root, File.expand_path("../../..", __FILE__)
+    enable  :methodoverride, :static, :sessions
+    disable :build_all
 
     helpers Sinatra::UrlForHelper, Integrity::Helpers
 
