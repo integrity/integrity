@@ -3,6 +3,7 @@ require "delayed_job"
 module Integrity
   class DelayedBuilder
     def initialize(options)
+      ActiveRecord::Base.default_timezone = :utc
       ActiveRecord::Base.establish_connection(options)
 
       unless Delayed::Job.table_exists?
