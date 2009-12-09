@@ -12,7 +12,7 @@
         checked with
         %a{ :href => "http://integrityapp.com", :title => "The fun continuous integration server" } integrity
     #content= yield
-    - if Integrity.config.protect?
+    - if protect?
       #footer
         - if authorized?
           Oh, hello
