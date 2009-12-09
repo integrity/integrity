@@ -15,9 +15,12 @@ class ConfiguratorTest < Test::Unit::TestCase
     assert_equal "/tmp/builds", Integrity.directory.to_s
   end
 
-  test "base_uri" do
+  test "base_uri and base_url" do
     Integrity.configure { |c| c.base_uri = "http://example.org" }
-    assert_equal "http://example.org", Integrity.base_uri.to_s
+    assert_equal "http://example.org", Integrity.base_url.to_s
+
+    Integrity.configure { |c| c.base_url = "http://foo.com" }
+    assert_equal "http://foo.com", Integrity.base_url.to_s
   end
 
   test "log" do

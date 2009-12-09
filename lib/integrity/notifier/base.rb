@@ -45,9 +45,9 @@ EOM
       end
 
       def build_url
-        base_uri = Integrity.base_uri ||
+        base_url = Integrity.base_url ||
           Addressable::URI.parse("http://example.org")
-        base_uri.join("/#{build.project.permalink}/builds/#{build.id}")
+        base_url.join("/#{build.project.permalink}/builds/#{build.id}")
       end
 
       private
