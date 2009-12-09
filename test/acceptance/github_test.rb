@@ -9,13 +9,6 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     So that my project is built everytime I push to the Holy Hub
   EOF
 
-  before do
-    # Because Bobette::GitHub expects payload["repository"]["url"]
-    # to looks like http://github.com/foo/bar but here we feed it a path
-    # so that breaks Bobette::GitHub#uri
-    Bobette::GitHub.class_eval { def uri(repo); repo["url"]; end }
-  end
-
   def payload(repo)
     { "after"      => repo.head, "ref" => "refs/heads/#{repo.branch}",
       "repository" => { "url" => repo.uri },
@@ -23,7 +16,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
   end
 
   def github_post(payload)
-    post "/push/#{Integrity.config.push.last}", :payload => payload
+    post "/push/#{Integrity.app.github_token}", :payload => payload
   end
 
   scenario "Without any configured endpoint" do
@@ -34,6 +27,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     @_rack_mock_sessions = nil
     @_rack_test_sessions = nil
     @app = Integrity.app
+    @app.disable(:github_token)
 
     repo = git_repo(:my_test_project)
     Project.gen(:my_test_project, :uri => repo.uri)
@@ -61,6 +55,8 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     Project.gen(:my_test_project, :uri => repo.uri, :command => "true")
 
     github_post payload(repo)
+    assert_equal "4", last_response.body
+
     visit "/my-test-project"
 
     assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
@@ -77,6 +73,8 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     Project.gen(:my_test_project, :uri => repo.uri)
 
     github_post payload(repo)
+    assert_equal "1", last_response.body
+
     visit "/my-test-project"
 
     assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
