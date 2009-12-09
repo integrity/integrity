@@ -14,8 +14,13 @@ module Integrity
       Integrity.directory = Pathname(dir)
     end
 
-    def base_uri=(uri)
-      Integrity.base_uri = Addressable::URI.parse(uri)
+    def base_url=(url)
+      warn "c.base_uri is deprecated; use c.base_url instead"
+      Integrity.base_url = Addressable::URI.parse(url)
+    end
+
+    def base_uri=(url)
+      self.base_url = url
     end
 
     def log=(log)

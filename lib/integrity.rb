@@ -43,7 +43,7 @@ module Integrity
   end
 
   class << self
-    attr_accessor :builder, :directory, :base_uri, :logger
+    attr_accessor :builder, :directory, :base_url, :logger
     alias_method :config, :configure
   end
 
