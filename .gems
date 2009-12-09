@@ -1,9 +1,9 @@
-dm-core -v 0.10.0
-dm-timestamps -v 0.10.0
-dm-types -v 0.10.0
-dm-migrations -v 0.10.0
-dm-aggregates -v 0.10.0
-dm-validations -v 0.10.0
+dm-core -v 0.10.1
+dm-timestamps -v 0.10.1
+dm-types -v 0.10.1
+dm-migrations -v 0.10.1
+dm-aggregates -v 0.10.1
+dm-validations -v 0.10.1
 bcrypt-ruby -v 2.0.5
 uuidtools -v 2.0.0
 extlib -v 0.9.13
@@ -14,8 +14,6 @@ thor -v 0.9.9
 addressable -v 2.1.0
 rack -v 1.0.0
 json -v 1.1.9
-sinatra-authorization -v 1.0.0
 sinatra -v 0.9.4
-bob -v 0.4.1
-bobette -v 0.0.5
+sinatra-authorization -v 1.0.0
 emk-sinatra-url-for -s http://gems.github.com
