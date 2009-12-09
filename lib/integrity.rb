@@ -52,6 +52,10 @@ module Integrity
   end
 
   def self.app
+    unless base_url
+      warn "The base_url option will be mendatory in the next release"
+    end
+
     Integrity::App
   end
 end
