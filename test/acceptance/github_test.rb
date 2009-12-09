@@ -23,7 +23,6 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
   end
 
   def github_post(payload)
-    basic_authorize "admin", "test"
     post "/push/#{Integrity.config.push.last}", :payload => payload
   end
 
