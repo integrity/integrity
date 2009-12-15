@@ -87,6 +87,10 @@ module Integrity
     def human_status
       ! blank? && last_build.human_status
     end
+    
+    def human_duration
+      ! blank? && last_build.human_duration
+    end
 
     private
       def set_permalink

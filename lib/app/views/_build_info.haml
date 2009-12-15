@@ -1,4 +1,7 @@
-%h1&= build.human_status
+%h1
+  = build.human_status
+  - if !build.pending? && !build.building?
+    &== in #{build.human_duration}
 
 %form{ :action => build_path(build), :method => :post }
   %p.submit

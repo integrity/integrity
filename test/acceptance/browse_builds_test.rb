@@ -79,6 +79,7 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
     click_link(/Build 87e673a/)
 
     assert_have_tag("h1", :content => "Built 87e673a successfully")
+    assert_have_tag("h1", :content => "in 2m")
     assert_have_tag("h2", :content => "Build Output")
     assert_have_tag("button", :content => "Rebuild")
 

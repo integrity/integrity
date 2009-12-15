@@ -17,6 +17,7 @@ require "dm-timestamps"
 require "dm-aggregates"
 require "dm-migrations"
 require "addressable/uri"
+require "chronic_duration"
 require "bcat/ansi"
 
 require "app/app"
