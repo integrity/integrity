@@ -1,7 +1,7 @@
 begin
   require "tinder"
 rescue LoadError
-  abort "Install shout-bot to use the Campfire notifier"
+  abort "Install tinder to use the Campfire notifier"
 end
 
 module Integrity
