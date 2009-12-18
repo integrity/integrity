@@ -12,10 +12,10 @@ require "integrity"
 # require "integrity/notifier/campfire"
 
 Integrity.configure do |c|
-  c.database  = "sqlite3:integrity.db"
-  c.directory = "builds"
-  c.log       = "integrity.log"
-  c.build_all = true
-  c.push    :github, "SECRET"
-  c.builder :threaded, 5
+  c.database     "sqlite3:integrity.db"
+  c.directory    "builds"
+  c.log          "integrity.log"
+  c.build_all!
+  c.github_token "SECRET"
+  c.builder      :threaded, 5
 end

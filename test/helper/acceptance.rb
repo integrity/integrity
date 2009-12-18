@@ -46,7 +46,7 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
     Integrity::App.set(:environment, :test)
     Webrat.configure { |c| c.mode = :rack }
     Integrity.configure { |c|
-      c.push :github, "SECRET"
+      c.github_token "SECRET"
     }
     Integrity.builder = lambda { |build| Builder.new(build).build }
     @app = Integrity.app

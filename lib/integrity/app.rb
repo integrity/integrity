@@ -25,7 +25,7 @@ module Integrity
       # +#current_user+
       login_required if session[:user]
 
-      Integrity.configure { |c| c.base_uri = url_for("/", :full) }
+      Integrity.configure { |c| c.base_url url_for("/", :full) }
 
       if request.path_info =~ /^\/push/
         Integrity.log "WARN: The /push URL is deprecated; use /github instead"

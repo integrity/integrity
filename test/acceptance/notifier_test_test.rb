@@ -10,9 +10,9 @@ class NotifierTestTest < Test::Unit::TestCase
 
   setup do
     Integrity.configure { |c|
-      c.database = "sqlite3::memory:"
-      c.base_uri = "http://example.org/"
-      c.log      = "/dev/null"
+      c.database "sqlite3::memory:"
+      c.base_url "http://example.org/"
+      c.log      "/dev/null"
     }
 
     DataMapper.auto_migrate!

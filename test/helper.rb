@@ -20,11 +20,11 @@ class Test::Unit::TestCase
 
   before(:all) do
     Integrity.configure { |c|
-      c.database  = "sqlite3::memory:"
-      c.directory = File.expand_path(File.dirname(__FILE__) + "/../tmp")
-      c.log  = "/dev/null"
-      c.user = "admin"
-      c.pass = "test"
+      c.database  "sqlite3::memory:"
+      c.directory File.expand_path(File.dirname(__FILE__) + "/../tmp")
+      c.log  "/dev/null"
+      c.user "admin"
+      c.pass "test"
     }
   end
 

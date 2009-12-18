@@ -4,7 +4,7 @@ class BaseNotifierTest < Test::Unit::TestCase
   before(:each) do
     @build    = Build.gen(:successful, :project => Project.gen)
     @notifier = Notifier::Base.new(@build, {})
-    Integrity.configure { |c| c.base_uri = "http://ci.example.org" }
+    Integrity.configure { |c| c.base_url "http://ci.example.org" }
   end
 
   it "requires to implement .to_haml" do
