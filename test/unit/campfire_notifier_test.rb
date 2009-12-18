@@ -4,7 +4,7 @@ require "integrity/notifier/campfire"
 
 class CampfireNotifierTest < Test::Unit::TestCase
   setup do
-    Integrity.configure { |c| c.base_uri = "http://example.org" }
+    Integrity.configure { |c| c.base_url "http://example.org" }
     @config = { "account" => "integrity",
       "use_ssl" => false,
       "room"    => "ci",
