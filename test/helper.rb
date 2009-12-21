@@ -22,6 +22,7 @@ class Test::Unit::TestCase
     Integrity.configure { |c|
       c.database  "sqlite3::memory:"
       c.directory File.expand_path(File.dirname(__FILE__) + "/../tmp")
+      c.base_url "http://www.example.com"
       c.log  "/dev/null"
       c.user "admin"
       c.pass "test"
