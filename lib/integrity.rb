@@ -51,10 +51,7 @@ module Integrity
   end
 
   def self.app
-    unless base_url
-      warn "The base_url option will be mandatory in the next release"
-    end
-
+    fail "Please set the base_url setting in init.rb" unless base_url
     Integrity::App
   end
 end
