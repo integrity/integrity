@@ -37,12 +37,6 @@ module Integrity
       Integrity::App.set(:github_token, token)
     end
 
-    def push(*args)
-      warn "`c.push :github, 'TOKEN'` is deprecated; " \
-       "use `c.github_token 'token'` instead"
-      github_token(args.last)
-    end
-
     def build_all!
       Integrity.app.enable(:build_all)
     end

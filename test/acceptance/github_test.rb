@@ -16,7 +16,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
   end
 
   def github_post(payload)
-    post "/push/#{Integrity.app.github_token}", :payload => payload
+    post "/github/#{Integrity.app.github_token}", :payload => payload
   end
 
   scenario "Without any configured endpoint" do
@@ -27,8 +27,8 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     repo = git_repo(:my_test_project)
     Project.gen(:my_test_project, :uri => repo.uri)
 
-    post("/push/foo", :payload => payload(repo)) { |r| assert r.not_found? }
-    post("/push/",    :payload => payload(repo)) { |r| assert r.not_found? }
+    post("/github/foo", :payload => payload(repo)) { |r| assert r.not_found? }
+    post("/github/",    :payload => payload(repo)) { |r| assert r.not_found? }
   end
 
   scenario "Receiving a payload for a branch that is not monitored" do

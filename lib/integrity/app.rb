@@ -24,21 +24,15 @@ module Integrity
       # required to do so. This way we get the real values of +#logged_in?+ and
       # +#current_user+
       login_required if session[:user]
-
-      if request.path_info =~ /^\/push/
-        Integrity.log "WARN: The /push URL is deprecated; use /github instead"
-      end
     end
 
-    %w[/push/:token /github/:token].each { |route|
-      post route do
-        halt(404) unless github_enabled?
-        halt(403) unless params[:token] == options.github_token
-        halt(400) unless payload = github_payload
+    post "/github/:token" do |token|
+      halt(404) unless github_enabled?
+      halt(403) unless token == options.github_token
+      halt(400) unless payload = github_payload
 
-        BuildableProject.call(payload).each { |b| b.build }.size.to_s
-      end
-    }
+      BuildableProject.call(payload).each { |b| b.build }.size.to_s
+    end
 
     get "/integrity.css" do
       response["Content-Type"] = "text/css; charset=utf-8"
