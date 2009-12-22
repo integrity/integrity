@@ -28,6 +28,9 @@ module Integrity
         when :dj
           require "integrity/builder/delayed"
           Integrity::DelayedBuilder.new(args)
+        when :resque
+          require "integrity/builder/resque"
+          Integrity::ResqueBuilder
         else
           raise ArgumentError, "Unknown builder #{name}"
         end

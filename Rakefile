@@ -41,6 +41,20 @@ namespace :jobs do
   end
 end
 
+begin
+  namespace :resque do
+    require "resque/tasks"
+
+    desc "Start a Resque worker for Integrity"
+    task :work do
+      require "init"
+      ENV["QUEUE"] = "integrity"
+      Rake::Task["resque:resque:work"].invoke
+    end
+  end
+rescue LoadError
+end
+
 desc "Generate HTML documentation."
 file "doc/integrity.html" => ["doc/htmlize",
   "doc/integrity.txt",
