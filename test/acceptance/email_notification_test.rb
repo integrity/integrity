@@ -16,7 +16,8 @@ class EmailNotificationTest < Test::Unit::AcceptanceTestCase
 
   scenario "Sending the notification via SMTP" do
     Net::SMTP.disable_tls
-    server   = Rumbster.new(10_000)
+    port     = 10_000 + rand(10)
+    server   = Rumbster.new(port)
     observer = MailMessageObserver.new
     server.add_observer(observer)
     server.start
@@ -31,7 +32,7 @@ class EmailNotificationTest < Test::Unit::AcceptanceTestCase
 
     check "enabled_notifiers_email"
     fill_in "email_notifier_host", :with => "127.0.0.1"
-    fill_in "email_notifier_port", :with => 10_000
+    fill_in "email_notifier_port", :with => port
     fill_in "email_notifier_to",   :with => "hacker@example.org"
     fill_in "email_notifier_from", :with => "ci@example.org"
     select  "cram_md5",            :from => "Auth type"
