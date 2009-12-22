@@ -31,6 +31,8 @@ gem "sinatra-url-for", :git => "git://github.com/emk/sinatra-url-for.git"
 # gem "activerecord"
 # gem "sqlite3-ruby"
 # gem "delayed_job", :git => "git://github.com/tobi/delayed_job.git"
+# = Dependency for the :resque builder
+# gem "resque"
 
 # = Development dependencies.
 only :test do
