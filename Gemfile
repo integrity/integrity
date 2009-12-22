@@ -26,6 +26,7 @@ gem "sinatra-url-for", :git => "git://github.com/emk/sinatra-url-for.git"
 # gem "shout-bot"
 # = Campfire
 # gem "broach"
+# gem "nap", :git => "git://github.com/qrush/nap.git"
 
 # = Dependencies for the :dj builder
 # gem "activerecord"
