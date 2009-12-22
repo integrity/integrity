@@ -1,4 +1,3 @@
-source "http://gemcutter.org"
 gem "dm-core", "0.10.1"
 gem "dm-timestamps", "0.10.1"
 gem "dm-types", "0.10.1"
@@ -26,7 +25,7 @@ gem "sinatra-url-for", :git => "git://github.com/emk/sinatra-url-for.git"
 # = IRC
 # gem "shout-bot"
 # = Campfire
-# gem "tinder"
+# gem "broach"
 
 # = Dependencies for the :dj builder
 # gem "activerecord"
@@ -55,5 +54,7 @@ only :test do
   gem "webrat"
   gem "shout-bot"
   gem "sinatra-ditties"
-  gem "tinder"
+  gem "broach"
+  gem "nap", :git => "git://github.com/qrush/nap.git"
+  gem "webmock"
 end

@@ -1,6 +1,7 @@
 require "storyteller"
 require "webrat"
 require "rack/test"
+require "webmock"
 
 require "helper"
 require "helper/acceptance/repo"
@@ -37,6 +38,7 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
   include Webrat::Methods
   include Webrat::Matchers
   include Webrat::HaveTagMatcher
+  include WebMock
 
   Webrat::Methods.delegate_to_session :response_code
 

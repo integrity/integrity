@@ -11,12 +11,8 @@
   %input.text#campfire_notifier_room{ :name => "notifiers[Campfire][room]", :type => "text", :value => config["room"] }
 
 %p.normal
-  %label{ :for => "campfire_notifier_user" } User
-  %input.text#campfire_notifier_user{ :name => "notifiers[Campfire][user]", :value => config["user"], :type => "text" }
-
-%p.normal
-  %label{ :for => "campfire_notifier_pass" } Password
-  %input.text#campfire_notifier_pass{ :name => "notifiers[Campfire][pass]", :value => config["pass"], :type => "text" }
+  %label{ :for => "campfire_notifier_token" } API Token
+  %input.text#campfire_notifier_token{ :name => "notifiers[Campfire][token]", :value => config["token"], :type => "text" }
 
 %p.normal
   %label{ :for => "campfire_notifier_announce_success" } Notify on success?
