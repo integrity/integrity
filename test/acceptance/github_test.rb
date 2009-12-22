@@ -9,6 +9,8 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     So that my project is built everytime I push to the Holy Hub
   EOF
 
+  setup { Integrity.configure { |c| c.github_token "SECRET" } }
+
   def payload(repo)
     { "after"      => repo.head, "ref" => "refs/heads/#{repo.branch}",
       "repository" => { "url" => repo.uri },

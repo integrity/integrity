@@ -1,5 +1,17 @@
 module Integrity
   module Helpers
+    def push_enabled?
+      options.respond_to?(:push_token) && options.push_token
+    end
+
+    def push_payload
+      payload = JSON.parse(request.body.read)
+      payload["commits"] = [payload["commits"].last] unless options.build_all?
+      payload
+    rescue JSON::JSONError
+      false
+    end
+
     def github_enabled?
       options.respond_to?(:github_token) && options.github_token
     end

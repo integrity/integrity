@@ -4,6 +4,7 @@ require "integrity/helpers/pretty_output"
 require "integrity/helpers/rendering"
 require "integrity/helpers/resources"
 require "integrity/helpers/urls"
+require "integrity/helpers/push"
 
 module Integrity
   module Helpers
