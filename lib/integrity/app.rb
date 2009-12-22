@@ -1,5 +1,3 @@
-require "integrity/helpers/github"
-
 module Integrity
   class App < Sinatra::Base
     set     :root, File.expand_path("../../..", __FILE__)
@@ -24,6 +22,14 @@ module Integrity
       # required to do so. This way we get the real values of +#logged_in?+ and
       # +#current_user+
       login_required if session[:user]
+    end
+
+    post "/push/:token" do |token|
+      halt(404) unless push_enabled?
+      halt(403) unless token == options.push_token
+      halt(400) unless payload = push_payload
+
+      BuildableProject.call(payload).each { |b| b.build }.size.to_s
     end
 
     post "/github/:token" do |token|
