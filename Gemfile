@@ -24,7 +24,7 @@ gem "sinatra-url-for", :git => "git://github.com/emk/sinatra-url-for.git"
 # = IRC
 # gem "shout-bot"
 # = Campfire
-# gem "broach"
+# gem "broach", :git => "git://github.com/Manfred/broach.git"
 # gem "nap", :git => "git://github.com/qrush/nap.git"
 
 # = Dependencies for the :dj builder
@@ -54,7 +54,7 @@ only :test do
   gem "webrat"
   gem "shout-bot"
   gem "sinatra-ditties"
-  gem "broach"
+  gem "broach", :git => "git://github.com/Manfred/broach.git"
   gem "nap", :git => "git://github.com/qrush/nap.git"
   gem "webmock"
 end
