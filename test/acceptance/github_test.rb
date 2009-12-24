@@ -78,8 +78,12 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
 
   scenario "Receiving an invalid payload" do
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
-    basic_authorize "admin", "test"
     github_post "foo"
     assert last_response.client_error?
+  end
+
+  scenario "Invalid token" do
+    post "/github/foo"
+    assert last_response.forbidden?
   end
 end
