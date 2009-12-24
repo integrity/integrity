@@ -80,8 +80,12 @@ class PushTest < Test::Unit::AcceptanceTestCase
 
   scenario "Receiving an invalid payload" do
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
-    basic_authorize "admin", "test"
     push_post "foo"
     assert last_response.client_error?
+  end
+
+  scenario "Invalid token" do
+    post "/push/foo"
+    assert last_response.forbidden?
   end
 end
