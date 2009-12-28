@@ -85,28 +85,43 @@ run Integrity.app
 ----
 
 === Automating the builds
-Continuous integration must be automatic, ortherwise it probably won't work.
-You can either setup http://github.com[GitHub] to notify Integrity of new
-commits or a http://en.wikipedia.org/wiki/Cron[Cron] job that polls your
-repository for new ones.
+Integrity provides three different HTTP endpoints to trigger new builds:
 
-==== GitHub
-Setup a
-http://github.com/guides/post-receive-hooks[Post-Receive Hook] on your GitHub
-repository pointing to http://ci.example.org/github/TOKEN and add this line to
-your configuration:
-[source, ruby]
-c.github_token, "TOKEN"
+POST /:project/builds:: Causes Integrity to fetch the HEAD of the remote
+repository and build it. Note that HTTP authentication applies to it if set.
+This endpoint can't be disabled.
 
-==== Polling
-Here is an example that triggers a build only when the git repository has new
-commits:
+POST /github/:token:: Supports GitHub's
+http://github.com/guides/post-receive-hooks[Post-Receive Hook]. Enable it:
 [source, ruby]
 ----
-require "init"
-Integrity::Project.all.each { |project|
-  project.build("HEAD") if project.blank? || `git ls-remote #{project.uri}`.
-    include?("#{project.last_build.commit.identifier}\tHEAD")
+c.github "TOKEN"
+----
+
+POST /push/:token:: Acts the GitHub endpoint but with a simpler payload
+format, making it easier to use in custom post-receive hook or cron jobs.
+Enable it:
+[source, ruby]
+----
+c.push "TOKEN"
+----
+
+Payload example:
+----
+{
+  "uri": "git://example.org/repo.git"
+  "branch": "master",
+  "commits": [
+    {
+      "author": {
+        "name": "John Doe",
+        "email": "johndoe@example.org"
+      },
+      "timestamp": "2009-12-23 00:01:41 +0100",
+      "id": "da90853abfc89b41d40b9f33f240e2e9018fc85f",
+      "message": "First commit"
+    }
+  ]
 }
 ----
 

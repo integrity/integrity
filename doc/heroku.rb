@@ -7,8 +7,8 @@ Integrity.configure do |c|
   c.directory "tmp"
   c.base_url  "http://myapp.heroku.com"
   c.log       "tmp/integrity.log"
+  c.github    "SECRET"
   c.build_all!
-  c.push    :github, "SECRET"
   c.builder :threaded, 5
 end
 

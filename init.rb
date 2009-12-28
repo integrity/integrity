@@ -16,7 +16,7 @@ Integrity.configure do |c|
   c.directory    "builds"
   c.base_url     "http://ci.example.org"
   c.log          "integrity.log"
+  c.github       "SECRET"
   c.build_all!
-  c.github_token "SECRET"
   c.builder      :threaded, 5
 end
