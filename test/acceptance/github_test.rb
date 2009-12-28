@@ -9,7 +9,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     So that my project is built everytime I push to the Holy Hub
   EOF
 
-  setup { Integrity.configure { |c| c.github_token "SECRET" } }
+  setup { Integrity.configure { |c| c.github "SECRET" } }
 
   def payload(repo)
     { "after"      => repo.head, "ref" => "refs/heads/#{repo.branch}",
@@ -18,13 +18,13 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
   end
 
   def github_post(payload)
-    post "/github/#{Integrity.app.github_token}", :payload => payload
+    post "/github/#{Integrity.app.github}", :payload => payload
   end
 
   scenario "Without any configured endpoint" do
     @_rack_mock_sessions = nil
     @_rack_test_sessions = nil
-    Integrity.app.disable(:github_token)
+    Integrity.app.disable(:github)
 
     repo = git_repo(:my_test_project)
     Project.gen(:my_test_project, :uri => repo.uri)
