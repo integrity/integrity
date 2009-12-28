@@ -3,15 +3,17 @@ Integrity
 
 As soon as you push your commits, Integrity builds your code, run your tests
 and makes sure everything works fine. It then reports the build status using
-various notifiers back to you and your team so everyone is on the same page and
-problems can be fixed right away.
+various notifiers back to you and your team so everyone is on the same page
+and problems can be fixed right away.
+
+Checkout Integrity watching itself at http://builder.integrityapp.com.
 
 Read more about about Continuous Integration on
 http://martinfowler.com/articles/continuousIntegration.html[Martin Fowler's
 website] and http://en.wikipedia.org/wiki/Continuous_Integration[Wikipedia].
 
 == Installation
-First of all, make sure to meet these prerequisites:
+Make sure your system meet these prerequisites:
 
 * Ruby >= 1.8.6
 * RubyGems >= 1.3.5
@@ -29,7 +31,7 @@ $ ./bin/rake db
 If you want give it a quick try before going any further, run `./bin/rackup`
 and navigate to http://0.0.0.0:9292.
 
-To upgrade, do this:
+Upgrade:
 [source, shell]
 $ git fetch origin
 $ git merge origin/v0.2.2
@@ -63,7 +65,7 @@ is writable by the user that runs Integrity.
 base_url:: Absolute URL to your Integrity instance, *without* a trailing slash.
 log:: Path to the Integrity log file; mostly useful for troubleshooting
 build_all!:: Tells Integirty to build every single commit it is notified about.
-Otherwise, it only builds the newest.
+Only builds the newest otherwise.
 HTTP authentication:: If both the `user` and `pass` settings are set then only
 the logged-in users can administer the projects and see the private ones.
 Example:
@@ -114,22 +116,22 @@ Integrity ships with two ways of building your codes in the background.
 ==== Threaded
 The +threaded+ builder pushes the build job to an in-memory queue and processes
 them as soon as possible. It relies on Ruby's thread so it doesn't have any
-dependency nor need any external process to be run.
+dependency nor requires to run other processes.
 [source, ruby]
 c.builder :threaded, 5
 
-The second argument is the size of the thread pool. The bigger, the more jobs
-it can process in parralel.
+The second argument is the size of the thread pool.
 
 ==== Delayed::Job
-The +dj+ builder queue the build jobs into a SQL database using
+The +dj+ builder queue up the builds into a SQL database using
 http://github.com/tobi/delayed_job[Delayed::Job]. To use it, install its
-dependencies by uncommenting the relevant lines in the `Gemfile` and
-running `gem bundle`.
+dependencies by uncommenting the relevant lines in the `Gemfile` and running
+`gem bundle`.
+
 [source, ruby]
 c.builder :dj, :adapter => "sqlite3", :database => "dj.db"
 
-The option hash can be any valid
+The second argument must be a valid
 http://api.rubyonrails.org/classes/ActiveRecord/Base.html#M002364[ActiveRecord
 connection hash].
 
@@ -138,9 +140,9 @@ http://github.com/tobi/delayed_job#readme[dj's documentation] for more details.
 
 == Notification
 After a build status is available, you want to know it **immediately**,
-Integrity currently supports three notification mediums: Email,
-http://en.wikipedia.org/wiki/IRC[IRC] and http://campfirenow.com[Campfire].
-To setup and use one of these with your projects:
+Integrity currently supports three notification mediums: Email, IRC and
+http://campfirenow.com[Campfire]. To set it up and use one of these with
+your projects:
 
 1. Open the `Gemfile`, uncomment the relevant lines and run `gem bundle` to
    install the notifier's dependencies.
@@ -240,8 +242,8 @@ To start hacking, grab the code from our git repository at
 `gem bundle`. Finally, hack and `./bin/rake` as usual ;-)
 
 Once you're done, make sure your changes are rebased on on top of the `master`
-branch and open a new ticket in our bug tracker to let us know where we
-can pull from.
+branch and open a new ticket in our bug tracker to let us know where we can
+pull from.
 
 == See Also
 * http://integrity-menu.com[Integrity Menu] — a dashboard widget for Mac OS X
