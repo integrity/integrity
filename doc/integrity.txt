@@ -63,6 +63,7 @@ The SQLite3 adapter (`do_sqlite3`) is installed by default.
 directory:: This is where your projects' code will be checked out. Make sure it
 is writable by the user that runs Integrity.
 base_url:: Absolute URL to your Integrity instance, *without* a trailing slash.
+This setting is optional but is required to have proper links in notifications.
 log:: Path to the Integrity log file; mostly useful for troubleshooting
 build_all!:: Tells Integirty to build every single commit it is notified about.
 Only builds the newest otherwise.
