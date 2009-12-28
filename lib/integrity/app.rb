@@ -24,18 +24,10 @@ module Integrity
       login_required if session[:user]
     end
 
-    post "/push/:token" do |token|
-      halt(404) unless push_enabled?
-      halt(403) unless token == options.push_token
-      halt(400) unless payload = push_payload
-
-      BuildableProject.call(payload).each { |b| b.build }.size.to_s
-    end
-
-    post "/github/:token" do |token|
-      halt(404) unless github_enabled?
-      halt(403) unless token == options.github_token
-      halt(400) unless payload = github_payload
+    post "/:endpoint/:token" do |endpoint, token|
+      pass unless endpoint_enabled?
+      halt 403 unless token   == endpoint_token
+      halt 400 unless payload =  endpoint_payload
 
       BuildableProject.call(payload).each { |b| b.build }.size.to_s
     end

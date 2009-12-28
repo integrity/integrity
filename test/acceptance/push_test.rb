@@ -9,7 +9,7 @@ class PushTest < Test::Unit::AcceptanceTestCase
     So that I can use Integrity without GitHub
   EOF
 
-  setup { Integrity.configure { |c| c.push_token "TOKEN" } }
+  setup { Integrity.configure { |c| c.push "TOKEN" } }
 
   def payload(repo)
     { "uri"     => repo.uri.to_s,
@@ -18,13 +18,13 @@ class PushTest < Test::Unit::AcceptanceTestCase
   end
 
   def push_post(_payload)
-    post "/push/#{Integrity.app.push_token}", {}, :input => _payload
+    post "/push/#{Integrity.app.push}", {}, :input => _payload
   end
 
   scenario "Without any configured endpoint" do
     @_rack_mock_sessions = nil
     @_rack_test_sessions = nil
-    Integrity.app.disable(:push_token)
+    Integrity.app.disable(:push)
 
     repo = git_repo(:my_test_project)
     Project.gen(:my_test_project, :uri => repo.uri)
