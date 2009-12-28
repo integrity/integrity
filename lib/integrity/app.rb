@@ -22,6 +22,10 @@ module Integrity
       # required to do so. This way we get the real values of +#logged_in?+ and
       # +#current_user+
       login_required if session[:user]
+
+      unless Integrity.base_url
+        Integrity.configure { |c| c.base_url url_for("/", :full) }
+      end
     end
 
     post "/:endpoint/:token" do |endpoint, token|

@@ -51,7 +51,7 @@ module Integrity
   end
 
   def self.app
-    fail "Please set the base_url setting in init.rb" unless base_url
+    warn "the base_url setting isn't set" unless base_url
     Integrity::App
   end
 end

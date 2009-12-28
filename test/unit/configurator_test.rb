@@ -20,7 +20,7 @@ class ConfiguratorTest < Test::Unit::TestCase
     assert_equal "http://foo.com", Integrity.base_url.to_s
 
     Integrity.base_url = nil
-    assert_raise(RuntimeError) { Integrity.app }
+    assert_nothing_raised(RuntimeError) { Integrity.app }
   end
 
   test "log" do
