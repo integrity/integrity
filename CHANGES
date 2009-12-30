@@ -1,3 +1,27 @@
+= 0.2.3 / 2010-01-11
+
+ * Solidify and document the API to trigger builds
+
+ * Upgrade to the new Campfire API [Nick Quaranto]
+
+ * Various fixes to the DelayedJob builder [Nick Quaranto]
+
+ * Undocumented Resque-powered builder
+
+ * Misceleanous non-backward compatible changes to the configuration DSL
+
+ * The base_uri setting has been renamed to base_url
+
+ * Allow to not configure a push endpoint
+
+ * Various documentation fixes and improvements
+
+ * SVN supports attempt is discountinued; now only supporting git.
+
+ * Allow Proc-like builder
+
+ * Bob and Bobette are discountinued and now parts of Integrity
+
 = 0.2.2 / 2009-11-29
 
  * Fix GitHub post-receive not working when the project URI doesn't have a
