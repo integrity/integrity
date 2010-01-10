@@ -36,7 +36,7 @@ class ProjectTest < Test::Unit::TestCase
 
     it "has a branch" do
       assert_equal "master", @project.branch
-      assert_equal "master",       Project.new.branch
+      assert_equal "master", Project.new.branch
     end
 
     it "has a command" do
@@ -95,6 +95,12 @@ class ProjectTest < Test::Unit::TestCase
     it "requires an SCM" do
       assert_no_change(Project, :count) {
         ! Project.gen(:scm => nil).valid?
+      }
+    end
+
+    it "requires a branch" do
+      assert_no_change(Project, :count) {
+        ! Project.gen(:branch => nil).valid?
       }
     end
 
