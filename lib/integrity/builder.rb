@@ -11,7 +11,6 @@ module Integrity
     end
 
     def build
-      repo.checkout
       start
       run
       complete
@@ -19,6 +18,8 @@ module Integrity
 
     def start
       Integrity.log "Started building #{@build.project.uri} at #{commit}"
+
+      repo.checkout
 
       metadata = repo.metadata
 
