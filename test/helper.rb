@@ -20,7 +20,7 @@ class Test::Unit::TestCase
 
   before(:all) do
     Integrity.configure { |c|
-      c.database  "sqlite3::memory:"
+      c.database  "sqlite3:test.db"
       c.directory File.expand_path(File.dirname(__FILE__) + "/../tmp")
       c.base_url "http://www.example.com"
       c.log  "/dev/null"
