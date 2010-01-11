@@ -29,11 +29,6 @@ class ProjectTest < Test::Unit::TestCase
         @project.uri.to_s
     end
 
-    it "has an SCM" do
-      assert_equal "git", @project.scm
-      assert_equal "git", Project.new.scm
-    end
-
     it "has a branch" do
       assert_equal "master", @project.branch
       assert_equal "master", Project.new.branch
@@ -89,12 +84,6 @@ class ProjectTest < Test::Unit::TestCase
     it "requires an URI" do
       assert_no_change(Project, :count) {
         assert ! Project.gen(:uri => nil).valid?
-      }
-    end
-
-    it "requires an SCM" do
-      assert_no_change(Project, :count) {
-        ! Project.gen(:scm => nil).valid?
       }
     end
 

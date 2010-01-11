@@ -14,7 +14,6 @@ module NotifierHelper
     fill_in "Branch to track", :with => "master"
     fill_in "Build script",    :with => "rake"
     check   "Public project"
-    select "Git",              :from => "project_scm"
 
     fill_in_email_notifier
   end

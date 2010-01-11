@@ -11,7 +11,6 @@ module Integrity
 
   Project.fixture do
     { :name    => (name = unique { /\w+/.gen }),
-      :scm     => "git",
       :uri     => "git://github.com/#{/\w+/.gen}/#{name}.git",
       :branch  => %w[master test-refactoring lh-34].pick,
       :command => %w[rake make ant test.xml].pick,
@@ -20,7 +19,6 @@ module Integrity
 
   Project.fixture(:integrity) do
     { :name    => "Integrity",
-      :scm     => "git",
       :uri     => "git://github.com/foca/integrity.git",
       :branch  => "master",
       :command => "rake",
@@ -29,7 +27,6 @@ module Integrity
 
   Project.fixture(:my_test_project) do
     { :name    => "My Test Project",
-      :scm     => "git",
       :uri     => File.dirname(__FILE__) + "/../../",
       :branch  => "master",
       :command => "./test",

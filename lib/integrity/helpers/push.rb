@@ -48,7 +48,6 @@ module Integrity
         end
 
       payload.update(
-        "scm"         => "git",
         "uri"         => uri,
         "branch"      => branch,
         "commits"     => commits
