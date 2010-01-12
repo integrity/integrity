@@ -14,6 +14,9 @@ begin
 rescue LoadError
 end
 
+# TODO
+Addressable::URI.class_eval { def gsub(*a); to_s.gsub(*a); end }
+
 class Test::Unit::TestCase
   include RR::Adapters::TestUnit
   include Integrity
@@ -23,10 +26,11 @@ class Test::Unit::TestCase
       c.database  "sqlite3:test.db"
       c.directory File.expand_path(File.dirname(__FILE__) + "/../tmp")
       c.base_url "http://www.example.com"
-      c.log  "/dev/null"
+      c.log  "test.log"
       c.user "admin"
       c.pass "test"
     }
+    Thread.abort_on_exception = true
   end
 
   before(:each) do DataMapper.auto_migrate! end

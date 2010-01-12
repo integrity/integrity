@@ -1,7 +1,7 @@
 require "storyteller"
 require "webrat"
 require "rack/test"
-require "webmock"
+require "webmock/test_unit"
 
 require "helper"
 require "helper/acceptance/repo"
