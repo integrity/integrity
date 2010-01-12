@@ -1,11 +1,14 @@
 module Integrity
   class BuildableProject
     def self.call(buildable)
-      return [] unless project = Project.first(
+      return [] unless projects = Project.all(
         :uri.like => "#{buildable["uri"]}%",
         :branch   => buildable["branch"]
       )
-      buildable["commits"].collect { |c| new(project, c["id"]) }
+
+      projects.inject([]) { |acc, p|
+        acc.concat buildable["commits"].collect { |c| new(p, c["id"]) }
+      }
     end
 
     def initialize(project, commit)

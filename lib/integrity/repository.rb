@@ -1,6 +1,7 @@
 module Integrity
   class Repository
-    def initialize(uri, branch, commit)
+    def initialize(id, uri, branch, commit)
+      @id     = id
       @uri    = uri
       @branch = branch
       @commit = commit == "HEAD" ? head : commit
@@ -28,7 +29,7 @@ module Integrity
     end
 
     def directory
-      @directory ||= Integrity.directory.join(path, @commit)
+      @directory ||= Integrity.directory.join(@id.to_s)
     end
 
     private
@@ -40,13 +41,6 @@ module Integrity
         cmd = "(#{cd ? "cd #{directory} && " : ""}#{cmd} > /dev/null 2>&1)"
         Integrity.logger.debug(cmd)
         system(cmd) || fail("Couldn't run `#{cmd}`")
-      end
-
-      def path
-        @path ||= "#{@uri}-#{@branch}".
-          gsub(/[^\w_ \-]+/i, "-").# Remove unwanted chars.
-          gsub(/[ \-]+/i, "-").    # No more than one of the separator in a row.
-          gsub(/^\-|\-$/i, "")     # Remove leading/trailing separator.
       end
   end
 end
