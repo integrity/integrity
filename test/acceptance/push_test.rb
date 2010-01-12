@@ -83,7 +83,7 @@ class PushTest < Test::Unit::AcceptanceTestCase
 
     begin
       Integrity.configure { |c|
-        c.builder :threaded, 8
+        c.builder :threaded, 1
         c.build_all!
       }
 

@@ -6,11 +6,11 @@ module Integrity
     include Notifiers
 
     property :id,         Serial
-    property :name,       String,   :nullable => false
+    property :name,       String,   :required => true
     property :permalink,  String
-    property :uri,        URI,      :nullable => false, :length => 255
-    property :branch,     String,   :nullable => false, :default => "master"
-    property :command,    String,   :nullable => false, :length => 255, :default => "rake"
+    property :uri,        URI,      :required => true, :length => 255
+    property :branch,     String,   :required => true, :default => "master"
+    property :command,    String,   :required => true, :length => 255, :default => "rake"
     property :public,     Boolean,  :default  => true
 
     timestamps :at

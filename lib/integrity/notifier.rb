@@ -3,9 +3,9 @@ module Integrity
     include DataMapper::Resource
 
     property :id,      Serial
-    property :name,    String,   :nullable => false
-    property :enabled, Boolean,  :nullable => false, :default => false
-    property :config,  Yaml,     :nullable => false, :lazy    => false
+    property :name,    String,   :required => true
+    property :enabled, Boolean,  :required => true, :default => false
+    property :config,  Yaml,     :required => true, :lazy    => false
 
     belongs_to :project
 
