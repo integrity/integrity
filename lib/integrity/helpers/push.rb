@@ -2,8 +2,8 @@ module Integrity
   module Helpers
     def endpoint_token
       %w[push github].include?(params[:endpoint]) &&
-        options.respond_to?(params[:endpoint]) &&
-        options.send(params[:endpoint])
+        settings.respond_to?(params[:endpoint]) &&
+        settings.send(params[:endpoint])
     end
     alias_method :endpoint_enabled?, :endpoint_token
 
@@ -20,7 +20,7 @@ module Integrity
 
     def push_payload
       payload = JSON.parse(request.body.read)
-      payload["commits"] = [payload["commits"].last] unless options.build_all?
+      payload["commits"] = [payload["commits"].last] unless settings.build_all?
       payload
     end
 
@@ -38,10 +38,10 @@ module Integrity
         end
 
       # TODO
-      uri = repository["url"] if options.test?
+      uri = repository["url"] if settings.test?
 
       commits =
-        if options.build_all?
+        if settings.build_all?
           payload.delete("commits")
         else
           [payload["commits"].detect { |c| c["id"] == payload["after"] }]
