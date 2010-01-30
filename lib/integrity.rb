@@ -1,6 +1,5 @@
 require "addressable/uri"
 require "sinatra/base"
-require "sinatra/url_for"
 require "sinatra/authorization"
 require "json"
 require "haml"
