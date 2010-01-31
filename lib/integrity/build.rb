@@ -17,10 +17,6 @@ module Integrity
 
     before :destroy do commit.destroy! end
 
-    def self.pending
-      all(:started_at => nil)
-    end
-
     def pending?
       started_at.nil?
     end
