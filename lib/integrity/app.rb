@@ -4,7 +4,7 @@ module Integrity
     enable  :methodoverride, :static, :sessions
     disable :build_all
 
-    helpers Sinatra::UrlForHelper, Integrity::Helpers
+    helpers Integrity::Helpers
 
     not_found do
       status 404
