@@ -14,9 +14,6 @@ begin
 rescue LoadError
 end
 
-# TODO
-Addressable::URI.class_eval { def gsub(*a); to_s.gsub(*a); end }
-
 class Test::Unit::TestCase
   include RR::Adapters::TestUnit
   include Integrity
