@@ -38,13 +38,6 @@ class BuildTest < Test::Unit::TestCase
       Build.gen(:pending).human_status
   end
 
-  it "finds pending builds" do
-    3.of{Build.gen(:pending)}
-    2.of{Build.gen(:building)}
-
-    assert_equal 3, Build.pending.count
-  end
-
   test "being destroyed" do
     build = Build.gen
     assert_change(Commit, :count, -1) { build.destroy }
