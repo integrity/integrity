@@ -42,11 +42,11 @@ module Integrity
     end
 
     def blank?
-      builds.count.zero?
+      status == :blank
     end
 
     def status
-      blank? ? :blank : last_build.status
+      last_build ? last_build.status : :blank
     end
 
     def human_status
