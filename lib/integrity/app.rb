@@ -18,6 +18,8 @@ module Integrity
     end
 
     before do
+      halt 404 if request.path_info.include?("favico")
+
       # The browser only sends http auth data for requests that are explicitly
       # required to do so. This way we get the real values of +#logged_in?+ and
       # +#current_user+
