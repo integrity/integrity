@@ -4,8 +4,7 @@ module Integrity
 
     property :id,           Serial
     property :project_id,   Integer   # TODO :nullable => false
-    property :output,       Text,     :default => "", :lazy => false,
-      :length => 1048576
+    property :output,       Text,     :default => "", :length => 1048576
     property :successful,   Boolean,  :default => false
     property :started_at,   DateTime
     property :completed_at, DateTime
