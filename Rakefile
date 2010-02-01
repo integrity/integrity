@@ -22,7 +22,7 @@ end
 
 task :db do
   require "init"
-  DataMapper.auto_migrate!
+  DataMapper.auto_upgrade!
 end
 
 namespace :jobs do
