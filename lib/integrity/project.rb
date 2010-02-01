@@ -30,19 +30,19 @@ module Integrity
     end
 
     def last_build
-      builds.first(:order => [:created_at.desc])
+      @_build ||= builds.first(:order => [:created_at.desc])
     end
 
     def previous_builds
-      builds.all(:id.not => last_build.id, :order => [:created_at.desc])
+      @_builds ||= builds.all(:order => [:created_at.desc]) - Array(last_build)
     end
 
     def blank?
-      status == :blank
+      @status ||= status == :blank
     end
 
     def status
-      last_build ? last_build.status : :blank
+      @statius ||= last_build ? last_build.status : :blank
     end
 
     def human_status
