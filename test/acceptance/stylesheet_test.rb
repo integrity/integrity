@@ -14,7 +14,9 @@ class IntegrityStylesheetTest < Test::Unit::AcceptanceTestCase
     visit "/integrity.css"
 
     assert_contain("body {")
-    assert webrat_session.send(:response).headers.key?("ETag")
+
+    header "HTTP_IF_MODIFIED_SINCE", last_response["Last-Modified"]
+    visit "/integrity.css"
 
     visit "/reset.css"
     assert_contain("Yahoo!")
