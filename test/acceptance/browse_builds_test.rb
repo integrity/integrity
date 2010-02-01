@@ -10,7 +10,6 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
   scenario "Browsing to a project with not builds" do
     Project.gen(:blank, :name => "Integrity")
 
-
     visit "/integrity"
 
     assert_have_no_tag("#last_build")
@@ -33,6 +32,11 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
       assert_have_tag("li.failed",  :count => 2)
       assert_have_tag("li.success", :count => 2)
     end
+
+    header "HTTP_IF_MODIFIED_SINCE", last_response["Last-Modified"]
+    visit "/"
+
+    assert_equal 304, last_response.status
   end
 
   scenario "Looking for details on the last build" do
@@ -52,6 +56,11 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("span.who",     :content => "by: Nicolas Sanguinetti")
     assert_have_tag("span.when",    :content => "Dec 15th")
     assert_have_tag("pre.output",   :content => "This is the build output")
+
+    header "HTTP_IF_MODIFIED_SINCE", last_response["Last-Modified"]
+    visit "/"
+
+    assert_equal 304, last_response.status
   end
 
   scenario "Browsing to an individual build pages" do
@@ -64,5 +73,10 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
     click_link(/Build 87e673a/)
 
     assert_have_tag("h1", :content => "Built 87e673a successfully")
+
+    header "HTTP_IF_MODIFIED_SINCE", last_response["Last-Modified"]
+    visit "/integrity"
+
+    assert_equal 304, last_response.status
   end
 end
