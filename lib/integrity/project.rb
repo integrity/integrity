@@ -37,10 +37,6 @@ module Integrity
       builds.all(:id.not => last_build.id, :order => [:created_at.desc])
     end
 
-    def building?
-      builds.count(:started_at.not => nil, :completed_at => nil)
-    end
-
     def blank?
       status == :blank
     end
