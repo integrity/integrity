@@ -6,6 +6,7 @@ module Integrity
 
     helpers Integrity::Helpers
 
+    # TODO
     def last_modified(time)
       return unless time
       super
