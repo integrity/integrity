@@ -7,6 +7,8 @@ class IntegrityStylesheetTest < Test::Unit::AcceptanceTestCase
     So that Integrity isn't a PITA to use
   EOS
 
+  before { FileUtils.rm_f("public/integrity.css") }
+
   scenario "browsing on some Integrity install" do
     visit "/"
     assert_have_tag("link[@href='/integrity.css']")
