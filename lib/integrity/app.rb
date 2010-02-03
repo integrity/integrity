@@ -26,7 +26,6 @@ module Integrity
     use Sass::Plugin::Rack
 
     configure do |app|
-      Sass::Plugin.options[:never_update]      = true
       Sass::Plugin.options[:css_location]      = app.public
       Sass::Plugin.options[:template_location] = app.views
     end
