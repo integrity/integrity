@@ -8,6 +8,7 @@ require "helper/acceptance/repo"
 
 Rack::Test::DEFAULT_HOST.replace("www.example.com")
 
+# TODO
 Webrat::Session.class_eval {
   def redirect?
     [301, 302, 303, 307].include?(response_code)
