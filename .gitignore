@@ -15,3 +15,5 @@ bin
 vendor
 doc/integrity.html
 builds
+.sass-cache
+public/integrity.css
