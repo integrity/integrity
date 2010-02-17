@@ -18,7 +18,8 @@
     %span.what<
       &== commit: #{build.commit.identifier}
 
-%h2 Build Output:
-%pre.output
-  :preserve
-    #{bash_color_codes h(build.output)}
+- if !build.pending? && !build.building?
+  %h2 Build Output:
+  %pre.output
+    :preserve
+      #{bash_color_codes h(build.output)}
