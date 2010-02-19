@@ -1,3 +1,5 @@
+source :gemcutter
+
 gem "dm-core", "0.10.2"
 gem "dm-timestamps", "0.10.2"
 gem "dm-types", "0.10.2"
@@ -33,8 +35,12 @@ gem "sinatra-authorization", "1.0.0"
 # = Dependency for the :resque builder
 # gem "resque"
 
+# Uncomment if you're using pg or mysql instead of sqlite
+# gem "pg"
+# gem "mysql"
+
 # = Development dependencies.
-only :test do
+group :test do
   source "http://gems.github.com"
   gem "ruby-debug"
   gem "sqlite3-ruby"
