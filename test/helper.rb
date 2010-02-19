@@ -1,3 +1,5 @@
+require File.join(File.dirname(__FILE__), "..", ".bundle", "environment")
+
 require "test/unit"
 require "rr"
 require "extlib"

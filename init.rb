@@ -1,6 +1,6 @@
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "lib"))
 
-require "vendor/gems/environment"
+require ".bundle/environment"
 require "integrity"
 
 # Uncomment as appropriate for the notifier you want to use
