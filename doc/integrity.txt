@@ -161,8 +161,8 @@ Integrity currently supports three notification mediums: Email, IRC and
 http://campfirenow.com[Campfire]. To set it up and use one of these with
 your projects:
 
-1. Open the `Gemfile`, uncomment the relevant lines and run `bundle lock && bundle install` to
-   install the notifier's dependencies.
+1. Open the `Gemfile`, uncomment the relevant lines and run
+   `bundle lock && bundle install` to install the notifier's dependencies.
 2. Edit the `init.rb` file to require it. Example:
 +
 [source, ruby]
