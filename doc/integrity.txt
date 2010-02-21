@@ -280,5 +280,3 @@ No. Integrity only supports http://git-scm.org[git].
 **Absolutely!** As long as your build process can be run from an UNIX-y
 environment and that it returns a *zero* status code for success and
 *non-zero* for failure, then Integrity works for you.
-
-// vim: set syntax=asciidoc:
