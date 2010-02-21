@@ -29,8 +29,8 @@ $ bundle install
 $ bundle lock
 $ rake db
 
-If you want give it a quick try before going any further, run `./bin/rackup`
-and navigate to http://0.0.0.0:9292.
+If you want give it a quick try before going any further, run
+`bundle exec rackup` and navigate to http://0.0.0.0:9292.
 
 Upgrade:
 [source, shell]
