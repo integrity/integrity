@@ -256,7 +256,8 @@ http://github.com/integrity/integrity/issues[bug tracker].
 
 To start hacking, grab the code from our git repository at
 `git://github.com/integrity/integrity.git` and setup the dependencies with
-`bundle install && bundle lock`. Finally, hack and `rake` as usual ;-)
+`bundle install && bundle lock`. Finally, hack and `bundle exec rake` as
+usual ;-)
 
 Once you're done, make sure your changes are rebased on on top of the `master`
 branch and open a new ticket in our bug tracker to let us know where we can
