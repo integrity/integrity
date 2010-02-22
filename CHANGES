@@ -1,3 +1,26 @@
+= 0.3.0 / 2010-02-21
+
+ * Introduce the bootstrapper. Useful to automate creation of projects. Example:
+
+      Integrity.bootstrap do |b|
+        b.project "Integrity" do |p|
+          p.uri     = "git://github.com/integrity/integrity"
+          p.command = "gem bundle && ./bin/rake"
+          p.public
+        end
+      end
+
+ * Miscelleanous SQL performance improvements and fixes. Thanks to
+   Nick Quaranto for his help debugging these problems
+
+ * Set proper HTTP cache headers
+
+ * Allow projects to have the same URI and branch
+
+ * Upgrade to Bundler 0.9 [Nick Quaranto]
+
+ * Upgrade to DataMapper 0.10.2
+
 = 0.2.3 / 2010-01-11
 
  * Solidify and document the API to trigger builds
