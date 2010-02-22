@@ -32,14 +32,6 @@ class Test::Unit::TestCase
 
   before(:each) do DataMapper.auto_migrate! end
 
-  def capture_stdout
-    output = StringIO.new
-    $stdout = output
-    yield
-    $stdout = STDOUT
-    output
-  end
-
   def assert_change(object, method, difference=1)
     initial_value = object.send(method)
     yield
