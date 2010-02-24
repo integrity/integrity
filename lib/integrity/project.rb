@@ -42,7 +42,7 @@ module Integrity
     end
 
     def status
-      @statius ||= last_build ? last_build.status : :blank
+      @status ||= last_build ? last_build.status : :blank
     end
 
     def human_status
