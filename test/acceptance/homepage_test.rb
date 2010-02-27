@@ -38,7 +38,7 @@ class HomepageTest < Test::Unit::AcceptanceTestCase
     assert_equal 304, last_response.status
   end
 
-  scenario "a user clicking through a link on the home page for a public project arrives at the project page" do
+  scenario "Clicking on a project from the homepage" do
     Project.gen(:my_test_project, :public => true)
 
     visit "/"
@@ -46,8 +46,8 @@ class HomepageTest < Test::Unit::AcceptanceTestCase
 
     assert_have_tag("h1", :content => "My Test Project")
 
-    # He can then go back to the project listing
     click_link "projects"
+
     assert_have_tag("a", :content => "My Test Project")
   end
 
