@@ -47,8 +47,7 @@ module Integrity
     end
 
     def run
-      cmd = "(cd #{repo.directory} && RUBYOPT=#{pre_bundler_rubyopt} PATH=#{pre_bundler_path} && #{@build.project.command} 2>&1)"
-      Integrity.log cmd
+      cmd = "(cd #{repo.directory} && #{@build.project.command} 2>&1)"
       IO.popen(cmd, "r") { |io| @output = io.read }
       @status = $?.success?
     end
@@ -62,14 +61,5 @@ module Integrity
     def commit
       @build.commit.identifier
     end
-
-    private
-      def pre_bundler_path
-        ENV['PATH'] && ENV["PATH"].split(":").reject { |path| path.include?("vendor") }.join(":")
-      end
-
-      def pre_bundler_rubyopt
-        ENV['RUBYOPT'] && ENV["RUBYOPT"].split.reject { |opt| opt.include?("vendor") }.join(" ")
-      end
   end
 end
