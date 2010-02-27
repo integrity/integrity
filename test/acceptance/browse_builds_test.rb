@@ -73,12 +73,12 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
     click_link(/Build 87e673a/)
 
     assert_have_tag("h1", :content => "Built 87e673a successfully")
+    assert_have_tag("h2", :content => "Build Output:")
 
     header "HTTP_IF_MODIFIED_SINCE", last_response["Last-Modified"]
     visit "/integrity"
 
     assert_equal 304, last_response.status
-    assert_have_tag("h2", :content => "Build Output:")
   end
 
   scenario "Browsing to an individual pending build page" do
