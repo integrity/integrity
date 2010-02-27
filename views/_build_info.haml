@@ -18,7 +18,15 @@
     %span.what<
       &== commit: #{build.commit.identifier}
 
-%h2 Build Output:
-%pre.output
-  :preserve
-    #{bash_color_codes h(build.output)}
+- if !build.pending? && !build.building?
+  %h2 Build Output:
+  %pre.output
+    :preserve
+      #{bash_color_codes h(build.output)}
+
+- unless build.building?
+  %form{ :action => build_path(build), :method => :post }
+    %input{ :name => "_method", :type => "hidden", :value => "delete" }
+    %p.submit
+      %button{ :type => :submit, :title => "Delete this build" }
+        Delete build
