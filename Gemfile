@@ -65,4 +65,5 @@ group :test do
   gem "broach", :git => "git://github.com/Manfred/broach.git"
   gem "nap", :git => "git://github.com/qrush/nap.git"
   gem "webmock"
+  gem "turn"
 end
