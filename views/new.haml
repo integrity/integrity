@@ -5,22 +5,22 @@
 
   %p.required{ :class => error_class(@project, :name) }
     %label{ :for => "project_name" }<
-      &== Name #{errors_on @project, :name}
+      &== Name #{errors_on(@project, :name)}
     %input.text#project_name{ :name => "project_data[name]", :type => "text", :value => h(@project.name) }
 
   %p.required{ :class => error_class(@project, :uri) }
     %label{ :for => "project_repository" }<
-      &== Repository URI#{errors_on @project, :uri}
+      &== Repository URI#{errors_on(@project, :uri)}
     %input.text#project_repository{ :name => "project_data[uri]", :type => "text", :value => h(@project.uri) }
 
   %p.normal{ :class => error_class(@project, :branch) }
     %label{ :for => "project_branch" }<
-      &== Branch to track #{errors_on @project, :branch}
+      &== Branch to track #{errors_on(@project, :branch)}
     %input.text#project_branch{ :name => "project_data[branch]", :type => "text", :value => h(@project.branch) }
 
   %p.normal{ :class => error_class(@project, :command) }
     %label{ :for => "project_build_script" }
-      &== Build script #{errors_on @project, :command}
+      &== Build script #{errors_on(@project, :command)}
     %textarea#project_build_script{ :name => "project_data[command]", :cols => 40, :rows => 2 }
       &== #{@project.command.to_s}
 
