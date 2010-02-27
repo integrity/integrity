@@ -63,10 +63,11 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
     assert_equal 304, last_response.status
   end
 
-  scenario "Browsing to an individual successful build page" do
+  scenario "Browsing to an individual build page" do
     Project.gen(:integrity, :builds => [
       Build.gen(:successful, :commit => Commit.gen(:identifier => "87e673a")),
-      Build.gen(:pending, :commit => Commit.gen(:identifier => "7fee3f0"))
+      Build.gen(:pending, :commit => Commit.gen(:identifier => "7fee3f0")),
+      Build.gen(:pending)
     ])
 
     visit "/integrity"
@@ -75,22 +76,16 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("h1", :content => "Built 87e673a successfully")
     assert_have_tag("h2", :content => "Build Output:")
 
-    header "HTTP_IF_MODIFIED_SINCE", last_response["Last-Modified"]
-    visit "/integrity"
-
-    assert_equal 304, last_response.status
-  end
-
-  scenario "Browsing to an individual pending build page" do
-    Project.gen(:integrity, :builds => [
-      Build.gen(:pending, :commit => Commit.gen(:identifier => "7fee3f0")),
-      Build.gen(:successful, :commit => Commit.gen(:identifier => "87e673a"))
-    ])
-
     visit "/integrity"
     click_link(/Build 7fee3f0/)
 
     assert_have_tag("h1", :content => "This commit hasn't been built yet")
     assert_have_no_tag("h2", :content => "Build Output:")
+
+    visit "/integrity"
+    header "HTTP_IF_MODIFIED_SINCE", last_response["Last-Modified"]
+    visit "/integrity"
+
+    assert_equal 304, last_response.status
   end
 end
