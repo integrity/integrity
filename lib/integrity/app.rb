@@ -135,5 +135,13 @@ module Integrity
       @build = current_project.build(current_build.commit.identifier)
       redirect build_url(@build).to_s
     end
+
+    delete "/:project/builds/:build" do
+      login_required
+
+      url = project_url(current_build.project).to_s
+      current_build.destroy!
+      redirect url
+    end
   end
 end
