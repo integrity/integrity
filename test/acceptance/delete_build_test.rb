@@ -1,6 +1,6 @@
 require "helper/acceptance"
 
-class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
+class DeleteBuildTest < Test::Unit::AcceptanceTestCase
   story <<-EOS
     As a user,
     I want to be able to delete a pending build of a project in Integrity
