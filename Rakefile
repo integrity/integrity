@@ -25,6 +25,19 @@ task :db do
   DataMapper.auto_upgrade!
 end
 
+namespace :utils do
+  desc "Clear old builds" 
+  task :remove_old_builds, :num_builds_to_keep do |t, args|
+    num = (args.num_builds_to_keep || 50).to_i
+    num = (num <= 0) ? 1 : num # Don't accidentally the whole build table
+    puts "Purging builds older than the most recent #{num} builds."
+    require "init"
+    require "lib/integrity/build"
+    builds = Integrity::Build.all(:completed_at.not => nil, :order => [ :completed_at.desc, :id.desc ], :offset => num, :limit => 9_999)
+    builds.map{|b| b.destroy }
+  end
+end
+
 namespace :jobs do
   desc "Clear the delayed_job queue."
   task :clear do
