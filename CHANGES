@@ -1,3 +1,9 @@
+= 0.3.1 / 2010-02-27
+
+ * Add button to delete builds that are not in progress [Joe Chippindale]
+
+ * Only show build output when available [Joe Chippindale]
+
 = 0.3.0 / 2010-02-21
 
  * Introduce the bootstrapper. Useful to automate creation of projects. Example:
