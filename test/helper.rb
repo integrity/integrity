@@ -2,8 +2,7 @@ require "test/unit"
 require "rr"
 require "extlib"
 require "dm-sweatshop"
-require "context"
-require "pending"
+require "contest"
 
 require "integrity"
 require "fixtures"
@@ -14,11 +13,11 @@ begin
 rescue LoadError
 end
 
-class Test::Unit::TestCase
+class IntegrityTest < Test::Unit::TestCase
   include RR::Adapters::TestUnit
   include Integrity
 
-  before(:all) do
+  def setup
     Integrity.configure { |c|
       c.database  "sqlite3:test.db"
       c.directory File.expand_path(File.dirname(__FILE__) + "/../tmp")
@@ -28,9 +27,12 @@ class Test::Unit::TestCase
       c.pass "test"
     }
     Thread.abort_on_exception = true
+    DataMapper.auto_migrate!
   end
 
-  before(:each) do DataMapper.auto_migrate! end
+  class << self
+    alias_method :it, :test
+  end
 
   def assert_change(object, method, difference=1)
     initial_value = object.send(method)

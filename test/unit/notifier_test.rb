@@ -1,6 +1,6 @@
 require "helper/acceptance/textfile_notifier"
 
-class NotifierTest < Test::Unit::TestCase
+class NotifierTest < IntegrityTest
   test "fixture is valid and can be saved" do
     assert_change(Notifier, :count) {
       notifier = Notifier.gen(:irc)
@@ -32,7 +32,9 @@ class NotifierTest < Test::Unit::TestCase
       project.save
     }
   end
-
+end
+__END__
+TODO
   it "handles notifier timeouts" do
     pending("Move to acceptance tests") {
       irc   = Notifier.gen(:irc)

@@ -1,6 +1,6 @@
 require "helper"
 
-class CommitTest < Test::Unit::TestCase
+class CommitTest < IntegrityTest
   test "fixture is valid and can be saved" do
     assert_change(Commit, :count) {
       commit = Commit.gen
@@ -8,7 +8,7 @@ class CommitTest < Test::Unit::TestCase
     }
   end
 
-  before(:each) do
+  setup do
     @commit = Commit.gen(
       :message    => "Initial commit",
       :identifier => "658ba96cb0235e82ee720510c049883955200fa9",

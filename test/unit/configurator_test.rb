@@ -1,6 +1,6 @@
 require "helper"
 
-class ConfiguratorTest < Test::Unit::TestCase
+class ConfiguratorTest < IntegrityTest
   test "builder" do
     Integrity.configure { |c| c.builder(:threaded, 1) }
     assert_respond_to Integrity.builder, :wait!

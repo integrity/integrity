@@ -1,4 +1,3 @@
-require "storyteller"
 require "webrat"
 require "rack/test"
 require "webmock/test_unit"
@@ -16,7 +15,7 @@ Webrat::Session.class_eval {
 }
 
 module AcceptanceHelper
-  include IntegrityTest
+  include TestHelper
 
   def git_repo(name)
     GitRepo.new(name.to_s).tap { |repo|
@@ -36,10 +35,9 @@ module AcceptanceHelper
   end
 end
 
-class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
+class Test::Unit::AcceptanceTestCase < IntegrityTest
   include FileUtils
   include AcceptanceHelper
-  include Test::Storyteller
 
   include Rack::Test::Methods
   include Webrat::Methods
@@ -51,19 +49,22 @@ class Test::Unit::AcceptanceTestCase < Test::Unit::TestCase
 
   attr_reader :app
 
-  before(:all) do
+  def self.story(*a); end
+
+  class << self
+    alias_method :scenario, :test
+  end
+
+  setup do
     Integrity::App.set(:environment, :test)
     Webrat.configure { |c| c.mode = :rack }
     Integrity.builder = lambda { |build| Builder.new(build).build }
     @app = Integrity.app
-  end
-
-  before(:each) do
     Integrity.directory.mkdir
     log_out
   end
 
-  after(:each) do
+  teardown do
     Integrity.directory.rmtree
   end
 end
