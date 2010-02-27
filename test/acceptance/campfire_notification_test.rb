@@ -7,11 +7,9 @@ class CampfireNotificationTest < Test::Unit::AcceptanceTestCase
     So that I get alerts with every build
   EOS
 
-  before(:each) do
-    load "integrity/notifier/campfire.rb"
-  end
-
   setup do
+    load "integrity/notifier/campfire.rb"
+
     @token   = "fc7795d580b6adacaa90f1ds24030s14a31a6522sed"
     @account = "rush"
     @room    = "The Studio"
@@ -21,6 +19,10 @@ class CampfireNotificationTest < Test::Unit::AcceptanceTestCase
     @id = 1337
     @room_url  = "https://#{@token}:x@#{@account}.campfirenow.com/rooms"
     @speak_url = "https://#{@token}:x@#{@account}.campfirenow.com/room/#{@id}/speak"
+  end
+
+  teardown do
+    WebMock.reset_webmock
   end
 
   def commit(successful)

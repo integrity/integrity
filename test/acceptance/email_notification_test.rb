@@ -9,8 +9,7 @@ class EmailNotificationTest < Test::Unit::AcceptanceTestCase
     So that I get alerts with every build
   EOS
 
-  before(:each) do
-    # Because notifiers are remove_const'd in the global #before.
+  setup do
     load "integrity/notifier/email.rb"
   end
 

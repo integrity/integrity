@@ -1,6 +1,6 @@
 require "helper"
 
-class ProjectTest < Test::Unit::TestCase
+class ProjectTest < IntegrityTest
   test "fixture is valid and can be saved" do
     assert_change(Project, :count) {
       project = Project.gen
@@ -8,8 +8,40 @@ class ProjectTest < Test::Unit::TestCase
     }
   end
 
+  it "orders projects by name" do
+    rails   = Project.gen(:name => "rails",   :public => true)
+    merb    = Project.gen(:name => "merb",    :public => true)
+    sinatra = Project.gen(:name => "sinatra", :public => true)
+    camping = Project.gen(:name => "camping", :public => false)
+
+    assert_equal [camping, merb, rails, sinatra], Project.all
+    assert_equal [merb, rails, sinatra], Project.all(:public => true)
+  end
+
+  test "destroying itself" do
+    project = Project.gen(:builds => 7.of{Build.gen})
+
+    assert_change(Build, :count, -7) { project.destroy }
+    assert ! Project.get(project.id)
+  end
+
+  test "finding its previous builds" do
+    project = Project.gen(:builds => 5.of{Build.gen})
+
+    assert_equal 4,  project.previous_builds.count
+    assert_equal [], Project.gen(:builds => 1.of{Build.gen}).previous_builds
+    assert_equal [], Project.gen(:blank).previous_builds
+
+    assert project.previous_builds.first.created_at >
+      project.previous_builds.last.created_at
+
+    assert ! Project.gen(:blank).last_build
+    assert ! project.previous_builds.include?(project.last_build)
+  end
+
+
   describe "Properties" do
-    before(:each) do
+    setup do
       @project = Project.gen(:integrity)
     end
 
@@ -100,37 +132,6 @@ class ProjectTest < Test::Unit::TestCase
     end
   end
 
-  it "orders projects by name" do
-    rails   = Project.gen(:name => "rails",   :public => true)
-    merb    = Project.gen(:name => "merb",    :public => true)
-    sinatra = Project.gen(:name => "sinatra", :public => true)
-    camping = Project.gen(:name => "camping", :public => false)
-
-    assert_equal [camping, merb, rails, sinatra], Project.all
-    assert_equal [merb, rails, sinatra], Project.all(:public => true)
-  end
-
-  test "destroying itself" do
-    project = Project.gen(:builds => 7.of{Build.gen})
-
-    assert_change(Build, :count, -7) { project.destroy }
-    assert ! Project.get(project.id)
-  end
-
-  test "finding its previous builds" do
-    project = Project.gen(:builds => 5.of{Build.gen})
-
-    assert_equal 4,  project.previous_builds.count
-    assert_equal [], Project.gen(:builds => 1.of{Build.gen}).previous_builds
-    assert_equal [], Project.gen(:blank).previous_builds
-
-    assert project.previous_builds.first.created_at >
-      project.previous_builds.last.created_at
-
-    assert ! Project.gen(:blank).last_build
-    assert ! project.previous_builds.include?(project.last_build)
-  end
-
   describe "When updating its notifiers" do
     setup do
       twitter = Notifier.gen(:twitter, :enabled => true)
@@ -210,7 +211,7 @@ class ProjectTest < Test::Unit::TestCase
   end
 
   describe "When retrieving state about its notifier" do
-    before(:each) do
+    setup do
       @project = Project.gen
       @irc     = Notifier.gen(:irc)
     end

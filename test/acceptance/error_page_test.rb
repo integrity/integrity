@@ -7,8 +7,8 @@ class ErrorPageTest < Test::Unit::AcceptanceTestCase
     So that I can understand what's going on
   EOS
 
-  before { Integrity::App.disable :raise_errors }
-  after  { Integrity::App.enable  :raise_errors }
+  setup     { Integrity::App.disable :raise_errors }
+  teardown  { Integrity::App.enable  :raise_errors }
 
   scenario "Something horrible happens" do
     stub(Project).all { raise ArgumentError }

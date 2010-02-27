@@ -1,6 +1,6 @@
 require "helper"
 
-class BootstrapperTest < Test::Unit::TestCase
+class BootstrapperTest < IntegrityTest
   def create_project
     Integrity.bootstrap do |b|
       b.project "Integrity" do |p|

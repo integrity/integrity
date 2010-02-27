@@ -1,4 +1,4 @@
-module IntegrityTest
+module TestHelper
   class GitRepo
     attr_reader :path
 

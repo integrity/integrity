@@ -7,12 +7,12 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     So that I know if it builds properly
   EOS
 
-  before(:all) do
+  setup do
     @builder = Integrity.builder
     Integrity.configure { |c| c.builder :threaded }
   end
 
-  after(:all) do
+  teardown do
     Integrity.builder = @builder
   end
 

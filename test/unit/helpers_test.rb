@@ -1,6 +1,6 @@
 require "helper"
 
-class HelpersTest < Test::Unit::TestCase
+class HelpersTest < IntegrityTest
   test "pretty_date" do
     h = Module.new { extend Integrity::Helpers }
 

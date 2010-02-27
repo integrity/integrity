@@ -7,14 +7,8 @@ class IRCNotificationTest < Test::Unit::AcceptanceTestCase
     So that I get alerts with every build
   EOS
 
-  before(:each) do
-    # This is needed before any available notifier is remove_const'd
-    # in the global #before.
-    load "integrity/notifier/irc.rb"
-  end
-
   # thanks harryv
-   class MockSocket
+  class MockSocket
     attr_accessor :in, :out
     def gets() @in.gets end
     def puts(m) @out.puts(m) end
@@ -22,6 +16,8 @@ class IRCNotificationTest < Test::Unit::AcceptanceTestCase
   end
 
   setup do
+    load "integrity/notifier/irc.rb"
+
     @socket, @server = MockSocket.new, MockSocket.new
     @socket.in, @server.out = IO.pipe
     @server.in, @socket.out = IO.pipe

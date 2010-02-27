@@ -1,6 +1,6 @@
 require "helper"
 
-class BuildTest < Test::Unit::TestCase
+class BuildTest < IntegrityTest
   test "fixture is valid and can be saved" do
     # TODO: useless test?
     assert_change(Build, :count) {

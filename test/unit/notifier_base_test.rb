@@ -1,7 +1,7 @@
 require "helper"
 
-class BaseNotifierTest < Test::Unit::TestCase
-  before(:each) do
+class BaseNotifierTest < IntegrityTest
+  setup do
     @build    = Build.gen(:successful, :project => Project.gen)
     @notifier = Notifier::Base.new(@build, {})
     Integrity.configure { |c| c.base_url "http://ci.example.org" }
