@@ -1,2 +1,8 @@
 #build{ :class => @build.status }
   = partial(:build_info, :build => @build)
+- unless @build.building?
+  %form{ :action => build_path(@build), :method => :post }
+    %input{ :name => "_method", :type => "hidden", :value => "delete" }
+    %p
+      %button{ :title => "Delete this build" }
+        Delete build

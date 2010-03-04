@@ -9,15 +9,16 @@ class DeleteBuildTest < Test::Unit::AcceptanceTestCase
 
   scenario "Delete latest build that is pending" do
     Project.gen(:integrity, :builds => [
-      Build.gen(:pending, :commit => Commit.gen(:identifier => "7fee3f0"))
+      Build.gen(:pending, :commit => Commit.gen(:identifier => "foo")),
+      Build.gen(:failed, :commit => Commit.gen(:identifier => "7fee3f0"))
     ])
 
     login_as "admin", "test"
 
     visit "/integrity"
-    assert_have_tag("h1", :content => "This commit hasn't been built yet")
-
+    click_link "Build foo"
     click_button "Delete build"
-    assert_contain("No builds for this project, buddy")
+
+    assert_not_contain "Previous builds"
   end
 end
