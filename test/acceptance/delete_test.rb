@@ -4,7 +4,7 @@ class DeleteTest < Test::Unit::AcceptanceTestCase
   story <<-EOS
     As an administrator,
     I want to delete projects I don't care about anymore
-    So that Integrity isn't cluttered with unimportant projects
+    And busted builds
   EOS
 
   scenario "Deleting a project from the edit page" do
@@ -17,5 +17,19 @@ class DeleteTest < Test::Unit::AcceptanceTestCase
     visit "/"
 
     assert_have_no_tag("ul#projects", :content => "Integrity")
+  end
+
+  scenario "Deleting some busted build" do
+    Project.gen(:integrity, :builds => [
+      Build.gen(:commit => Commit.gen(:identifier => "foo")),
+      Build.gen(:commit => Commit.gen(:identifier => "bar")),
+    ])
+
+    login_as "admin", "test"
+    visit "/integrity"
+    click_link "Build foo"
+    click_button "Delete build"
+
+    assert_not_contain("Previous builds")
   end
 end
