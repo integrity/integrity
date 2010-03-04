@@ -23,10 +23,3 @@
   %pre.output
     :preserve
       #{bash_color_codes h(build.output)}
-
-- unless build.building?
-  %form{ :action => build_path(build), :method => :post }
-    %input{ :name => "_method", :type => "hidden", :value => "delete" }
-    %p.submit
-      %button{ :type => :submit, :title => "Delete this build" }
-        Delete build
