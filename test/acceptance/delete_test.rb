@@ -18,11 +18,4 @@ class DeleteTest < Test::Unit::AcceptanceTestCase
 
     assert_have_no_tag("ul#projects", :content => "Integrity")
   end
-
-  scenario "Sending a DELETE request directly as a user" do
-    log_out
-    Project.gen(:integrity)
-    delete "/integrity"
-    assert_equal 401, last_response.status
-  end
 end
