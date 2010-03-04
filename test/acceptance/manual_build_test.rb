@@ -30,12 +30,10 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     click_button "manual build"
 
     assert_have_tag("#build h1", :content => "hasn't been built yet")
-    assert_have_no_tag("button", :content => "Rebuild")
 
     build
     reload
 
-    assert_have_no_tag("button", :content => "Rebuild")
     assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
     assert_have_tag("blockquote p", :content => "This commit will work")
     assert_have_tag("span.who",     :content => "by: John Doe")
@@ -57,7 +55,6 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     build
     reload
 
-    assert_have_tag("button", :content => "Rebuild")
     assert_have_tag("h1", :content => "Built #{repo.short_head} and failed")
     assert_have_tag("blockquote p", :content => "This commit will fail")
   end
@@ -96,7 +93,6 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     click_button "manual build"
 
     assert_have_tag("#build h1", :content => "hasn't been built yet")
-    assert_have_no_tag("button", :content => "Rebuild")
 
     build
     reload
@@ -124,7 +120,6 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     click_button "manual build"
 
     assert_have_tag("#build h1", :content => "hasn't been built yet")
-    assert_have_no_tag("button", :content => "Rebuild")
 
     build
     reload
@@ -139,7 +134,6 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     click_button "Rebuild"
 
     assert_have_tag("#build h1", :content => "hasn't been built yet")
-    assert_have_no_tag("button", :content => "Rebuild")
 
     build
     reload
