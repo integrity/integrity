@@ -41,7 +41,6 @@ gem "sinatra-authorization", "1.0.0"
 
 # = Development dependencies.
 group :test do
-  source "http://gems.github.com"
   gem "ruby-debug"
   gem "sqlite3-ruby"
   gem "activerecord"
