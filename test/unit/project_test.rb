@@ -25,18 +25,11 @@ class ProjectTest < IntegrityTest
     assert ! Project.get(project.id)
   end
 
-  test "finding its previous builds" do
+  test "finding its builds" do
     project = Project.gen(:builds => 5.of{Build.gen})
 
-    assert_equal 4,  project.previous_builds.count
-    assert_equal [], Project.gen(:builds => 1.of{Build.gen}).previous_builds
-    assert_equal [], Project.gen(:blank).previous_builds
-
-    assert project.previous_builds.first.created_at >
-      project.previous_builds.last.created_at
-
-    assert ! Project.gen(:blank).last_build
-    assert ! project.previous_builds.include?(project.last_build)
+    assert project.sorted_builds.first.created_at >
+      project.sorted_builds.last.created_at
   end
 
 

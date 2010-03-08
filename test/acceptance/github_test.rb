@@ -58,7 +58,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
 
     assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
     assert_have_tag(".attribution", :content => "by John Doe")
-    assert_have_tag("#previous_builds li", :count => 3)
+    assert_have_tag("#previous_builds li", :count => 4)
   end
 
   scenario "Receiving a payload with build_all option *disabled*" do
@@ -73,7 +73,6 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     visit "/my-test-project"
 
     assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
-    assert_have_no_tag("#previous_builds li")
   end
 
   scenario "Receiving an invalid payload" do

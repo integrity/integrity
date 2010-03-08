@@ -30,7 +30,7 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
     within("ul#previous_builds") do
       assert_have_tag("li.pending", :count => 2)
       assert_have_tag("li.failed",  :count => 2)
-      assert_have_tag("li.success", :count => 2)
+      assert_have_tag("li.success", :count => 3)
     end
 
     header "HTTP_IF_MODIFIED_SINCE", last_response["Last-Modified"]

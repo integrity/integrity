@@ -29,12 +29,13 @@ module Integrity
       BuildableProject.new(self, commit).build
     end
 
-    def last_build
-      @_build ||= builds.first(:order => [:created_at.desc])
+    # TODO lame, there is got to be a better way
+    def sorted_builds
+      builds(:order => [:created_at.desc])
     end
 
-    def previous_builds
-      @_builds ||= builds.all(:order => [:created_at.desc]) - Array(last_build)
+    def last_build
+      sorted_builds.first
     end
 
     def blank?
