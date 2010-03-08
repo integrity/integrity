@@ -7,7 +7,7 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
     So I can see the history of a project
   EOS
 
-  scenario "Browsing to a project with not builds" do
+  scenario "Browsing to a project with no builds" do
     Project.gen(:blank, :name => "Integrity")
 
     visit "/integrity"
