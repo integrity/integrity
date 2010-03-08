@@ -80,7 +80,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
 
     click_link "my-test-project"
     assert_have_tag "h1", :content => "success"
-    assert_have_tag "#previous_builds li", :count => 1
+    assert_have_tag "#previous_builds li", :count => 2
   end
 
   scenario "Fixing the build command and then rebuilding HEAD" do
@@ -142,7 +142,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
 
     click_link "my-test-project"
     assert_have_tag("#last_build h1", :content => "success")
-    assert_have_tag("#previous_builds li", :count => 1)
+    assert_have_tag("#previous_builds li", :count => 2)
     assert_have_tag("#previous_builds li[@class='failed']", :content => commit)
   end
 
@@ -171,7 +171,6 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
       click_link "my-test-project"
 
       assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
-      assert_have_no_tag("#previous_builds")
     rescue LoadError
       warn "Couldn't load DJ. Skipping test"
     ensure
