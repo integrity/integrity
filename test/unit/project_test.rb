@@ -1,7 +1,7 @@
 require "helper"
 
 class ProjectTest < IntegrityTest
-  test "fixture is valid and can be saved" do
+  test "default fixture is valid and can be saved" do
     assert_change(Project, :count) {
       project = Project.gen
       assert project.valid? && project.save
@@ -18,7 +18,7 @@ class ProjectTest < IntegrityTest
     assert_equal [merb, rails, sinatra], Project.all(:public => true)
   end
 
-  test "destroying itself" do
+  test "destroy" do
     project = Project.gen(:builds => 7.of{Build.gen})
 
     assert_change(Build, :count, -7) { project.destroy }
@@ -38,51 +38,41 @@ class ProjectTest < IntegrityTest
       @project = Project.gen(:integrity)
     end
 
-    it "has a name" do
-      assert_equal "Integrity", @project.name
+    test "name" do
+      assert_equal "Integrtesty", @project.name
     end
 
-    it "has a permalink" do
-      assert_equal "integrity", @project.permalink
+    test "permalink" do
+      assert_equal "integrtesty", @project.permalink
 
       assert_equal "foos-bar-baz-and-bacon",
         Project.gen(:name => "foo's bar/baz and BACON?!").permalink
     end
 
-    it "has an URI" do
-      assert_equal "git://github.com/foca/integrity.git",
+    test "uri" do
+      assert_equal "gtest://gtesthub.com/foca/integrtesty.gtest",
         @project.uri.to_s
     end
 
-    it "has a branch" do
+    test "branch" do
       assert_equal "master", @project.branch
       assert_equal "master", Project.new.branch
     end
 
-    it "has a command" do
+    test "command" do
       assert_equal "rake", @project.command
       assert_equal "rake", Project.new.command
     end
 
-    it "knows it's visibility" do
-      assert Project.new.public?
-
-      assert @project.public?
-      assert Project.gen(:public => "1").public?
-      assert ! Project.gen(:public => "0").public?
-
-      assert Project.gen(:public => "false").public?
-      assert Project.gen(:public => "true").public?
-      assert ! Project.gen(:public => false).public?
-      assert ! Project.gen(:public => nil).public?
+    test "created_at" do
+      assert_kind_of DateTime, @project.created_at
     end
 
-    it "has created_at and updated_at datetimes" do
-      assert_kind_of DateTime, @project.created_at
+    test "updated_at" do
       assert_kind_of DateTime, @project.updated_at
     end
 
-    it "knows it's status" do
+    test "status" do
       assert_equal :success,  Project.gen(:successful).status
       assert_equal :failed,   Project.gen(:failed).status
       assert_equal :pending,  Project.gen(:pending).status
@@ -125,6 +115,7 @@ class ProjectTest < IntegrityTest
     end
   end
 
+  # XXX
   describe "When updating its notifiers" do
     setup do
       twitter = Notifier.gen(:twitter, :enabled => true)
