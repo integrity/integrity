@@ -1,118 +1,79 @@
 require "helper"
 
 class ProjectTest < IntegrityTest
-  test "default fixture is valid and can be saved" do
-    assert_change(Project, :count) {
-      project = Project.gen
-      assert project.valid? && project.save
-    }
+  test "all" do
+    rails   = Project.gen(:public, :name => "rails")
+    camping = Project.gen(:public, :name => "camping")
+    sinatra = Project.gen(:public, :name => "sinatra")
+
+    assert_equal [sinatra, camping, sinatra], Project.all
   end
 
-  it "orders projects by name" do
-    rails   = Project.gen(:name => "rails",   :public => true)
-    merb    = Project.gen(:name => "merb",    :public => true)
-    sinatra = Project.gen(:name => "sinatra", :public => true)
-    camping = Project.gen(:name => "camping", :public => false)
+  test "sorted_builds" do
+    project = Project.gen(:builds => 5.of{Build.gen})
+    project.save!
+    first   = project.sorted_builds.first
+    last    = project.sorted_builds.last
 
-    assert_equal [camping, merb, rails, sinatra], Project.all
-    assert_equal [merb, rails, sinatra], Project.all(:public => true)
+    assert first.updated_at > last.updated_at
+  end
+
+  test "last_build" do
+    assert_nil Project.gen(:blank).last_build
+  end
+
+  test "status" do
+    assert Project.gen(:blank).blank?,           "blank"
+    assert Project.gen(:successful).successful?, "successful"
+    assert Project.gen(:failed).failed?,         "failed"
+    assert Project.gen(:building).building?,     "building"
+    assert Project.gen(:pending).pending?,       "pending"
+
+    assert_equal :blank,    Project.gen(:blank).status
+    assert_equal :success,  Project.gen(:successful).status
+    assert_equal :failed,   Project.gen(:failed).status
+    assert_equal :pending,  Project.gen(:pending).status
+    assert_equal :building, Project.gen(:building).status
   end
 
   test "destroy" do
-    project = Project.gen(:builds => 7.of{Build.gen})
+    project = Project.gen(:builds => 2.of{Build.gen})
 
-    assert_change(Build, :count, -7) { project.destroy }
+    assert_change(Build, :count, -2) { project.destroy }
     assert ! Project.get(project.id)
   end
 
-  test "finding its builds" do
-    project = Project.gen(:builds => 5.of{Build.gen})
+  test "permalink" do
+    assert_equal "integrity", Project.gen(:integrity)
 
-    assert project.sorted_builds.first.created_at >
-      project.sorted_builds.last.created_at
+    assert_equal "foos-bar-baz-and-bacon",
+      Project.gen(:name => "foo's bar/baz and BACON?!").permalink
   end
 
-
-  describe "Properties" do
-    setup do
-      @project = Project.gen(:integrity)
-    end
-
-    test "name" do
-      assert_equal "Integrtesty", @project.name
-    end
-
-    test "permalink" do
-      assert_equal "integrtesty", @project.permalink
-
-      assert_equal "foos-bar-baz-and-bacon",
-        Project.gen(:name => "foo's bar/baz and BACON?!").permalink
-    end
-
-    test "uri" do
-      assert_equal "gtest://gtesthub.com/foca/integrtesty.gtest",
-        @project.uri.to_s
-    end
-
-    test "branch" do
-      assert_equal "master", @project.branch
-      assert_equal "master", Project.new.branch
-    end
-
-    test "command" do
-      assert_equal "rake", @project.command
-      assert_equal "rake", Project.new.command
-    end
-
-    test "created_at" do
-      assert_kind_of DateTime, @project.created_at
-    end
-
-    test "updated_at" do
-      assert_kind_of DateTime, @project.updated_at
-    end
-
-    test "status" do
-      assert_equal :success,  Project.gen(:successful).status
-      assert_equal :failed,   Project.gen(:failed).status
-      assert_equal :pending,  Project.gen(:pending).status
-      assert_equal :blank,    Project.gen(:blank).status
-      assert_equal :building, Project.gen(:building).status
-    end
+  test "defaults" do
+    assert_equal "master", Project.new.branch
+    assert_equal "rake",   Project.new.command
+    assert Project.new.public?
   end
 
-  describe "Validation" do
-    it "requires a name" do
-      assert_no_change(Project, :count) {
-        assert ! Project.gen(:name => nil).valid?
-      }
-    end
+  it "requires a name" do
+    assert_no_change(Project, :count) {
+      assert ! Project.gen(:name => nil).valid?
+    }
+  end
 
-    it "ensures its name is unique" do
-      Project.gen(:name => "Integrity")
+  it "requires an URI" do
+    assert_no_change(Project, :count) {
+      assert ! Project.gen(:uri => nil).valid?
+    }
+  end
 
-      assert_no_change(Project, :count) {
-        assert ! Project.gen(:name => "Integrity").valid?
-      }
-    end
+  test "name uniqueness" do
+    Project.gen(:integrity)
 
-    it "requires an URI" do
-      assert_no_change(Project, :count) {
-        assert ! Project.gen(:uri => nil).valid?
-      }
-    end
-
-    it "requires a branch" do
-      assert_no_change(Project, :count) {
-        ! Project.gen(:branch => nil).valid?
-      }
-    end
-
-    it "requires a command" do
-      assert_no_change(Project, :count) {
-        assert ! Project.gen(:command => nil).valid?
-      }
-    end
+    assert_no_change(Project, :count) {
+      assert ! Project.gen(:integrity).valid?
+    }
   end
 
   # XXX
