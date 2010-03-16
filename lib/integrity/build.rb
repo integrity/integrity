@@ -18,22 +18,26 @@ module Integrity
       commit.destroy!
     end
 
-    def pending?
-      started_at.nil?
+    def successful?
+      successful == true
+    end
+
+    def failed?
+      ! successful?
     end
 
     def building?
       ! started_at.nil? && completed_at.nil?
     end
 
-    def failed?
-      !successful?
+    def pending?
+      started_at.nil?
     end
 
     def status
       case
-      when pending?    then :pending
       when building?   then :building
+      when pending?    then :pending
       when successful? then :success
       when failed?     then :failed
       end
