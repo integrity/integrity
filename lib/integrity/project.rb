@@ -15,15 +15,18 @@ module Integrity
 
     timestamps :at
 
+    validates_is_unique :name
+
     default_scope(:default).update(:order => [:name.asc])
 
     has n, :builds
     has n, :notifiers
 
     before :save, :set_permalink
-    before :destroy do builds.destroy! end
 
-    validates_is_unique :name
+    before :destroy do
+      builds.destroy!
+    end
 
     def build(commit)
       BuildableProject.new(self, commit).build
@@ -57,11 +60,14 @@ module Integrity
 
     private
       def set_permalink
-        attribute_set(:permalink, (name || "").downcase.
+        attribute_set(:permalink,
+          (name || "").
+          downcase.
           gsub(/'s/, "s").
           gsub(/&/, "and").
           gsub(/[^a-z0-9]+/, "-").
-          gsub(/-*$/, ""))
+          gsub(/-*$/, "")
+        )
       end
   end
 end
