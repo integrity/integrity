@@ -65,10 +65,6 @@ module Integrity
       1.of{Build.gen(:building)})
   end
 
-  Project.fixture(:blank) do
-    Project.gen_attrs.update(:builds => [])
-  end
-
   Build.fixture do
     { :output       => /[:paragraph:]/.gen,
       :successful   => [true, false].pick,
