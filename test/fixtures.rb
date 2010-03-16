@@ -12,8 +12,8 @@ module Integrity
   Project.fixture do
     { :name    => (name = unique { /\w+/.gen }),
       :uri     => "git://github.com/#{/\w+/.gen}/#{name}.git",
-      :branch  => %w[master test-refactoring lh-34].pick,
-      :command => %w[rake make ant test.xml].pick,
+      :branch  => Randgen.word,
+      :command => Randgen.word,
       :public  => true }
   end
 
