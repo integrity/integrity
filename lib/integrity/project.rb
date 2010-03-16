@@ -50,11 +50,9 @@ module Integrity
       last_build && last_build.human_status
     end
 
-    def public=(flag)
-      attribute_set(:public, case flag
-        when "1", "0" then flag == "1"
-        else !!flag
-      end)
+    def public=(v)
+      return attribute_set(:public, v == "1") if %w[0 1].include?(v)
+      attribute_set(:public, !!v)
     end
 
     private
