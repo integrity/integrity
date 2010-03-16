@@ -24,7 +24,6 @@ module Integrity
       metadata = repo.metadata
 
       @build.update(
-        :started_at => Time.now,
         :commit     => {
           :identifier   => metadata["id"],
           :message      => metadata["message"],
@@ -38,7 +37,6 @@ module Integrity
       Integrity.log "Build #{commit} exited with #{@status} got:\n #{@output}"
 
       @build.update!(
-        :completed_at => Time.now,
         :successful   => @status,
         :output       => @output
       )

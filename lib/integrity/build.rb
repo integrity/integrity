@@ -14,26 +14,32 @@ module Integrity
     belongs_to :project
     has 1,     :commit
 
-    before :destroy do commit.destroy! end
+    before :destroy do
+      commit.destroy!
+    end
+
+    def successful?
+      successful == true
+    end
+
+    def failed?
+      ! successful?
+    end
+
+    def building?
+      !! started_at
+    end
 
     def pending?
       started_at.nil?
     end
 
-    def building?
-      ! started_at.nil? && completed_at.nil?
-    end
-
-    def failed?
-      !successful?
-    end
-
     def status
       case
-      when pending?    then :pending
-      when building?   then :building
       when successful? then :success
       when failed?     then :failed
+      when building?   then :building
+      when pending?    then :pending
       end
     end
 
