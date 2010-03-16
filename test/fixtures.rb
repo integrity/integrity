@@ -41,10 +41,6 @@ module Integrity
       3.of { Build.gen(:successful) })
   end
 
-  Project.fixture(:svn) do
-    Project.gen_attrs(:my_test_project).update(:scm => "svn", :branch => "")
-  end
-
   Project.fixture(:blank) do
     Project.gen_attrs.update(:builds => [])
   end
