@@ -16,10 +16,10 @@
       %button{ :type => :submit, :title => "Fetch the last commit from the remote repository and build it" }<
         Fetch and build
 
-  - unless @project.builds.empty?
+  - unless @project.blank?
     %h2 Builds
     %ul#previous_builds
-      - @project.builds.each do |build|
+      - @project.sorted_builds.each do |build|
         %li{ :class => build.status }
           %a{ :href => build_path(build) }
             %strong.build<
