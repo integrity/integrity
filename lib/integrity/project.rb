@@ -15,18 +15,15 @@ module Integrity
 
     timestamps :at
 
-    validates_is_unique :name
-
     default_scope(:default).update(:order => [:name.asc])
 
     has n, :builds
     has n, :notifiers
 
     before :save, :set_permalink
+    before :destroy do builds.destroy! end
 
-    before :destroy do
-      builds.destroy!
-    end
+    validates_is_unique :name
 
     def build(commit)
       BuildableProject.new(self, commit).build
@@ -34,44 +31,39 @@ module Integrity
 
     # TODO lame, there is got to be a better way
     def sorted_builds
-      builds(:order => [:updated_at.asc])
+      builds(:order => [:created_at.desc])
     end
 
-    def status
-      return :blank if blank?
-      sorted_builds.last.status
+    def last_build
+      sorted_builds.first
     end
 
     def blank?
-      sorted_builds.last.nil?
+      @status ||= status == :blank
+    end
+
+    def status
+      @status ||= last_build ? last_build.status : :blank
     end
 
     def human_status
-      return if blank?
-      last_build.human_status
+      last_build && last_build.human_status
     end
 
-    def public=(v)
-      value =
-        if %w[0 1].include?(v)
-          v == "1"
-        else
-          !! v
-        end
-
-      attribute_set(:public, v)
+    def public=(flag)
+      attribute_set(:public, case flag
+        when "1", "0" then flag == "1"
+        else !!flag
+      end)
     end
 
     private
       def set_permalink
-        set_attribute(:permalink,
-          (name || "").
-          downcase.
+        attribute_set(:permalink, (name || "").downcase.
           gsub(/'s/, "s").
           gsub(/&/, "and").
           gsub(/[^a-z0-9]+/, "-").
-          gsub(/-*$/, "")
-        )
+          gsub(/-*$/, ""))
       end
   end
 end
