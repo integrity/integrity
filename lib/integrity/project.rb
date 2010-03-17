@@ -42,15 +42,15 @@ module Integrity
     end
 
     def blank?
-      @status ||= status == :blank
+      last_build.nil?
     end
 
     def status
-      @status ||= last_build ? last_build.status : :blank
+      blank? ? :blank : last_build.status
     end
 
     def human_status
-      last_build && last_build.human_status
+      ! blank? && last_build.human_status
     end
 
     def public=(v)
