@@ -1,14 +1,6 @@
 require "helper"
 
 class BuildTest < IntegrityTest
-  test "fixture is valid and can be saved" do
-    # TODO: useless test?
-    assert_change(Build, :count) {
-      build = Build.gen(:project => Project.gen)
-      assert build.valid? && build.save
-    }
-  end
-
   it "has an output" do
     assert ! Build.gen.output.empty?
     assert_equal "", Build.new.output
