@@ -17,7 +17,7 @@
     %span.what<
       &== commit: #{build.commit.identifier}
 
-- if !build.pending? && !build.building?
+- if build.completed?
   %h2 Build Output:
   %pre.output
     :preserve
