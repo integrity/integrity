@@ -4,7 +4,7 @@
     %h1
       Why don't you
       = succeed "?" do
-        %a{ :href => path("/new") } create your first project
+        %a{ :href => path("new") } create your first project
 - else
   %ul#projects
     - @projects.each do |project|
@@ -17,4 +17,4 @@
           - when :blank
             Never built yet
   %p#new
-    %a{ :href => path("/new") } Add a new project
+    %a{ :href => path("new") } Add a new project
