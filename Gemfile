@@ -16,7 +16,7 @@ gem "haml", "2.2.17"
 gem "thor", "0.9.9"
 gem "addressable", "2.1.1"
 gem "json", "1.1.9"
-gem "sinatra", "1.0.a"
+gem "sinatra", "1.0.0"
 gem "sinatra-authorization", "1.0.0"
 
 # These are dependencies for the various notifiers. Uncomment as appropriate.
