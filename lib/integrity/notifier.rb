@@ -26,5 +26,9 @@ module Integrity
     def klass
       self.class.available[name]
     end
+
+    def notify_of_build_start(build)
+      klass.notify_of_build_start(build, config) if klass
+    end
   end
 end

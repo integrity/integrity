@@ -2,11 +2,18 @@ module Integrity
   class Notifier
     class Base
       def self.notify(build, config)
-        Integrity.logger.info "Notifying of build #{build.sha1_short} with #{to_s}"
-        Timeout.timeout(8) { new(build, config).deliver! }
-      rescue Timeout::Error
-        Integrity.logger.error "#{to_s} notifier timed out"
-        false
+        msg = "Notifying of build #{build.commit.short_identifier} with #{to_s}"
+        log_and_notify_with_timeout(msg) { new(build, config).deliver! }
+      end
+
+      def self.notify_of_build_start(build, config)
+        notifier = new(build, config)
+        if notifier.respond_to?(:deliver_started_notification!)
+          log_and_notify_with_timeout(msg) do
+            msg = "Notifying of the start of build #{build.commit.short_identifier} with #{to_s}"
+            notifier.deliver_started_notification!
+          end
+        end
       end
 
       def self.to_haml
@@ -53,6 +60,19 @@ EOM
       def build_output
         @build.output.gsub("\e[0m", "").gsub(/\e\[3[1-7]m/, "")
       end
+      private
+
+        def escape(s)
+          s.gsub("\e[0m", "").gsub(/\e\[3[1-7]m/, "")
+        end
+
+        def self.log_and_notify_with_timeout(log_message, &block)
+          Integrity.log log_message
+          Timeout.timeout(8) { yield }
+        rescue Timeout::Error
+          Integrity.log "#{to_s} notifier timed out"
+          false
+        end
     end
   end
 end
