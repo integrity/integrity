@@ -1,3 +1,18 @@
+= 0.4.0 / 2010-03-27
+
+ * Add a rake task to clean-up old build checkouts
+
+ * Add a TCP notifier. Works great with http://github.com/atmos/irccat-nodejs
+
+ * Fix URLs, allowing to mount Integrity to a sub direcory [Iain Hecker]
+
+ * Fix the delete/rebuild buttons
+
+ * The last build is now displayed both at the top and in the builds list.
+   It simplifies things and fixes some ordering issues.
+
+ * Upgrade to Sinatra 1.0
+
 = 0.3.1 / 2010-02-27
 
  * Add button to delete builds that are not in progress [Joe Chippindale]
