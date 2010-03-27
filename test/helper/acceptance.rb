@@ -33,6 +33,24 @@ module AcceptanceHelper
     def AcceptanceHelper.logged_in; false; end
     rack_test_session.header("Authorization", nil)
   end
+
+  # thanks http://github.com/ichverstehe
+  def mock_socket
+    socket, server = MockSocket.new, MockSocket.new
+    socket.in, server.out = IO.pipe
+    server.in, socket.out = IO.pipe
+
+    stub(TCPSocket).open(anything, anything) {socket}
+    server
+  end
+
+  class MockSocket
+    attr_accessor :in, :out
+    def gets() @in.gets end
+    def puts(m) @out.puts(m) end
+    def eof?() true end
+    def close() end
+  end
 end
 
 class Test::Unit::AcceptanceTestCase < IntegrityTest

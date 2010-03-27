@@ -8,22 +8,9 @@ class TCPNotificationTest < Test::Unit::AcceptanceTestCase
     Using Corey's awesome  http://github.com/atmos/irccat-nodejs
   EOS
 
-  # thanks harryv
-  class MockSocket
-    attr_accessor :in, :out
-    def gets() @in.gets end
-    def puts(m) @out.puts(m) end
-    def eof?() true end
-  end
-
   setup do
     load "integrity/notifier/tcp.rb"
-
-    @socket, @server = MockSocket.new, MockSocket.new
-    @socket.in, @server.out = IO.pipe
-    @server.in, @socket.out = IO.pipe
-
-    stub(TCPSocket).open(anything, anything) {@socket}
+    @server = mock_socket
   end
 
   def build(status)
