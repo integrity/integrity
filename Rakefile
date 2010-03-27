@@ -25,6 +25,15 @@ task :db do
   DataMapper.auto_upgrade!
 end
 
+desc "Clean-up build directory"
+task :cleanup do
+  require "init"
+  Integrity::Build.all(:completed_at.not => nil).each { |build|
+    dir = Integrity.directory.join(build.id.to_s)
+    dir.rmtree if dir.directory?
+  }
+end
+
 namespace :jobs do
   desc "Clear the delayed_job queue."
   task :clear do
