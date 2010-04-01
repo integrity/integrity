@@ -6,12 +6,6 @@ module Integrity
 
     helpers Integrity::Helpers
 
-    # TODO
-    def last_modified(time)
-      return unless time
-      super
-    end
-
     not_found do
       status 404
       show :not_found, :title => "lost, are we?"
@@ -85,7 +79,6 @@ module Integrity
 
     get "/:project" do
       login_required unless current_project.public?
-      last_modified current_project.builds.max(:created_at, :updated_at)
       show :project, :title => ["projects", current_project.name]
     end
 
@@ -122,8 +115,6 @@ module Integrity
 
     get "/:project/builds/:build" do
       login_required unless current_project.public?
-      last_modified current_build.updated_at
-
       show :build, :title => ["projects", current_project.permalink,
         current_build.commit.identifier]
     end
