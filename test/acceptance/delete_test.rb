@@ -28,7 +28,7 @@ class DeleteTest < Test::Unit::AcceptanceTestCase
     login_as "admin", "test"
     visit "/integrity"
     click_link "Build foo"
-    click_button "Delete build"
+    click_button "Delete this build"
 
     assert_not_contain("Previous builds")
   end
