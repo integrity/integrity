@@ -2,7 +2,7 @@
 
  * Add a rake task to clean-up old build checkouts
 
- * Add a TCP notifier. Works great with http://github.com/atmos/irccat-nodejs
+ * Add a TCP notifier. Works great with http://github.com/atmos/ircat.js
 
  * Fix URLs, allowing to mount Integrity to a sub direcory [Iain Hecker]
 
