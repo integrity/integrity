@@ -32,11 +32,6 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
       assert_have_tag("li.failed",  :count => 2)
       assert_have_tag("li.success", :count => 3)
     end
-
-    header "HTTP_IF_MODIFIED_SINCE", last_response["Last-Modified"]
-    visit "/"
-
-    assert_equal 304, last_response.status
   end
 
   scenario "Looking for details on the last build" do
