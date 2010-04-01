@@ -85,7 +85,7 @@ module Integrity
 
     get "/:project" do
       login_required unless current_project.public?
-      last_modified current_project.builds.max(:updated_at)
+      last_modified current_project.builds.max(:created_at, :updated_at)
       show :project, :title => ["projects", current_project.name]
     end
 

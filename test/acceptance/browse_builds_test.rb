@@ -42,7 +42,7 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
       :message => "No more pending tests :)",
       :committed_at => Time.mktime(2008, 12, 15, 18)
     )
-    Project.gen(:integrity, :builds => [build])
+    p = Project.gen(:integrity, :builds => [build])
 
     visit "/integrity"
 
@@ -53,9 +53,15 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("pre.output",   :content => "This is the build output")
 
     header "HTTP_IF_MODIFIED_SINCE", last_response["Last-Modified"]
-    visit "/"
-
+    visit "/integrity"
     assert_equal 304, last_response.status
+
+    p.builds << Build.gen(:pending)
+    p.save
+
+    header "HTTP_IF_MODIFIED_SINCE", last_response["Last-Modified"]
+    visit "/integrity"
+    assert_equal 200, last_response.status
   end
 
   scenario "Browsing to an individual build page" do
@@ -80,9 +86,9 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("button", :content => "Rebuild")
 
     visit "/integrity"
+
     header "HTTP_IF_MODIFIED_SINCE", last_response["Last-Modified"]
     visit "/integrity"
-
     assert_equal 304, last_response.status
   end
 end
