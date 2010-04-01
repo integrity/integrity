@@ -3,7 +3,7 @@ cat <<EOF
 <!DOCTYPE html>
 <html>
 <head>
-<title>Integrity | The easy and fun automated continuous integration server</title>
+<title>Integrity | Continuous Integration server</title>
 <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
 <link href=integrity.css rel=stylesheet type="text/css">
 </head>
@@ -14,8 +14,7 @@ src="http://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"
 alt="Fork me on GitHub" /></a></p>
 <div id=header>
 <h1><a href="/">Integrity</a></h1>
-<p>The easy and fun automated <strong>continuous integration</strong>
-server</p>
+<p>Continuous Integration server</p>
 </div>
 <div id=content>
 EOF
