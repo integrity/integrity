@@ -31,11 +31,6 @@ class HomepageTest < Test::Unit::AcceptanceTestCase
 
     assert_have_tag("li[@class~=blank]",    :content => "Never built yet")
     assert_have_tag("li[@class~=building]", :content => "Building!")
-
-    header "HTTP_IF_MODIFIED_SINCE", last_response["Last-Modified"]
-    visit "/"
-
-    assert_equal 304, last_response.status
   end
 
   scenario "Clicking on a project from the homepage" do

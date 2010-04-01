@@ -52,7 +52,6 @@ module Integrity
     end
 
     get "/?" do
-      last_modified Build.max(:updated_at)
       @projects = authorized? ? Project.all : Project.all(:public => true)
       show :home, :title => "projects"
     end
