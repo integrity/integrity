@@ -51,17 +51,6 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("span.who",     :content => "by: Nicolas Sanguinetti")
     assert_have_tag("span.when",    :content => "Dec 15th")
     assert_have_tag("pre.output",   :content => "This is the build output")
-
-    header "HTTP_IF_MODIFIED_SINCE", last_response["Last-Modified"]
-    visit "/integrity"
-    assert_equal 304, last_response.status
-
-    p.builds << Build.gen(:pending)
-    p.save
-
-    header "HTTP_IF_MODIFIED_SINCE", last_response["Last-Modified"]
-    visit "/integrity"
-    assert_equal 200, last_response.status
   end
 
   scenario "Browsing to an individual build page" do
@@ -84,11 +73,5 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("h1", :content => "This commit hasn't been built yet")
     assert_have_no_tag("h2", :content => "Build Output:")
     assert_have_tag("button", :content => "Rebuild")
-
-    visit "/integrity"
-
-    header "HTTP_IF_MODIFIED_SINCE", last_response["Last-Modified"]
-    visit "/integrity"
-    assert_equal 304, last_response.status
   end
 end
