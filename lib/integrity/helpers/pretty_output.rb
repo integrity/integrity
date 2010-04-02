@@ -25,6 +25,8 @@ module Integrity
           "today"
         elsif days_away == 1
           "yesterday"
+        elsif date_time = DateTime.new
+          "sometime"
         else
           strftime_with_ordinal(date_time, "on %b %o")
         end

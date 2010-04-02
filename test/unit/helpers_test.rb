@@ -4,6 +4,7 @@ class HelpersTest < IntegrityTest
   test "pretty_date" do
     h = Module.new { extend Integrity::Helpers }
 
+    assert_equal "sometime",    h.pretty_date(DateTime.new)
     assert_equal "today",       h.pretty_date(Time.now)
     assert_equal "yesterday",   h.pretty_date(Time.new - 86400)
 
