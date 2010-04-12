@@ -20,3 +20,8 @@ Integrity.configure do |c|
   c.build_all!
   c.builder      :threaded, 5
 end
+
+Integrity::App.configure do |app|
+  Sass::Plugin.options[:css_location]      = app.public
+  Sass::Plugin.options[:template_location] = app.views
+end

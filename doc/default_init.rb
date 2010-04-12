@@ -1,5 +1,6 @@
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "lib"))
-gem "data_objects", "= 0.10.1"
+
+require ".bundle/environment"
 require "integrity"
 
 # Uncomment as appropriate for the notifier you want to use
@@ -11,16 +12,16 @@ require "integrity/notifier/email"
 # require "integrity/notifier/campfire"
 
 Integrity.configure do |c|
-  c.database  ENV["DATABASE_URL"]
-  c.directory "tmp"
-  c.base_url  ENV["BASE_URL"] || "http://myapp.heroku.com"
-  c.log       "tmp/integrity.log"
-  c.github    ENV["GITHUB_TOKEN"] || "TOKEN"
+  c.database     "sqlite3:integrity.db"
+  c.directory    "builds"
+  c.base_url     "http://ci.example.org"
+  c.log          "integrity.log"
+  c.github       "SECRET"
   c.build_all!
-  c.builder :threaded, 5
+  c.builder      :threaded, 5
 end
 
 Integrity::App.configure do |app|
-  Sass::Plugin.options[:css_location]      = "#{app.root}/tmp"
+  Sass::Plugin.options[:css_location]      = app.public
   Sass::Plugin.options[:template_location] = app.views
 end

@@ -1,4 +1,4 @@
-Integrity — Continuous Integration server
+= Integrity — Continuous Integration server
 
 Code  http://github.com/integrity/integrity
 Docs  http://integrityapp.com
@@ -6,3 +6,28 @@ CI    http://builder.integrityapp.com/integrity
 Bugs  http://github.com/integrity/integrity/issues
 IRC   irc://irc.freenode.net/integrity
 List  integrity@librelist.com
+
+
+== Deploying to Heroku
+
+Deploy [Integrity](http://integrityapp.com) on [Heroku](http://heroku.com)'s platform. Email and Campfire notification gems are enabled by default.
+
+=== Installation
+
+Get the repo;
+
+    git clone git://github.com/sr/integrity-heroku
+    cd integrity-heroku
+    heroku create
+
+Manually edit your Heroku URL and Github Token settings in init.rb
+
+    c.base_url  "http://myapp.heroku.com"
+    c.github    "TOKEN"
+
+Commit and push;
+
+    git commit -a -m "updated our heroku configuration"
+    git push heroku master
+    heroku rake db
+    heroku open
