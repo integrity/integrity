@@ -188,6 +188,18 @@ $ git push heroku master
 $ heroku rake db
 $ heroku open
 
+You can manually edit your Heroku URL and Github Token settings in init.rb
+
+[source, ruby]
+c.base_url  ENV["BASE_URL"] || "http://myapp.heroku.com"
+c.github    ENV["GITHUB_TOKEN"] || "TOKEN"
+
+Or, alternatively you can create some [Heroku Config Vars] (http://docs.heroku.com/config-vars)
+
+[source, shell]
+$ heroku config:add GITHUB_TOKEN=SOME_SECRET_TOKEN
+$ heroku config:add BASE_URL=http://golden-stream-69.heroku.com
+
 NOTE: It isn't possible to access repositories over SSH due to Heroku's
       architecture.
 
