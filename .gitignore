@@ -4,3 +4,4 @@ Gemfile.lock
 integrity.db
 integrity.log
 public/integrity.css
+doc/integrity.html
