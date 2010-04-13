@@ -1,7 +1,6 @@
 = 0.4.x
 
-  * Updated Heroku configuration [Glenn Roberts]
-
+ * Fix Heroku configuration files and deployment instructions [Glenn Roberts]
 
 = 0.4.1 / 2010-04-02
 
