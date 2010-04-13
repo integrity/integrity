@@ -19,6 +19,12 @@ module Integrity
 
     use Sass::Plugin::Rack
 
+    # Specify the tmp dir since Heroku has a read-only filesystem
+    Integrity::App.configure do |app|
+      Sass::Plugin.options[:css_location]      = "#{app.root}/tmp"
+      Sass::Plugin.options[:template_location] = app.views
+    end
+
     before do
       halt 404 if request.path_info.include?("favico")
 
