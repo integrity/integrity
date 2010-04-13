@@ -19,3 +19,10 @@ Integrity.configure do |c|
   c.build_all!
   c.builder :threaded, 5
 end
+
+# Specify the tmp dir since Heroku has a read-only filesystem
+Integrity::App.configure do |app|
+  Sass::Plugin.options[:css_location]      = './tmp/'
+  Sass::Plugin.options[:cache_location]    = './tmp/'
+  Sass::Plugin.options[:template_location] = app.views
+end
