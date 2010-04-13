@@ -19,12 +19,6 @@ module Integrity
 
     use Sass::Plugin::Rack
 
-    # Specify the tmp dir since Heroku has a read-only filesystem
-    configure do |app|
-      Sass::Plugin.options[:css_location]      = "#{app.root}/tmp"
-      Sass::Plugin.options[:template_location] = app.views
-    end
-
     before do
       halt 404 if request.path_info.include?("favico")
 
@@ -44,6 +38,12 @@ module Integrity
       halt 400 unless payload =  endpoint_payload
 
       BuildableProject.call(payload).each { |b| b.build }.size.to_s
+    end
+
+    get "/integrity.css" do
+      response["Content-Type"] = "text/css; charset=utf-8"
+      etag stylesheet_hash
+      sass :integrity
     end
 
     get "/?" do
