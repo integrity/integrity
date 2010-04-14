@@ -8,10 +8,6 @@ module Integrity
         }
       end
 
-      def stylesheet_hash
-        @_hash ||= Digest::MD5.file(options.views + "/integrity.sass").hexdigest
-      end
-
       def show(view, options={})
         @title = breadcrumbs(*options[:title])
         haml view
