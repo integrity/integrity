@@ -1,7 +1,8 @@
 .bundle/*
 Gemfile.lock
 .sass-cache/
-integrity.db
-integrity.log
 public/integrity.css
 doc/integrity.html
+builds
+*.db
+*.log
