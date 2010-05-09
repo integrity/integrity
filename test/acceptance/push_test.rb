@@ -126,6 +126,36 @@ class PushTest < Test::Unit::AcceptanceTestCase
     end
   end
 
+  scenario "Auto-branch feature" do
+    begin
+      Integrity.auto_branch = true
+      Integrity.app.disable(:build_all)
+      repo = git_repo(:my_test_project)
+      repo.add_successful_commit
+
+      Project.gen(:my_test_project, :uri => repo.uri)
+
+      push_post payload(repo)
+      assert_equal "1", last_response.body
+
+      visit "/"
+      click_link "My Test Project"
+      assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
+
+      repo.checkout("wip")
+      repo.add_failing_commit
+
+      push_post payload(repo)
+      assert_equal "1", last_response.body
+
+      visit "/"
+      click_link "My Test Project (wip)"
+      assert_have_tag("h1", :content => "Built #{repo.short_head} and failed")
+    ensure
+      Integrity.auto_branch = false
+    end
+  end
+
   scenario "Receiving an invalid payload" do
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
     push_post "foo"
