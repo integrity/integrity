@@ -43,7 +43,7 @@ Addressable::URI.class_eval { def gsub(*a); to_s.gsub(*a); end }
 
 module Integrity
   class << self
-    attr_accessor :builder, :directory, :base_url, :logger
+    attr_accessor :builder, :directory, :base_url, :logger, :auto_branch
   end
 
   def self.configure(&block)
