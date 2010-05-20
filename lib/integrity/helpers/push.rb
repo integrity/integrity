@@ -32,7 +32,11 @@ module Integrity
 
       uri =
         if repository["private"]
-          "git@github.com:#{URI(repository["url"]).path[1..-1]}"
+          if payload["uri"]
+            payload["uri"]
+          else
+            "git@github.com:#{URI(repository["url"]).path[1..-1]}"
+          end
         else
           URI(repository["url"]).tap { |u| u.scheme = "git" }.to_s
         end
