@@ -30,19 +30,13 @@ module Integrity
       repository = payload.delete("repository")
       branch     = payload.delete("ref").split("/").last
 
-      uri =
+      unless uri = payload.delete("uri")
         if repository["private"]
-          if payload["uri"]
-            payload["uri"]
-          else
-            "git@github.com:#{URI(repository["url"]).path[1..-1]}"
-          end
+          "git@github.com:#{URI(repository["url"]).path[1..-1]}"
         else
           URI(repository["url"]).tap { |u| u.scheme = "git" }.to_s
         end
-
-      # TODO
-      uri = repository["url"] if settings.test?
+      end
 
       commits =
         if settings.build_all?
