@@ -1,0 +1,10 @@
+%form{ :method => "post", :action => project_path(@project, :fork) }
+  %p.normal{ :class => error_class(@project, :branch) }
+    %label{ :for => "project_branch" }<
+      &== Topic branch #{errors_on(@project, :branch)}
+    %input.text#project_branch{ :name => "project_data[branch]", :type => "text" }
+
+  - notifier_form
+
+  %p.submit
+    %button.positive{ :type => "submit" }= "Fork Project"
