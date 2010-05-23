@@ -99,6 +99,25 @@ module Integrity
       show :new, :title => ["projects", current_project.permalink, "edit"]
     end
 
+    get "/:project/fork" do
+      login_required
+      show :fork, :title => ["projects", current_project.permalink, "fork"]
+    end
+
+    post "/:project/fork" do
+      login_required
+
+      branch  = params["project_data"]["branch"]
+      project = Project.create(
+        :name    => "#{current_project.name} (#{branch})",
+        :uri     => current_project.uri.to_s,
+        :branch  => branch,
+        :command => current_project.command,
+        :public  => current_project.public?
+      )
+      redirect project_url(project).to_s
+    end
+
     post "/:project/builds" do
       login_required
 
