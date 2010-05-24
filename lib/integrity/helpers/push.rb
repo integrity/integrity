@@ -28,7 +28,7 @@ module Integrity
       payload = JSON.parse(params[:payload])
 
       repository = payload.delete("repository")
-      branch     = payload.delete("ref").split("/").last
+      branch     = payload.delete("ref").split("refs/heads/").last
 
       unless uri = payload.delete("uri")
         if repository["private"]
