@@ -15,7 +15,7 @@ website] and http://en.wikipedia.org/wiki/Continuous_Integration[Wikipedia].
 == Installation
 Make sure your system meet these prerequisites:
 
-* Ruby >= 1.8.6
+* Ruby >= 1.8.6 (currently doesn't work on 1.9.X)
 * RubyGems >= 1.3.5
 * git >= 1.6
 
@@ -29,8 +29,8 @@ $ bundle install
 $ bundle lock
 $ rake db
 
-If you want give it a quick try before going any further, run
-`bundle exec rackup` and navigate to http://0.0.0.0:9292.
+To give it a quick try before going any further, run `bundle exec rackup` and
+navigate to http://0.0.0.0:9292.
 
 Upgrade:
 [source, shell]
@@ -38,7 +38,7 @@ $ git fetch origin
 $ git merge origin/v0.4.1
 
 == Configuration
-Integrity is configured via the `init.rb` file using the Ruby syntax. Example:
+Integrity is configured via the `init.rb` file using Ruby.
 [source, ruby]
 ----
 Integrity.configure do |c|
@@ -53,7 +53,7 @@ end
 
 === Basic settings
 database:: Any valid database URI supported by
-http://datamapper.rubyforge.org/dm-core/DataMapper.html[DataMapper]. Examples:
+http://datamapper.rubyforge.org/dm-core/DataMapper.html[DataMapper].
 * `sqlite3:integrity.db`
 * `mysql://user:password@localhost/integrity`
 * `postgres://user:password@localhost/integrity`
@@ -62,7 +62,7 @@ IMPORTANT: You need to install the appropriate `data_objects` adapter as well.
 The SQLite3 adapter (`do_sqlite3`) is installed by default.
 
 directory:: This is where your projects' code will be checked out. Make sure it
-is writable by the user that runs Integrity.
+is writable by the user who runs Integrity.
 base_url:: Absolute URL to your Integrity instance, *without* a trailing slash.
 This setting is optional but is required to have proper links in notifications.
 log:: Path to the Integrity log file; mostly useful for troubleshooting
@@ -70,7 +70,6 @@ build_all!:: Tells Integirty to build every single commit it is notified about.
 Only builds the newest otherwise.
 HTTP authentication:: If both the `user` and `pass` settings are set then only
 the logged-in users can administer the projects and see the private ones.
-Example:
 [source, ruby]
 ----
 c.user "admin"
@@ -142,7 +141,7 @@ The second argument is the size of the thread pool.
 ==== Delayed::Job
 The +dj+ builder queue up the builds into a SQL database using
 http://github.com/tobi/delayed_job[Delayed::Job]. To use it, install its
-dependencies by uncommenting the relevant lines in the `Gemfile` and running
+dependencies by uncommenting the relevant lines in the `Gemfile` and run
 `bundle lock && bundle install`.
 
 [source, ruby]
@@ -152,8 +151,9 @@ The second argument must be a valid
 http://api.rubyonrails.org/classes/ActiveRecord/Base.html#M002364[ActiveRecord
 connection hash].
 
-Run a worker with `./bin/rake jobs:work`. Please See
-http://github.com/tobi/delayed_job#readme[dj's documentation] for more details.
+Run a worker with `rake jobs:work`. See
+http://github.com/tobi/delayed_job#readme[Delayed::Job's documentation]
+for more details.
 
 == Notification
 After a build status is available, you want to know it **immediately**,
@@ -181,6 +181,7 @@ Heroku is the easiest and fastest way to deploy Integrity.
 
 [source, shell]
 $ cp doc/heroku.rb init.rb
+$ $EDITOR Gemfile # un-comment the postgres gem
 $ git commit -am "Configured for Heroku"
 $ gem install heroku
 $ heroku create
@@ -193,13 +194,12 @@ You can manually edit your Github Token in init.rb
 [source, ruby]
 c.github    ENV["GITHUB_TOKEN"] || "TOKEN"
 
-Or, you can create a [Heroku Config Vars] (http://docs.heroku.com/config-vars)
+Or create a [Heroku Config Vars] (http://docs.heroku.com/config-vars)
 
 [source, shell]
 $ heroku config:add GITHUB_TOKEN=secret
 
-NOTE: It isn't possible to access repositories over SSH due to Heroku's
-      architecture.
+NOTE: It isn't possible to access repositories over SSH on Heroku
 
 === http://modrails.com[Phusion Passenger]
 Please see Passenger's documentation for
@@ -273,17 +273,10 @@ Once you're done, make sure your changes are rebased on on top of the `master`
 branch and open a new ticket in our bug tracker to let us know where we can
 pull from.
 
-== See Also
-* http://integrity-menu.com[Integrity Menu] — a dashboard widget for Mac OS X
-  that shows the current status of projects being managed by Integrity.
-  http://metric-fu.rubyforge.org[metric_fu].
-* http://devver.net/caliper[Caliper], a service of http://devver.net[Devver]
-  that provides easy Ruby metrics.
-
 == FAQ
 === Does it support Subversion or any other SCM?
 [[faq-scm]]
-No. Integrity only supports http://git-scm.org[git].
+No. Integrity only works with http://git-scm.org[git].
 
 === But does it work with <insert tech here>?
 [[faq-tech]]
