@@ -75,6 +75,20 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
   end
 
+  scenario "Monitoring the foo/bar branch" do
+    repo = git_repo(:my_test_project)
+    repo.checkout "foo/bar"
+    repo.add_successful_commit
+    Project.gen(:my_test_project, :uri => repo.uri, :branch => repo.branch)
+
+    github_post payload(repo)
+    assert_equal "1", last_response.body
+
+    visit "/my-test-project"
+
+    assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
+  end
+
   scenario "Receiving an invalid payload" do
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
     github_post "foo"
