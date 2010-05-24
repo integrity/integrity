@@ -1,15 +1,12 @@
 module TestHelper
   class GitRepo
-    attr_reader :path
+    attr_reader :path, :branch
 
     alias_method :uri, :path
 
-    def initialize(name = "test_repo")
-      @path = Integrity.directory.join(name)
-    end
-
-    def branch
-      "master"
+    def initialize(name = "test_repo", branch = "master")
+      @path   = Integrity.directory.join(name)
+      @branch = branch
     end
 
     def create
@@ -65,8 +62,13 @@ module TestHelper
     def add_commit(message)
       Dir.chdir(@path) {
         yield
-        `git commit -m "#{message}"`
+        `git commit -m "#{@branch}: #{message}"`
       }
+    end
+
+    def checkout(branch)
+      @branch = branch
+      Dir.chdir(@path) { `git checkout -b #{branch} > /dev/null 2>&1` }
     end
 
     def script(status)
