@@ -1,5 +1,4 @@
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "lib"))
-gem "data_objects", "= 0.10.1"
 require "integrity"
 
 # Uncomment as appropriate for the notifier you want to use
