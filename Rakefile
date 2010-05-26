@@ -20,6 +20,7 @@ namespace :test do
   end
 end
 
+desc "Create the database"
 task :db do
   require "init"
   DataMapper.auto_upgrade!
