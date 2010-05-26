@@ -17,13 +17,6 @@ module Integrity
       show :error, :title => "something has gone terribly wrong"
     end
 
-    use Sass::Plugin::Rack
-
-    configure do |app|
-      Sass::Plugin.options[:css_location]      = app.public
-      Sass::Plugin.options[:template_location] = app.views
-    end
-
     before do
       halt 404 if request.path_info.include?("favico")
 
