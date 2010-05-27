@@ -6,7 +6,7 @@ module Integrity
     include Notifiers
 
     property :id,         Serial
-    property :name,       String,   :required => true
+    property :name,       String,   :required => true, :unique => true
     property :permalink,  String
     property :uri,        URI,      :required => true, :length => 255
     property :branch,     String,   :required => true, :default => "master"
@@ -14,8 +14,6 @@ module Integrity
     property :public,     Boolean,  :default  => true
 
     timestamps :at
-
-    validates_is_unique :name
 
     default_scope(:default).update(:order => [:name.asc])
 
