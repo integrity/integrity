@@ -10,6 +10,7 @@ require "dm-validations"
 require "dm-types"
 require "dm-timestamps"
 require "dm-aggregates"
+require "dm-migrations"
 
 require "yaml"
 require "logger"
