@@ -9,7 +9,7 @@ module Integrity
 
     belongs_to :project
 
-    validates_is_unique :name, :scope => :project
+    validates_uniqueness_of :name, :scope => :project
 
     def self.available
       @notifiers ||= {}
