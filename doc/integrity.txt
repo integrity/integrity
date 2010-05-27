@@ -260,6 +260,7 @@ NOTE: If you run Integrity with another deployment strategy please drop us
 You can get in touch via IRC at irc://irc.freenode.net/integrity[#integrity on
 freenode]. If no one happens to be around, you can ask by emailing our mailing
 list at integrity@librelist.com.
+(http://librelist.com/browser/integrity/[Archives])
 
 If you find a bug, or want to give us a feature request, log it into our
 http://github.com/integrity/integrity/issues[bug tracker].
