@@ -19,7 +19,7 @@ class IRCNotificationTest < Test::Unit::AcceptanceTestCase
 
     login_as "admin", "test"
     visit "/my-test-project"
-    click_link "Edit Project"
+    click_link "Edit"
 
     check "enabled_notifiers_irc"
     fill_in "Send to", :with => "irc://irc.example.org/foo"

@@ -1,5 +1,6 @@
 #administrative
-  %a{ :href => project_path(@project, :edit) } Edit Project
+  %a{ :href => project_path(@project, :edit) } Edit
+  = " / "
   %a{ :href => project_path(@project, :fork) } Fork
 
 - if @project.blank?

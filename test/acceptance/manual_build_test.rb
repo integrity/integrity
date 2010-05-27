@@ -99,7 +99,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("h1", :content => "failed")
 
     click_link "my-test-project"
-    click_link "Edit Project"
+    click_link "Edit"
     fill_in "Build script", :with => "./test"
     click_button "Update Project"
     click_button "Fetch and build"
@@ -128,7 +128,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("h1", :content => "failed")
 
     click_link "my-test-project"
-    click_link "Edit Project"
+    click_link "Edit"
     fill_in "Build script", :with => "./test"
     click_button "Update Project"
     click_button "Rebuild"
