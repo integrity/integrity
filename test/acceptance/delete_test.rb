@@ -12,7 +12,7 @@ class DeleteTest < Test::Unit::AcceptanceTestCase
 
     login_as "admin", "test"
     visit "/integrity"
-    click_link "Edit Project"
+    click_link "Edit"
     click_button "Yes, I'm sure, nuke it"
     visit "/"
 

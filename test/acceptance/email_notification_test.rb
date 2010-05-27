@@ -27,7 +27,7 @@ class EmailNotificationTest < Test::Unit::AcceptanceTestCase
 
     login_as "admin", "test"
     visit "/my-test-project"
-    click_link "Edit Project"
+    click_link "Edit"
 
     check "enabled_notifiers_email"
     fill_in "email_notifier_host", :with => "127.0.0.1"
@@ -49,7 +49,7 @@ class EmailNotificationTest < Test::Unit::AcceptanceTestCase
     server.stop
 
     visit "/my-test-project"
-    click_link "Edit Project"
+    click_link "Edit"
     assert_have_tag("select#email_notifier_auth option[@value='cram_md5'][@selected='selected']")
   end
 
@@ -61,7 +61,7 @@ class EmailNotificationTest < Test::Unit::AcceptanceTestCase
 
     login_as "admin", "test"
     visit "/my-test-project"
-    click_link "Edit Project"
+    click_link "Edit"
 
     check "enabled_notifiers_email"
     fill_in "email_notifier_to",   :with => "hacker@example.org"

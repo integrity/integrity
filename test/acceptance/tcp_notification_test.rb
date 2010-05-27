@@ -20,7 +20,7 @@ class TCPNotificationTest < Test::Unit::AcceptanceTestCase
 
     login_as "admin", "test"
     visit "/my-test-project"
-    click_link "Edit Project"
+    click_link "Edit"
 
     check "enabled_notifiers_tcp"
     fill_in "Send to", :with => "tcp://0.0.0.0:1234"

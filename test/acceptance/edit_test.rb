@@ -12,7 +12,7 @@ class EditTest < Test::Unit::AcceptanceTestCase
 
     login_as "admin", "test"
     visit "/integrity"
-    click_link "Edit Project"
+    click_link "Edit"
     fill_in "Name",            :with => "Integrity (refactoring)"
     fill_in "Branch to track", :with => "refactoring"
     click_button "Update Project"
@@ -25,7 +25,7 @@ class EditTest < Test::Unit::AcceptanceTestCase
 
     login_as "admin", "test"
     visit "/integrity"
-    click_link "Edit Project"
+    click_link "Edit"
     check "Public project"
     click_button "Update Project"
     log_out
@@ -51,7 +51,7 @@ class EditTest < Test::Unit::AcceptanceTestCase
   scenario "Editing a project as a user" do
     Project.gen(:integrity)
     visit "/integrity"
-    click_link "Edit Project"
+    click_link "Edit"
     assert_equal 401, last_response.status
   end
 end
