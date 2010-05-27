@@ -30,6 +30,16 @@ module Integrity
       BuildableProject.new(self, commit).build
     end
 
+    def fork(new_branch)
+      Project.create(
+        :name    => "#{name} (#{new_branch})",
+        :uri     => uri,
+        :branch  => new_branch,
+        :command => command,
+        :public  => public?
+      )
+    end
+
     # TODO lame, there is got to be a better way
     def sorted_builds
       builds(:order => [:created_at.desc])
