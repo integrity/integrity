@@ -1,6 +1,15 @@
-= 0.4.x
+= 20 / 2010-05-27
 
- * Fix Heroku configuration files and deployment instructions [Glenn Roberts]
+ * Fix GitHub integration to work with valid git ref such as
+   "refs/heads/releases/2010/15" [Chris Griego]
+
+ * Support GitHub-ish payload to make Integrity work with
+   http://beanstalkapp.com/ [Dima Sabanin]
+
+ * Unknown commit date are now displayed as "unavailable" instead
+   of "Jan 1st" [Douglas F Shearer]
+
+ * Fix Heroku deployment [Glenn Roberts]
 
 = 0.4.1 / 2010-04-02
 
