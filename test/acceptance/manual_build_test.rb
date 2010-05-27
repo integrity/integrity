@@ -171,7 +171,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
       click_link "my-test-project"
 
       assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
-    rescue LoadError
+    rescue LoadError, NameError
       warn "Couldn't load DJ. Skipping test"
     ensure
       Integrity.builder = old_builder
