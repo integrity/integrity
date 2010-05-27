@@ -108,13 +108,7 @@ module Integrity
       login_required
 
       branch  = params["project_data"]["branch"]
-      project = Project.create(
-        :name    => "#{current_project.name} (#{branch})",
-        :uri     => current_project.uri.to_s,
-        :branch  => branch,
-        :command => current_project.command,
-        :public  => current_project.public?
-      )
+      project = current_project.fork(branch)
       redirect project_url(project).to_s
     end
 

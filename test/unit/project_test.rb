@@ -154,6 +154,18 @@ class ProjectTest < IntegrityTest
     end
   end
 
+  test "fork" do
+    project = Project.gen(:integrity)
+
+    forked = assert_change(Project, :count, 1) { project.fork("fork") }
+
+    assert_equal "Integrity (fork)", forked.name
+    assert_equal "fork",             forked.branch
+    assert_equal project.uri,        forked.uri
+    assert_equal project.command,    forked.command
+    assert_equal project.public,     forked.public
+  end
+
   describe "When retrieving state about its notifier" do
     setup do
       @project = Project.gen
