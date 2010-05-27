@@ -15,9 +15,6 @@ class IntegrityStylesheetTest < Test::Unit::AcceptanceTestCase
 
     assert_contain("body {")
 
-    header "HTTP_IF_MODIFIED_SINCE", last_response["Last-Modified"]
-    visit "/integrity.css"
-
     visit "/reset.css"
     assert_contain("Yahoo!")
 
