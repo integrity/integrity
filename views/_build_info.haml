@@ -13,9 +13,6 @@
     |
     %span.when{ :title => build.commit.committed_at }<
       &= pretty_date build.commit.committed_at
-    |
-    %span.what<
-      &== commit: #{build.commit.identifier}
 
 - if build.completed?
   %h2 Build Output:
