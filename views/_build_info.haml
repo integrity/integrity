@@ -13,8 +13,8 @@
     |
     %span.when{ :title => build.commit.committed_at }<
       &= pretty_date build.commit.committed_at
-    |
     - if build.project.github?
+      |
       %span.github<
         %a{ :href => github_commit_url(build.commit) } on GitHub
 
