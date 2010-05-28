@@ -5,7 +5,12 @@ module Integrity
         parts = project.uri.path.split("/").reject { |x| x.empty? }
         user  = parts.first
         repo  = parts.last.chomp(".git")
-        "http://github.com/#{user}/#{repo}"
+
+        if project.branch == "master"
+          "http://github.com/#{user}/#{repo}"
+        else
+          "http://github.com/#{user}/#{repo}/tree/#{project.branch}"
+        end
       end
 
       def github_commit_url(commit)

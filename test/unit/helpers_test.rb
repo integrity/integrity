@@ -36,5 +36,9 @@ class HelpersTest < IntegrityTest
 
     assert_equal "http://github.com/sr/integrity",
       @h.github_project_url(project)
+
+    project.update(:branch => "baz")
+    assert_equal "http://github.com/sr/integrity/tree/baz",
+      @h.github_project_url(project).to_s
   end
 end
