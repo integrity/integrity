@@ -166,6 +166,11 @@ class ProjectTest < IntegrityTest
     assert_equal project.public,     forked.public
   end
 
+  test "github" do
+    assert Project.gen(:integrity).github?
+    assert ! Project.gen(:my_test_project).github?
+  end
+
   describe "When retrieving state about its notifier" do
     setup do
       @project = Project.gen

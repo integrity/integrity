@@ -40,6 +40,10 @@ module Integrity
       )
     end
 
+    def github?
+      uri.to_s.include?("github.com")
+    end
+
     # TODO lame, there is got to be a better way
     def sorted_builds
       builds(:order => [:created_at.desc])
