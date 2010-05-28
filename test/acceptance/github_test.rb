@@ -13,7 +13,9 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
 
   def payload(repo)
     { "after"      => repo.head, "ref" => "refs/heads/#{repo.branch}",
-      "repository" => { "url" => repo.uri },
+      # TODO get GitHub to include git URL in its payload :-)
+      # "repository" => { "url" => repo.uri },
+      "uri"        => repo.uri,
       "commits"    => repo.commits }.to_json
   end
 
@@ -67,12 +69,17 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     repo.add_successful_commit
     Project.gen(:my_test_project, :uri => repo.uri)
 
+    Project.gen(:integrity, :uri => git_repo(:integrity).uri)
+
     github_post payload(repo)
     assert_equal "1", last_response.body
 
     visit "/my-test-project"
 
     assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
+
+    visit "/integrity"
+    assert_contain "No builds"
   end
 
   scenario "Monitoring the foo/bar branch" do

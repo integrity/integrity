@@ -31,11 +31,12 @@ module Integrity
       branch     = payload.delete("ref").split("refs/heads/").last
 
       unless uri = payload.delete("uri")
-        if repository["private"]
-          "git@github.com:#{URI(repository["url"]).path[1..-1]}"
-        else
-          URI(repository["url"]).tap { |u| u.scheme = "git" }.to_s
-        end
+        uri =
+          if repository["private"]
+            "git@github.com:#{URI(repository["url"]).path[1..-1]}"
+          else
+            URI(repository["url"]).tap { |u| u.scheme = "git" }.to_s
+          end
       end
 
       commits =
