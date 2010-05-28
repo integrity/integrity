@@ -194,7 +194,7 @@ You can manually edit your Github Token in init.rb
 [source, ruby]
 c.github    ENV["GITHUB_TOKEN"] || "TOKEN"
 
-Or create a [Heroku Config Vars] (http://docs.heroku.com/config-vars)
+Or create a http://docs.heroku.com/config-vars[Heroku Config vars]
 
 [source, shell]
 $ heroku config:add GITHUB_TOKEN=secret
