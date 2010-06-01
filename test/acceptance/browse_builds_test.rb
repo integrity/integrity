@@ -15,6 +15,9 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
     assert_have_no_tag("#last_build")
     assert_have_no_tag("#previous_builds")
     assert_contain("No builds for this project, buddy")
+
+    click_link "GitHub"
+    assert last_request.url.include?("http://github.com")
   end
 
   scenario "Browsing to a project with all kind of builds" do
