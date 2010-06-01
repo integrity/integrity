@@ -1,3 +1,15 @@
+= 21 / 2010-06-01
+
+ * Add ability to fork a project to track a topic branch
+
+ * Link to GitHub from build and project page when possible
+
+ * Do not display the full commit SHA1 anymore
+
+ * Fix a bug introduced in v20
+
+ * Upgrade to DataMapper RC3
+
 = 20 / 2010-05-27
 
  * Fix GitHub integration to work with valid git ref such as
