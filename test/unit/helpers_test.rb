@@ -44,4 +44,11 @@ class HelpersTest < IntegrityTest
     assert_equal "http://github.com/sr/integrity/commit/#{commit_id}",
       @h.github_commit_url(commit)
   end
+  
+  test "bash_color_codes" do
+    bash = "Test string \e[31m31\e[0m, \e[32m32\e[0m, \e[33m33\e[0m, \e[34m34\e[0m, \e[35m35\e[0m, \e[36m36\e[0m, \e[37m37\e[0m"
+    html = "Test string <span class=\"color31\">31</span>, <span class=\"color32\">32</span>, <span class=\"color33\">33</span>, <span class=\"color34\">34</span>, <span class=\"color35\">35</span>, <span class=\"color36\">36</span>, <span class=\"color37\">37</span>"
+    
+    assert_equal @h.bash_color_codes(bash), html
+  end
 end
