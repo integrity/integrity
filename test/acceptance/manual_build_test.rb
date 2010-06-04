@@ -77,6 +77,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("#build h1", :content => "hasn't been built yet")
 
     build
+    reload
 
     click_link "my-test-project"
     assert_have_tag "h1", :content => "success"
