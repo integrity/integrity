@@ -29,7 +29,7 @@ class HelpersTest < IntegrityTest
     project.builds << Build.gen(:successful, :commit => commit)
     project.save
 
-    assert_equal "http://github.com/foca/integrity/commits/#{commit_id}",
+    assert_equal "http://github.com/foca/integrity/commit/#{commit_id}",
       @h.github_commit_url(commit)
 
     project.update(:uri => "git@github.com:sr/integrity.git")
