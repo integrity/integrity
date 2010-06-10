@@ -1,12 +1,12 @@
 module Integrity
   module Helpers
     module Urls
-      def github_project_url(project)
+      def github_project_url(project, branch=true)
         parts = project.uri.path.split("/").reject { |x| x.empty? }
         user  = parts.first
         repo  = parts.last.chomp(".git")
 
-        if project.branch == "master"
+        if ! branch || project.branch == "master"
           "http://github.com/#{user}/#{repo}"
         else
           "http://github.com/#{user}/#{repo}/compare/" \
@@ -15,7 +15,7 @@ module Integrity
       end
 
       def github_commit_url(commit)
-        github_project_url(commit.build.project).to_s +
+        github_project_url(commit.build.project, false).to_s +
           "/commit/#{commit.identifier}"
       end
 

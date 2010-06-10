@@ -40,5 +40,8 @@ class HelpersTest < IntegrityTest
     project.update(:branch => "baz")
     assert_equal "http://github.com/sr/integrity/compare/master...baz",
       @h.github_project_url(project).to_s
+
+    assert_equal "http://github.com/sr/integrity/commit/#{commit_id}",
+      @h.github_commit_url(commit)
   end
 end
