@@ -1,19 +1,44 @@
 module Integrity
   class BuildableProject
+    class Finder
+      def self.find(uri, branch)
+        new(uri, branch).find
+      end
+
+      def initialize(uri, branch)
+        @uri    = uri
+        @branch = branch
+      end
+
+      def find
+        return branches unless auto_branch?
+        Array(branch || forked)
+      end
+
+      def auto_branch?
+        !! Integrity.auto_branch
+      end
+
+      def branches
+        all.all(:branch => @branch)
+      end
+
+      def branch
+        all.first(:branch => @branch)
+      end
+
+      def forked
+        all.first("master").fork(@branch)
+      end
+
+      def all
+        @all ||= Project.all(:uri.like => "#{@uri}%")
+      end
+    end
+
     def self.call(buildable)
-      projects = Project.all(:uri.like => "#{buildable["uri"]}%")
-
-      projects =
-        case
-        when ! Integrity.auto_branch?
-          projects.all(:branch => buildable["branch"])
-        when project = projects.first(:branch => buildable["branch"])
-          project
-        when project = projects.first(:branch => "master")
-          project.fork(buildable["branch"])
-        end
-
-      Array(projects).inject([]) { |acc, p|
+      projects = Finder.find(buildable["uri"], buildable["branch"])
+      projects.inject([]) { |acc, p|
         acc.concat buildable["commits"].collect { |c| new(p, c["id"]) }
       }
     end
