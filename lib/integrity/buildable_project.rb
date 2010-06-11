@@ -4,11 +4,12 @@ module Integrity
       projects = Project.all(:uri.like => "#{buildable["uri"]}%")
 
       projects =
-        if ! Integrity.auto_branch?
+        case
+        when ! Integrity.auto_branch?
           projects.all(:branch => buildable["branch"])
-        elsif project = projects.first(:branch => buildable["branch"])
+        when project = projects.first(:branch => buildable["branch"])
           project
-        elsif project = projects.first(:branch => "master")
+        when project = projects.first(:branch => "master")
           project.fork(buildable["branch"])
         end
 
