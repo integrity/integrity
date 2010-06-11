@@ -86,7 +86,7 @@ run Integrity.app
 ----
 
 === Automating the builds
-Integrity provides three different HTTP endpoints to trigger new builds:
+Integrity provides two HTTP endpoints to trigger new builds:
 
 POST /:project/builds:: Causes Integrity to fetch the HEAD of the remote
 repository and build it. Note that HTTP authentication applies to it if set.
@@ -97,33 +97,6 @@ http://github.com/guides/post-receive-hooks[Post-Receive Hook]. Enable it:
 [source, ruby]
 ----
 c.github "TOKEN"
-----
-
-POST /push/:token:: Acts the GitHub endpoint but with a simpler payload
-format, making it easier to use in custom post-receive hook or cron jobs.
-Enable it:
-[source, ruby]
-----
-c.push "TOKEN"
-----
-
-Payload example:
-----
-{
-  "uri": "git://example.org/repo.git"
-  "branch": "master",
-  "commits": [
-    {
-      "author": {
-        "name": "John Doe",
-        "email": "johndoe@example.org"
-      },
-      "timestamp": "2009-12-23 00:01:41 +0100",
-      "id": "da90853abfc89b41d40b9f33f240e2e9018fc85f",
-      "message": "First commit"
-    }
-  ]
-}
 ----
 
 === Choosing a builder
