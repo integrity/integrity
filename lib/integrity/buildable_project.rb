@@ -28,7 +28,9 @@ module Integrity
       end
 
       def forked
-        all.first("master").fork(@branch)
+        if master = all.first("master")
+          master.fork(@branch)
+        end
       end
 
       def all
