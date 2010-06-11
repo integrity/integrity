@@ -30,10 +30,10 @@ module Integrity
       end
     end
 
-    post "/:endpoint/:token" do |endpoint, token|
-      pass unless endpoint_enabled?
-      halt 403 unless token   == endpoint_token
-      halt 400 unless payload =  endpoint_payload
+    post "/github/:token" do |token|
+      pass     unless github_enabled?
+      halt 403 unless token   == github_token
+      halt 400 unless payload =  github_payload
 
       BuildableProject.call(payload).each { |b| b.build }.size.to_s
     end
