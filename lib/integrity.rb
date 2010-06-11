@@ -46,10 +46,6 @@ module Integrity
     attr_accessor :builder, :directory, :base_url, :logger, :auto_branch
   end
 
-  def self.auto_branch?
-    !! auto_branch
-  end
-
   def self.configure(&block)
     @config ||= Configurator.new(&block)
     @config.tap { |c| block.call(c) if block }
