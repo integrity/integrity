@@ -76,7 +76,7 @@ class ProjectTest < IntegrityTest
   end
 
   test "fork" do
-    project = Project.gen(:integrity)
+    project = Project.gen(:integrity, :notifiers => [Notifier.gen(:irc)])
 
     forked = assert_change(Project, :count, 1) { project.fork("fork") }
 
@@ -85,6 +85,9 @@ class ProjectTest < IntegrityTest
     assert_equal project.uri,        forked.uri
     assert_equal project.command,    forked.command
     assert_equal project.public,     forked.public
+
+    assert_equal 2, Notifier.count
+    assert project.notifiers.first.config[:uri].include?("irc://")
   end
 
   test "github" do
