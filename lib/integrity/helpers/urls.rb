@@ -9,7 +9,8 @@ module Integrity
         if project.branch == "master"
           "http://github.com/#{user}/#{repo}"
         else
-          "http://github.com/#{user}/#{repo}/compare/master..#{project.branch}"
+          "http://github.com/#{user}/#{repo}/compare/" \
+            "master...#{project.branch}"
         end
       end
 
