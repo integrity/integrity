@@ -33,8 +33,5 @@ class ConfiguratorTest < IntegrityTest
   test "endpoints" do
     Integrity.configure { |c| c.github "HOLY_HUB" }
     assert_equal "HOLY_HUB", Integrity::App.github
-
-    Integrity.configure { |c| c.push "42" }
-    assert_equal "42", Integrity::App.push
   end
 end
