@@ -36,10 +36,6 @@ module Integrity
         end
     end
 
-    def push(token)
-      Integrity::App.set(:push, token)
-    end
-
     def github(token)
       Integrity::App.set(:github, token)
     end
