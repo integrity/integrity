@@ -30,7 +30,7 @@ class ConfiguratorTest < IntegrityTest
       instance_variable_get(:@dev).path
   end
 
-  test "endpoints" do
+  test "github" do
     Integrity.configure { |c| c.github "HOLY_HUB" }
     assert_equal "HOLY_HUB", Integrity::App.github
   end
