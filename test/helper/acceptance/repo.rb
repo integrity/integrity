@@ -62,7 +62,8 @@ module TestHelper
     def add_commit(message)
       Dir.chdir(@path) {
         yield
-        `git commit -m "#{@branch}: #{message}"`
+        `git commit -m "#{@branch}: #{message}" \
+           --author="John Doe <jdoe@gmail.com>"`
       }
     end
 

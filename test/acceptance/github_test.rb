@@ -131,20 +131,34 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "Monitoring the foo/bar branch" do
-    Integrity.app.disable(:build_all)
+    old_builder = Integrity.builder
 
-    repo = git_repo(:my_test_project)
-    repo.checkout "foo/bar"
-    repo.add_successful_commit
+    begin
+      Integrity.builder = nil
+      Integrity.configure { |c| c.builder :threaded, 1 }
 
-    Project.gen(:my_test_project, :uri => repo.uri, :branch => repo.branch)
+      repo = git_repo(:my_test_project)
+      repo.checkout "foo/bar"
+      repo.add_successful_commit
 
-    github_post payload(repo)
-    assert_equal "1", last_response.body
+      Project.gen(:my_test_project, :uri => repo.uri, :branch => repo.branch)
 
-    visit "/my-test-project"
+      github_post payload(repo)
+      assert_equal "1", last_response.body
 
-    assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
+      visit "/my-test-project"
+      assert_have_tag "#last_build h1", :content => "#{repo.short_head} hasn't"
+      assert_have_tag "p", :content => "foo/bar: This commit will work"
+      assert_have_tag "span.who", :content => "by: John Doe"
+      assert_have_tag "span.when", :content => "today"
+
+      Integrity.builder.wait!
+      reload
+
+      assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
+    ensure
+      Integrity.builder = old_builder
+    end
   end
 
   scenario "Receiving an invalid payload" do
