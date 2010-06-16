@@ -10,6 +10,10 @@ require "integrity"
 # require "integrity/notifier/irc"
 # = Campfire
 # require "integrity/notifier/campfire"
+# = TCP
+# require "integrity/notifier/tcp"
+# = HTTP
+# require "integrity/notifier/http"
 
 Integrity.configure do |c|
   c.database     "sqlite3:integrity.db"
