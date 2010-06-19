@@ -1,4 +1,4 @@
-source :gemcutter
+source "http://rubygems.org"
 
 gem "dm-sqlite-adapter", "1.0.0"
 gem "dm-core", "1.0.0"
