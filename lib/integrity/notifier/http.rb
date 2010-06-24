@@ -7,11 +7,11 @@ module Integrity
         <<-HAML
 %p.normal
   %label{ :for => "http_notifier_url" } URL
-  %input.text#http_notifier_url{                          |
-    :name => "notifiers[HTTP][url]",                      |
-    :type => "text",                                     |
-    :value => config["url"] ||                           |
-      "http://0.0.0.0:3000" } |
+  %input.text#http_notifier_url{            |
+    :name => "notifiers[HTTP][url]",        |
+    :type => "text",                        |
+    :value => config["url"] ||              |
+      "http://0.0.0.0:3000" }               |
         HAML
       end
 
