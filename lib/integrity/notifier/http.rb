@@ -6,37 +6,23 @@ module Integrity
       def self.to_haml
         <<-HAML
 %p.normal
-  %label{ :for => "http_notifier_success" } Success
-  %input.text#http_notifier_success{                          |
-    :name => "notifiers[HTTP][success]",                      |
+  %label{ :for => "http_notifier_url" } URL
+  %input.text#http_notifier_url{                          |
+    :name => "notifiers[HTTP][url]",                      |
     :type => "text",                                     |
-    :value => config["success"] ||                           |
+    :value => config["url"] ||                           |
       "http://0.0.0.0:3000" } |
-%p.normal
-  %label{ :for => "http_notifier_failure" } Failure
-  %input.text#http_notifier_failure{                          |
-    :name => "notifiers[HTTP][failure]",                      |
-    :type => "text",                                     |
-    :value => config["failure"] ||                           |
-      "http://0.0.0.0:3000" } |
-
         HAML
       end
 
       def initialize(build, config={})
-        @success = URI(config.delete("success"))
-        @failure = URI(config.delete("failure"))
+        @url = URI(config.delete("url"))
         super
       end
 
       def deliver!
-        if short_message.include? "success"
-          url = @success
-        elsif short_message.include? "failed"
-          url = @failure
-        end
         begin
-          Net::HTTP.post_form(url, {'name'=>build.project.name,'short_message'=>short_message,'author'=>build.commit.author.name,'commit_message'=>build.commit.message,'status'=>build.status,'url'=>build_url})
+          Net::HTTP.post_form(@url, {'name'=>build.project.name,'short_message'=>short_message,'author'=>build.commit.author.name,'commit_message'=>build.commit.message,'status'=>build.status,'url'=>build_url})
         rescue NameError
         end
       end
