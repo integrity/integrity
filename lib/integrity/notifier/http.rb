@@ -22,12 +22,12 @@ module Integrity
 
       def deliver!
         Net::HTTP.post_form(@url, {
-          "name"           => build.project.name,
-          "short_message"  => short_message,
+          "project"        => build.project.name,
+          "message"        => short_message,
+          "url"            => build_url
           "author"         => build.commit.author.name,
           "commit_message" => build.commit.message,
           "status"         => build.status,
-          "url"            => build_url
         })
       end
     end
