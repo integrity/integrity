@@ -32,7 +32,7 @@ module Integrity
       def deliver!
         if short_message.include? "success"
           url = @success
-        elsif short_message.include? "failed"        
+        elsif short_message.include? "failed"
           url = @failure
         end
         begin
