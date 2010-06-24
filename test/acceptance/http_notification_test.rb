@@ -4,7 +4,7 @@ class HTTPNotificationTest < Test::Unit::AcceptanceTestCase
   story <<-EOS
     As an administrator,
     I want to setup the HTTP notifiers on my projects
-    So that I get alerts with every build
+    So that I get a POST to given URL for every build
   EOS
 
   setup do
