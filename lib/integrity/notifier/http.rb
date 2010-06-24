@@ -21,10 +21,7 @@ module Integrity
       end
 
       def deliver!
-        begin
-          Net::HTTP.post_form(@url, {'name'=>build.project.name,'short_message'=>short_message,'author'=>build.commit.author.name,'commit_message'=>build.commit.message,'status'=>build.status,'url'=>build_url})
-        rescue NameError
-        end
+        Net::HTTP.post_form(@url, {'name'=>build.project.name,'short_message'=>short_message,'author'=>build.commit.author.name,'commit_message'=>build.commit.message,'status'=>build.status,'url'=>build_url})
       end
     end
 
