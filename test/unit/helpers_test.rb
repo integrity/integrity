@@ -38,7 +38,18 @@ class HelpersTest < IntegrityTest
       @h.github_project_url(project)
 
     project.update(:branch => "baz")
-    assert_equal "http://github.com/sr/integrity/tree/baz",
+    assert_equal "http://github.com/sr/integrity/compare/master...baz",
       @h.github_project_url(project).to_s
+
+    assert_equal "http://github.com/sr/integrity/commit/#{commit_id}",
+      @h.github_commit_url(commit)
+  end
+
+  test "bash_color_codes" do
+    bash = "Test string \e[31m31\e[0m, \e[32m32\e[0m"
+    html = "Test string <span class=\"color31\">31</span>, " \
+      "<span class=\"color32\">32</span>"
+
+    assert_equal @h.bash_color_codes(bash), html
   end
 end

@@ -38,9 +38,16 @@ module Integrity
       end
 
       def run(cmd, cd=true)
-        cmd = "(#{cd ? "cd #{directory} && " : ""}#{cmd} > /dev/null 2>&1)"
+        output = ""
+        cmd    = "(#{cd ? "cd #{directory} && " : ""}#{cmd} 2>&1)"
         Integrity.logger.debug(cmd)
-        system(cmd) || fail("Couldn't run `#{cmd}`")
+
+        IO.popen(cmd, "r") { |io| output = io.read }
+
+        unless $?.success?
+          Integrity.logger.error(output.inspect)
+          fail "Failed run '#{cmd}'"
+        end
       end
   end
 end

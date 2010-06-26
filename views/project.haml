@@ -1,10 +1,8 @@
 #administrative
   %a{ :href => project_path(@project, :edit) } Edit
-  = " / "
-  %a{ :href => project_path(@project, :fork) } Fork
   - if @project.github?
     = " / "
-    %a{ :href => github_project_url(@project) } GitHub
+    %a{ :href => github_project_url(@project) }= github_project_link(@project)
 
 - if @project.blank?
   %form.blank_slate{ :action => project_path(@project, :builds), :method => :post }

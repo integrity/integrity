@@ -1,27 +1,11 @@
 module Integrity
   module Helpers
-    def endpoint_token
-      %w[push github].include?(params[:endpoint]) &&
-        settings.respond_to?(params[:endpoint]) &&
-        settings.send(params[:endpoint])
-    end
-    alias_method :endpoint_enabled?, :endpoint_token
-
-    def endpoint_payload
-      case params[:endpoint]
-      when "push"   then push_payload
-      when "github" then github_payload
-      else
-        nil
-      end
-    rescue JSON::JSONError
-      nil
+    def github_token
+      settings.github
     end
 
-    def push_payload
-      payload = JSON.parse(request.body.read)
-      payload["commits"] = [payload["commits"].last] unless settings.build_all?
-      payload
+    def github_enabled?
+      settings.respond_to?(:github) && settings.github
     end
 
     def github_payload
@@ -51,6 +35,8 @@ module Integrity
         "branch"      => branch,
         "commits"     => commits
       )
+    rescue JSON::JSONError
+      nil
     end
   end
 end
