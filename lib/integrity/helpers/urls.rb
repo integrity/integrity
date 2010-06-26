@@ -14,6 +14,16 @@ module Integrity
         end
       end
 
+      def github_project_link(project)
+        url = github_project_url(project)
+
+        if url.include?("/compare/master")
+          "Compare on GitHub"
+        else
+          "Browse on GitHub"
+        end
+      end
+
       def github_commit_url(commit)
         github_project_url(commit.build.project, false).to_s +
           "/commit/#{commit.identifier}"
