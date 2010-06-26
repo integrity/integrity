@@ -221,12 +221,6 @@ a {
         font-size: 0.8em;
         color: #999999;
         text-align: right; }
-      #content #projects li.success .meta {
-        color: #337022; }
-      #content #projects li.failed .meta {
-        color: #ff1100; }
-      #content #projects li.building .meta {
-        color: #777777; }
   #content #previous_builds li a {
     display: block;
     padding: .25em;
@@ -276,22 +270,31 @@ a {
       border-color: #99d688 #ccffbb #ccffbb #99d688; }
     #content #build.success h1, #content #last_build.success h1 {
       color: #337022; }
-    #content #build.success .meta, #content #last_build.success .meta {
+    #content #build.success .meta, #content #build.success a, #content #last_build.success .meta, #content #last_build.success a {
       color: #77b466; }
+      #content #build.success .meta a:hover, #content #build.success a a:hover, #content #last_build.success .meta a:hover, #content #last_build.success a a:hover {
+        color: #bbf8aa;
+        background-color: #337022; }
     #content #build.failed h1, #content #build.failed blockquote, #content #last_build.failed h1, #content #last_build.failed blockquote {
       background-color: #ffbbaa;
       border-color: #dd9988 #ffccbb #ffccbb #dd9988; }
     #content #build.failed h1, #content #last_build.failed h1 {
       color: #ff1100; }
-    #content #build.failed .meta, #content #last_build.failed .meta {
+    #content #build.failed .meta, #content #build.failed a, #content #last_build.failed .meta, #content #last_build.failed a {
       color: #bb7766; }
+      #content #build.failed .meta a:hover, #content #build.failed a a:hover, #content #last_build.failed .meta a:hover, #content #last_build.failed a a:hover {
+        color: #ffbbaa;
+        background-color: #ff1100; }
     #content #build.building h1, #content #build.building blockquote, #content #last_build.building h1, #content #last_build.building blockquote {
       background-color: #cccccc;
       border-color: #aaaaaa #dddddd #dddddd #aaaaaa; }
     #content #build.building h1, #content #last_build.building h1 {
       color: #777777; }
-    #content #build.building .meta, #content #last_build.building .meta {
+    #content #build.building .meta, #content #build.building a, #content #last_build.building .meta, #content #last_build.building a {
       color: #333333; }
+      #content #build.building .meta a:hover, #content #build.building a a:hover, #content #last_build.building .meta a:hover, #content #last_build.building a a:hover {
+        color: #cccccc;
+        background-color: #777777; }
     #content #build h1, #content #last_build h1 {
       margin-top: .5em;
       margin-bottom: 0;
