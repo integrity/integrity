@@ -1,7 +1,5 @@
 #administrative
   %a{ :href => project_path(@project, :edit) } Edit
-  = " / "
-  %a{ :href => project_path(@project, :fork) } Fork
   - if @project.github?
     = " / "
     %a{ :href => github_project_url(@project) } GitHub
