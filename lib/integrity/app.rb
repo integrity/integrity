@@ -30,10 +30,10 @@ module Integrity
       end
     end
 
-    post "/:endpoint/:token" do |endpoint, token|
-      pass unless endpoint_enabled?
-      halt 403 unless token   == endpoint_token
-      halt 400 unless payload =  endpoint_payload
+    post "/github/:token" do |token|
+      pass     unless github_enabled?
+      halt 403 unless token   == github_token
+      halt 400 unless payload =  github_payload
 
       BuildableProject.call(payload).each { |b| b.build }.size.to_s
     end
@@ -97,19 +97,6 @@ module Integrity
       login_required
 
       show :new, :title => ["projects", current_project.permalink, "edit"]
-    end
-
-    get "/:project/fork" do
-      login_required
-      show :fork, :title => ["projects", current_project.permalink, "fork"]
-    end
-
-    post "/:project/fork" do
-      login_required
-
-      branch  = params["project_data"]["branch"]
-      project = current_project.fork(branch)
-      redirect project_url(project).to_s
     end
 
     post "/:project/builds" do

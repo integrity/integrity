@@ -113,7 +113,6 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
   scenario "Fixing the build command and then rebuilding the failed build" do
     repo = git_repo(:my_test_project)
     repo.add_successful_commit
-    commit = repo.short_head
     Project.gen(:my_test_project, :uri => repo.uri, :command => "exit 1")
 
     login_as "admin", "test"
@@ -124,7 +123,6 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
 
     build
     reload
-    repo.add_failing_commit
 
     assert_have_tag("h1", :content => "failed")
 
@@ -139,12 +137,12 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     build
     reload
 
-    assert_have_tag("#build h1", :content => "Built #{commit} successfully")
+    assert_have_tag "#build h1",
+      :content => "Built #{repo.short_head} successfully"
 
     click_link "my-test-project"
     assert_have_tag("#last_build h1", :content => "success")
     assert_have_tag("#previous_builds li", :count => 2)
-    assert_have_tag("#previous_builds li[@class='failed']", :content => commit)
   end
 
   scenario "Building with DelayedBuilder" do

@@ -14,7 +14,7 @@ class EmailNotificationTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "Sending the notification via SMTP" do
-    Net::SMTP.disable_tls
+    ::Net::SMTP.disable_tls
     port     = 10_000 + rand(10)
     server   = Rumbster.new(port)
     observer = MailMessageObserver.new

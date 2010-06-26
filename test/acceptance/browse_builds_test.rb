@@ -77,7 +77,7 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
     visit "/integrity"
     click_link(/Build 7fee3f0/)
 
-    assert_have_tag("h1", :content => "This commit hasn't been built yet")
+    assert_have_tag("h1", :content => "7fee3f0 hasn't been built yet")
     assert_have_no_tag("h2", :content => "Build Output:")
     assert_have_tag("button", :content => "Rebuild")
   end

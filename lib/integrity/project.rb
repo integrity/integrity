@@ -31,13 +31,23 @@ module Integrity
     end
 
     def fork(new_branch)
-      Project.create(
+      forked = Project.create(
         :name    => "#{name} (#{new_branch})",
         :uri     => uri,
         :branch  => new_branch,
         :command => command,
         :public  => public?
       )
+
+      notifiers.each { |notifier|
+        forked.notifiers.create(
+          :name    => notifier.name,
+          :enabled => notifier.enabled?,
+          :config  => notifier.config
+        )
+      }
+
+      forked
     end
 
     def github?
