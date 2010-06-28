@@ -19,6 +19,7 @@ gem "addressable", "2.1.1"
 gem "json", "1.1.9"
 gem "sinatra", "1.0.0"
 gem "sinatra-authorization", "1.0.0"
+gem "bcat", "~>0.5"
 
 # Required to deploy on Heroku
 # gem "do_postgres", "0.10.1"

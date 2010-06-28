@@ -19,6 +19,7 @@ require "timeout"
 require "ostruct"
 require "pathname"
 require "forwardable"
+require "bcat/ansi"
 
 require "integrity/core_ext/object"
 
