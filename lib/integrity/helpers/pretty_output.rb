@@ -9,7 +9,7 @@ module Integrity
       end
 
       def bash_color_codes(string)
-        string.gsub(/\e\[3([1-7])m/, '<span class="color3\\1">').gsub("\e[0m", '</span>')
+        Bcat::ANSI.new(string).to_html
       end
 
       def pretty_date(date_time)
