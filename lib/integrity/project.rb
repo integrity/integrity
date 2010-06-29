@@ -27,7 +27,7 @@ module Integrity
     end
 
     def build(commit)
-      BuildableProject.new(self, commit).build
+      BuildableProject.new(self, {"id" => commit}).build
     end
 
     def fork(new_branch)
