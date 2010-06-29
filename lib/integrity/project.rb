@@ -26,8 +26,18 @@ module Integrity
       builds.destroy!
     end
 
+    def build_head
+      BuildableProject.new(self, {"id" => "HEAD"}).build
+    end
+
     def build(commit)
-      BuildableProject.new(self, {"id" => commit}).build
+      buildable = BuildableProject.new(self, {
+        "id"        => commit.identifier,
+        "message"   => commit.message,
+        "timestamp" => commit.committed_at,
+        "author"    => commit.author
+      })
+      buildable.build
     end
 
     def fork(new_branch)
