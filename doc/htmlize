@@ -23,7 +23,7 @@ cat <<EOF
 </div>
 <div id=footer>
   <div class=credits>
-    Integrity is &copy; 2008, 2009
+    Integrity is &copy; 2008, 2009, 2010
     <a href="http://nicolassanguinetti.info">Nicolás Sanguinetti</a>
     and <a href="http://atonie.org">Simon Rozet</a>
   </div>
