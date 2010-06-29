@@ -314,22 +314,6 @@ a {
       overflow: auto;
       max-height: 50em;
       font-size: .825em; }
-      #content #build pre.output .color30, #content #last_build pre.output .color30 {
-        color: #333; }
-      #content #build pre.output .color31, #content #last_build pre.output .color31 {
-        color: #e33; }
-      #content #build pre.output .color32, #content #last_build pre.output .color32 {
-        color: #3e3; }
-      #content #build pre.output .color33, #content #last_build pre.output .color33 {
-        color: #ee3; }
-      #content #build pre.output .color34, #content #last_build pre.output .color34 {
-        color: #33e; }
-      #content #build pre.output .color35, #content #last_build pre.output .color35 {
-        color: #e3e; }
-      #content #build pre.output .color36, #content #last_build pre.output .color36 {
-        color: #3ee; }
-      #content #build pre.output .color37, #content #last_build pre.output .color37 {
-        color: #fff; }
   #content #push_path {
     display: block;
     margin-top: 1em;
