@@ -29,7 +29,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     visit "/my-test-project"
     click_button "manual build"
 
-    assert_have_tag("#build h1", :content => "hasn't been built yet")
+    assert_have_tag("#build h1", :content => "HEAD hasn't been built yet")
 
     build
     reload
@@ -50,7 +50,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     visit "/my-test-project"
     click_button "manual build"
 
-    assert_have_tag("#build h1", :content => "hasn't been built yet")
+    assert_have_tag("#build h1", :content => "HEAD hasn't been built yet")
 
     build
     reload
@@ -67,14 +67,14 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     visit "/my-test-project"
     click_button "manual build"
 
-    assert_have_tag("#build h1", :content => "hasn't been built yet")
+    assert_have_tag("#build h1", :content => "HEAD hasn't been built yet")
 
     build
     reload
 
     click_link "my-test-project"
     click_button "Fetch and build"
-    assert_have_tag("#build h1", :content => "hasn't been built yet")
+    assert_have_tag("#build h1", :content => "HEAD hasn't been built yet")
 
     build
     reload
@@ -93,7 +93,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     visit "/my-test-project"
     click_button "manual build"
 
-    assert_have_tag("#build h1", :content => "hasn't been built yet")
+    assert_have_tag("#build h1", :content => "HEAD hasn't been built yet")
 
     build
     reload
@@ -119,7 +119,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     visit "/my-test-project"
     click_button "manual build"
 
-    assert_have_tag("#build h1", :content => "hasn't been built yet")
+    assert_have_tag("#build h1", :content => "HEAD hasn't been built yet")
 
     build
     reload
@@ -132,7 +132,8 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     click_button "Update Project"
     click_button "Rebuild"
 
-    assert_have_tag("#build h1", :content => "hasn't been built yet")
+    assert_have_tag("#build h1",
+      :content => "#{repo.short_head} hasn't been built yet")
 
     build
     reload
@@ -164,7 +165,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
       visit "/my-test-project"
       click_button "manual build"
 
-      assert_have_tag("h1", :content => "hasn't been built yet")
+      assert_have_tag("h1", :content => "HEAD hasn't been built yet")
 
       Delayed::Job.work_off
       click_link "my-test-project"
