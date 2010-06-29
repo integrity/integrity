@@ -1,3 +1,27 @@
+= 22 / 2010-06-29
+
+ * New auto_branch feature. Say the project "Integrity" is tracking the master
+   branch, and I push my "build-duration" topic branch to GitHub, Integrity
+   will create and build a new project named "Integrity (build-duration)" using
+   the same build command and notifiers
+
+ * Remove the fork feature. I've found the auto_branch feature to be
+   much more convenient
+
+ * Populate commit meta data from the GitHub payload when receiving a push
+
+ * Remove the /push endpoint in favor of GitHub-ish payloads
+
+ * Improved build output colorization thanks to Ryan Tomayko's bcat.
+   http://github.com/rtomayko/bcat
+
+ * Improved GitHub links to compare view and commit page
+   [Łukasz Strzałkowski, Simon Rozet]
+
+ * Log git commands errors for easier troubleshooting
+
+ * Upgrade to DataMapper 1.0
+
 = 21 / 2010-06-01
 
  * Add ability to fork a project to track a topic branch

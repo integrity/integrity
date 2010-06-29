@@ -24,7 +24,7 @@ Then grab Integrity via git, install its dependencies and create the database:
 $ gem install bundler
 $ git clone git://github.com/integrity/integrity
 $ cd integrity
-$ git checkout -b deploy v21
+$ git checkout -b deploy v22
 $ bundle install
 $ bundle lock
 $ rake db
@@ -35,7 +35,7 @@ navigate to http://0.0.0.0:9292.
 Upgrade:
 [source, shell]
 $ git fetch origin
-$ git merge origin/v21
+$ git merge origin/v22
 
 == Configuration
 Integrity is configured via the `init.rb` file using Ruby.
