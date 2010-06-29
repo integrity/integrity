@@ -72,4 +72,9 @@ file "doc/integrity.html" => ["doc/htmlize",
   sh "cat doc/integrity.txt | doc/htmlize > #{f.name}"
 end
 
+desc "Re-generate stylesheet"
+file "public/integrity.css" => "views/integrity.sass" do |f|
+  sh "sass views/integrity.sass > #{f.name}"
+end
+
 CLOBBER.include("doc/integrity.html")
