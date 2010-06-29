@@ -44,6 +44,10 @@ module Integrity
       Integrity.app.enable(:build_all)
     end
 
+    def auto_branch!
+      Integrity.auto_branch = true
+    end
+
     def user(v)
       Integrity.app.set(:user, v)
     end
