@@ -68,6 +68,10 @@ This setting is optional but is required to have proper links in notifications.
 log:: Path to the Integrity log file; mostly useful for troubleshooting
 build_all!:: Tells Integirty to build every single commit it is notified about.
 Only builds the newest otherwise.
+auto_branch!:: Say the project _Integrity_ is tracking the master branch, and
+I push my _build-duration_ topic branch to GitHub, Integrity will create and
+build a new project named _Integrity (build-duration)_ using the same build
+command and notifiers.
 HTTP authentication:: If both the `user` and `pass` settings are set then only
 the logged-in users can administer the projects and see the private ones.
 [source, ruby]
