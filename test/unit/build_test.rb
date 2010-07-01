@@ -1,12 +1,12 @@
 require "helper"
 
 class BuildTest < IntegrityTest
-  it "has an output" do
+  test "output" do
     assert ! Build.gen.output.empty?
     assert_equal "", Build.new.output
   end
 
-  it "knows it's status" do
+  test "status" do
     assert Build.gen(:successful).successful?
     assert ! Build.gen(:failed).successful?
 
@@ -16,7 +16,7 @@ class BuildTest < IntegrityTest
     assert_equal :building, Build.gen(:building).status
   end
 
-  it "has a human readable status" do
+  test "human status" do
     assert_match /^Built (.*?) successfully$/,
       Build.gen(:successful).human_status
 
@@ -31,7 +31,7 @@ class BuildTest < IntegrityTest
       build.human_status
   end
 
-  test "being destroyed" do
+  test "destroy" do
     build = Build.gen
     assert_change(Commit, :count, -1) { build.destroy }
   end
