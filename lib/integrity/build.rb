@@ -38,6 +38,26 @@ module Integrity
       !pending? && !building?
     end
 
+    def identifier
+      commit.identifier
+    end
+
+    def short_identifier
+      commit.short_identifier
+    end
+
+    def message
+      commit.message
+    end
+
+    def author
+      commit.author.name
+    end
+
+    def committed_at
+      commit.committed_at
+    end
+
     def status
       case
       when building?   then :building

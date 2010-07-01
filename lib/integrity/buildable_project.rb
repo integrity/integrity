@@ -18,11 +18,11 @@ module Integrity
 
     def commit_author(commit)
       unless author = commit["author"]
-        return Author::AuthorStruct.new("unknown", nil)
+        return Author::AuthorStruct.new("author not loaded", nil)
       end
 
       Author::AuthorStruct.new(
-        author["name"] || "unknown",
+        author["name"] || "author not loaded",
         author["email"]
       )
     end

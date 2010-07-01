@@ -31,6 +31,20 @@ class BuildTest < IntegrityTest
       build.human_status
   end
 
+  test "commit data" do
+    build = Build.gen(:commit => Commit.gen(
+      :identifier   => "6f2ec35bc09744f55e528fe98a438dcb704edc65",
+      :message      => "init",
+      :author       => "Simon Rozet <simon@rozet.name>",
+      :committed_at => Time.utc(2008, 10, 12, 14, 18, 20)
+    ))
+
+    assert_equal "init",        build.message
+    assert_equal "Simon Rozet", build.author
+    assert_kind_of DateTime,    build.committed_at
+    assert build.identifier.include?(build.short_identifier)
+  end
+
   test "destroy" do
     build = Build.gen
     assert_change(Commit, :count, -1) { build.destroy }
