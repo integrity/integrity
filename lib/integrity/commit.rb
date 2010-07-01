@@ -22,12 +22,12 @@ module Integrity
     end
 
     def message
-      attribute_get(:message) || "<Commit message not loaded>"
+      attribute_get(:message) || "message not loaded"
     end
 
     def author
       attribute_get(:author) ||
-        Author.load('<Commit author not loaded> <<Commit author not loaded>>', :author)
+        Author.load("author not loaded", nil)
     end
 
     def committed_at

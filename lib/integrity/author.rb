@@ -9,7 +9,7 @@ module Integrity
         if string =~ /^(.*) <(.*)>$/
           new($1.strip, $2.strip)
         else
-          new(string, "unknown")
+          new(string, "not loaded")
         end
       end
 

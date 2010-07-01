@@ -6,17 +6,17 @@
       Rebuild
 
 %blockquote
-  %p&= build.commit.message
+  %p&= build.message
   %p.meta<
     %span.who<
-      &== by: #{build.commit.author.name}
+      &== by: #{build.author}
     |
-    %span.when{ :title => build.commit.committed_at }<
-      &= pretty_date build.commit.committed_at
+    %span.when{ :title => build.committed_at }<
+      &= pretty_date build.committed_at
     - if build.project.github?
       |
       %span.github<
-        %a{ :href => github_commit_url(build.commit) } view on GitHub
+        %a{ :href => github_commit_url(build) } view on GitHub
 
 - if build.completed?
   %h2 Build Output:

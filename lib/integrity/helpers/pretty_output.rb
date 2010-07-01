@@ -19,7 +19,7 @@ module Integrity
         elsif days_away == 1
           "yesterday"
         elsif date_time == DateTime.new
-          "unknown"
+          "commit date not loaded"
         else
           strftime_with_ordinal(date_time, "on %b %o")
         end

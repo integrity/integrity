@@ -4,7 +4,7 @@ class HelpersTest < IntegrityTest
   setup { @h = Module.new { extend Integrity::Helpers } }
 
   test "pretty_date" do
-    assert_equal "unknown",     @h.pretty_date(DateTime.new)
+    assert_equal "commit date not loaded", @h.pretty_date(DateTime.new)
     assert_equal "today",       @h.pretty_date(Time.now)
     assert_equal "yesterday",   @h.pretty_date(Time.new - 86400)
 
@@ -24,13 +24,14 @@ class HelpersTest < IntegrityTest
     assert_equal "http://github.com/foca/integrity",
       @h.github_project_url(project).to_s
 
-    commit    = Commit.gen
-    commit_id = commit.identifier
-    project.builds << Build.gen(:successful, :commit => commit)
+    build = Build.gen
+    commit_id = build.identifier
+
+    project.builds << build
     project.save
 
     assert_equal "http://github.com/foca/integrity/commit/#{commit_id}",
-      @h.github_commit_url(commit)
+      @h.github_commit_url(build)
 
     project.update(:uri => "git@github.com:sr/integrity.git")
 
@@ -42,6 +43,6 @@ class HelpersTest < IntegrityTest
       @h.github_project_url(project).to_s
 
     assert_equal "http://github.com/sr/integrity/commit/#{commit_id}",
-      @h.github_commit_url(commit)
+      @h.github_commit_url(build)
   end
 end
