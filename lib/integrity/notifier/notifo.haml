@@ -1,0 +1,15 @@
+%p.normal
+  %label{ :for => "notifo_service_account" } Service Account
+  %input.text#notifo_service_account{ :name => "notifiers[Notifo][account]", :type => "text", :value => config["account"] }
+
+%p.normal
+  %label{ :for => "notifo_service_token" } Token
+  %input.text#notifo_service_token{ :name => "notifiers[Notifo][token]", :type => "text", :value => config["token"] }
+
+%p.normal
+  %label{ :for => "notifo_recipients" } Recipients
+  %input.text#notifo_recipients{ :name => "notifiers[Notifo][recipients]", :type => "text", :value => config["recipients"] }
+
+%p.normal
+  %label{ :for => "notifo_announce_success" } Notify on success?
+  %input#notifo_announce_success{ :name => "notifiers[Notifo][announce_success]", :type => "checkbox", :checked => config['announce_success'], :value => "1" }
