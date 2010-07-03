@@ -25,6 +25,9 @@ module Integrity
           {"name"    => build.project.name,
            "status"  => build.status,
            "url"     => build_url,
+           "repo"    => build.project.uri,
+           "branch"  => build.project.branch,
+           "commit"  => build.commit.identifier,
            "author"  => build.commit.author.name,
            "message" => build.commit.message}
         )
