@@ -26,7 +26,7 @@ module Integrity
 
       def github_commit_url(build)
         github_project_url(build.project, false).to_s +
-          "/commit/#{build.identifier}"
+          "/commit/#{build.sha1}"
       end
 
       def root_url

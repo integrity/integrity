@@ -109,7 +109,7 @@ module Integrity
     get "/:project/builds/:build" do
       login_required unless current_project.public?
       show :build, :title => ["projects", current_project.permalink,
-        current_build.commit.short_identifier]
+        current_build.sha1_short]
     end
 
     post "/:project/builds/:build" do
