@@ -38,11 +38,11 @@ module Integrity
       !pending? && !building?
     end
 
-    def identifier
+    def sha1
       commit.identifier
     end
 
-    def short_identifier
+    def sha1_short
       commit.short_identifier
     end
 
@@ -69,10 +69,10 @@ module Integrity
 
     def human_status
       case status
-      when :success  then "Built #{commit.short_identifier} successfully"
-      when :failed   then "Built #{commit.short_identifier} and failed"
-      when :pending  then "#{commit.short_identifier} hasn't been built yet"
-      when :building then "#{commit.short_identifier} is building"
+      when :success  then "Built #{sha1_short} successfully"
+      when :failed   then "Built #{sha1_short} and failed"
+      when :pending  then "#{sha1_short} hasn't been built yet"
+      when :building then "#{sha1_short} is building"
       end
     end
   end

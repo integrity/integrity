@@ -27,7 +27,7 @@ class BuildTest < IntegrityTest
       Build.gen(:building).human_status
 
     build = Build.gen(:pending)
-    assert_equal "#{build.commit.short_identifier} hasn't been built yet",
+    assert_equal "#{build.sha1_short} hasn't been built yet",
       build.human_status
   end
 
@@ -42,7 +42,7 @@ class BuildTest < IntegrityTest
     assert_equal "init",        build.message
     assert_equal "Simon Rozet", build.author
     assert_kind_of DateTime,    build.committed_at
-    assert build.identifier.include?(build.short_identifier)
+    assert build.sha1.include?(build.sha1_short)
   end
 
   test "destroy" do

@@ -26,6 +26,6 @@
         %li{ :class => build.status }
           %a{ :href => build_path(build) }
             %strong.build<
-              &== Build #{build.short_identifier}
+              &== Build #{build.sha1_short}
             %span.attribution<
               == by #{build.author}, #{pretty_date build.committed_at}

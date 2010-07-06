@@ -25,7 +25,7 @@ class HelpersTest < IntegrityTest
       @h.github_project_url(project).to_s
 
     build = Build.gen
-    commit_id = build.identifier
+    commit_id = build.sha1
 
     project.builds << build
     project.save
