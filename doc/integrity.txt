@@ -153,31 +153,6 @@ require "integrity/notifier/email"
    enable and configure the notifier.
 
 == Deployment
-=== http://heroku.com[Heroku]
-Heroku is the easiest and fastest way to deploy Integrity.
-
-[source, shell]
-$ cp doc/heroku.rb init.rb
-$ $EDITOR Gemfile # un-comment the postgres gem
-$ git commit -am "Configured for Heroku"
-$ gem install heroku
-$ heroku create
-$ git push heroku master
-$ heroku rake db
-$ heroku open
-
-You can manually edit your Github Token in init.rb
-
-[source, ruby]
-c.github    ENV["GITHUB_TOKEN"] || "TOKEN"
-
-Or create a http://docs.heroku.com/config-vars[Heroku Config vars]
-
-[source, shell]
-$ heroku config:add GITHUB_TOKEN=secret
-
-NOTE: It isn't possible to access repositories over SSH on Heroku
-
 === http://modrails.com[Phusion Passenger]
 Please see Passenger's documentation for
 http://www.modrails.com/documentation/Users%20guide%20Apache.html[Apache] and
