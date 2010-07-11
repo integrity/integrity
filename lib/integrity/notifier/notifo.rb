@@ -1,3 +1,7 @@
+require 'net/https'
+require 'uri'
+require 'openssl'
+
 module Integrity
   class Notifier
     class Notifo < Notifier::Base
