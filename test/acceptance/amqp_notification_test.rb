@@ -23,7 +23,7 @@ class AMQPNotificationTest < Test::Unit::AcceptanceTestCase
 
     check "enabled_notifiers_amqp"
     fill_in "Host", :with => "localhost"
-    fill_in "Queue", :with => "test"
+    fill_in "Exchange", :with => "test"
     click_button "Update"
     click_button "Manual Build"
 
@@ -43,7 +43,7 @@ class AMQPNotificationTest < Test::Unit::AcceptanceTestCase
     mock_rabbit = Bunny.new
     mock(mock_rabbit).start {}
     mock(mock_rabbit).stop {}
-    mock(mock_rabbit).queue('test') { mock!.publish(msg) {} }
+    mock(mock_rabbit).exchange('test', :type => :fanout) { mock!.publish(msg) {} }
     stub(Bunny).new { mock_rabbit }
     head = build(0)
   end
