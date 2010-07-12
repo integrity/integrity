@@ -14,17 +14,17 @@ module Integrity
     :value => config["queue_host"] ||         |
       "localhost" }                           |
 %p.normal
-  %label{ :for => "amqp_queue_name" } Queue
-  %input.text#amqp_queue_name{                |
-    :name => "notifiers[AMQP][queue_name]",   |
-    :type => "text",                          |
-    :value => config["queue_name"] ||         |
-      "integrity" }                           |
+  %label{ :for => "amqp_exchange_name" } Exchange
+  %input.text#amqp_exchange_name{                 |
+    :name => "notifiers[AMQP][exchange_name]",    |
+    :type => "text",                              |
+    :value => config["exchange_name"] ||          |
+      "integrity" }                               |
         HAML
       end
 
       def initialize(build, config={})
-        @queue_name = config.delete("queue_name")
+        @exchange_name = config.delete("exchange_name")
         @queue_host = config.delete("queue_host")
         super
       end
@@ -35,8 +35,8 @@ module Integrity
         # start a communication session with the amqp server
         b.start
 
-        # declare a queue
-        q = b.queue(@queue_name)
+        # declare exchange
+        exch = b.exchange(@exchange_name, :type => :fanout)
 
         # json message to be put on the queue
         msg = JSON.generate({
@@ -48,7 +48,7 @@ module Integrity
         })
 
         # publish a message to the queue
-        q.publish(msg)
+        exch.publish(msg)
 
         # close the connection
         b.stop
