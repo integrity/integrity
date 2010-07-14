@@ -35,7 +35,7 @@ module Integrity
         "id"        => commit.identifier,
         "message"   => commit.message,
         "timestamp" => commit.committed_at,
-        "author"    => commit.author
+        "author"    => commit.author.to_s
       })
       buildable.build
     end

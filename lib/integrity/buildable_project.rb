@@ -3,28 +3,23 @@ module Integrity
     def self.call(buildable)
       projects = ProjectFinder.find(buildable["uri"], buildable["branch"])
       projects.inject([]) { |acc, project|
-        acc.concat buildable["commits"].collect{|commit| new(project, commit)}
+        acc.concat buildable["commits"].collect { |commit|
+          if author = commit.delete("author")
+            commit["author"] = "#{author["name"]} <#{author["email"]}>"
+          end
+
+          new(project, commit)
+        }
       }
     end
 
     def initialize(project, commit)
       @build = project.builds.create(:commit => {
         :identifier   => commit["id"],
-        :author       => commit_author(commit),
+        :author       => commit["author"],
         :message      => commit["message"],
         :committed_at => commit["timestamp"]
       })
-    end
-
-    def commit_author(commit)
-      unless author = commit["author"]
-        return Author::AuthorStruct.new("author not loaded", nil)
-      end
-
-      Author::AuthorStruct.new(
-        author["name"] || "author not loaded",
-        author["email"]
-      )
     end
 
     def build
