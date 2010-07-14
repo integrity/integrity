@@ -16,6 +16,8 @@ require "integrity"
 # require "integrity/notifier/http"
 # = Notifo
 # require "integrity/notifier/notifo"
+# = AMQP
+# require "integrity/notifier/amqp"
 
 Integrity.configure do |c|
   c.database     "sqlite3:integrity.db"
