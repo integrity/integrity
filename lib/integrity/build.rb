@@ -42,8 +42,13 @@ module Integrity
       commit.identifier
     end
 
+    # TODO
     def sha1_short
-      commit.short_identifier
+      if commit
+        commit.short_identifier
+      else
+        "This commit"
+      end
     end
 
     def message
