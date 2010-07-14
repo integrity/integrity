@@ -30,6 +30,8 @@ gem "rack", "1.1.0"
 # = Campfire
 # gem "broach", :git => "git://github.com/Manfred/broach.git"
 # gem "nap", :git => "git://github.com/qrush/nap.git"
+# = AMQP
+# gem "bunny"
 
 # = Dependencies for the :dj builder
 # gem "activerecord"
@@ -64,6 +66,7 @@ group :test do
   gem "sinatra-ditties"
   gem "broach", :git => "git://github.com/Manfred/broach.git"
   gem "nap", :git => "git://github.com/qrush/nap.git"
+  gem "bunny"
   gem "webmock"
   gem "turn"
 end
