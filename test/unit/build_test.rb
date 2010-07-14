@@ -29,6 +29,9 @@ class BuildTest < IntegrityTest
     build = Build.gen(:pending)
     assert_equal "#{build.sha1_short} hasn't been built yet",
       build.human_status
+
+    assert_equal "This commit hasn't been built yet",
+      Build.gen(:pending, :commit => nil).human_status
   end
 
   test "commit data" do
