@@ -78,11 +78,12 @@ class Test::Unit::AcceptanceTestCase < IntegrityTest
     Webrat.configure { |c| c.mode = :rack }
     Integrity.builder = lambda { |build| Builder.new(build).build }
     @app = Integrity.app
+
+    if Integrity.directory.directory?
+      Integrity.directory.rmtree
+    end
+
     Integrity.directory.mkdir
     log_out
-  end
-
-  teardown do
-    Integrity.directory.rmtree
   end
 end
