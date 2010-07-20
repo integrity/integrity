@@ -10,7 +10,7 @@ module Integrity
       @queue = :integrity
 
       def self.perform(build)
-        Builder.build Build.get(build)
+        Builder.build Build.get!(build)
       end
     end
   end
