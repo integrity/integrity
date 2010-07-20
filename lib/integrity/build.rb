@@ -18,6 +18,10 @@ module Integrity
       commit.destroy!
     end
 
+    def build
+      Builder.build(self)
+    end
+
     def successful?
       successful == true
     end
