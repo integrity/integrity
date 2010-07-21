@@ -8,16 +8,19 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
   EOS
 
   setup do
-    @builder = Integrity.builder
-    Integrity.configure { |c| c.builder :threaded }
+    @builder = Integrity.config.builder
+    Integrity.configure { |c|
+      c.builder = :threaded, 1
+    }
   end
 
   teardown do
-    Integrity.builder = @builder
+    # TODO this dude shouldn't be leaking
+    Integrity.config.instance_variable_set(:@builder, @builder)
   end
 
   def build
-    Integrity.builder.wait!
+    Integrity.config.builder.wait!
   end
 
   scenario "Triggering a successful build" do
@@ -154,14 +157,13 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "Building with DelayedBuilder" do
-    old_builder = Integrity.builder
+    old_builder = Integrity.config.builder
 
     begin
-      Integrity.builder = nil
       FileUtils.rm_f("dj.db")
 
       Integrity.configure { |c|
-        c.builder :dj, :adapter => "sqlite3", :database => "dj.db"
+        c.builder   = :dj, {:adapter => "sqlite3", :database => "dj.db"}
       }
 
       repo = git_repo(:my_test_project)
@@ -181,7 +183,8 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     rescue LoadError, NameError
       warn "Couldn't load DJ. Skipping test"
     ensure
-      Integrity.builder = old_builder
+      # TODO
+      Integrity.config.instance_variable_set(:@builder, old_builder)
     end
   end
 end

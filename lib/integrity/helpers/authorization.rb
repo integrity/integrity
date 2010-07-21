@@ -8,22 +8,25 @@ module Integrity
       end
 
       def authorized?
-        return true unless protect?
+        unless Integrity.config.protected?
+          return true
+        end
+
         !!request.env["REMOTE_USER"]
       end
 
       def authorize(user, password)
-        return true unless protect?
-        options.user == user && options.pass == password
+        unless Integrity.config.protected?
+          return true
+        end
+
+        Integrity.config.username == user &&
+          Integrity.config.password == password
       end
 
       def unauthorized!(realm=authorization_realm)
         response["WWW-Authenticate"] = %(Basic realm="#{realm}")
         throw :halt, [401, show(:unauthorized, :title => "incorrect credentials")]
-      end
-
-      def protect?
-        options.respond_to?(:user) && options.respond_to?(:pass)
       end
     end
   end

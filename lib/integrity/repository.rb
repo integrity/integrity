@@ -1,4 +1,5 @@
 module Integrity
+  # TODO rename to checkout
   class Repository
     def initialize(id, uri, branch, commit)
       @id     = id
@@ -29,7 +30,7 @@ module Integrity
     end
 
     def directory
-      @directory ||= Integrity.directory.join(@id.to_s)
+      @directory ||= Integrity.config.directory.join(@id.to_s)
     end
 
     private
@@ -40,12 +41,13 @@ module Integrity
       def run(cmd, cd=true)
         output = ""
         cmd    = "(#{cd ? "cd #{directory} && " : ""}#{cmd} 2>&1)"
-        Integrity.logger.debug(cmd)
+        # TODO
+        Integrity.config.logger.debug(cmd)
 
         IO.popen(cmd, "r") { |io| output = io.read }
 
         unless $?.success?
-          Integrity.logger.error(output.inspect)
+          Integrity.config.logger.error(output.inspect)
           fail "Failed run '#{cmd}'"
         end
       end

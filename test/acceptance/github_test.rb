@@ -9,7 +9,12 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     So that my project is built everytime I push to the Holy Hub
   EOF
 
-  setup { Integrity.configure { |c| c.github "SECRET" } }
+  setup do
+    Integrity.configure { |c|
+      c.github_token = "SECRET"
+      c.auto_branch  = false
+    }
+  end
 
   def payload(repo)
     { "after"      => repo.head, "ref" => "refs/heads/#{repo.branch}",
@@ -20,13 +25,13 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
   end
 
   def github_post(payload)
-    post "/github/#{Integrity.app.github}", :payload => payload
+    post "/github/#{Integrity.config.github_token}", :payload => payload
   end
 
   scenario "Not configured" do
     @_rack_mock_sessions = nil
     @_rack_test_sessions = nil
-    Integrity.app.disable(:github)
+    Integrity.configure { |c| c.github_token = nil }
 
     repo = git_repo(:my_test_project)
     Project.gen(:my_test_project, :uri => repo.uri)
@@ -47,7 +52,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
 
   scenario "Receiving a payload with build_all option *enabled*" do
     stub(Time).now { unique { |i| Time.mktime(2009, 12, 15, i / 60, i % 60) } }
-    Integrity.configure { |c| c.build_all! }
+    Integrity.configure { |c| c.build_all = true }
 
     repo = git_repo(:my_test_project)
     3.times{|i| i % 2 == 1 ? repo.add_successful_commit : repo.add_failing_commit}
@@ -83,12 +88,12 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "Building two projects with the same URI and branch" do
-    old_builder = Integrity.builder
+    old_builder = Integrity.config.builder
 
     begin
       Integrity.configure { |c|
-        c.builder :threaded, 1
-        c.build_all!
+        c.builder   = :threaded, 1
+        c.build_all = true
       }
 
       stub(Time).now { unique { |i| Time.mktime(2009, 12, 15, i / 60, i % 60) } }
@@ -112,7 +117,8 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
       github_post payload(repo)
       assert_equal "8", last_response.body
 
-      Integrity.builder.wait!
+      # TODO
+      Integrity.config.builder.wait!
 
       visit "/success"
 
@@ -126,16 +132,19 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
       assert_have_tag(".attribution", :content => "by John Doe")
       assert_have_tag("#previous_builds li", :count => 4)
     ensure
-      Integrity.builder = old_builder
+      # TODO
+      Integrity.config.instance_variable_set(:@builder, old_builder)
     end
   end
 
   scenario "Monitoring the foo/bar branch" do
-    old_builder = Integrity.builder
+    old_builder = Integrity.config.builder
 
     begin
-      Integrity.builder = nil
-      Integrity.configure { |c| c.builder :threaded, 1 }
+      Integrity.configure { |c|
+        c.builder   = :threaded, 1
+        c.build_all = false
+      }
 
       repo = git_repo(:my_test_project)
       repo.checkout "foo/bar"
@@ -152,12 +161,13 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
       assert_have_tag "span.who", :content => "by: John Doe"
       assert_have_tag "span.when", :content => "today"
 
-      Integrity.builder.wait!
+      # TODO
+      Integrity.config.builder.wait!
       reload
 
       assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
     ensure
-      Integrity.builder = old_builder
+      Integrity.config.instance_variable_set(:@builde, old_builder)
     end
   end
 
@@ -168,33 +178,32 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "Auto branching" do
-    begin
-      Integrity.auto_branch = true
-      Integrity.app.disable(:build_all)
-      repo = git_repo(:my_test_project)
-      repo.add_successful_commit
+    Integrity.configure { |c|
+      c.auto_branch = true
+      c.build_all   = false
+    }
 
-      Project.gen(:my_test_project, :uri => repo.uri)
+    repo = git_repo(:my_test_project)
+    repo.add_successful_commit
 
-      github_post payload(repo)
-      assert_equal "1", last_response.body
+    Project.gen(:my_test_project, :uri => repo.uri)
 
-      visit "/"
-      click_link "My Test Project"
-      assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
+    github_post payload(repo)
+    assert_equal "1", last_response.body
 
-      repo.checkout("wip")
-      repo.add_failing_commit
+    visit "/"
+    click_link "My Test Project"
+    assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
 
-      github_post payload(repo)
-      assert_equal "1", last_response.body
+    repo.checkout("wip")
+    repo.add_failing_commit
 
-      visit "/"
-      click_link "My Test Project (wip)"
-      assert_have_tag("h1", :content => "Built #{repo.short_head} and failed")
-    ensure
-      Integrity.auto_branch = false
-    end
+    github_post payload(repo)
+    assert_equal "1", last_response.body
+
+    visit "/"
+    click_link "My Test Project (wip)"
+    assert_have_tag("h1", :content => "Built #{repo.short_head} and failed")
   end
 
   scenario "Invalid token" do

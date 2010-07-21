@@ -25,14 +25,14 @@ module Integrity
       # +#current_user+
       login_required if session[:user]
 
-      unless Integrity.base_url
-        Integrity.configure { |c| c.base_url url_for("/", :full) }
+      unless Integrity.config.base_url
+        Integrity.configure { |c| c.base_url = url_for("/", :full) }
       end
     end
 
     post "/github/:token" do |token|
-      pass     unless github_enabled?
-      halt 403 unless token   == github_token
+      pass     unless Integrity.config.github_enabled?
+      halt 403 unless token   == Integrity.config.github_token
       halt 400 unless payload =  github_payload
 
       BuildableProject.call(payload).each { |b| b.build }.size.to_s
