@@ -1,13 +1,5 @@
 module Integrity
   module Helpers
-    def github_token
-      settings.github
-    end
-
-    def github_enabled?
-      settings.respond_to?(:github) && settings.github
-    end
-
     def github_payload
       payload = JSON.parse(params[:payload])
 
@@ -24,16 +16,16 @@ module Integrity
       end
 
       commits =
-        if settings.build_all?
+        if Integrity.config.build_all?
           payload.delete("commits")
         else
           [payload["commits"].detect { |c| c["id"] == payload["after"] }]
         end
 
       payload.update(
-        "uri"         => uri,
-        "branch"      => branch,
-        "commits"     => commits
+        "uri"     => uri,
+        "branch"  => branch,
+        "commits" => commits
       )
     rescue JSON::JSONError
       nil

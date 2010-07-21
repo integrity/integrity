@@ -10,12 +10,9 @@ module Integrity
     end
 
     def find
-      return branches unless auto_branch?
+      # TODO auto_branch property
+      return branches unless Integrity.config.auto_branch?
       Array(branch || forked)
-    end
-
-    def auto_branch?
-      !! Integrity.auto_branch
     end
 
     def branches

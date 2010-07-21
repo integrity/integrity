@@ -44,13 +44,12 @@ require "integrity/builder/threaded"
 Addressable::URI.class_eval { def gsub(*a); to_s.gsub(*a); end }
 
 module Integrity
-  class << self
-    attr_accessor :builder, :directory, :base_url, :logger, :auto_branch
+  def self.config
+    @config ||= Configuration.new
   end
 
-  def self.configure(&block)
-    @config ||= Configurator.new(&block)
-    @config.tap { |c| block.call(c) if block }
+  def self.configure
+    yield(config)
   end
 
   def self.bootstrap(&block)
@@ -58,11 +57,11 @@ module Integrity
   end
 
   def self.log(message, &block)
-    logger.info(message, &block)
+    config.logger.info(message, &block)
   end
 
   def self.app
-    warn "the base_url setting isn't set" unless base_url
+    warn "the base_url setting isn't set" unless config.instance_variable_get(:@base_url)
     Integrity::App
   end
 end

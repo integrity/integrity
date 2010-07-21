@@ -1,30 +1,36 @@
 module Integrity
   class Configuration
-    def initialize
-      yield self
-    end
+    attr_reader :directory, :base_url, :logger, :builder, :github_token,
+      :build_all, :auto_branch, :username, :password
 
-    def database(uri)
+    def database=(uri)
       DataMapper.setup(:default, uri)
     end
 
-    def directory(dir)
-      Integrity.directory = Pathname(dir)
+    def directory=(dir)
+      @directory = Pathname(dir)
     end
 
-    def base_url(url)
-      Integrity.base_url = Addressable::URI.parse(url)
+    def base_url=(url)
+      @base_url = Addressable::URI.parse(url)
     end
 
-    def log(log)
-      Integrity.logger = Logger.new(log)
+    # TODO
+    def log=(log)
+      @log = log
     end
 
-    def builder(name, args=nil)
-      Integrity.builder =
+    def logger
+      @logger ||= Logger.new(@log)
+    end
+
+    def builder=(builder)
+      name, args = builder
+
+      @builder =
         case name
         when :threaded
-          Integrity::ThreadedBuilder.new(args || 2, Integrity.logger)
+          Integrity::ThreadedBuilder.new(args || 2, logger)
         when :dj
           require "integrity/builder/delayed"
           Integrity::DelayedBuilder.new(args)
@@ -36,24 +42,40 @@ module Integrity
         end
     end
 
-    def github(token)
-      Integrity::App.set(:github, token)
+    def github_token=(token)
+      @github_token = token
     end
 
-    def build_all!
-      Integrity.app.enable(:build_all)
+    def github_enabled?
+      !! @github_token
     end
 
-    def auto_branch!
-      Integrity.auto_branch = true
+    def build_all=(v)
+      @build_all = v
     end
 
-    def user(v)
-      Integrity.app.set(:user, v)
+    def build_all?
+      !! @build_all
     end
 
-    def pass(v)
-      Integrity.app.set(:pass, v)
+    def auto_branch=(v)
+      @auto_branch =v
+    end
+
+    def auto_branch?
+      !! @auto_branch
+    end
+
+    def username=(v)
+      @username = v
+    end
+
+    def password=(v)
+      @password = v
+    end
+
+    def protected?
+      @username && @password
     end
   end
 end

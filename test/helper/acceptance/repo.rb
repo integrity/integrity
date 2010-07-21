@@ -5,7 +5,7 @@ module TestHelper
     alias_method :uri, :path
 
     def initialize(name = "test_repo", branch = "master")
-      @path   = Integrity.directory.join(name)
+      @path   = Integrity.config.directory.join(name)
       @branch = branch
     end
 

@@ -76,14 +76,15 @@ class Test::Unit::AcceptanceTestCase < IntegrityTest
   setup do
     Integrity::App.set(:environment, :test)
     Webrat.configure { |c| c.mode = :rack }
-    Integrity.builder = lambda { |build| Builder.new(build).build }
+    # TODO
+    Integrity.config.instance_variable_set(:@builder, lambda { |build| Builder.new(build).build })
     @app = Integrity.app
 
-    if Integrity.directory.directory?
-      Integrity.directory.rmtree
+    if Integrity.config.directory.directory?
+      Integrity.config.directory.rmtree
     end
 
-    Integrity.directory.mkdir
+    Integrity.config.directory.mkdir
     log_out
   end
 end
