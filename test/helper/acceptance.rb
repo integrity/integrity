@@ -73,11 +73,17 @@ class Test::Unit::AcceptanceTestCase < IntegrityTest
     alias_method :scenario, :test
   end
 
+  class MockBuilder
+    def self.enqueue(build)
+      build.run!
+    end
+  end
+
   setup do
     Integrity::App.set(:environment, :test)
     Webrat.configure { |c| c.mode = :rack }
     # TODO
-    Integrity.config.instance_variable_set(:@builder, lambda { |build| Builder.new(build).build })
+    Integrity.config.instance_variable_set(:@builder, MockBuilder)
     @app = Integrity.app
 
     if Integrity.config.directory.directory?

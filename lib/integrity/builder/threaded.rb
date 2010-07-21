@@ -10,8 +10,8 @@ module Integrity
     end
 
     # Adds a job to the queue.
-    def call(build)
-      @pool << proc { build.run }
+    def enqueue(build)
+      @pool << proc { build.run! }
     end
 
     # The number of jobs currently in the queue.

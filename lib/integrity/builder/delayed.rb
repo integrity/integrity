@@ -30,7 +30,7 @@ module Integrity
       }
     end
 
-    def call(build)
+    def enqueue(build)
       Delayed::Job.enqueue(BuildJob.new(build))
     end
 
@@ -40,7 +40,7 @@ module Integrity
       end
 
       def perform
-        Build.get!(@build).run
+        Build.get!(@build).run!
       end
     end
   end
