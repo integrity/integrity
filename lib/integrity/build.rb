@@ -18,7 +18,7 @@ module Integrity
       commit.destroy!
     end
 
-    def build
+    def run
       Builder.build(self)
     end
 
