@@ -1,5 +1,5 @@
 module Integrity
-  class Configurator
+  class Configuration
     def initialize
       yield self
     end
