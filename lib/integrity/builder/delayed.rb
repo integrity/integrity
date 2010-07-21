@@ -40,7 +40,7 @@ module Integrity
       end
 
       def perform
-        Build.get!(@build).build
+        Build.get!(@build).run
       end
     end
   end
