@@ -2,7 +2,7 @@ require "resque"
 
 module Integrity
   module ResqueBuilder
-    def self.call(build)
+    def self.enqueue(build)
       Resque.enqueue BuildJob, build.id
     end
 
@@ -10,7 +10,7 @@ module Integrity
       @queue = :integrity
 
       def self.perform(build)
-        Build.get!(build).run
+        Build.get!(build).run!
       end
     end
   end

@@ -23,7 +23,7 @@ module Integrity
     end
 
     def build
-      @build.tap { |b| Integrity.config.builder.call(b) }
+      @build.tap { |b| b.run }
     end
   end
 end

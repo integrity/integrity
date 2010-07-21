@@ -19,6 +19,10 @@ module Integrity
     end
 
     def run
+      Integrity.config.builder.enqueue(self)
+    end
+
+    def run!
       Builder.build(self)
     end
 
