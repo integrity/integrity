@@ -17,7 +17,7 @@ module Integrity
     end
 
     def start
-      Integrity.log "Started building #{@build.project.uri} at #{commit}"
+      Integrity.logger.info "Started building #{@build.project.uri} at #{commit}"
 
       checkout.run
 
@@ -41,7 +41,7 @@ module Integrity
     end
 
     def complete
-      Integrity.log "Build #{commit} exited with #{@status} got:\n #{@output}"
+      Integrity.logger.info "Build #{commit} exited with #{@status} got:\n #{@output}"
 
       @build.update!(
         :completed_at => Time.now,

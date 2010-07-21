@@ -40,12 +40,12 @@ module Integrity
         output = ""
         cmd    = "(#{cd ? "cd #{@directory} && " : ""}#{cmd} 2>&1)"
         # TODO
-        Integrity.config.logger.debug(cmd)
+        Integrity.logger.debug(cmd)
 
         IO.popen(cmd, "r") { |io| output = io.read }
 
         unless $?.success?
-          Integrity.config.logger.error(output.inspect)
+          Integrity.logger.error(output.inspect)
           fail "Failed run '#{cmd}'"
         end
       end

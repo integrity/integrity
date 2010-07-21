@@ -56,8 +56,8 @@ module Integrity
     Bootstrapper.new(&block)
   end
 
-  def self.log(message, &block)
-    config.logger.info(message, &block)
+  def self.logger
+    config.logger
   end
 
   def self.app

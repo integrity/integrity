@@ -25,7 +25,7 @@ module Integrity
       # TODO
       Delayed::Job.class_eval {
         def logger
-          @_logger ||= Integrity.config.logger
+          @_logger ||= Integrity.logger
         end
       }
     end
