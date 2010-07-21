@@ -19,9 +19,9 @@ module Integrity
     def start
       Integrity.log "Started building #{@build.project.uri} at #{commit}"
 
-      repo.checkout
+      checkout.run
 
-      metadata = repo.metadata
+      metadata = checkout.metadata
 
       @build.update(
         :started_at => Time.now,
@@ -47,15 +47,22 @@ module Integrity
     end
 
     def run
-      cmd = "(cd #{repo.directory} && #{@build.project.command} 2>&1)"
+      cmd = "(cd #{checkout_directory} && #{@build.project.command} 2>&1)"
       IO.popen(cmd, "r") { |io| @output = io.read }
       @status = $?.success?
     end
 
-    def repo
-      @repo ||= Repository.new(
-        @build.id, @build.project.uri, @build.project.branch, commit
+    def checkout
+      @checkout ||= Checkout.new(
+        @build.project.uri,
+        @build.project.branch,
+        commit,
+        checkout_directory
       )
+    end
+
+    def checkout_directory
+      @dir ||= Integrity.config.directory.join(@build.id.to_s)
     end
 
     def commit

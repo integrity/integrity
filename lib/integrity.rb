@@ -36,7 +36,7 @@ require "integrity/notifier"
 require "integrity/notifier/base"
 require "integrity/helpers"
 require "integrity/app"
-require "integrity/repository"
+require "integrity/checkout"
 require "integrity/builder"
 require "integrity/builder/threaded"
 
