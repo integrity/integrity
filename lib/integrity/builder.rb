@@ -35,7 +35,7 @@ module Integrity
     end
 
     def run
-      cmd = "(cd #{checkout_directory} && #{@build.project.command} 2>&1)"
+      cmd = "(cd #{checkout_directory} && #{command} 2>&1)"
       IO.popen(cmd, "r") { |io| @output = io.read }
       @status = $?.success?
     end
@@ -63,6 +63,10 @@ module Integrity
 
     def checkout_directory
       @dir ||= Integrity.config.directory.join(@build.id.to_s)
+    end
+
+    def command
+      @build.project.command
     end
 
     def commit
