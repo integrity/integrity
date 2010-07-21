@@ -14,6 +14,7 @@ module Integrity
       start
       run
       complete
+      notify
     end
 
     def start
@@ -48,7 +49,9 @@ module Integrity
         :successful   => @status,
         :output       => @output
       )
+    end
 
+    def notify
       @build.project.enabled_notifiers.each { |n| n.notify_of_build(@build) }
     end
 
