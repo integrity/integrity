@@ -34,6 +34,12 @@ module Integrity
       )
     end
 
+    def run
+      cmd = "(cd #{checkout_directory} && #{@build.project.command} 2>&1)"
+      IO.popen(cmd, "r") { |io| @output = io.read }
+      @status = $?.success?
+    end
+
     def complete
       Integrity.log "Build #{commit} exited with #{@status} got:\n #{@output}"
 
@@ -44,12 +50,6 @@ module Integrity
       )
 
       @build.project.enabled_notifiers.each { |n| n.notify_of_build(@build) }
-    end
-
-    def run
-      cmd = "(cd #{checkout_directory} && #{@build.project.command} 2>&1)"
-      IO.popen(cmd, "r") { |io| @output = io.read }
-      @status = $?.success?
     end
 
     def checkout
