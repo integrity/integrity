@@ -23,7 +23,7 @@ require "bcat/ansi"
 
 require "integrity/core_ext/object"
 
-require "integrity/configurator"
+require "integrity/configuration"
 require "integrity/bootstrapper"
 require "integrity/project"
 require "integrity/project_finder"
