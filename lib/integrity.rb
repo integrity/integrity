@@ -43,6 +43,10 @@ require "integrity/builder"
 Addressable::URI.class_eval { def gsub(*a); to_s.gsub(*a); end }
 
 module Integrity
+  autoload :ThreadedBuilder, "integrity/threaded_builder"
+  autoload :DelayedBuilder,  "integrity/delayed_builder"
+  autoload :ResqueBuilder,   "integrity/resque_builder"
+
   def self.config
     @config ||= Configuration.new
   end
