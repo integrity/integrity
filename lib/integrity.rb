@@ -64,8 +64,10 @@ module Integrity
   end
 
   def self.app
-    # TODO
-    warn "the base_url setting isn't set" unless config.instance_variable_get(:@base_url)
+    unless config.base_url
+      warn "the base_url setting isn't set"
+    end
+
     Integrity::App
   end
 end
