@@ -1,7 +1,7 @@
 module Integrity
   class Notifier
     class Base
-      def self.notify_of_build(build, config)
+      def self.notify(build, config)
         Integrity.logger.info "Notifying of build #{build.sha1_short} with #{to_s}"
         Timeout.timeout(8) { new(build, config).deliver! }
       rescue Timeout::Error

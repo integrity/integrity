@@ -39,7 +39,7 @@ module Integrity
     end
 
     def notify
-      @build.project.enabled_notifiers.each { |n| n.notify_of_build(@build) }
+      @build.project.enabled_notifiers.each { |n| n.notify(@build) }
     end
 
     def checkout
