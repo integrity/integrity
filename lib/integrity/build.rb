@@ -23,7 +23,7 @@ module Integrity
     end
 
     def run!
-      Builder.build(self)
+      Builder.build(self, Integrity.logger)
     end
 
     def successful?
