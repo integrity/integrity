@@ -1,7 +1,15 @@
 module Integrity
   class Payload
+    def self.build(payload)
+      new(payload).build
+    end
+
     def initialize(payload)
       @payload = JSON.parse(payload)
+    end
+
+    def build
+      BuildablePayload.build(self, !Integrity.config.build_all?)
     end
 
     def head
