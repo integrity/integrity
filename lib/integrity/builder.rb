@@ -24,7 +24,7 @@ module Integrity
     end
 
     def run_command
-      @status, @output = checkout.run(command)
+      @status, @output = checkout.run_in_dir(command)
     end
 
     def complete

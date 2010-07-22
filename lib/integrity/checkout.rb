@@ -8,12 +8,12 @@ module Integrity
 
     def checkout
       unless cloned?
-        run_command "git clone #{@repo.uri} #{@directory}", false
+        run! "git clone #{@repo.uri} #{@directory}"
       end
 
-      run_command "git fetch origin"
-      run_command "git checkout origin/#{@repo.branch}"
-      run_command "git reset --hard #{@commit}"
+      run_in_dir! "git fetch origin"
+      run_in_dir! "git checkout origin/#{@repo.branch}"
+      run_in_dir! "git reset --hard #{@commit}"
     end
 
     def metadata
@@ -30,31 +30,34 @@ module Integrity
       `git ls-remote --heads #{@repo.uri} #{@repo.branch} | cut -f1`.chomp
     end
 
+    def run_in_dir(command)
+      run("cd #{@directory} && #{command}")
+    end
+
+    def run_in_dir!(command)
+      run!("cd #{@directory} && #{command}")
+    end
+
     def run(command)
-      cmd    = "(cd #{@directory} && #{command} 2>&1)"
+      cmd    = "(#{command} 2>&1)"
+      Integrity.logger.debug(cmd)
       output = ""
       IO.popen(cmd, "r") { |io| output = io.read }
 
       [$?.success?, output]
     end
 
-    private
-      def cloned?
-        @directory.join(".git").directory?
+    def run!(command)
+      success, output = run(command)
+
+      unless success
+        Integrity.logger.error(output.inspect)
+        fail "Failed to run '#{cmd}'"
       end
+    end
 
-      def run_command(cmd, cd=true)
-        output = ""
-        cmd    = "(#{cd ? "cd #{@directory} && " : ""}#{cmd} 2>&1)"
-        # TODO
-        Integrity.logger.debug(cmd)
-
-        IO.popen(cmd, "r") { |io| output = io.read }
-
-        unless $?.success?
-          Integrity.logger.error(output.inspect)
-          fail "Failed run '#{cmd}'"
-        end
-      end
+    def cloned?
+      @directory.join(".git").directory?
+    end
   end
 end
