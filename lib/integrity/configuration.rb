@@ -49,13 +49,10 @@ module Integrity
       @builder =
         case name
         when :threaded
-          require "integrity/threaded_builder"
           Integrity::ThreadedBuilder.new(args || 2, logger)
         when :dj
-          require "integrity/delayed_builder"
           Integrity::DelayedBuilder.new(args)
         when :resque
-          require "integrity/resque_builder"
           Integrity::ResqueBuilder
         else
           raise ArgumentError, "Unknown builder #{name}"
