@@ -1,19 +1,18 @@
 module Integrity
   class Checkout
-    def initialize(uri, branch, commit, directory)
-      @uri       = uri
-      @branch    = branch
+    def initialize(repo, commit, directory)
+      @repo      = repo
       @commit    = commit == "HEAD" ? head : commit
       @directory = directory
     end
 
     def run
       unless cloned?
-        run_command "git clone #{@uri} #{@directory}", false
+        run_command "git clone #{@repo.uri} #{@directory}", false
       end
 
       run_command "git fetch origin"
-      run_command "git checkout origin/#{@branch}"
+      run_command "git checkout origin/#{@repo.branch}"
       run_command "git reset --hard #{@commit}"
     end
 
@@ -28,7 +27,7 @@ module Integrity
     end
 
     def head
-      `git ls-remote --heads #{@uri} #{@branch} | cut -f1`.chomp
+      `git ls-remote --heads #{@repo.uri} #{@repo.branch} | cut -f1`.chomp
     end
 
     private

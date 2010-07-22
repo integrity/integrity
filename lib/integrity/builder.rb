@@ -45,8 +45,7 @@ module Integrity
 
     def checkout
       @checkout ||= Checkout.new(
-        @build.project.uri,
-        @build.project.branch,
+        repo,
         commit,
         checkout_directory
       )
@@ -54,6 +53,10 @@ module Integrity
 
     def checkout_directory
       @dir ||= Integrity.config.directory.join(@build.id.to_s)
+    end
+
+    def repo
+      @build.project.repo
     end
 
     def command
