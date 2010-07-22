@@ -37,6 +37,7 @@ require "integrity/payload"
 require "integrity/helpers"
 require "integrity/app"
 require "integrity/checkout"
+require "integrity/command_runner"
 require "integrity/builder"
 require "integrity/builder/threaded"
 
