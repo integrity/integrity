@@ -1,11 +1,12 @@
 module Integrity
   class Builder
-    def self.build(b)
-      new(b).build
+    def self.build(_build, logger)
+      new(_build, logger).build
     end
 
-    def initialize(build)
+    def initialize(build, logger)
       @build  = build
+      @logger = logger
       @status = false
       @output = ""
     end
@@ -18,7 +19,7 @@ module Integrity
     end
 
     def start
-      Integrity.logger.info "Started building #{@build.project.uri} at #{commit}"
+      @logger.info "Started building #{@build.project.uri} at #{commit}"
       checkout.checkout
       @build.update(:started_at => Time.now, :commit => checkout.metadata)
     end
@@ -28,7 +29,7 @@ module Integrity
     end
 
     def complete
-      Integrity.logger.info "Build #{commit} exited with #{@status} got:\n #{@output}"
+      @logger.info "Build #{commit} exited with #{@status} got:\n #{@output}"
 
       @build.update(
         :completed_at => Time.now,
@@ -42,7 +43,7 @@ module Integrity
     end
 
     def checkout
-      @checkout ||= Checkout.new(repo, commit, directory)
+      @checkout ||= Checkout.new(repo, commit, directory, @logger)
     end
 
     def directory

@@ -1,9 +1,10 @@
 module Integrity
   class Checkout
-    def initialize(repo, commit, directory)
+    def initialize(repo, commit, directory, logger)
       @repo      = repo
       @commit    = commit == "HEAD" ? head : commit
       @directory = directory
+      @logger    = logger
     end
 
     def checkout
@@ -39,7 +40,7 @@ module Integrity
     end
 
     def runner
-      @runner ||= CommandRunner.new(Integrity.logger)
+      @runner ||= CommandRunner.new(@logger)
     end
   end
 end
