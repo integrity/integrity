@@ -39,7 +39,7 @@ module Integrity
         halt 403
       end
 
-      build_payload
+      Payload.build(params[:payload]).to_s
     end
 
     get "/?" do
