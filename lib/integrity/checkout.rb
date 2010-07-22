@@ -8,12 +8,14 @@ module Integrity
 
     def checkout
       unless cloned?
-        run! "git clone #{@repo.uri} #{@directory}"
+        runner.run! "git clone #{@repo.uri} #{@directory}"
       end
 
-      run_in_dir! "git fetch origin"
-      run_in_dir! "git checkout origin/#{@repo.branch}"
-      run_in_dir! "git reset --hard #{@commit}"
+      in_dir do |c|
+        c.run! "git fetch origin"
+        c.run! "git checkout origin/#{@repo.branch}"
+        c.run! "git reset --hard #{@commit}"
+      end
     end
 
     def metadata
@@ -31,33 +33,19 @@ module Integrity
     end
 
     def run_in_dir(command)
-      run("cd #{@directory} && #{command}")
+      in_dir { |r| r.run(command) }
     end
 
-    def run_in_dir!(command)
-      run!("cd #{@directory} && #{command}")
-    end
-
-    def run(command)
-      cmd    = "(#{command} 2>&1)"
-      Integrity.logger.debug(cmd)
-      output = ""
-      IO.popen(cmd, "r") { |io| output = io.read }
-
-      [$?.success?, output]
-    end
-
-    def run!(command)
-      success, output = run(command)
-
-      unless success
-        Integrity.logger.error(output.inspect)
-        fail "Failed to run '#{cmd}'"
-      end
+    def in_dir(&block)
+      runner.cd(@directory, &block)
     end
 
     def cloned?
       @directory.join(".git").directory?
+    end
+
+    def runner
+      @runner ||= CommandRunner.new(Integrity.logger)
     end
   end
 end
