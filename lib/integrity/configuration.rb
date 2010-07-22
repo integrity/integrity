@@ -51,10 +51,10 @@ module Integrity
         when :threaded
           Integrity::ThreadedBuilder.new(args || 2, logger)
         when :dj
-          require "integrity/builder/delayed"
+          require "integrity/delayed_builder"
           Integrity::DelayedBuilder.new(args)
         when :resque
-          require "integrity/builder/resque"
+          require "integrity/resque_builder"
           Integrity::ResqueBuilder
         else
           raise ArgumentError, "Unknown builder #{name}"
