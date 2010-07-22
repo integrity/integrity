@@ -40,7 +40,7 @@ Link: #{build_url}
 
 == Build Output:
 
-#{escape(build.output)}
+#{build_output}
 EOM
       end
 
@@ -50,11 +50,9 @@ EOM
         base_url.join("/#{build.project.permalink}/builds/#{build.id}")
       end
 
-      private
-
-        def escape(s)
-          s.gsub("\e[0m", "").gsub(/\e\[3[1-7]m/, "")
-        end
+      def build_output
+        @build.output.gsub("\e[0m", "").gsub(/\e\[3[1-7]m/, "")
+      end
     end
   end
 end
