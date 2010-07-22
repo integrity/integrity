@@ -25,16 +25,16 @@ module Integrity
       end
 
       def short_message
-        build.human_status
+        @build.human_status
       end
 
       def full_message
         <<-EOM
 == #{short_message}
 
-Commit Message: #{build.message}
-Commit Date: #{build.committed_at}
-Commit Author: #{build.author}
+Commit Message: #{@build.message}
+Commit Date: #{@build.committed_at}
+Commit Author: #{@build.author}
 
 Link: #{build_url}
 
@@ -47,7 +47,7 @@ EOM
       def build_url
         base_url = Integrity.config.base_url ||
           Addressable::URI.parse("http://example.org")
-        base_url.join("/#{build.project.permalink}/builds/#{build.id}")
+        base_url.join("/#{@build.project.permalink}/builds/#{@build.id}")
       end
 
       def build_output
