@@ -12,26 +12,5 @@ module Integrity
     timestamps :at
 
     belongs_to :build
-
-    def identifier
-      attribute_get(:identifier) || ""
-    end
-
-    def short_identifier
-      identifier.to_s[0..6]
-    end
-
-    def message
-      attribute_get(:message) || "message not loaded"
-    end
-
-    def author
-      attribute_get(:author) ||
-        Author.load("author not loaded", nil)
-    end
-
-    def committed_at
-      attribute_get(:committed_at)
-    end
   end
 end

@@ -20,15 +20,15 @@ class BaseNotifierTest < IntegrityTest
   end
 
   it "provides a short message" do
-    assert_equal "Built #{@build.commit.short_identifier} successfully",
+    assert_equal "Built #{@build.sha1_short} successfully",
       @notifier.short_message
   end
 
   it "provides a full message" do
     assert @notifier.full_message.include?(@build.human_status)
-    assert @notifier.full_message.include?(@build.commit.message)
-    assert @notifier.full_message.include?(@build.commit.committed_at.to_s)
-    assert @notifier.full_message.include?(@build.commit.author.name)
+    assert @notifier.full_message.include?(@build.message)
+    assert @notifier.full_message.include?(@build.committed_at.to_s)
+    assert @notifier.full_message.include?(@build.author)
     assert @notifier.full_message.include?(@notifier.build_url)
     assert @notifier.full_message.include?(@build.output)
   end
