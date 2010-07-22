@@ -4,7 +4,7 @@ class HelpersTest < IntegrityTest
   setup { @h = Module.new { extend Integrity::Helpers } }
 
   test "pretty_date" do
-    assert_equal "commit date not loaded", @h.pretty_date(DateTime.new)
+    assert_equal "commit date not loaded", @h.pretty_date(nil)
     assert_equal "today",       @h.pretty_date(Time.now)
     assert_equal "yesterday",   @h.pretty_date(Time.new - 86400)
 

@@ -171,12 +171,6 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     end
   end
 
-  scenario "Receiving an invalid payload" do
-    Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
-    github_post "foo"
-    assert last_response.client_error?
-  end
-
   scenario "Auto branching" do
     Integrity.configure { |c|
       c.auto_branch = true
