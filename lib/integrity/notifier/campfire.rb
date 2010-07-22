@@ -26,7 +26,7 @@ Commit Message: #{build.commit.message}
 Commit Date: #{build.commit.committed_at}
 Commit Author: #{build.commit.author.name}
 
-#{escape(build.output)}
+#{build_output}
 EOM
       end
 
