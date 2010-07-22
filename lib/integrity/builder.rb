@@ -12,21 +12,19 @@ module Integrity
 
     def build
       start
-      run
+      run_command
       complete
       notify
     end
 
     def start
       Integrity.logger.info "Started building #{@build.project.uri} at #{commit}"
-      checkout.run
+      checkout.checkout
       @build.update(:started_at => Time.now, :commit => checkout.metadata)
     end
 
-    def run
-      cmd = "(cd #{checkout_directory} && #{command} 2>&1)"
-      IO.popen(cmd, "r") { |io| @output = io.read }
-      @status = $?.success?
+    def run_command
+      @status, @output = checkout.run(command)
     end
 
     def complete
