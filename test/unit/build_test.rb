@@ -31,7 +31,7 @@ class BuildTest < IntegrityTest
       build.human_status
 
     assert_equal "This commit hasn't been built yet",
-      Build.gen(:pending, :commit => nil).human_status
+      Build.gen(:pending, :commit => {:identifier => nil}).human_status
   end
 
   test "commit data" do

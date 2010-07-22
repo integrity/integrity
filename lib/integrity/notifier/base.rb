@@ -2,7 +2,7 @@ module Integrity
   class Notifier
     class Base
       def self.notify_of_build(build, config)
-        Integrity.logger.info "Notifying of build #{build.commit.short_identifier} with #{to_s}"
+        Integrity.logger.info "Notifying of build #{build.sha1_short} with #{to_s}"
         Timeout.timeout(8) { new(build, config).deliver! }
       rescue Timeout::Error
         Integrity.logger.error "#{to_s} notifier timed out"
@@ -32,9 +32,9 @@ module Integrity
         <<-EOM
 == #{short_message}
 
-Commit Message: #{build.commit.message}
-Commit Date: #{build.commit.committed_at}
-Commit Author: #{build.commit.author.name}
+Commit Message: #{build.message}
+Commit Date: #{build.committed_at}
+Commit Author: #{build.author}
 
 Link: #{build_url}
 

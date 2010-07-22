@@ -4,6 +4,10 @@ module Integrity
     size      65535
     lazy      true
 
+    def self.unknown
+      load("author not loaded", nil)
+    end
+
     class AuthorStruct < Struct.new(:name, :email)
       def self.parse(string)
         if string =~ /^(.*) <(.*)>$/

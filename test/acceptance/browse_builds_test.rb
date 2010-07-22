@@ -36,7 +36,7 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
       assert_have_tag("li.success", :count => 3)
     end
 
-    click_link Commit.first.short_identifier
+    click_link Build.first.sha1_short
     click_link "on GitHub"
     assert last_request.url.include?("http://github.com")
   end

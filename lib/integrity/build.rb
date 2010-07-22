@@ -57,21 +57,20 @@ module Integrity
       commit.identifier
     end
 
-    # TODO
     def sha1_short
-      if commit
-        commit.short_identifier
-      else
-        "This commit"
+      unless sha1
+        return "This commit"
       end
+
+      sha1[0..6]
     end
 
     def message
-      commit.message
+      commit.message || "message not loaded"
     end
 
     def author
-      commit.author.name
+      (commit.author || Author.unknown).name
     end
 
     def committed_at
