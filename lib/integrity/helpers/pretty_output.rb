@@ -13,13 +13,15 @@ module Integrity
       end
 
       def pretty_date(date_time)
+        unless date_time
+          return "commit date not loaded"
+        end
+
         days_away = (Date.today - Date.new(date_time.year, date_time.month, date_time.day)).to_i
         if days_away == 0
           "today"
         elsif days_away == 1
           "yesterday"
-        elsif date_time == DateTime.new
-          "commit date not loaded"
         else
           strftime_with_ordinal(date_time, "on %b %o")
         end

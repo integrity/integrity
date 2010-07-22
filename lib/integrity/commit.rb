@@ -31,7 +31,7 @@ module Integrity
     end
 
     def committed_at
-      attribute_get(:committed_at) || DateTime.new
+      attribute_get(:committed_at)
     end
   end
 end

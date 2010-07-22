@@ -1,34 +1,20 @@
 module Integrity
   module Helpers
-    def github_payload
-      payload = JSON.parse(params[:payload])
-
-      repository = payload.delete("repository")
-      branch     = payload.delete("ref").split("refs/heads/").last
-
-      unless uri = payload.delete("uri")
-        uri =
-          if repository["private"]
-            "git@github.com:#{URI(repository["url"]).path[1..-1]}"
-          else
-            URI(repository["url"]).tap { |u| u.scheme = "git" }.to_s
-          end
-      end
-
-      commits =
+    def build_payload
+      payload  = Payload.new(params[:payload])
+      projects = ProjectFinder.find(payload.uri, payload.branch)
+      builds   = []
+      projects.each { |project|
         if Integrity.config.build_all?
-          payload.delete("commits")
+          payload.commits.each { |commit|
+            builds << project.builds.create(:commit => commit)
+          }
         else
-          [payload["commits"].detect { |c| c["id"] == payload["after"] }]
+          builds << project.builds.create(:commit => payload.head)
         end
-
-      payload.update(
-        "uri"     => uri,
-        "branch"  => branch,
-        "commits" => commits
-      )
-    rescue JSON::JSONError
-      nil
+      }
+      builds.each { |b| b.run }
+      builds.size.to_s
     end
   end
 end

@@ -27,17 +27,18 @@ module Integrity
     end
 
     def build_head
-      BuildableProject.new(self, {"id" => "HEAD"}).build
+      build(Commit.new(:identifier => "HEAD"))
     end
 
     def build(commit)
-      buildable = BuildableProject.new(self, {
-        "id"        => commit.identifier,
-        "message"   => commit.message,
-        "timestamp" => commit.committed_at,
-        "author"    => commit.author.to_s
+      _build = builds.create(:commit => {
+        :identifier   => commit.identifier,
+        :author       => commit.author,
+        :message      => commit.message,
+        :committed_at => commit.committed_at
       })
-      buildable.build
+      _build.run
+      _build
     end
 
     def fork(new_branch)

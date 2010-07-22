@@ -31,11 +31,15 @@ module Integrity
     end
 
     post "/github/:token" do |token|
-      pass     unless Integrity.config.github_enabled?
-      halt 403 unless token   == Integrity.config.github_token
-      halt 400 unless payload =  github_payload
+      unless Integrity.config.github_enabled?
+        pass
+      end
 
-      BuildableProject.call(payload).each { |b| b.build }.size.to_s
+      unless token == Integrity.config.github_token
+        halt 403
+      end
+
+      build_payload
     end
 
     get "/?" do
