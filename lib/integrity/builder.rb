@@ -19,20 +19,8 @@ module Integrity
 
     def start
       Integrity.logger.info "Started building #{@build.project.uri} at #{commit}"
-
       checkout.run
-
-      metadata = checkout.metadata
-
-      @build.update(
-        :started_at => Time.now,
-        :commit     => {
-          :identifier   => metadata["id"],
-          :message      => metadata["message"],
-          :author       => metadata["author"],
-          :committed_at => metadata["timestamp"]
-        }
-      )
+      @build.update(:started_at => Time.now, :commit => checkout.metadata)
     end
 
     def run

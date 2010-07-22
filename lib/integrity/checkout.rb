@@ -18,13 +18,13 @@ module Integrity
     end
 
     def metadata
-      format = "---%nid: %H%nauthor: %an " \
-        "<%ae>%nmessage: >-%n  %s%ntimestamp: %ci%n"
+      format = "---%nidentifier: %H%nauthor: %an " \
+        "<%ae>%nmessage: >-%n  %s%ncommitted_at: %ci%n"
 
       dump = YAML.load(`cd #{@directory} && git show -s \
         --pretty=format:"#{format}" #{@commit}`)
 
-      dump.update("timestamp" => Time.parse(dump["timestamp"]))
+      dump.update("committed_at" => Time.parse(dump["committed_at"]))
     end
 
     def head
