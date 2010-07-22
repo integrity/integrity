@@ -7,9 +7,7 @@ module Integrity
     end
 
     def checkout
-      unless cloned?
-        runner.run! "git clone #{@repo.uri} #{@directory}"
-      end
+      runner.run! "git clone #{@repo.uri} #{@directory}"
 
       in_dir do |c|
         c.run! "git fetch origin"
@@ -38,10 +36,6 @@ module Integrity
 
     def in_dir(&block)
       runner.cd(@directory, &block)
-    end
-
-    def cloned?
-      @directory.join(".git").directory?
     end
 
     def runner
