@@ -42,15 +42,11 @@ module Integrity
     end
 
     def checkout
-      @checkout ||= Checkout.new(
-        repo,
-        commit,
-        checkout_directory
-      )
+      @checkout ||= Checkout.new(repo, commit, directory)
     end
 
-    def checkout_directory
-      @dir ||= Integrity.config.directory.join(@build.id.to_s)
+    def directory
+      @directory ||= Integrity.config.directory.join(@build.id.to_s)
     end
 
     def repo
