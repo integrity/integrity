@@ -6,7 +6,7 @@ module Integrity
       @directory = directory
     end
 
-    def run
+    def checkout
       unless cloned?
         run_command "git clone #{@repo.uri} #{@directory}", false
       end
@@ -28,6 +28,14 @@ module Integrity
 
     def head
       `git ls-remote --heads #{@repo.uri} #{@repo.branch} | cut -f1`.chomp
+    end
+
+    def run(command)
+      cmd    = "(cd #{@directory} && #{command} 2>&1)"
+      output = ""
+      IO.popen(cmd, "r") { |io| output = io.read }
+
+      [$?.success?, output]
     end
 
     private
