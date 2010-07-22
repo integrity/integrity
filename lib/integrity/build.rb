@@ -2,6 +2,13 @@ module Integrity
   class Build
     include DataMapper::Resource
 
+    HUMAN_STATUS = {
+      :success  => "Built %s successfully",
+      :failed   => "Built %s and failed",
+      :pending  => "%s hasn't been built yet",
+      :building => "%s is building"
+    }
+
     property :id,           Serial
     property :project_id,   Integer   # TODO :nullable => false
     property :output,       Text,     :default => "", :length => 1048576
@@ -81,12 +88,7 @@ module Integrity
     end
 
     def human_status
-      case status
-      when :success  then "Built #{sha1_short} successfully"
-      when :failed   then "Built #{sha1_short} and failed"
-      when :pending  then "#{sha1_short} hasn't been built yet"
-      when :building then "#{sha1_short} is building"
-      end
+      HUMAN_STATUS[status] % sha1_short
     end
   end
 end
