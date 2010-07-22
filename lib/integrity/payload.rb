@@ -35,7 +35,9 @@ module Integrity
       if repository["private"]
         "git@github.com:#{URI(repository["url"]).path[1..-1]}"
       else
-        URI(repository["url"]).tap { |u| u.scheme = "git" }.to_s
+        uri = URI(repository["url"])
+        uri.scheme = "git"
+        uri.to_s
       end
     end
 

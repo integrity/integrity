@@ -18,9 +18,13 @@ module AcceptanceHelper
   include TestHelper
 
   def git_repo(name)
-    GitRepo.new(name.to_s).tap { |repo|
-      repo.create unless File.directory?(repo.uri)
-    }
+    repo = GitRepo.new(name.to_s)
+
+    unless File.directory?(repo.uri)
+      repo.create
+    end
+
+    repo
   end
 
   def login_as(user, password)

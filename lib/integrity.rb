@@ -21,8 +21,6 @@ require "pathname"
 require "forwardable"
 require "bcat/ansi"
 
-require "integrity/core_ext/object"
-
 require "integrity/configuration"
 require "integrity/bootstrapper"
 require "integrity/project"
