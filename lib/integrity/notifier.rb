@@ -19,13 +19,12 @@ module Integrity
       available[klass.to_s.split(":").last] = klass
     end
 
-    def notify_of_build(build)
-      to_const.notify_of_build(build, config) if to_const
+    def notify(build)
+      klass && klass.notify(build, config)
     end
 
-    private
-      def to_const
-        self.class.available[name]
-      end
+    def klass
+      self.class.available[name]
+    end
   end
 end
