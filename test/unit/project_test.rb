@@ -36,15 +36,6 @@ class ProjectTest < IntegrityTest
       Project.gen(:name => "foo's bar/baz and BACON?!").permalink
   end
 
-  it "public" do
-    assert Project.gen(:public => "1").public?
-    assert ! Project.gen(:public => "0").public?
-    assert Project.gen(:public => "false").public?
-    assert Project.gen(:public => "true").public?
-    assert ! Project.gen(:public => false).public?
-    assert ! Project.gen(:public => nil).public?
-  end
-
   test "defaults" do
     assert_equal "master", Project.new.branch
     assert_equal "rake", Project.new.command

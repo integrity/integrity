@@ -92,11 +92,6 @@ module Integrity
       ! blank? && last_build.human_status
     end
 
-    def public=(v)
-      return attribute_set(:public, v == "1") if %w[0 1].include?(v)
-      attribute_set(:public, !!v)
-    end
-
     private
       def set_permalink
         attribute_set(:permalink,
