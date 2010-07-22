@@ -19,7 +19,7 @@ module Integrity
     end
 
     def start
-      @logger.info "Started building #{@build.project.uri} at #{commit}"
+      @logger.info "Started building #{repo.uri} at #{commit}"
       checkout.checkout
       @build.update(:started_at => Time.now, :commit => checkout.metadata)
     end
@@ -59,7 +59,7 @@ module Integrity
     end
 
     def commit
-      @build.commit.identifier
+      @build.sha1
     end
   end
 end
