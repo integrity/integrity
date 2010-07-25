@@ -9,7 +9,6 @@ module Integrity
     end
 
     def find
-      # TODO pass auto_branch to constructor
       unless Integrity.config.auto_branch?
         return branches
       end
