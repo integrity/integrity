@@ -10,7 +10,7 @@ module Integrity
 
     def build
       # TODO pass build_all to constructor
-      BuildablePayload.build(self, !Integrity.config.build_all?)
+      PayloadBuilder.build(self, !Integrity.config.build_all?)
     end
 
     def repo
