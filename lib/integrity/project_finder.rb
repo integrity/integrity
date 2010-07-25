@@ -1,36 +1,38 @@
 module Integrity
   class ProjectFinder
-    def self.find(uri, branch)
-      new(uri, branch).find
+    def self.find(repo)
+      new(repo).find
     end
 
-    def initialize(uri, branch)
-      @uri    = uri
-      @branch = branch
+    def initialize(repo)
+      @repo = repo
     end
 
     def find
-      # TODO auto_branch property
-      return branches unless Integrity.config.auto_branch?
+      # TODO pass auto_branch to constructor
+      unless Integrity.config.auto_branch?
+        return branches
+      end
+
       Array(branch || forked)
     end
 
     def branches
-      all.all(:branch => @branch)
+      all.all(:branch => @repo.branch)
     end
 
     def branch
-      all.first(:branch => @branch)
+      all.first(:branch => @repo.branch)
     end
 
     def forked
       if master = all.first("master")
-        master.fork(@branch)
+        master.fork(@repo.branch)
       end
     end
 
     def all
-      @all ||= Project.all(:uri.like => "#{@uri}%")
+      @all ||= Project.all(:uri.like => "#{@repo.uri}%")
     end
   end
 end
