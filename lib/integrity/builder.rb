@@ -51,11 +51,11 @@ module Integrity
     end
 
     def repo
-      @build.project.repo
+      @build.repo
     end
 
     def command
-      @build.project.command
+      @build.command
     end
 
     def commit

@@ -53,6 +53,14 @@ module Integrity
       ! pending? && ! building?
     end
 
+    def repo
+      project.repo
+    end
+
+    def command
+      project.command
+    end
+
     def sha1
       commit.identifier
     end
