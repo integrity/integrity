@@ -25,7 +25,7 @@ module Integrity
     end
 
     def projects
-      @projects ||= ProjectFinder.find(@payload.uri, @payload.branch)
+      @projects ||= ProjectFinder.find(@payload.repo)
     end
   end
 end

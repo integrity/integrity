@@ -9,7 +9,12 @@ module Integrity
     end
 
     def build
+      # TODO pass build_all to constructor
       BuildablePayload.build(self, !Integrity.config.build_all?)
+    end
+
+    def repo
+      Repository.new(uri, branch)
     end
 
     def head
