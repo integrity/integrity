@@ -1,16 +1,15 @@
 module Integrity
   class Payload
-    def self.build(payload)
-      new(payload).build
+    def self.build(payload, all)
+      new(payload).build(all)
     end
 
     def initialize(payload)
       @payload = JSON.parse(payload)
     end
 
-    def build
-      # TODO pass build_all to constructor
-      PayloadBuilder.build(self, Integrity.config.build_all?)
+    def build(all)
+      PayloadBuilder.build(self, all)
     end
 
     def repo
