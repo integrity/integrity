@@ -50,7 +50,7 @@ module Integrity
     end
 
     def completed?
-      !pending? && !building?
+      ! pending? && ! building?
     end
 
     def sha1

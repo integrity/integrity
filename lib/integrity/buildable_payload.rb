@@ -5,8 +5,8 @@ module Integrity
     end
 
     def initialize(payload, head)
-      @payload   = payload
-      @head      = head
+      @payload = payload
+      @head    = head
     end
 
     def build
