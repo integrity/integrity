@@ -1,12 +1,12 @@
 module Integrity
   class PayloadBuilder
-    def self.build(payload, head)
-      new(payload, head).build
+    def self.build(payload, build_all)
+      new(payload, build_all).build
     end
 
-    def initialize(payload, head)
-      @payload = payload
-      @head    = head
+    def initialize(payload, build_all)
+      @payload   = payload
+      @build_all = build_all
     end
 
     def build
@@ -21,7 +21,7 @@ module Integrity
     end
 
     def commits
-      @commits ||= @head ? [@payload.head] : @payload.commits
+      @commits ||= @build_all ? @payload.commits : [@payload.head]
     end
 
     def projects
