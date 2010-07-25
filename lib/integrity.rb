@@ -47,6 +47,8 @@ module Integrity
   autoload :DelayedBuilder,  "integrity/delayed_builder"
   autoload :ResqueBuilder,   "integrity/resque_builder"
 
+  Repository = Struct.new(:uri, :branch)
+
   def self.config
     @config ||= Configuration.new
   end

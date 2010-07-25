@@ -26,10 +26,8 @@ module Integrity
       builds.destroy!
     end
 
-    Repo = Struct.new(:uri, :branch)
-
     def repo
-      @repo ||= Repo.new(uri, branch)
+      @repo ||= Repository.new(uri, branch)
     end
 
     def build_head
