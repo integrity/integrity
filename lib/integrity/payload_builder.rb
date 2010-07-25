@@ -1,5 +1,5 @@
 module Integrity
-  class BuildablePayload
+  class PayloadBuilder
     def self.build(payload, head)
       new(payload, head).build
     end
