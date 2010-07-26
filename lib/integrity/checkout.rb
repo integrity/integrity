@@ -20,22 +20,19 @@ module Integrity
     def metadata
       format = "---%nidentifier: %H%nauthor: %an " \
         "<%ae>%nmessage: >-%n  %s%ncommitted_at: %ci%n"
-
-      result = run_in_dir!(
-        "cd #{@directory} && git show -s " \
-          "--pretty=format:\"#{format}\" #{sha1}"
-      )
-
-      dump = YAML.load(result.output)
+      result = run_in_dir!("git show -s --pretty=format:\"#{format}\" #{sha1}")
+      dump   = YAML.load(result.output)
 
       dump.update("committed_at" => Time.parse(dump["committed_at"]))
     end
 
+    def sha1
+      @sha1 ||= @commit == "HEAD" ? head : @commit
+    end
+
     def head
-      runner.run!(
-        "git ls-remote --heads #{@repo.uri} #{@repo.branch} " \
-          "| cut -f1"
-      ).output
+      runner.run!("git ls-remote --heads #{@repo.uri} #{@repo.branch}").
+        output.split.first
     end
 
     def run_in_dir(command)
@@ -52,10 +49,6 @@ module Integrity
 
     def runner
       @runner ||= CommandRunner.new(@logger)
-    end
-
-    def sha1
-      @sha1 ||= @commit == "HEAD" ? head : @commit
     end
   end
 end
