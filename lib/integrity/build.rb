@@ -33,6 +33,10 @@ module Integrity
       Builder.build(self, Integrity.logger)
     end
 
+    def notify
+      project.enabled_notifiers.each { |n| n.notify(self) }
+    end
+
     def successful?
       successful == true
     end
