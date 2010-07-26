@@ -21,12 +21,12 @@ module Integrity
       format = "---%nidentifier: %H%nauthor: %an " \
         "<%ae>%nmessage: >-%n  %s%ncommitted_at: %ci%n"
 
-      output = run_in_dir!(
+      result = run_in_dir!(
         "cd #{@directory} && git show -s " \
           "--pretty=format:\"#{format}\" #{sha1}"
       )
 
-      dump = YAML.load(output)
+      dump = YAML.load(result.output)
 
       dump.update("committed_at" => Time.parse(dump["committed_at"]))
     end
@@ -35,7 +35,7 @@ module Integrity
       runner.run!(
         "git ls-remote --heads #{@repo.uri} #{@repo.branch} " \
           "| cut -f1"
-      )
+      ).output
     end
 
     def run_in_dir(command)

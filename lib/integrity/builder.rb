@@ -8,8 +8,6 @@ module Integrity
       @build     = build
       @directory = directory
       @logger    = logger
-      @status    = false
-      @output    = ""
     end
 
     def build
@@ -26,16 +24,16 @@ module Integrity
     end
 
     def run
-      @status, @output = checkout.run_in_dir(command)
+      @result = checkout.run_in_dir(command)
     end
 
     def complete
-      @logger.info "Build #{commit} exited with #{@status} got:\n #{@output}"
+      @logger.info "Build #{commit} exited with #{@result.success} got:\n #{@result.output}"
 
       @build.update(
         :completed_at => Time.now,
-        :successful   => @status,
-        :output       => @output
+        :successful   => @result.success,
+        :output       => @result.output
       )
     end
 
