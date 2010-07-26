@@ -67,6 +67,7 @@ module Integrity
 
     get "/:project" do
       login_required unless current_project.public?
+
       show :project, :title => ["projects", current_project.name]
     end
 
@@ -103,12 +104,14 @@ module Integrity
 
     get "/:project/builds/:build" do
       login_required unless current_project.public?
+
       show :build, :title => ["projects", current_project.permalink,
         current_build.sha1_short]
     end
 
     get "/:project/builds/:build/raw" do
       login_required unless current_project.public?
+
       content_type :text
       current_build.output
     end
