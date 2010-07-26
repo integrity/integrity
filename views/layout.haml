@@ -12,12 +12,3 @@
         checked with
         %a{ :href => "http://integrityapp.com", :title => "The fun continuous integration server" } integrity
     #content= yield
-    - if Integrity.config.protected?
-      #footer
-        - if authorized?
-          Oh, hello
-          %strong&= current_user
-        - else
-          Hey there!
-          %a{ :href => path("login") } Log In
-          if you have a user
