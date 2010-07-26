@@ -81,7 +81,6 @@ Commit Date: #{DateTime.parse(build_commit["timestamp"])}
 Commit Author: #{build_commit["author"]["name"]}
 
 Running tests...
-
 EOM
 
     paste_payload = {

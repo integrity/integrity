@@ -2,7 +2,7 @@ module Integrity
   class Checkout
     def initialize(repo, commit, directory, logger)
       @repo      = repo
-      @commit    = commit == "HEAD" ? head : commit
+      @commit    = commit
       @directory = directory
       @logger    = logger
     end
@@ -13,7 +13,7 @@ module Integrity
       in_dir do |c|
         c.run! "git fetch origin"
         c.run! "git checkout origin/#{@repo.branch}"
-        c.run! "git reset --hard #{@commit}"
+        c.run! "git reset --hard #{sha1}"
       end
     end
 
@@ -22,13 +22,16 @@ module Integrity
         "<%ae>%nmessage: >-%n  %s%ncommitted_at: %ci%n"
 
       dump = YAML.load(`cd #{@directory} && git show -s \
-        --pretty=format:"#{format}" #{@commit}`)
+        --pretty=format:"#{format}" #{sha1}`)
 
       dump.update("committed_at" => Time.parse(dump["committed_at"]))
     end
 
     def head
-      `git ls-remote --heads #{@repo.uri} #{@repo.branch} | cut -f1`.chomp
+      runner.run!(
+        "git ls-remote --heads #{@repo.uri} #{@repo.branch} " \
+          "| cut -f1"
+      )
     end
 
     def run_in_dir(command)
@@ -41,6 +44,10 @@ module Integrity
 
     def runner
       @runner ||= CommandRunner.new(@logger)
+    end
+
+    def sha1
+      @sha1 ||= @commit == "HEAD" ? head : @commit
     end
   end
 end
