@@ -1,7 +1,7 @@
 module Integrity
   class App < Sinatra::Base
     set     :root, File.expand_path("../../..", __FILE__)
-    enable  :methodoverride, :static, :sessions
+    enable  :methodoverride, :static
     disable :build_all
 
     helpers Integrity::Helpers
@@ -19,11 +19,6 @@ module Integrity
 
     before do
       halt 404 if request.path_info.include?("favico")
-
-      # The browser only sends http auth data for requests that are explicitly
-      # required to do so. This way we get the real values of +#logged_in?+ and
-      # +#current_user+
-      login_required if session[:user]
 
       unless Integrity.config.base_url
         Integrity.configure { |c| c.base_url = url_for("/", :full) }
@@ -48,13 +43,6 @@ module Integrity
     get "/?" do
       @projects = authorized? ? Project.all : Project.all(:public => true)
       show :home, :title => "projects"
-    end
-
-    get "/login" do
-      login_required
-
-      session[:user] = current_user
-      redirect root_url.to_s
     end
 
     get "/new" do
