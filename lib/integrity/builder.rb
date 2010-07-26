@@ -1,14 +1,15 @@
 module Integrity
   class Builder
-    def self.build(_build, logger)
-      new(_build, logger).build
+    def self.build(_build, directory, logger)
+      new(_build, directory, logger).build
     end
 
-    def initialize(build, logger)
-      @build  = build
-      @logger = logger
-      @status = false
-      @output = ""
+    def initialize(build, directory, logger)
+      @build     = build
+      @directory = directory
+      @logger    = logger
+      @status    = false
+      @output    = ""
     end
 
     def build
@@ -47,7 +48,7 @@ module Integrity
     end
 
     def directory
-      @directory ||= Integrity.config.directory.join(@build.id.to_s)
+      @_directory ||= @directory.join(@build.id.to_s)
     end
 
     def repo

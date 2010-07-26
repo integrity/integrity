@@ -30,7 +30,7 @@ module Integrity
     end
 
     def run!
-      Builder.build(self, Integrity.logger)
+      Builder.build(self, Integrity.config.directory, Integrity.logger)
     end
 
     def notify
