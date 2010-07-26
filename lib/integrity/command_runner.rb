@@ -2,6 +2,8 @@ module Integrity
   class CommandRunner
     class Error < StandardError; end
 
+    Result = Struct.new(:success, :output)
+
     def initialize(logger)
       @logger = logger
     end
@@ -21,18 +23,18 @@ module Integrity
       output = ""
       IO.popen(cmd, "r") { |io| output = io.read }
 
-      [$?.success?, output.chomp]
+      Result.new($?.success?, output.chomp)
     end
 
     def run!(command)
-      success, output = run(command)
+      result = run(command)
 
-      unless success
+      unless result.success
         @logger.error(output.inspect)
         raise Error, "Failed to run '#{command}'"
       end
 
-      output
+      result
     end
 
     def normalize(cmd)
