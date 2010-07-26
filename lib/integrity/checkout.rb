@@ -7,7 +7,7 @@ module Integrity
       @logger    = logger
     end
 
-    def checkout
+    def run
       runner.run! "git clone #{@repo.uri} #{@directory}"
 
       in_dir do |c|

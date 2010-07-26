@@ -13,18 +13,18 @@ module Integrity
 
     def build
       start
-      run_command
+      run
       complete
       notify
     end
 
     def start
       @logger.info "Started building #{repo.uri} at #{commit}"
-      checkout.checkout
+      checkout.run
       @build.update(:started_at => Time.now, :commit => checkout.metadata)
     end
 
-    def run_command
+    def run
       @status, @output = checkout.run_in_dir(command)
     end
 
