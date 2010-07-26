@@ -21,7 +21,7 @@ module Integrity
       output = ""
       IO.popen(cmd, "r") { |io| output = io.read }
 
-      [$?.success?, output]
+      [$?.success?, output.chomp]
     end
 
     def run!(command)
@@ -31,6 +31,8 @@ module Integrity
         @logger.error(output.inspect)
         raise Error, "Failed to run '#{command}'"
       end
+
+      output
     end
 
     def normalize(cmd)
