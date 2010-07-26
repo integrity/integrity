@@ -5,7 +5,7 @@ module Integrity
     end
 
     def initialize(payload)
-      @payload = JSON.parse(payload)
+      @payload = payload
     end
 
     def build(all)
