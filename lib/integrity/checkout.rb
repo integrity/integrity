@@ -21,8 +21,12 @@ module Integrity
       format = "---%nidentifier: %H%nauthor: %an " \
         "<%ae>%nmessage: >-%n  %s%ncommitted_at: %ci%n"
 
-      dump = YAML.load(`cd #{@directory} && git show -s \
-        --pretty=format:"#{format}" #{sha1}`)
+      output = run_in_dir!(
+        "cd #{@directory} && git show -s " \
+          "--pretty=format:\"#{format}\" #{sha1}"
+      )
+
+      dump = YAML.load(output)
 
       dump.update("committed_at" => Time.parse(dump["committed_at"]))
     end
@@ -36,6 +40,10 @@ module Integrity
 
     def run_in_dir(command)
       in_dir { |r| r.run(command) }
+    end
+
+    def run_in_dir!(command)
+      in_dir { |r| r.run!(command) }
     end
 
     def in_dir(&block)
