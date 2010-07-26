@@ -19,7 +19,10 @@
         %a{ :href => github_commit_url(build) } view on GitHub
 
 - if build.completed?
-  %h2 Build Output:
+  %h2
+    Build Output
+    %a{:href => build_path(build, :raw)} (raw)
+
   %pre.output
     :preserve
       #{bash_color_codes h(build.output)}

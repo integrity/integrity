@@ -39,6 +39,11 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
     click_link Build.first.sha1_short
     click_link "on GitHub"
     assert last_request.url.include?("http://github.com")
+
+    visit "/integrity"
+    click_link "raw"
+    assert_equal Project.first(:name => "Integrity").last_build.output,
+      last_response.body
   end
 
   scenario "Looking for details on the last build" do
@@ -71,14 +76,14 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
     click_link(/Build 87e673a/)
 
     assert_have_tag("h1", :content => "Built 87e673a successfully")
-    assert_have_tag("h2", :content => "Build Output:")
+    assert_have_tag("h2", :content => "Build Output")
     assert_have_tag("button", :content => "Rebuild")
 
     visit "/integrity"
     click_link(/Build 7fee3f0/)
 
     assert_have_tag("h1", :content => "7fee3f0 hasn't been built yet")
-    assert_have_no_tag("h2", :content => "Build Output:")
+    assert_have_no_tag("h2", :content => "Build Output")
     assert_have_tag("button", :content => "Rebuild")
   end
 end
