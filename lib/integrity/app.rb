@@ -116,6 +116,12 @@ module Integrity
         current_build.sha1_short]
     end
 
+    get "/:project/builds/:build/raw" do
+      login_required unless current_project.public?
+      content_type :text
+      current_build.output
+    end
+
     post "/:project/builds/:build" do
       login_required
 

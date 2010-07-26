@@ -317,13 +317,16 @@ a
       :bottom-bottom-width 1px
       :line-height 1.4
 
+    h2 a
+      :font-size smaller
+
     &.success
       h1, blockquote
         :background-color = !success_bg
         :border-color = (!success_bg - #222) (!success_bg + #111) (!success_bg + #111) (!success_bg - #222)
       h1
         :color = !success_color
-      .meta, a
+      .meta, .github a
         :color = !success_bg - #444
         a:hover
           :color = !success_bg
@@ -335,7 +338,7 @@ a
         :border-color = (!failed_bg - #222) (!failed_bg + #111) (!failed_bg + #111) (!failed_bg - #222)
       h1
         :color = !failed_color
-      .meta, a
+      .meta, .github a
         :color = !failed_bg - #444
         a:hover
           :color = !failed_bg
@@ -347,11 +350,12 @@ a
         :border-color = (!building_bg - #222) (!building_bg + #111) (!building_bg + #111) (!building_bg - #222)
       h1
         :color = !building_color
-      .meta, a
+      .meta, .github a
         :color = !building_color - #444
         a:hover
           :color = !building_bg
           :background-color = !building_color
+
     h1
       :margin-top .5em
       :margin-bottom 0
