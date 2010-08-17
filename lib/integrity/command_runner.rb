@@ -30,7 +30,7 @@ module Integrity
       result = run(command)
 
       unless result.success
-        @logger.error(output.inspect)
+        @logger.error(result.output.inspect)
         raise Error, "Failed to run '#{command}'"
       end
 
