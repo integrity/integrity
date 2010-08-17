@@ -14,6 +14,7 @@ module Integrity
         c.run! "git fetch origin"
         c.run! "git checkout origin/#{@repo.branch}"
         c.run! "git reset --hard #{sha1}"
+        c.run! "git submodule update --init"
       end
     end
 
