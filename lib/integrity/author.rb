@@ -1,7 +1,6 @@
 module Integrity
-  class Author < DataMapper::Type
-    primitive String
-    size      65535
+  class Author < DataMapper::Property::String
+    length      65535
     lazy      true
 
     def self.unknown
