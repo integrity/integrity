@@ -25,16 +25,27 @@ module Integrity
 
     def dump(value)
       return nil if value.nil?
-
       value.to_s
     end
 
     def typecast(value)
       case value
       when AuthorStruct then value
-      when NilClass     then load(nil, property)
-      else load(value.to_s, property)
+      when NilClass     then load(nil)
+      else load(value.to_s)
       end
+    end
+
+    def typecast_to_primitive(value)
+      value.to_s
+    end
+
+    def primitive?(value)
+      return value.nil? || value.is_a?(String) || value.is_a?(AuthorStruct)
+    end
+    
+    def valid?(value)
+      primitive?(value)
     end
   end
 end
