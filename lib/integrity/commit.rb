@@ -26,8 +26,7 @@ module Integrity
     end
 
     def author
-      attribute_get(:author) ||
-        Author.load('<Commit author not loaded> <<Commit author not loaded>>', :author)
+      attribute_get(:author) || Author::AuthorStruct.new("<Commit message not loaded>", "<Commit message not loaded>")
     end
 
     def committed_at
