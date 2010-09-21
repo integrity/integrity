@@ -3,8 +3,8 @@ module Integrity
     length      65535
     lazy      true
 
-    def self.unknown
-      load("author not loaded", nil)
+    def unknown
+      load("author not loaded")
     end
 
     class AuthorStruct < Struct.new(:name, :email)
