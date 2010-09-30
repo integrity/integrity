@@ -53,11 +53,11 @@ end
 
 begin
   namespace :resque do
+    require "init"
     require "resque/tasks"
 
     desc "Start a Resque worker for Integrity"
     task :work do
-      require "init"
       ENV["QUEUE"] = "integrity"
       Rake::Task["resque:resque:work"].invoke
     end
