@@ -1,6 +1,11 @@
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "lib"))
 
-require ".bundle/environment"
+begin
+  require ".bundle/environment" 
+rescue LoadError
+  require "bundler/setup"
+end
+
 require "integrity"
 
 # Uncomment as appropriate for the notifier you want to use
