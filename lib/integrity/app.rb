@@ -70,12 +70,6 @@ module Integrity
 
       show :project, :title => ["projects", current_project.name]
     end
-    
-    get "/:project" do
-      login_required unless current_project.public?
-
-      show :project, :title => ["projects", current_project.name]
-    end
 
     get "/:project/ping" do
       login_required unless current_project.public?
