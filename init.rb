@@ -5,7 +5,6 @@ begin
 rescue LoadError
   require "bundler/setup"
 end
-
 require "integrity"
 
 # Uncomment as appropriate for the notifier you want to use
