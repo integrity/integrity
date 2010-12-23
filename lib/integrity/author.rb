@@ -1,10 +1,11 @@
 module Integrity
+  
   class Author < DataMapper::Property::String
     length      65535
     lazy      true
 
-    def unknown
-      load("author not loaded")
+    def self.unknown
+      AuthorStruct.parse("author not loaded")
     end
 
     class AuthorStruct < Struct.new(:name, :email)
@@ -51,5 +52,7 @@ module Integrity
     def valid?(value)
       primitive?(value)
     end
+    
   end
+  
 end
