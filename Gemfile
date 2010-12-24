@@ -1,6 +1,14 @@
 source "http://rubygems.org"
 
-gem "dm-sqlite-adapter", "1.0.0"
+# Uncomment if you're using sqlite3 instead
+# gem "dm-sqlite-adapter", "1.0.0"
+# gem "do_sqlite3", "0.10.2"
+# Uncomment if you're using mysql instead
+# gem "mysql"
+gem "dm-postgres-adapter", "1.0.0"
+gem "do_postgres", "0.10.2"
+gem "pg"
+
 gem "dm-core", "1.0.0"
 gem "dm-timestamps", "1.0.0"
 gem "dm-types", "1.0.0"
@@ -11,7 +19,6 @@ gem "bcrypt-ruby", "2.1.2"
 gem "uuidtools", "2.1.1"
 gem "extlib", "0.9.15"
 gem "data_objects", "0.10.2"
-gem "do_sqlite3", "0.10.2"
 gem "rake"
 gem "haml", "2.2.17"
 gem "thor", "0.9.9"
@@ -24,7 +31,7 @@ gem "rack", "1.1.0"
 
 # These are dependencies for the various notifiers. Uncomment as appropriate.
 # = Email
-# gem "sinatra-ditties"
+gem "sinatra-ditties"
 # = IRC
 # gem "shout-bot"
 # = Campfire
@@ -39,10 +46,6 @@ gem "rack", "1.1.0"
 # gem "delayed_job", :git => "git://github.com/tobi/delayed_job.git"
 # = Dependency for the :resque builder
 # gem "resque"
-
-# Uncomment if you're using pg or mysql instead of sqlite
-# gem "pg"
-# gem "mysql"
 
 # = Development dependencies.
 group :test do

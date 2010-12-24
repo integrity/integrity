@@ -26,7 +26,7 @@ require "integrity"
 # require "integrity/notifier/shell"
 
 Integrity.configure do |c|
-  c.database     =  "sqlite3:integrity.db"
+  c.database     =  "postgres://postgres@localhost/integrity"
   c.directory    =  "builds"
   c.base_url     =  "http://ci.example.org"
   c.log          =  "integrity.log"
