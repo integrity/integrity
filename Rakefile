@@ -30,7 +30,7 @@ desc "Clean-up build directory"
 task :cleanup do
   require "init"
   Integrity::Build.all(:completed_at.not => nil).each { |build|
-    dir = Integrity.directory.join(build.id.to_s)
+    dir = Integrity.config.directory.join(build.id.to_s)
     dir.rmtree if dir.directory?
   }
 end
@@ -53,11 +53,11 @@ end
 
 begin
   namespace :resque do
+    require "init"
     require "resque/tasks"
 
     desc "Start a Resque worker for Integrity"
     task :work do
-      require "init"
       ENV["QUEUE"] = "integrity"
       Rake::Task["resque:resque:work"].invoke
     end
