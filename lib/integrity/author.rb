@@ -3,7 +3,7 @@ module Integrity
     length      65535
     lazy      true
 
-    def unknown
+    def self.unknown
       load("author not loaded")
     end
 
@@ -47,7 +47,7 @@ module Integrity
     def primitive?(value)
       return value.nil? || value.is_a?(String) || value.is_a?(AuthorStruct)
     end
-    
+
     def valid?(value)
       primitive?(value)
     end
