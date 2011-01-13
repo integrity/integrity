@@ -4,3 +4,4 @@ doc/integrity.html
 builds
 *.db
 *.log
+.rvmrc
