@@ -1,7 +1,7 @@
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "lib"))
 
 begin
-  require ".bundle/environment" 
+  require ".bundle/environment"
 rescue LoadError
   require "bundler/setup"
 end
