@@ -1,26 +1,26 @@
 module Integrity
+  class AuthorStruct < Struct.new(:name, :email)
+    def self.parse(string)
+      if string =~ /^(.*) <(.*)>$/
+        new($1.strip, $2.strip)
+      else
+        new(string, "not loaded")
+      end
+    end
+
+    def to_s
+      @full ||= "#{name} <#{email}>"
+    end
+
+    alias_method :full, :to_s
+  end
+
   class Author < DataMapper::Property::String
     length 65535
     lazy   true
 
     def self.unknown
-      load("author not loaded")
-    end
-
-    class AuthorStruct < Struct.new(:name, :email)
-      def self.parse(string)
-        if string =~ /^(.*) <(.*)>$/
-          new($1.strip, $2.strip)
-        else
-          new(string, "not loaded")
-        end
-      end
-
-      def to_s
-        @full ||= "#{name} <#{email}>"
-      end
-
-      alias_method :full, :to_s
+      AuthorStruct.parse("author not loaded")
     end
 
     def load(value)
