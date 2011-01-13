@@ -39,14 +39,14 @@ namespace :jobs do
   desc "Clear the delayed_job queue."
   task :clear do
     require File.expand_path("../init", __FILE__)
-    require File.expand_path("../lib/integrity/delayed_builder", __FILE__)
+    require "integrity/delayed_builder"
     Delayed::Job.delete_all
   end
 
   desc "Start a delayed_job worker."
   task :work do
     require File.expand_path("../init", __FILE__)
-    require File.expand_path("../lib/integrity/delayed_builder", __FILE__)
+    require "integrity/delayed_builder"
     Delayed::Worker.new.start
   end
 end
