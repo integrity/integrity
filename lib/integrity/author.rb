@@ -1,7 +1,7 @@
 module Integrity
   class Author < DataMapper::Property::String
-    length      65535
-    lazy      true
+    length 65535
+    lazy   true
 
     def self.unknown
       load("author not loaded")
