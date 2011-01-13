@@ -22,13 +22,13 @@ end
 
 desc "Create the database"
 task :db do
-  require "init"
+  require File.expand_path("../init", __FILE__)
   DataMapper.auto_upgrade!
 end
 
 desc "Clean-up build directory"
 task :cleanup do
-  require "init"
+  require File.expand_path("../init", __FILE__)
   Integrity::Build.all(:completed_at.not => nil).each { |build|
     dir = Integrity.config.directory.join(build.id.to_s)
     dir.rmtree if dir.directory?
@@ -38,22 +38,22 @@ end
 namespace :jobs do
   desc "Clear the delayed_job queue."
   task :clear do
-    require "init"
-    require "integrity/builder/delayed"
+    require File.expand_path("../init", __FILE__)
+    require File.expand_path("../lib/integrity/delayed_builder", __FILE__)
     Delayed::Job.delete_all
   end
 
   desc "Start a delayed_job worker."
   task :work do
-    require "init"
-    require "integrity/builder/delayed"
+    require File.expand_path("../init", __FILE__)
+    require File.expand_path("../lib/integrity/delayed_builder", __FILE__)
     Delayed::Worker.new.start
   end
 end
 
 begin
   namespace :resque do
-    require "init"
+    require File.expand_path("../init", __FILE__)
     require "resque/tasks"
 
     desc "Start a Resque worker for Integrity"
