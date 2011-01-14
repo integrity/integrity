@@ -1,4 +1,5 @@
 require "delayed_job"
+require "active_record"
 
 module Integrity
   class DelayedBuilder
@@ -6,20 +7,24 @@ module Integrity
       ActiveRecord::Base.default_timezone = :utc
       ActiveRecord::Base.establish_connection(options)
 
-      unless Delayed::Job.table_exists?
-        ActiveRecord::Schema.define {
-          create_table :delayed_jobs, :force => true do |table|
-            table.integer  :priority, :default => 0
-            table.integer  :attempts, :default => 0
-            table.text     :handler
-            table.text     :last_error
-            table.datetime :run_at
-            table.datetime :locked_at
-            table.datetime :failed_at
-            table.string   :locked_by
-            table.timestamps
-          end
-        }
+      Delayed::Worker.backend = :active_record
+
+      ActiveRecord::Migration.suppress_messages do
+        unless Delayed::Job.table_exists?
+          ActiveRecord::Schema.define {
+            create_table :delayed_jobs, :force => true do |table|
+              table.integer  :priority, :default => 0
+              table.integer  :attempts, :default => 0
+              table.text     :handler
+              table.text     :last_error
+              table.datetime :run_at
+              table.datetime :locked_at
+              table.datetime :failed_at
+              table.string   :locked_by
+              table.timestamps
+            end
+          }
+        end
       end
 
       # TODO

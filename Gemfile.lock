@@ -16,15 +16,26 @@ GIT
 GEM
   remote: http://rubygems.org/
   specs:
+    activemodel (3.0.3)
+      activesupport (= 3.0.3)
+      builder (~> 2.1.2)
+      i18n (~> 0.4)
+    activerecord (3.0.3)
+      activemodel (= 3.0.3)
+      activesupport (= 3.0.3)
+      arel (~> 2.0.2)
+      tzinfo (~> 0.3.23)
     activesupport (3.0.3)
     addressable (2.2.2)
     ansi (1.2.2)
+    arel (2.0.7)
     bcat (0.5.2)
       rack (< 1.2)
     bcrypt-ruby (2.1.4)
     broach (0.2.1)
       json (~> 1.4)
       nap (~> 0.3)
+    builder (2.1.2)
     bunny (0.6.0)
     contest (0.1.2)
     crack (0.1.8)
@@ -98,6 +109,7 @@ GEM
     tlsmail (0.0.1)
     turn (0.8.1)
       ansi (>= 1.2.2)
+    tzinfo (0.3.23)
     uuidtools (2.1.1)
     webmock (1.6.2)
       addressable (>= 2.2.2)
@@ -111,6 +123,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activerecord (= 3.0.3)
   addressable (= 2.2.2)
   bcat (= 0.5.2)
   bcrypt-ruby (= 2.1.4)
