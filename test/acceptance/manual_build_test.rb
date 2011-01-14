@@ -134,7 +134,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
 
     click_link "my-test-project"
     click_link "Edit"
-    fill_in "Build script", :with => "./test"
+    fill_in "Build script", :with => "exit 0"
     click_button "Update Project"
     click_button "Rebuild"
 
