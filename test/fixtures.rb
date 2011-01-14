@@ -10,7 +10,7 @@ module Integrity
   extend DataMapper::Sweatshop::Unique
 
   Project.fixture do
-    { :name    => (name = unique { /\w+/.gen }),
+    { :name    => (name = unique(:project_name) { /\w+/.gen }),
       :uri     => "git://github.com/#{/\w+/.gen}/#{name}.git",
       :branch  => Randgen.word,
       :command => Randgen.word,
@@ -68,9 +68,9 @@ module Integrity
   Build.fixture do
     { :output       => /[:paragraph:]/.gen,
       :successful   => [true, false].pick,
-      :started_at   => unique {|i| Time.mktime(2008, 12, 15, i / 60, i % 60) },
-      :created_at   => unique {|i| Time.mktime(2008, 12, 15, i / 60, i % 60) },
-      :completed_at => unique {|i| Time.mktime(2008, 12, 15, i / 60, i % 60) },
+      :started_at   => unique(:build_started_at) {|i| Time.mktime(2008, 12, 15, i / 60, i % 60) },
+      :created_at   => unique(:build_created_at) {|i| Time.mktime(2008, 12, 15, i / 60, i % 60) },
+      :completed_at => unique(:build_completed_at) {|i| Time.mktime(2008, 12, 15, i / 60, i % 60) },
       :commit       => Commit.gen,
       :project      => Project.gen }
   end
@@ -89,7 +89,7 @@ module Integrity
 
   Build.fixture(:building) do
     Build.gen_attrs.update(:completed_at => nil, :started_at =>
-      unique {|i| Time.mktime(2008, 12, 15, 18, i % 60) })
+      unique(:build_building) {|i| Time.mktime(2008, 12, 15, 18, i % 60) })
   end
 
   Commit.fixture do
@@ -97,7 +97,7 @@ module Integrity
       :message    => /[:sentence:]/.gen,
       :author     => /\w+ \w+ <\w+@example.org>/.gen,
       :committed_at =>
-        unique{|i| Time.mktime(2008, 12, 15, 18, (59 - i) % 60)} }
+        unique(:commit_committed_at) {|i| Time.mktime(2008, 12, 15, 18, (59 - i) % 60)} }
   end
 
   Commit.fixture(:successful) do
@@ -105,7 +105,7 @@ module Integrity
       :message    => /[:sentence:]/.gen,
       :author     => /\w+ \w+ <\w+@example.org>/.gen,
       :committed_at =>
-        unique{|i| Time.mktime(2008, 12, 15, 18, (59 - i) % 60)},
+        unique(:commit_committed_at_successful) {|i| Time.mktime(2008, 12, 15, 18, (59 - i) % 60)},
       :build => Build.gen_attrs.update(:successful => true) }
   end
 
@@ -114,7 +114,7 @@ module Integrity
       :message    => /[:sentence:]/.gen,
       :author     => /\w+ \w+ <\w+@example.org>/.gen,
       :committed_at =>
-        unique{|i| Time.mktime(2008, 12, 15, 18, (59 - i) % 60)},
+        unique(:commit_committed_at_failed) {|i| Time.mktime(2008, 12, 15, 18, (59 - i) % 60)},
       :build => Build.gen_attrs.update(:successful => false) }
   end
 
