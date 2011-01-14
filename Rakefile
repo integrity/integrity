@@ -1,3 +1,4 @@
+$LOAD_PATH.unshift(File.expand_path(File.dirname(".")))
 require "rake/testtask"
 require "rake/clean"
 
@@ -22,13 +23,13 @@ end
 
 desc "Create the database"
 task :db do
-  require File.expand_path("../init", __FILE__)
+  require "init"
   DataMapper.auto_upgrade!
 end
 
 desc "Clean-up build directory"
 task :cleanup do
-  require File.expand_path("../init", __FILE__)
+  require "init"
   Integrity::Build.all(:completed_at.not => nil).each { |build|
     dir = Integrity.config.directory.join(build.id.to_s)
     dir.rmtree if dir.directory?
@@ -38,14 +39,14 @@ end
 namespace :jobs do
   desc "Clear the delayed_job queue."
   task :clear do
-    require File.expand_path("../init", __FILE__)
+    require "init"
     require "integrity/delayed_builder"
     Delayed::Job.delete_all
   end
 
   desc "Start a delayed_job worker."
   task :work do
-    require File.expand_path("../init", __FILE__)
+    require "init"
     require "integrity/delayed_builder"
     Delayed::Worker.new.start
   end
@@ -53,7 +54,7 @@ end
 
 begin
   namespace :resque do
-    require File.expand_path("../init", __FILE__)
+    require "init"
     require "resque/tasks"
 
     desc "Start a Resque worker for Integrity"
