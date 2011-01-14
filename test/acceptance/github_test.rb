@@ -51,7 +51,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "Receiving a payload with build_all option *enabled*" do
-    stub(Time).now { unique { |i| Time.mktime(2009, 12, 15, i / 60, i % 60) } }
+    stub(Time).now { unique(:time_for_receiving_payload) { |i| Time.mktime(2009, 12, 15, i / 60, i % 60) } }
     Integrity.configure { |c| c.build_all = true }
 
     repo = git_repo(:my_test_project)
@@ -96,7 +96,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
         c.build_all = true
       }
 
-      stub(Time).now { unique { |i| Time.mktime(2009, 12, 15, i / 60, i % 60) } }
+      stub(Time).now { unique(:time_for_building_two_projects) { |i| Time.mktime(2009, 12, 15, i / 60, i % 60) } }
 
       repo = git_repo(:my_test_project)
 
