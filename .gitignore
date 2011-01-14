@@ -1,5 +1,4 @@
 .bundle/*
-Gemfile.lock
 doc/integrity.html
 builds
 *.db
