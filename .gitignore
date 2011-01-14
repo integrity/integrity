@@ -5,3 +5,4 @@ builds
 *.db
 *.log
 .rvmrc
+*.tmproj
