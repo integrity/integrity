@@ -22,7 +22,7 @@ class CampfireNotificationTest < Test::Unit::AcceptanceTestCase
   end
 
   teardown do
-    WebMock.reset_webmock
+    WebMock.reset!
   end
 
   def commit(successful)

@@ -65,7 +65,7 @@ class Test::Unit::AcceptanceTestCase < IntegrityTest
   include Webrat::Methods
   include Webrat::Matchers
   include Webrat::HaveTagMatcher
-  include WebMock
+  include WebMock::API
 
   Webrat::Methods.delegate_to_session :response_code
 
