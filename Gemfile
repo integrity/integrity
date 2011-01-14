@@ -24,21 +24,20 @@ gem "rack",                  "1.1.0"
 
 # These are dependencies for the various notifiers. Uncomment as appropriate.
 # = Email
-# gem "sinatra-ditties"
+# gem "sinatra-ditties", "0.0.2"
 # = IRC
-# gem "shout-bot"
+# gem "shout-bot", "0.0.4"
 # = Campfire
-# gem "broach", :git => "git://github.com/Manfred/broach.git"
-# gem "nap", :git => "git://github.com/qrush/nap.git"
+# gem "broach", "0.2.1"
+# gem "nap", "0.4"
 # = AMQP
-# gem "bunny"
+# gem "bunny", "0.6.0"
 
 # = Dependencies for the :dj builder
-# gem "activerecord"
-# gem "sqlite3-ruby"
-# gem "delayed_job", :git => "git://github.com/tobi/delayed_job.git"
+# gem "sqlite3-ruby", "1.3.2"
+# gem "delayed_job", "2.1.2"
 # = Dependency for the :resque builder
-# gem "resque"
+# gem "resque", "1.10.0"
 
 # Uncomment if you're using pg or mysql instead of sqlite
 # gem "pg"
@@ -46,27 +45,26 @@ gem "rack",                  "1.1.0"
 
 # = Development dependencies.
 group :test do
-  gem "ruby-debug" if RUBY_VERSION < '1.9'
-  gem "sqlite3-ruby"
-  gem "activerecord"
-  gem "delayed_job", :git => "git://github.com/tobi/delayed_job.git"
-  gem "rr"
-  gem "mocha"
-  gem "redgreen"
-  gem "dm-sweatshop"
-  gem "ParseTree"
-  gem "randexp"
-  gem "rack-test", "0.5.0"
-  gem "rumbster"
-  gem "nokogiri"
-  gem "hpricot"
-  gem "contest"
-  gem "webrat"
-  gem "shout-bot"
-  gem "sinatra-ditties"
-  gem "broach", :git => "git://github.com/Manfred/broach.git"
-  gem "nap", :git => "git://github.com/qrush/nap.git"
-  gem "bunny"
-  gem "webmock"
-  gem "turn"
+  gem "ruby-debug",      "0.10.4" if RUBY_VERSION < '1.9'
+  gem "sqlite3-ruby",    "1.3.2"
+  gem "delayed_job",     "2.1.2"
+  gem "i18n",            "0.5.0"
+  gem "rr",              "1.0.2"
+  gem "mocha",           "0.9.10"
+  gem "redgreen",        "1.2.2"
+  gem "dm-sweatshop",    "~> 1.0.2", :git => "git://github.com/datamapper/dm-sweatshop.git"
+  gem "randexp",         "~> 0.1.5", :git => "git://github.com/snusnu/randexp", :branch => "no_parsetree"
+  gem "rack-test",       "0.5.7"
+  gem "rumbster",        "1.0.0"
+  gem "nokogiri",        "1.4.4"
+  gem "hpricot",         "0.8.3"
+  gem "contest",         "0.1.2"
+  gem "webrat",          "0.7.3"
+  gem "shout-bot",       "0.0.4"
+  gem "sinatra-ditties", "0.0.2"
+  gem "broach",          "0.2.1"
+  gem "nap",             "0.4"
+  gem "bunny",           "0.6.0"
+  gem "webmock",         "1.6.2"
+  gem "turn",            "0.8.1"
 end
