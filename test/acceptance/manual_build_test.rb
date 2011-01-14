@@ -176,7 +176,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
 
       assert_have_tag("h1", :content => "HEAD hasn't been built yet")
 
-      Delayed::Job.work_off
+      Delayed::Worker.new.work_off
       click_link "my-test-project"
 
       assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")

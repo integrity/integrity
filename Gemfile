@@ -36,6 +36,7 @@ gem "rack",                  "1.1.0"
 # = Dependencies for the :dj builder
 # gem "sqlite3-ruby", "1.3.2"
 # gem "delayed_job", "2.1.2"
+# gem "activerecord", "3.0.3"
 # = Dependency for the :resque builder
 # gem "resque", "1.10.0"
 
@@ -48,6 +49,7 @@ group :test do
   gem "ruby-debug",      "0.10.4" if RUBY_VERSION < '1.9'
   gem "sqlite3-ruby",    "1.3.2"
   gem "delayed_job",     "2.1.2"
+  gem "activerecord",    "3.0.3"
   gem "i18n",            "0.5.0"
   gem "rr",              "1.0.2"
   gem "mocha",           "0.9.10"
