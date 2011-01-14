@@ -27,8 +27,10 @@ class ConfiguratorTest < IntegrityTest
     Integrity.configure { |c| c.base_url = "http://foo.com" }
     assert_equal "foo.com", Integrity.config.base_url.host
 
-    Integrity.configure { |c| c.base_url = nil }
-    assert_nothing_raised(RuntimeError) { Integrity.app }
+    silence_warnings do
+      Integrity.configure { |c| c.base_url = nil }
+      assert_nothing_raised(RuntimeError) { Integrity.app }
+    end
   end
 
   test "logging" do
