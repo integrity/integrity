@@ -22,6 +22,11 @@
   %label{ :for => "email_notifier_pass" } Password
   %input.text#email_notifier_pass{ :name => "notifiers[Email][pass]", :value => config["pass"], :type => "text" }
 
+%p.normal.checkbox
+  %label{ :for => "email_notifier_starttls" } Auto STARTTLS
+  %input.hidden{ :name => "notifiers[Email][starttls]", :value => "0", :type => "hidden" }
+  %input.checkbox#email_notifier_starttls{ checkbox("notifiers[Email][starttls]", "1", :checked => (config["starttls"] == "1")) }
+
 %p.normal
   %label{ :for => "email_notifier_auth" } Auth type
   - dropdown("notifiers[Email][auth]", "email_notifier_auth", %w[plain login cram_md5], config["auth"])
