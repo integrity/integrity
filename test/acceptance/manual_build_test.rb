@@ -144,7 +144,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("#build blockquote p",
       :content => "This commit will work")
 
-    sleep 2
+    sleep 3
     build
     reload
 
