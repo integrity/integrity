@@ -25,18 +25,25 @@ gem "rack",                  "1.1.0"
 # These are dependencies for the various notifiers. Uncomment as appropriate.
 # = Email
 # gem "pony", "1.1"
+
 # = IRC
 # gem "shout-bot", "0.0.4"
+
 # = Campfire
 # gem "broach", "0.2.1"
 # gem "nap", "0.4"
+
 # = AMQP
 # gem "bunny", "0.6.0"
+
+# = Notifo
+# gem "notifo", "0.1.0"
 
 # = Dependencies for the :dj builder
 # gem "sqlite3-ruby", "1.3.2"
 # gem "delayed_job", "2.1.2"
 # gem "activerecord", "3.0.3"
+
 # = Dependency for the :resque builder
 # gem "resque", "1.10.0"
 
@@ -57,6 +64,7 @@ group :test do
   gem "dm-sweatshop",    "~> 1.0.2", :git => "git://github.com/datamapper/dm-sweatshop.git"
   gem "randexp",         "~> 0.1.5", :git => "git://github.com/snusnu/randexp", :branch => "no_parsetree"
   gem "pony",            "1.1"
+  gem "notifo",          "0.1.0"
   gem "rack-test",       "0.5.7"
   gem "nokogiri",        "1.4.4"
   gem "hpricot",         "0.8.3"
