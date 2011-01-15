@@ -50,7 +50,7 @@ module Integrity
           options = {
             :address              => @config["host"],
             :port                 => @config["port"],
-            :enable_starttls_auto => @config["starttls"] == "1" ? true : false,
+            :enable_starttls_auto => @config["starttls"],
             :user_name            => user,
             :password             => pass,
             :authentication       => @config["auth"],

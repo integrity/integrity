@@ -22,10 +22,9 @@
   %label{ :for => "email_notifier_pass" } Password
   %input.text#email_notifier_pass{ :name => "notifiers[Email][pass]", :value => config["pass"], :type => "text" }
 
-%p.normal.checkbox
+%p.normal
   %label{ :for => "email_notifier_starttls" } Auto STARTTLS
-  %input.hidden{ :name => "notifiers[Email][starttls]", :value => "0", :type => "hidden" }
-  %input.checkbox#email_notifier_starttls{ checkbox("notifiers[Email][starttls]", "1", :checked => (config["starttls"] == "1")) }
+  %input#email_notifier_starttls{ :name => "notifiers[Email][starttls]", :type => "checkbox", :checked => config["starttls"], :value => "1" }
 
 %p.normal
   %label{ :for => "email_notifier_auth" } Auth type
