@@ -1,7 +1,7 @@
 begin
-  require "sinatra/ditties/mailer"
+  require "pony"
 rescue LoadError
-  abort "Install sinatra-ditties to use the Email notifier"
+  abort "Install pony to use the Email notifier"
 end
 
 module Integrity
@@ -21,15 +21,11 @@ module Integrity
       end
 
       def deliver!
-        email.deliver!
-      end
-
-      def email
-        @email ||= Sinatra::Mailer::Email.new(
-          :to       => to,
-          :from     => from,
-          :text     => body,
-          :subject  => subject
+        Pony.mail(
+          :to      => to,
+          :from    => from,
+          :text    => body,
+          :subject => subject
         )
       end
 
@@ -51,21 +47,22 @@ module Integrity
           user = nil if user.empty?
           pass = nil if pass.empty?
 
-          Sinatra::Mailer.delivery_method = "net_smtp"
-
-          Sinatra::Mailer.config = {
-            :host => @config["host"],
-            :port => @config["port"],
-            :user => user,
-            :pass => pass,
-            :auth => @config["auth"],
-            :domain => @config["domain"]
+          options = {
+            :address              => @config["host"],
+            :port                 => @config["port"],
+            :enable_starttls_auto => @config["starttls"] == "1" ? true : false,
+            :user_name            => user,
+            :password             => pass,
+            :authentication       => @config["auth"],
+            :domain               => @config["domain"]
           }
+
+          Pony.options = { :via => :smtp, :via_options => options }
         end
 
         def configure_sendmail
-          Sinatra::Mailer.delivery_method = :sendmail
-          Sinatra::Mailer.config = {:sendmail_path => @config['sendmail']}
+          options = { :location => @config["sendmail"] }
+          Pony.options = { :via => :sendmail, :via_options => options }
         end
     end
 

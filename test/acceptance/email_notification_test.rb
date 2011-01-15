@@ -1,6 +1,4 @@
 require "helper/acceptance"
-require "rumbster"
-require "message_observers"
 
 class EmailNotificationTest < Test::Unit::AcceptanceTestCase
   story <<-EOS
@@ -14,13 +12,7 @@ class EmailNotificationTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "Sending the notification via SMTP" do
-    ::Net::SMTP.disable_tls
-    port     = 10_000 + rand(10)
-    server   = Rumbster.new(port)
-    observer = MailMessageObserver.new
-    server.add_observer(observer)
-    server.start
-
+    port    = 10_000 + rand(10)
     repo    = git_repo(:my_test_project)
     project = Project.gen(:my_test_project, :uri => repo.uri)
     repo.add_successful_commit
@@ -36,17 +28,16 @@ class EmailNotificationTest < Test::Unit::AcceptanceTestCase
     fill_in "email_notifier_from", :with => "ci@example.org"
     select  "cram_md5",            :from => "Auth type"
 
+    stub(Pony).deliver do |mail|
+      assert_equal ["hacker@example.org"], mail.to
+      assert_equal ["ci@example.org"], mail.from
+      assert mail.subject.include?("successful")
+    end
+
     click_button "Update"
     click_button "Manual Build"
 
-    mail = observer.messages.first
-
-    assert_equal ["hacker@example.org"], mail.destinations
-    assert_equal ["ci@example.org"],  mail.from
-    assert mail.subject.include?("successful")
-
-    assert_equal "cram_md5", Sinatra::Mailer.config[:auth]
-    server.stop
+    assert_equal "cram_md5", Pony.options[:via_options][:authentication]
 
     visit "/my-test-project"
     click_link "Edit"
@@ -70,6 +61,6 @@ class EmailNotificationTest < Test::Unit::AcceptanceTestCase
     click_button "Update"
     click_button "Manual Build"
 
-    assert_equal :sendmail, Sinatra::Mailer.delivery_method
+    assert_equal :sendmail, Pony.options[:via]
   end
 end

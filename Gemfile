@@ -24,7 +24,7 @@ gem "rack",                  "1.1.0"
 
 # These are dependencies for the various notifiers. Uncomment as appropriate.
 # = Email
-# gem "sinatra-ditties", "0.0.2"
+# gem "pony", "1.1"
 # = IRC
 # gem "shout-bot", "0.0.4"
 # = Campfire
@@ -56,14 +56,13 @@ group :test do
   gem "redgreen",        "1.2.2"
   gem "dm-sweatshop",    "~> 1.0.2", :git => "git://github.com/datamapper/dm-sweatshop.git"
   gem "randexp",         "~> 0.1.5", :git => "git://github.com/snusnu/randexp", :branch => "no_parsetree"
+  gem "pony",            "1.1"
   gem "rack-test",       "0.5.7"
-  gem "rumbster",        "1.0.0"
   gem "nokogiri",        "1.4.4"
   gem "hpricot",         "0.8.3"
   gem "contest",         "0.1.2"
   gem "webrat",          "0.7.3"
   gem "shout-bot",       "0.0.4"
-  gem "sinatra-ditties", "0.0.2"
   gem "broach",          "0.2.1"
   gem "nap",             "0.4"
   gem "bunny",           "0.6.0"
