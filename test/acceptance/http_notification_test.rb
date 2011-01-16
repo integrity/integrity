@@ -12,6 +12,10 @@ class HTTPNotificationTest < Test::Unit::AcceptanceTestCase
     stub_request(:any, "http://example.com/")
   end
 
+  teardown do
+    Notifier.available.replace({})
+  end
+
   def build(status)
     repo = git_repo(:my_test_project)
     status.zero? ? repo.add_successful_commit : repo.add_failing_commit

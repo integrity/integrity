@@ -22,7 +22,7 @@ class NotifoNotificationTest < Test::Unit::AcceptanceTestCase
 
   teardown do
     WebMock.reset!
-    Notifier.available.delete("Notifo")
+    Notifier.available.replace({})
   end
 
   def commit(successful)

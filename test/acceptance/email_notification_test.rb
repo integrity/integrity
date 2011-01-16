@@ -11,6 +11,10 @@ class EmailNotificationTest < Test::Unit::AcceptanceTestCase
     load "integrity/notifier/email.rb"
   end
 
+  teardown do
+    Notifier.available.replace({})
+  end
+
   scenario "Sending the notification via SMTP" do
     port    = 10_000 + rand(10)
     repo    = git_repo(:my_test_project)
