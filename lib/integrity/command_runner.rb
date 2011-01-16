@@ -21,7 +21,9 @@ module Integrity
       @logger.debug(cmd)
 
       output = ""
-      IO.popen(cmd, "r") { |io| output = io.read }
+      Bundler.with_clean_env do
+        IO.popen(cmd, "r") { |io| output = io.read }
+      end
 
       Result.new($?.success?, output.chomp)
     end
