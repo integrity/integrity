@@ -26,9 +26,6 @@ gem "rack",                  "1.1.0"
 # = Email
 # gem "pony", "1.1"
 
-# = IRC
-# gem "shout-bot", "0.0.4"
-
 # = Campfire
 # gem "broach", "0.2.1"
 # gem "nap", "0.4"
@@ -70,7 +67,6 @@ group :test do
   gem "hpricot",         "0.8.3"
   gem "contest",         "0.1.2"
   gem "webrat",          "0.7.3"
-  gem "shout-bot",       "0.0.4"
   gem "broach",          "0.2.1"
   gem "nap",             "0.4"
   gem "bunny",           "0.6.0"
