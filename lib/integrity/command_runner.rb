@@ -62,7 +62,13 @@ module Integrity
     # When build is done we rollback to previous environment.
     #
     # Bundler team will probably create a way to avoid this, but
-    # most lickely it won't sooner that Bundler 1.1
+    # most lickely it won't be sooner than Bundler 1.1
+    #
+    # FIXME:
+    # If you're using RVM gemsets and runnig Integrity in RVM shell,
+    # make sure that Bundler gem is installed into current gemset,
+    # not global. Otherwise, Bundler will drop path to your global
+    # gemset.
     def with_clean_env
       bundled_env = ENV.to_hash
       BUNDLER_VARS.each{ |var| ENV.delete(var) }
