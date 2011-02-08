@@ -24,7 +24,7 @@ module Integrity
         Pony.mail(
           :to      => to,
           :from    => from,
-          :text    => body,
+          :body    => body,
           :subject => subject
         )
       end
