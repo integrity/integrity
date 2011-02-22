@@ -7,6 +7,25 @@ class HomepageTest < Test::Unit::AcceptanceTestCase
     So I can follow the status of my various projects
   EOS
 
+  scenario "I can login on the very first page" do
+    visit "/"
+    click_link "Login"
+
+    assert_equal 401, response_code
+    assert_have_tag("a[@href='/login']", :content => "try again")
+    assert_have_tag("a[@href='/']",      :content => "go back")
+  end
+
+  scenario "I can login on projects list page" do
+    Project.gen(:my_test_project, :public => true)
+    visit "/"
+    click_link "Login"
+
+    assert_equal 401, response_code
+    assert_have_tag("a[@href='/login']", :content => "try again")
+    assert_have_tag("a[@href='/']",      :content => "go back")
+  end
+
   scenario "Private projects aren't shown" do
     Project.gen(:my_test_project, :public => false)
     Project.gen(:integrity, :public => true)
