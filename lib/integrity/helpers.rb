@@ -12,5 +12,9 @@ module Integrity
 
     include Rack::Utils
     alias :h :escape_html
+
+    def show_login?
+      Integrity.config.protected? && !authorized?
+    end
   end
 end

@@ -45,4 +45,12 @@ class IntegrityTest < Test::Unit::TestCase
   def assert_no_change(object, method, &block)
     assert_change(object, method, 0, &block)
   end
+
+  # Do not output warnings for the duration of the block.
+  def silence_warnings
+    $VERBOSE, v = nil, $VERBOSE
+    yield
+  ensure
+    $VERBOSE = v
+  end
 end

@@ -20,7 +20,11 @@
 
 %p.normal
   %label{ :for => "email_notifier_pass" } Password
-  %input.text#email_notifier_pass{ :name => "notifiers[Email][pass]", :value => config["pass"], :type => "text" }
+  %input.text#email_notifier_pass{ :name => "notifiers[Email][pass]", :value => config["pass"], :type => "password" }
+
+%p.normal
+  %label{ :for => "email_notifier_starttls" } Auto STARTTLS
+  %input#email_notifier_starttls{ :name => "notifiers[Email][starttls]", :type => "checkbox", :checked => config["starttls"], :value => "1" }
 
 %p.normal
   %label{ :for => "email_notifier_auth" } Auth type

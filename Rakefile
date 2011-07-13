@@ -1,3 +1,4 @@
+$LOAD_PATH.unshift(File.expand_path(File.dirname(".")))
 require "rake/testtask"
 require "rake/clean"
 
@@ -30,7 +31,7 @@ desc "Clean-up build directory"
 task :cleanup do
   require "init"
   Integrity::Build.all(:completed_at.not => nil).each { |build|
-    dir = Integrity.directory.join(build.id.to_s)
+    dir = Integrity.config.directory.join(build.id.to_s)
     dir.rmtree if dir.directory?
   }
 end
@@ -39,25 +40,25 @@ namespace :jobs do
   desc "Clear the delayed_job queue."
   task :clear do
     require "init"
-    require "integrity/builder/delayed"
+    require "integrity/delayed_builder"
     Delayed::Job.delete_all
   end
 
   desc "Start a delayed_job worker."
   task :work do
     require "init"
-    require "integrity/builder/delayed"
+    require "integrity/delayed_builder"
     Delayed::Worker.new.start
   end
 end
 
 begin
   namespace :resque do
+    require "init"
     require "resque/tasks"
 
     desc "Start a Resque worker for Integrity"
     task :work do
-      require "init"
       ENV["QUEUE"] = "integrity"
       Rake::Task["resque:resque:work"].invoke
     end

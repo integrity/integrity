@@ -45,6 +45,12 @@ module Integrity
       show :home, :title => "projects"
     end
 
+    get "/login" do
+      login_required
+
+      redirect root_url.to_s
+    end
+
     get "/new" do
       login_required
 
@@ -69,6 +75,16 @@ module Integrity
       login_required unless current_project.public?
 
       show :project, :title => ["projects", current_project.name]
+    end
+
+    get "/:project/ping" do
+      login_required unless current_project.public?
+
+      if current_project.last_build.status != :success
+        halt 412, current_build.status.to_s
+      else
+        current_project.last_build.sha1
+      end
     end
 
     put "/:project" do
