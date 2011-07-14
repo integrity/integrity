@@ -190,7 +190,7 @@ a {
     line-height: 1.4; }
   #content .error .backtrace {
     margin: 1em 0;
-    overflow: "scroll";
+    overflow: scroll;
     height: 30em;
     border: 1px solid silver;
     line-height: 1.6; }
