@@ -134,7 +134,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
 
     click_link "my-test-project"
     click_link "Edit"
-    fill_in "Build script", :with => "./test"
+    fill_in "Build script", :with => "exit 0"
     click_button "Update Project"
     click_button "Rebuild"
 
@@ -144,7 +144,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("#build blockquote p",
       :content => "This commit will work")
 
-    sleep 2
+    sleep 3
     build
     reload
 
@@ -176,7 +176,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
 
       assert_have_tag("h1", :content => "HEAD hasn't been built yet")
 
-      Delayed::Job.work_off
+      Delayed::Worker.new.work_off
       click_link "my-test-project"
 
       assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")

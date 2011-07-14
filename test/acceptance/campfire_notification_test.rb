@@ -22,7 +22,8 @@ class CampfireNotificationTest < Test::Unit::AcceptanceTestCase
   end
 
   teardown do
-    WebMock.reset_webmock
+    WebMock.reset!
+    Notifier.available.replace({})
   end
 
   def commit(successful)

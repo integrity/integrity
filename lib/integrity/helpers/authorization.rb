@@ -8,11 +8,8 @@ module Integrity
       end
 
       def authorized?
-        unless Integrity.config.protected?
-          return true
-        end
-
-        !!request.env["REMOTE_USER"]
+        !!request.env["REMOTE_USER"] ||
+          authorize(*auth.credentials) if auth.provided?
       end
 
       def authorize(user, password)

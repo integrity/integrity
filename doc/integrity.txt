@@ -42,12 +42,12 @@ Integrity is configured via the `init.rb` file using Ruby.
 [source, ruby]
 ----
 Integrity.configure do |c|
-  c.database  "sqlite3:integrity.db"
-  c.directory "builds"
-  c.base_url  "http://ci.example.org"
-  c.log       "integrity.log"
-  c.builder   :threaded, 5
-  c.build_all!
+  c.database  = "sqlite3:integrity.db"
+  c.directory = "builds"
+  c.base_url  = "http://ci.example.org"
+  c.log       = "integrity.log"
+  c.builder   = :threaded, 5
+  c.build_all = true
 end
 ----
 
@@ -76,8 +76,8 @@ HTTP authentication:: If both the `user` and `pass` settings are set then only
 the logged-in users can administer the projects and see the private ones.
 [source, ruby]
 ----
-c.user "admin"
-c.pass "password"
+c.username = "admin"
+c.password = "password"
 ----
 
 To protect the whole Integrity instance do this in your `config.ru` file:
@@ -100,7 +100,7 @@ POST /github/:token:: Supports GitHub's
 http://github.com/guides/post-receive-hooks[Post-Receive Hook]. Enable it:
 [source, ruby]
 ----
-c.github "TOKEN"
+c.github_token = "TOKEN"
 ----
 
 === Choosing a builder
@@ -111,7 +111,7 @@ The +threaded+ builder pushes the build job to an in-memory queue and processes
 them as soon as possible. It relies on Ruby's thread so it doesn't have any
 dependency nor requires to run other processes.
 [source, ruby]
-c.builder :threaded, 5
+c.builder = :threaded, 5
 
 The second argument is the size of the thread pool.
 
@@ -122,7 +122,7 @@ dependencies by uncommenting the relevant lines in the `Gemfile` and run
 `bundle lock && bundle install`.
 
 [source, ruby]
-c.builder :dj, :adapter => "sqlite3", :database => "dj.db"
+c.builder = :dj, { :adapter => "sqlite3", :database => "dj.db" }
 
 The second argument must be a valid
 http://api.rubyonrails.org/classes/ActiveRecord/Base.html#M002364[ActiveRecord
