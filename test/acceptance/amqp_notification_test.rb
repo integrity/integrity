@@ -12,6 +12,10 @@ class AMQPNotificationTest < Test::Unit::AcceptanceTestCase
     load "integrity/notifier/amqp.rb"
   end
 
+  teardown do
+    Notifier.available.replace({})
+  end
+
   def build(status)
     repo = git_repo(:my_test_project)
     status.zero? ? repo.add_successful_commit : repo.add_failing_commit

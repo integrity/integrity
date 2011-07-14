@@ -5,6 +5,9 @@
       Why don't you
       = succeed "?" do
         %a{ :href => path("new") } create your first project
+        - if show_login?
+          or
+          %a{ :href => path("login"), :id => "login" } login
 - else
   %ul#projects
     - @projects.each do |project|
@@ -16,5 +19,9 @@
             Building!
           - when :blank
             Never built yet
-  %p#new
-    %a{ :href => path("new") } Add a new project
+  %p
+    %a{ :href => path("new"), :id => "new" } Add a new project
+
+    - if show_login?
+      or
+      %a{ :href => path("login"), :id => "login" } Login

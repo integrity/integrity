@@ -13,6 +13,10 @@ class TCPNotificationTest < Test::Unit::AcceptanceTestCase
     @server = mock_socket
   end
 
+  teardown do
+    Notifier.available.replace({})
+  end
+
   def build(status)
     repo = git_repo(:my_test_project)
     status.zero? ? repo.add_successful_commit : repo.add_failing_commit

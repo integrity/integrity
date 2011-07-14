@@ -7,13 +7,6 @@ require "helper/acceptance/repo"
 
 Rack::Test::DEFAULT_HOST.replace("www.example.com")
 
-# TODO
-Webrat::Session.class_eval {
-  def redirect?
-    [301, 302, 303, 307].include?(response_code)
-  end
-}
-
 module AcceptanceHelper
   include TestHelper
 
@@ -65,7 +58,7 @@ class Test::Unit::AcceptanceTestCase < IntegrityTest
   include Webrat::Methods
   include Webrat::Matchers
   include Webrat::HaveTagMatcher
-  include WebMock
+  include WebMock::API
 
   Webrat::Methods.delegate_to_session :response_code
 
