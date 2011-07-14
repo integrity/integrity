@@ -68,7 +68,7 @@ class HomepageTest < Test::Unit::AcceptanceTestCase
   scenario "Browsing to an unknown project" do
     visit "/foobiz"
     assert last_response.not_found?
-    assert_have_tag("h1", :content => "you seem a bit lost, sir")
+    assert_have_tag("h1", :content => "you seem a bit lost")
   end
 
   scenario "Browsing to a private project" do
