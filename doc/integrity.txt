@@ -24,10 +24,9 @@ Then grab Integrity via git, install its dependencies and create the database:
 $ gem install bundler
 $ git clone git://github.com/integrity/integrity
 $ cd integrity
-$ git checkout -b deploy v22
+$ git checkout -b deploy master
 $ bundle install
-$ bundle lock
-$ rake db
+$ bundle exec rake db
 
 To give it a quick try before going any further, run `bundle exec rackup` and
 navigate to http://0.0.0.0:9292.
