@@ -22,6 +22,9 @@ gem "sinatra-authorization", "1.0.0"
 gem "bcat",                  "0.5.2"
 gem "rack",                  "1.1.0"
 
+# If you want to use Thin:
+# gem "thin"
+
 # These are dependencies for the various notifiers. Uncomment as appropriate.
 # = Email
 # gem "pony", "1.1"
