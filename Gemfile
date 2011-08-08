@@ -46,10 +46,10 @@ gem "rack",                  "1.1.0"
 
 # Uncomment if you're using pg or mysql instead of sqlite
 # gem "pg"
-# gem "dm-postgres-adapter", 1.0.2
+# gem "dm-postgres-adapter", "1.0.2"
 
 # gem "mysql"
-# gem "dm-mysql-adapter", 1.0.2
+# gem "dm-mysql-adapter", "1.0.2"
 
 # = Development dependencies.
 group :test do
