@@ -158,8 +158,10 @@ http://www.modrails.com/documentation/Users%20guide%20Apache.html[Apache] and
 http://www.modrails.com/documentation/Users%20guide%20Nginx.html[Nginx].
 
 === http://code.macournoyer.com/thin/[Thin]
+1. Uncomment the `thin` line in the Gemfile
+2. Run `bundle install` to install Thin
+
 [source, shell]
-$ gem install thin
 $ $EDITOR doc/thin.yml
 $ thin -C doc/thin.yml start
 
@@ -183,23 +185,22 @@ server {
 
 .Apache acting as reverse proxy to a cluster of thin instances
 ----
-<VirtualHost *>
-  <Proxy>
-    Order deny,allow
-    Allow from all
-  </Proxy>
+<VirtualHost *:80>
+        ServerName integrity.nationalfield.org
+        ServerAlias integrity
 
-  RedirectMatch ^/integrity$ /integrity/
-  ProxyRequests Off
-  ProxyPass /integrity/ http://localhost:8910/
-  ProxyHTMLURLMap http://localhost:8910 /integrity
+        ProxyRequests Off
+        ProxyPreserveHost On
 
-  <Location /integrity>
-    ProxyPassReverse /
-    SetOutputFilter proxy-html
-    ProxyHTMLURLMap / /integrity/
-    ProxyHTMLURLMap /integrity/ /integrity
-  </Location>
+        <Proxy *>
+                Order allow,deny
+                Allow from all
+        </Proxy>
+
+        ProxyPass / http://127.0.0.1:8910/
+        ProxyPassReverse / http://127.0.0.1:8910/
+
+        ProxyPassReverse / http://127.0.0.1:8911/
 </VirtualHost>
 ----
 
