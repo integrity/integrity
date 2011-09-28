@@ -67,10 +67,10 @@ EOM
         end
 
         def self.log_and_notify_with_timeout(log_message, &block)
-          Integrity.log log_message
+          Integrity.logger.info(log_message)
           Timeout.timeout(8) { yield }
         rescue Timeout::Error
-          Integrity.log "#{to_s} notifier timed out"
+          Integrity.logger.info("#{to_s} notifier timed out")
           false
         end
     end
