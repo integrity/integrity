@@ -21,6 +21,8 @@ require "integrity"
 # require "integrity/notifier/notifo"
 # = AMQP
 # require "integrity/notifier/amqp"
+# = Shell
+# require "integrity/notifier/shell"
 
 Integrity.configure do |c|
   c.database     = "sqlite3:integrity.db"
