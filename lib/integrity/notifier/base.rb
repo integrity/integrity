@@ -2,7 +2,7 @@ module Integrity
   class Notifier
     class Base
       def self.notify(build, config)
-        msg = "Notifying of build #{build.commit.short_identifier} with #{to_s}"
+        msg = "Notifying of build #{build.sha1_short} with #{to_s}"
         log_and_notify_with_timeout(msg) { new(build, config).deliver! }
       end
 
@@ -10,7 +10,7 @@ module Integrity
         notifier = new(build, config)
         if notifier.respond_to?(:deliver_started_notification!)
           log_and_notify_with_timeout(msg) do
-            msg = "Notifying of the start of build #{build.commit.short_identifier} with #{to_s}"
+            msg = "Notifying of the start of build #{build.sha1_short} with #{to_s}"
             notifier.deliver_started_notification!
           end
         end
