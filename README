@@ -1,8 +1,12 @@
 Integrity — Continuous Integration server
 
+
+NOTE: The website, integrityapp.com has been abandoned by the original owners,
+and I am unable to resolve that. For the complete contents of the website,
+see https://github.com/integrity/integrity/blob/master/doc/integrity.txt
+
 Code  http://github.com/integrity/integrity
-Docs  http://integrityapp.com
-CI    http://builder.integrityapp.com/integrity
+Docs  https://github.com/integrity/integrity/blob/master/doc/integrity.txt
 Bugs  http://github.com/integrity/integrity/issues
 IRC   irc://irc.freenode.net/integrity
 List  integrity@librelist.com
