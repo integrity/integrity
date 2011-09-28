@@ -11,7 +11,7 @@
 - else
   %ul#projects
     - @projects.each do |project|
-      %li{ :class => cycle("even", "odd") + ' ' + project.status.to_s }
+      %li{ :class => cycle("odd", "even") + ' ' + project.status.to_s }
         %a{ :href => project_path(project) }&= project.name
         .meta
           - case project.status
