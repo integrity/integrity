@@ -21,7 +21,13 @@ module Integrity
         }
 
         connection = Net::HTTP.new("coopapp.com", 80)
-        connection.post("/groups/#{coop_group}/notes", {:status => "#{short_message}", :key => "#{coop_key}"}.to_json, headers)
+        connection.post("/groups/#{coop_group}/notes", {:status => "#{full_message}", :key => "#{coop_key}"}.to_json, headers)
+      end
+      
+      def full_message
+        <<-EOM
+Integrity: #{@build.project.name}: #{short_message} (#{build_url})
+EOM
       end
 
       def to_s
