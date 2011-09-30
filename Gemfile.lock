@@ -6,16 +6,15 @@ GIT
       dm-core (~> 1.0.2)
       randexp (~> 0.1.5)
 
-GIT
-  remote: git://github.com/snusnu/randexp
-  revision: 7866bf0e5670cf65a96bfb434f3e6dda4507ce5c
-  branch: no_parsetree
-  specs:
-    randexp (0.1.5)
-
 GEM
   remote: http://rubygems.org/
   specs:
+    ParseTree (3.0.8)
+      RubyInline (>= 3.7.0)
+      sexp_processor (>= 3.0.0)
+    RubyInline (3.11.0)
+      ZenTest (~> 4.3)
+    ZenTest (4.6.2)
     activemodel (3.0.3)
       activesupport (= 3.0.3)
       builder (~> 2.1.2)
@@ -98,8 +97,11 @@ GEM
     rack-test (0.5.7)
       rack (>= 1.0)
     rake (0.8.7)
+    randexp (0.1.5)
+      ParseTree
     redgreen (1.2.2)
     rr (1.0.2)
+    sexp_processor (3.0.7)
     sinatra (1.1.2)
       rack (~> 1.1)
       tilt (~> 1.2)
@@ -158,7 +160,7 @@ DEPENDENCIES
   rack (= 1.1.0)
   rack-test (= 0.5.7)
   rake (= 0.8.7)
-  randexp (~> 0.1.5)!
+  randexp (~> 0.1.5)
   redgreen (= 1.2.2)
   rr (= 1.0.2)
   sinatra (= 1.1.2)
