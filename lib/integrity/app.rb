@@ -74,6 +74,25 @@ module Integrity
     get "/:project" do
       login_required unless current_project.public?
 
+      if limit = Integrity.config.project_default_build_count
+        @builds = current_project.sorted_builds.all(:limit => limit + 1)
+        if @builds.length == limit
+          @showing_all_builds = true
+        end
+      else
+        @builds = current_project.sorted_builds
+        @showing_all_builds = true
+      end
+
+      show :project, :title => ["projects", current_project.name]
+    end
+
+    get "/:project/all" do
+      login_required unless current_project.public?
+
+      @builds = current_project.sorted_builds
+      @showing_all_builds = true
+
       show :project, :title => ["projects", current_project.name]
     end
 

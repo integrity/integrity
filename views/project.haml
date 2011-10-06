@@ -22,10 +22,14 @@
   - unless @project.blank?
     %h2 Builds
     %ul#previous_builds
-      - @project.sorted_builds.each do |build|
+      - @builds.each do |build|
         %li{ :class => build.status }
           %a{ :href => build_path(build) }
             %strong.build<
               &== Build #{build.sha1_short}
             %span.attribution<
               == by #{build.author}, #{pretty_date build.committed_at}
+
+  - unless @showing_all_builds
+    %p
+      %a{ :href => project_path(@project, :all) } See all builds

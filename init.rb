@@ -25,11 +25,12 @@ require "integrity"
 # require "integrity/notifier/shell"
 
 Integrity.configure do |c|
-  c.database     = "sqlite3:integrity.db"
-  c.directory    = "builds"
-  c.base_url     = "http://ci.example.org"
-  c.log          = "integrity.log"
-  c.github_token = "SECRET"
-  c.build_all    = true
-  c.builder      = :threaded, 5
+  c.database                    = "sqlite3:integrity.db"
+  c.directory                   = "builds"
+  c.base_url                    = "http://ci.example.org"
+  c.log                         = "integrity.log"
+  c.github_token                = "SECRET"
+  c.build_all                   = true
+  c.builder                     = :threaded, 5
+  c.project_default_build_count = 10
 end

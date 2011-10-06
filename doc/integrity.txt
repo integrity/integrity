@@ -41,12 +41,13 @@ Integrity is configured via the `init.rb` file using Ruby.
 [source, ruby]
 ----
 Integrity.configure do |c|
-  c.database  = "sqlite3:integrity.db"
-  c.directory = "builds"
-  c.base_url  = "http://ci.example.org"
-  c.log       = "integrity.log"
-  c.builder   = :threaded, 5
-  c.build_all = true
+  c.database                    = "sqlite3:integrity.db"
+  c.directory                   = "builds"
+  c.base_url                    = "http://ci.example.org"
+  c.log                         = "integrity.log"
+  c.builder                     = :threaded, 5
+  c.build_all                   = true
+  c.project_default_build_count = 10
 end
 ----
 
@@ -71,6 +72,8 @@ auto_branch!:: Say the project _Integrity_ is tracking the master branch, and
 I push my _build-duration_ topic branch to GitHub, Integrity will create and
 build a new project named _Integrity (build-duration)_ using the same build
 command and notifiers.
+project_default_build_count:: How many builds to initially show on project
+pages. nil, which is the default, means show all builds.
 HTTP authentication:: If both the `user` and `pass` settings are set then only
 the logged-in users can administer the projects and see the private ones.
 [source, ruby]
