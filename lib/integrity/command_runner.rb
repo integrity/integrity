@@ -62,7 +62,7 @@ module Integrity
     # When build is done we rollback to previous environment.
     #
     # Bundler team will probably create a way to avoid this, but
-    # most lickely it won't be sooner than Bundler 1.1
+    # most likely it won't be sooner than Bundler 1.1
     #
     # FIXME:
     # If you're using RVM gemsets and runnig Integrity in RVM shell,
