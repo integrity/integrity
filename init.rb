@@ -23,6 +23,8 @@ require "integrity"
 # require "integrity/notifier/amqp"
 # = Shell
 # require "integrity/notifier/shell"
+# = Co-op
+# require "integrity/notifier/coop"
 
 Integrity.configure do |c|
   c.database     = "sqlite3:integrity.db"
