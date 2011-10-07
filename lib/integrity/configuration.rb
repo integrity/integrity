@@ -9,7 +9,8 @@ module Integrity
       :github_token,
       :log,
       :username,
-      :password
+      :password,
+      :project_default_build_count
 
     def build_all?
       !! @build_all
