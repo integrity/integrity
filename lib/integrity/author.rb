@@ -17,7 +17,8 @@ module Integrity
 
   class Author < DataMapper::Property::String
     length 65535
-    lazy   true
+    # author is used in project display, do not lazy load it
+    lazy   false
 
     def self.unknown
       AuthorStruct.parse("author not loaded")
