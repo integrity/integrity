@@ -76,7 +76,7 @@ module Integrity
 
       if limit = Integrity.config.project_default_build_count
         @builds = current_project.sorted_builds.all(:limit => limit + 1)
-        if @builds.length == limit
+        if @builds.length <= limit
           @showing_all_builds = true
         end
       else
