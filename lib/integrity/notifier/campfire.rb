@@ -1,7 +1,8 @@
 begin
   require "broach"
 rescue LoadError => e
-  abort "Install broach to use the Campfire notifier: #{e.class}: #{e.message}"
+  warn "Install broach to use the Campfire notifier: #{e.class}: #{e.message}"
+  raise
 end
 
 module Integrity
