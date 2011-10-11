@@ -182,6 +182,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
       assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
     rescue LoadError, NameError => e
       warn "Couldn't load DJ. Skipping test: #{e.class}: #{e.message}"
+      raise
     ensure
       # TODO
       Integrity.config.instance_variable_set(:@builder, old_builder)
