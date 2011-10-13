@@ -7,7 +7,6 @@ gem "dm-types",              "1.0.2"
 gem "dm-migrations",         "1.0.2"
 gem "dm-aggregates",         "1.0.2"
 gem "dm-validations",        "1.0.2"
-gem "extlib",                "0.9.15"
 gem "data_objects",          "0.10.2"
 gem "do_sqlite3",            "0.10.2"
 gem "rake",                  "0.8.7"
@@ -54,6 +53,7 @@ gem "rack",                  "1.1.0"
 # = Development dependencies.
 group :test do
   gem "ruby-debug",      "0.10.4" if RUBY_VERSION < '1.9'
+  gem "extlib",          "0.9.15"
   gem "sqlite3-ruby",    "1.3.2"
   gem "delayed_job",     "2.1.2"
   gem "activerecord",    "3.0.3"
