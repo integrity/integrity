@@ -21,8 +21,11 @@ module Integrity
     end
 
     def metadata
-      format = "---%nidentifier: %H%nauthor: %an " \
-        "<%ae>%nmessage: >-%n  %s%ncommitted_at: %ci%n"
+      format = "---%n" \
+        "identifier: %H%n" \
+        "author: %an <%ae>%n" \
+        "message: >-%n  %s%n" \
+        "committed_at: %ci%n"
       result = run_in_dir!("git show -s --pretty=format:\"#{format}\" #{sha1}")
       dump   = YAML.load(result.output)
 
