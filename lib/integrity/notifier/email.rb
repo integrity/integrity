@@ -1,7 +1,8 @@
 begin
   require "pony"
-rescue LoadError
-  abort "Install pony to use the Email notifier"
+rescue LoadError => e
+  warn "Install pony to use the Email notifier: #{e.class}: #{e.message}"
+  raise
 end
 
 module Integrity

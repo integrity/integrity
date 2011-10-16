@@ -1,7 +1,8 @@
 begin
   require "notifo"
-rescue LoadError
-  abort "Install notifo to use the Notifo notifier"
+rescue LoadError => e
+  warn "Install notifo to use the Notifo notifier: #{e.class}: #{e.message}"
+  raise
 end
 
 module Integrity
