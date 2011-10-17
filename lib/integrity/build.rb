@@ -81,6 +81,10 @@ module Integrity
       commit.message || "message not loaded"
     end
 
+    def body
+      commit.body || "body not loaded"
+    end
+
     def author
       (commit.author || Author.unknown).name
     end
