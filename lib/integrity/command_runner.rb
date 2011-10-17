@@ -40,10 +40,16 @@ module Integrity
     end
 
     def normalize(cmd)
+      # bash requires lists to end with a semicolon (or a newline).
+      # see http://wiki.bash-hackers.org/syntax/ccmd/grouping_plain
+      # zsh has no such restriction.
+      unless cmd[-1] == ?;
+        cmd += ';'
+      end
       if @dir
-        "(cd #{@dir} && #{cmd} 2>&1)"
+        "cd #{@dir} && { #{cmd} } 2>&1"
       else
-        "(#{cmd} 2>&1)"
+        "{ #{cmd} } 2>&1"
       end
     end
 
