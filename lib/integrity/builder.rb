@@ -11,9 +11,16 @@ module Integrity
     end
 
     def build
-      start
-      run
-      complete
+      begin
+        start
+        run
+      rescue Interrupt, SystemExit
+        raise
+      rescue Exception => e
+        fail(e)
+      else
+        complete
+      end
       notify
     end
 
@@ -35,6 +42,18 @@ module Integrity
         :completed_at => Time.now,
         :successful   => @result.success,
         :output       => @result.output
+      )
+    end
+    
+    def fail(exception)
+      failure_message = "#{exception.class}: #{exception.message}"
+      
+      @logger.info "Build #{commit} failed with an exception: #{failure_message}"
+      
+      @build.update(
+        :completed_at => Time.now,
+        :successful => false,
+        :output => failure_message
       )
     end
 
