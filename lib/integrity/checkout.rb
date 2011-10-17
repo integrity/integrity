@@ -29,6 +29,9 @@ module Integrity
       result = run_in_dir!("git show -s --pretty=format:\"#{format}\" #{sha1}")
       dump   = YAML.load(result.output)
 
+      result = run_in_dir!("git show -s --pretty=format:\"%b\" #{sha1}")
+      dump['body'] = result.output
+
       unless dump["committed_at"].kind_of? Time
         dump.update("committed_at" => Time.parse(dump["committed_at"]))
       end
