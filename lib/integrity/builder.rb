@@ -26,8 +26,10 @@ module Integrity
 
     def start
       @logger.info "Started building #{repo.uri} at #{commit}"
-      @build.update(:started_at => Time.now, :commit => checkout.metadata)
+      @build.update(:started_at => Time.now)
       @build.project.enabled_notifiers.each { |n| n.notify_of_build_start(@build) }
+      # checkout.metadata invokes git and may fail
+      @build.update(:commit => checkout.metadata)
       checkout.run
     end
 
