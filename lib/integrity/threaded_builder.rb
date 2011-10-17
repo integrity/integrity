@@ -129,6 +129,9 @@ module Integrity
               raise
             rescue Exception => e
               @logger.error("Exception occured during build: #{e.class}: #{e.message}")
+              e.backtrace.each do |line|
+                @logger.error(line)
+              end
             end
             @njobs.dec
           end
