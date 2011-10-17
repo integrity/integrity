@@ -126,7 +126,7 @@ module Integrity
             begin
               job.call
             rescue Exception => e
-              @logger.error("Exception occured during build: #{e.message}")
+              @logger.error("Exception occured during build: #{e.class}: #{e.message}")
             end
             @njobs.dec
           end
