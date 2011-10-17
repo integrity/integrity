@@ -52,6 +52,11 @@ module Integrity
       
       @logger.info "Build #{commit} failed with an exception: #{failure_message}"
       
+      failure_message << "\n\n"
+      exception.backtrace.each do |line|
+        failure_message << line << "\n"
+      end
+      
       @build.update(
         :completed_at => Time.now,
         :successful => false,
