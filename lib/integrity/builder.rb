@@ -11,17 +11,26 @@ module Integrity
     end
 
     def build
-      start
-      run
-      complete
+      begin
+        start
+        run
+      rescue Interrupt, SystemExit
+        raise
+      rescue Exception => e
+        fail(e)
+      else
+        complete
+      end
       notify
     end
 
     def start
       @logger.info "Started building #{repo.uri} at #{commit}"
-      checkout.run
-      @build.update(:started_at => Time.now, :commit => checkout.metadata)
+      @build.update(:started_at => Time.now)
       @build.project.enabled_notifiers.each { |n| n.notify_of_build_start(@build) }
+      checkout.run
+      # checkout.metadata invokes git and may fail
+      @build.update(:commit => checkout.metadata)
     end
 
     def run
@@ -35,6 +44,23 @@ module Integrity
         :completed_at => Time.now,
         :successful   => @result.success,
         :output       => @result.output
+      )
+    end
+    
+    def fail(exception)
+      failure_message = "#{exception.class}: #{exception.message}"
+      
+      @logger.info "Build #{commit} failed with an exception: #{failure_message}"
+      
+      failure_message << "\n\n"
+      exception.backtrace.each do |line|
+        failure_message << line << "\n"
+      end
+      
+      @build.update(
+        :completed_at => Time.now,
+        :successful => false,
+        :output => failure_message
       )
     end
 
