@@ -26,8 +26,8 @@ module Integrity
       end
 
       def initialize(build, config={})
-        @success_cmd = config.delete("success_script")
-        @failed_cmd = config.delete("failed_script")
+        @success_cmd = config["success_script"]
+        @failed_cmd = config["failed_script"]
         super
       end
 
