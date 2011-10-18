@@ -24,8 +24,8 @@ module Integrity
       end
 
       def initialize(build, config={})
-        @exchange_name = config.delete("exchange_name")
-        @queue_host = config.delete("queue_host")
+        @exchange_name = config["exchange_name"]
+        @queue_host = config["queue_host"]
         super
       end
 

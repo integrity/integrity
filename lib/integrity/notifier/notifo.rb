@@ -15,9 +15,9 @@ module Integrity
       end
 
       def initialize(build, config={})
-        @account    = config.delete("account")
-        @token      = config.delete("token")
-        @recipients = config.delete("recipients")
+        @account    = config["account"]
+        @token      = config["token"]
+        @recipients = config["recipients"]
         super(build, config)
       end
 
