@@ -16,7 +16,7 @@ module Integrity
       end
 
       def initialize(build, config={})
-        uri = config.delete('uri')
+        uri = config['uri']
         unless uri
           raise ArgumentError, 'uri not given in config'
         end

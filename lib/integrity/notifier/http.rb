@@ -16,7 +16,7 @@ module Integrity
       end
 
       def initialize(build, config={})
-        @url = URI(config.delete("url"))
+        @url = URI(config["url"])
         super
       end
 
