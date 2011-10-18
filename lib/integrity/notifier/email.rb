@@ -15,8 +15,8 @@ module Integrity
       end
 
       def initialize(build, config={})
-        @to     = config.delete("to")
-        @from   = config.delete("from")
+        @to     = config["to"]
+        @from   = config["from"]
         super(build, config)
         configure_mailer
       end
