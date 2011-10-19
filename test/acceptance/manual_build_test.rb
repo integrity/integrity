@@ -143,10 +143,6 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
 
     assert_have_tag("h1", :content => "failed")
 
-    # builds are ordered by time, sleep here to make times distinct
-    # (otherwise the first build may be taken as the last build)
-    sleep 1.1
-
     click_link "my-test-project"
     click_link "Edit"
     fill_in "Build script", :with => "exit 0"
