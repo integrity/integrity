@@ -1,3 +1,24 @@
+= master
+
+ * Exceptions raised inside Integrity now correctly cause builds to fail.
+
+ * It is now possible to limit how many builds to display initially on
+   project pages.
+
+ * Co-op notifier added.
+
+ * Shell notifier added.
+
+ * psych compatibility fixes.
+
+ * Notifications can now be sent when builds start.
+
+ * Configuration style changed from method calls to assignments.
+
+ * Git submodules are now checked out in repositories being tested.
+
+ * Various performance improvements and bug fixes.
+
 = 22 / 2010-06-29
 
  * New auto_branch feature. Say the project "Integrity" is tracking the master
