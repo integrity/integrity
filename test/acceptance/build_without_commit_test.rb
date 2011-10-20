@@ -25,4 +25,12 @@ class BuildWithoutCommitTest < Test::Unit::AcceptanceTestCase
     assert_equal 200, response_code
     assert_contain("(commit is missing)")
   end
+  
+  scenario 'Deleting a build without commit' do
+    login_as "admin", "test"
+    visit "/buggy/builds/#{@build.id}"
+    click_button "Delete this build"
+
+    assert_not_contain("Previous builds")
+  end
 end
