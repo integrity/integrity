@@ -107,9 +107,8 @@ module Integrity
       if commit
         commit.committed_at
       else
-        # Returning a string here might break something, if it does
-        # change to something like beginning of epoch or nil
-        '(commit is missing)'
+        # UI expects a date, give it to it
+        Time.utc(1970)
       end
     end
 
