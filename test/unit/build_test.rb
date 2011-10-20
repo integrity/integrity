@@ -64,7 +64,7 @@ class BuildTest < IntegrityTest
     assert_equal '(commit is missing)', build.sha1_short
     assert_equal '(commit is missing)', build.message
     assert_equal '(commit is missing)', build.author
-    assert_equal '(commit is missing)', build.committed_at
+    assert_equal Time.utc(1970), build.committed_at
   end
   
   test "destroying build without a commit" do
