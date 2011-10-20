@@ -81,8 +81,9 @@ module Integrity
       commit.message || "message not loaded"
     end
 
-    def body
-      commit.body || "body not loaded"
+    def full_message
+      # commit.message fallback is here because we don't have migrations (yet?)
+      commit.full_message || commit.message || "message not loaded"
     end
 
     def author
