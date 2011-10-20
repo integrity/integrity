@@ -82,8 +82,12 @@ module Integrity
     end
 
     def full_message
-      # commit.message fallback is here because we don't have migrations (yet?)
-      commit.full_message || commit.message || "message not loaded"
+      if commit
+        # commit.message fallback is here because we don't have migrations (yet?)
+        commit.full_message || commit.message || "message not loaded"
+      else
+        '(commit is missing)'
+      end
     end
 
     def author
