@@ -48,6 +48,7 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
 
   scenario "Looking for details on the last build" do
     build = Build.gen(:successful, :output => "This is the build output")
+    build.commit.raise_on_save_failure = true
     build.commit.update(
       :identifier => "7fee3f0014b529e2b76d591a8085d76eab0ff923",
       :author  => "Nicolas Sanguinetti <contacto@nicolassanguinetti.info>",
