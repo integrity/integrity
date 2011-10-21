@@ -7,7 +7,7 @@
 
 %blockquote
   %p
-    #{'<br />' + h(build.full_message).gsub("\n", '<br />')}
+    #{h(build.full_message).gsub("\n", '<br />')}
   %p.meta<
     %span.who<
       &== by: #{build.author}
