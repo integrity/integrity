@@ -10,12 +10,14 @@ class ProjectTest < IntegrityTest
   end
 
   test "destroy" do
-    project = Project.gen(:builds => 2.of{Build.gen})
+    builds = 2.of{Build.gen}
+    project = Project.gen(:builds => builds, :last_build => builds.last)
     assert_change(Build, :count, -2) { project.destroy }
   end
 
   test "sorted_builds" do
-    project = Project.gen(:builds => 5.of{Build.gen})
+    builds = 5.of{Build.gen}
+    project = Project.gen(:builds => builds, :last_build => builds.last)
     first   = project.sorted_builds.first
     last    = project.sorted_builds.last
 
