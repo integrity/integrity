@@ -34,11 +34,12 @@ module Integrity
   end
 
   Project.fixture(:misc_builds) do
-    Project.gen_attrs.update(:builds => \
+    builds = 
       2.of { Build.gen(:failed) }     +
       2.of { Build.gen(:pending) }    +
       1.of { Build.gen(:building) }   +
-      3.of { Build.gen(:successful) })
+      3.of { Build.gen(:successful) }
+    Project.gen_attrs.update(:builds => builds, :last_build => builds.last)
   end
 
   Project.fixture(:blank) do
@@ -46,23 +47,27 @@ module Integrity
   end
 
   Project.fixture(:successful) do
-    Project.gen_attrs.update(:builds => 2.of{Build.gen(:failed)} +
-      1.of{Build.gen(:successful)})
+    builds = 2.of{Build.gen(:failed)} +
+      1.of{Build.gen(:successful)}
+    Project.gen_attrs.update(:builds => builds, :last_build => builds.last)
   end
 
   Project.fixture(:failed) do
-    Project.gen_attrs.update(:builds => 2.of{Build.gen(:successful)} +
-      1.of{Build.gen(:failed)})
+    builds = 2.of{Build.gen(:successful)} +
+      1.of{Build.gen(:failed)}
+    Project.gen_attrs.update(:builds => builds, :last_build => builds.last)
   end
 
   Project.fixture(:pending) do
-    Project.gen_attrs.update(:builds => 1.of{Build.gen} +
-      1.of{Build.gen(:pending)})
+    builds = 1.of{Build.gen} +
+      1.of{Build.gen(:pending)}
+    Project.gen_attrs.update(:builds => builds, :last_build => builds.last)
   end
 
   Project.fixture(:building) do
-    Project.gen_attrs.update(:builds => 3.of{Build.gen} +
-      1.of{Build.gen(:building)})
+    builds = 3.of{Build.gen} +
+      1.of{Build.gen(:building)}
+    Project.gen_attrs.update(:builds => builds, :last_build => builds.last)
   end
 
   Build.fixture do
