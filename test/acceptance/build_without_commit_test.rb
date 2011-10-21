@@ -9,7 +9,7 @@ class BuildWithoutCommitTest < Test::Unit::AcceptanceTestCase
 
   setup do
     @build = Build.gen(:pending, :commit => nil)
-    Project.gen(:blank, :name => 'Buggy', :builds => [@build])
+    Project.gen(:blank, :name => 'Buggy', :builds => [@build], :last_build => @build)
   end
   
   scenario "Browsing to a project with a build without commit" do
