@@ -39,6 +39,17 @@ module TestHelper
         `git add test`
       }
     end
+    
+    def add_commit_with_very_long_commit_message_lines
+      # 2000 chars
+      subject = '123456789 ' * 200
+      message = "#{subject} end-subject\n\nAnd again in body:\n\n#{subject} end-body"
+      add_commit(message) {
+        `echo '#{script(0)}' > test`
+        `chmod +x test`
+        `git add test`
+      }
+    end
 
     def head
       Dir.chdir(@path) { `git log --pretty=format:%H | head -1`.chomp }
