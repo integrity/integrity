@@ -1,3 +1,4 @@
+require "helper"
 require "helper/acceptance/textfile_notifier"
 
 class NotifierTest < IntegrityTest
