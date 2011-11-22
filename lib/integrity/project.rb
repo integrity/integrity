@@ -12,6 +12,7 @@ module Integrity
     property :branch,     String,   :required => true, :default => "master"
     property :command,    String,   :required => true, :length => 255, :default => "rake"
     property :public,     Boolean,  :default  => true
+    property :last_build_id, Integer, :required => false
 
     timestamps :at
 
@@ -19,6 +20,7 @@ module Integrity
 
     has n, :builds
     has n, :notifiers
+    belongs_to :last_build, 'Build'
 
     before :save, :set_permalink
 
@@ -72,10 +74,6 @@ module Integrity
     # TODO lame, there is got to be a better way
     def sorted_builds
       builds(:order => [:created_at.desc, :id.desc])
-    end
-
-    def last_build
-      sorted_builds.first
     end
 
     def blank?
