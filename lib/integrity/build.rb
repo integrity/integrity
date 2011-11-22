@@ -21,6 +21,11 @@ module Integrity
     belongs_to :project
     has 1,     :commit
 
+    after :create do
+      project.raise_on_save_failure = true
+      project.update(:last_build_id => id)
+    end
+
     before :destroy do
       if commit
         commit.destroy!

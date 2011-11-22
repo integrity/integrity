@@ -20,10 +20,11 @@ class DeleteTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "Deleting some busted build" do
-    Project.gen(:integrity, :builds => [
+    builds = [
       Build.gen(:commit => Commit.gen(:identifier => "foo")),
       Build.gen(:commit => Commit.gen(:identifier => "bar")),
-    ])
+    ]
+    Project.gen(:integrity, :builds => builds, :last_build => builds.last)
 
     login_as "admin", "test"
     visit "/integrity"
