@@ -27,6 +27,8 @@ class HelpersTest < IntegrityTest
     build = Build.gen
     commit_id = build.sha1
 
+    project.raise_on_save_failure = true
+
     project.builds << build
     project.save
 
