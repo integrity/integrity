@@ -1,3 +1,5 @@
+require "helper"
+
 class ProjectNotifier < IntegrityTest
   setup do
     @project = Project.gen
