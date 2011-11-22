@@ -26,11 +26,13 @@ module Integrity
 
     def start
       @logger.info "Started building #{repo.uri} at #{commit}"
+      @build.raise_on_save_failure = true
       @build.update(:started_at => Time.now)
       @build.project.enabled_notifiers.each { |n| n.notify_of_build_start(@build) }
       checkout.run
       # checkout.metadata invokes git and may fail
-      @build.update(:commit => checkout.metadata)
+      @build.commit.raise_on_save_failure = true
+      @build.commit.update(checkout.metadata)
     end
 
     def run
@@ -40,6 +42,7 @@ module Integrity
     def complete
       @logger.info "Build #{commit} exited with #{@result.success} got:\n #{@result.output}"
 
+      @build.raise_on_save_failure = true
       @build.update(
         :completed_at => Time.now,
         :successful   => @result.success,
@@ -57,6 +60,7 @@ module Integrity
         failure_message << line << "\n"
       end
       
+      @build.raise_on_save_failure = true
       @build.update(
         :completed_at => Time.now,
         :successful => false,
