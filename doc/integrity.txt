@@ -231,7 +231,10 @@ pull from.
 == FAQ
 === Does it support Subversion or any other SCM?
 [[faq-scm]]
-No. Integrity only works with http://git-scm.org[git].
+Integrity only works with http://git-scm.org[git]. However, git can mirror
+other SCMs, for example Subversion via git-svn, and Integrity will work with
+such mirrored repositories. It is up to you to keep the mirrored repositories
+up to date with your primary repositories.
 
 === But does it work with <insert tech here>?
 [[faq-tech]]
