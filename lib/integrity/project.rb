@@ -71,7 +71,7 @@ module Integrity
 
     # TODO lame, there is got to be a better way
     def sorted_builds
-      builds(:order => [:created_at.desc])
+      builds(:order => [:created_at.desc, :id.desc])
     end
 
     def last_build
