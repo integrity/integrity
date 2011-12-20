@@ -6,12 +6,18 @@ module Integrity
   class ThreadedBuilder
     # The optional pool size controls how many threads will be created.
     def initialize(pool_size, logger)
+      @pending = []
       @pool = ThreadPool.new(pool_size, logger)
     end
 
     # Adds a job to the queue.
     def enqueue(build)
-      @pool << proc { build.run! }
+      cmd = proc { build.run! }
+      if @paused
+        @pending << cmd
+      else
+        @pool << cmd
+      end
     end
 
     # The number of jobs currently in the queue.
@@ -22,6 +28,20 @@ module Integrity
     # This method will not return until #njobs returns 0.
     def wait!
       Thread.pass until @pool.njobs == 0
+    end
+
+    # Will pause the ThreadPool so state can be tested
+    def pause!
+      @paused = true
+    end
+
+    # Will resume the ThreadPool from a paused state
+    def resume!
+      @paused = false
+      @pending.each do |build|
+        @pool << build
+      end
+      @pending = []
     end
 
     # Manage a pool of threads, allowing for spin up / spin down of the
@@ -120,7 +140,6 @@ module Integrity
         Thread.new {
           c = Thread.current
           c[:run] = true
-
           while c[:run]
             job = @jobs.pop
             begin

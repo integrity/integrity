@@ -45,11 +45,11 @@ class HomepageTest < Test::Unit::AcceptanceTestCase
     visit "/"
 
     # TODO
-    assert_have_tag("li[@class~=success]")
-    assert_have_tag("li[@class~=failed]")
+    assert_have_tag("li[@class~=success]",  :content => "successfully in 2m")
+    assert_have_tag("li[@class~=failed]",   :content => "and failed in 2m")
 
     assert_have_tag("li[@class~=blank]",    :content => "Never built yet")
-    assert_have_tag("li[@class~=building]", :content => "Building!")
+    assert_have_tag("li[@class~=building]", :content => "Building! Started at")
   end
 
   scenario "Clicking on a project from the homepage" do

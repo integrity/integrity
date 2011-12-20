@@ -1,3 +1,4 @@
+require 'active_support/core_ext/time/calculations'
 module Integrity
   class Build
     include DataMapper::Resource
@@ -138,5 +139,11 @@ module Integrity
     def human_status
       HUMAN_STATUS[status] % sha1_short
     end
+
+    def human_duration
+      return if pending? || building?
+      ChronicDuration.output((completed_at.to_time.to_i - started_at.to_time.to_i), :format => :micro)
+    end
+
   end
 end

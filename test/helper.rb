@@ -9,6 +9,10 @@ require "fixtures"
 
 begin
   require "ruby-debug"
+rescue LoadError
+end
+
+begin
   require "redgreen"
 rescue LoadError
 end

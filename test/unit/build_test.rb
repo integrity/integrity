@@ -34,6 +34,10 @@ class BuildTest < IntegrityTest
       Build.gen(:pending, :commit => {:identifier => nil}).human_status
   end
 
+  it "has a human readable duration" do
+    assert_match '2m', Build.gen(:successful).human_duration
+  end
+
   test "commit data" do
     build = Build.gen(:commit => Commit.gen(
       :identifier   => "6f2ec35bc09744f55e528fe98a438dcb704edc65",

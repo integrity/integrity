@@ -1,3 +1,5 @@
+$:.unshift File.dirname(__FILE__)+"/../../lib"
+$:.unshift File.dirname(__FILE__)+"/.."
 require "helper/acceptance"
 
 class ManualBuildTest < Test::Unit::AcceptanceTestCase
@@ -12,6 +14,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     Integrity.configure { |c|
       c.builder = :threaded, 1
     }
+    Integrity.config.builder.pause!
   end
 
   teardown do
@@ -20,7 +23,9 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
   end
 
   def build
+    Integrity.config.builder.resume!
     Integrity.config.builder.wait!
+    Integrity.config.builder.pause!
   end
 
   scenario "Triggering a successful build" do
@@ -116,6 +121,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
 
     build
     reload
+
     assert_have_tag("h1", :content => "failed")
 
     click_link "my-test-project"
