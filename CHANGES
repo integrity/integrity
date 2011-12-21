@@ -1,9 +1,28 @@
 = master
 
+= 23 / 2011-12-20
+
+ * The length of branch and permalink fields was increased to 255 characters
+   from 60, allowing longer branch names. This change applies only to new
+   Integrity installations; existing installations must manually alter their
+   project table.
+
+ * Integrity home page now loads much faster thanks to projects keeping track
+   of their last builds.
+
+ * Unused dependencies deleted from Gemfile, do_sqlite3 dependency was
+   bumped to make Integrity work on ruby 1.9 with sqlite again.
+
+ * Tests are succeeding again on ruby 1.8 and 1.9.
+
+ * UI is no longer broken when builds end up without commits.
+
+ * The entire commit message is now shown in builds, not just the subject.
+
  * Exceptions raised inside Integrity now correctly cause builds to fail.
 
  * It is now possible to limit how many builds to display initially on
-   project pages.
+   project pages. This makes project pages load much faster.
 
  * Co-op notifier added.
 
@@ -17,7 +36,7 @@
 
  * Git submodules are now checked out in repositories being tested.
 
- * Various performance improvements and bug fixes.
+ * Various smaller performance improvements and bug fixes.
 
 = 22 / 2010-06-29
 
