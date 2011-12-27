@@ -6,10 +6,8 @@
     %title= "#{@title.last} | integrity"
     - stylesheets(:reset, :buttons, :integrity)
 
-    - if @status
+    - if @status && @status != :blank
       %link{ :rel => "icon", :type => "image/png", :href => "/icons/" + @status.to_s + ".png" }
-    - else
-      %link{ :rel => "icon", :type => "image/png", :href => "/icons/pending.png" }
 
   %body
     #header
