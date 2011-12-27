@@ -31,7 +31,7 @@ gem "rack",                  "1.1.0"
 
 # These are dependencies for the various notifiers. Uncomment as appropriate.
 # = Email
-# gem "pony", "1.1"
+gem "pony", "1.1"
 
 # = Campfire
 # gem "broach", "0.2.1"
@@ -49,7 +49,7 @@ gem "rack",                  "1.1.0"
 # gem "activerecord", "3.0.3"
 
 # = Dependency for the :resque builder
-# gem "resque", "1.10.0"
+gem "resque", "1.10.0"
 
 # Uncomment if you're using pg or mysql instead of sqlite
 # gem "pg"
