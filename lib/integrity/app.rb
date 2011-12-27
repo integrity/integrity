@@ -153,7 +153,7 @@ module Integrity
     get "/:project/builds/:build" do
       login_required unless current_project.public?
 
-      @status = current_project.status
+      @status = current_build.status
       show :build, :title => ["projects", current_project.permalink,
         current_build.sha1_short]
     end
