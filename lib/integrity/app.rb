@@ -95,7 +95,7 @@ module Integrity
         @showing_all_builds = true
       end
 
-      @status = @builds.first.status
+      @status = current_project.status
 
       show :project, :title => ["projects", current_project.name]
     end
