@@ -112,8 +112,8 @@ module Integrity
     get "/:project/ping" do
       login_required unless current_project.public?
 
-      if current_project.last_build.status != :success
-        halt 412, current_build.status.to_s
+      if current_project.status != :success
+        halt 412, current_project.status.to_s
       else
         current_project.last_build.sha1
       end
