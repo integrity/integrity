@@ -42,6 +42,14 @@ module Integrity
 
     get "/?" do
       @projects = authorized? ? Project.all : Project.all(:public => true)
+
+      @status = :success
+      @projects.each { |project|
+          if project.last_build.failed?
+              @status = :failed
+          end
+      }
+
       show :home, :title => "projects"
     end
 
@@ -86,6 +94,8 @@ module Integrity
         @builds = current_project.sorted_builds
         @showing_all_builds = true
       end
+
+      @status = @builds.first.status
 
       show :project, :title => ["projects", current_project.name]
     end
@@ -143,6 +153,7 @@ module Integrity
     get "/:project/builds/:build" do
       login_required unless current_project.public?
 
+      @status = current_project.status
       show :build, :title => ["projects", current_project.permalink,
         current_build.sha1_short]
     end
