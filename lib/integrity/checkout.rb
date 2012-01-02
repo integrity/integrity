@@ -51,8 +51,10 @@ module Integrity
       end
 
       unless dump["committed_at"].kind_of? Time
-        dump.update("committed_at" => Time.parse(dump["committed_at"]))
+        dump["committed_at"] = Time.parse(dump["committed_at"])
       end
+
+      dump
     end
 
     def sha1
