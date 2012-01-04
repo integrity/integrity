@@ -63,7 +63,10 @@ module TestHelper
       Dir.chdir(@path) {
         `git log --pretty=format:%H`.each_line.collect{|l| l.split("\n").first}.
         inject([]) { |acc, sha1|
-          fmt  = "---%nmessage: >-%n  %s%ntimestamp: %ci%n" \
+          # Note: psych will return unquoted timestamp as a Time object,
+          # syck will return it as a string
+          # Note: use single quotes because of how we invoke git below
+          fmt  = "---%nmessage: >-%n  %s%ntimestamp: '%ci'%n" \
             "id: %H%nauthor: %n name: %an%n email: %ae%n"
           acc << YAML.load(`git show -s --pretty=format:"#{fmt}" #{sha1}`)
         }.reverse
