@@ -1,5 +1,10 @@
 = master
 
+ * Integrity now has favicons for the home page, project pages and build pages
+   reflecting the respective build statuses.
+
+ * psych compatibility fixes.
+
 = 23 / 2011-12-20
 
  * The length of branch and permalink fields was increased to 255 characters
