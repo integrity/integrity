@@ -5,6 +5,10 @@
     %meta{ :content => "en", :"http-equiv" => "Content-Language" }
     %title= "#{@title.last} | integrity"
     - stylesheets(:reset, :buttons, :integrity)
+
+    - if @status && @status != :blank
+      %link{ :rel => "shortcut icon", :href => "/icons/" + @status.to_s + ".ico" }
+
   %body
     #header
       %h1= @title.join(" / ")

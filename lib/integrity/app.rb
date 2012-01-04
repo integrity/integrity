@@ -42,6 +42,46 @@ module Integrity
 
     get "/?" do
       @projects = authorized? ? Project.all : Project.all(:public => true)
+
+      # we may have no projects defined yet
+      @status = :blank
+      # statuses can be thought of as having the following hierarchy:
+      # success -> pending -> building -> failed
+      # status of Integrity overall is the rightmost status of
+      # any of displayed projects.
+      # statuses are listed in lib/integrity/build.rb.
+      @projects.each do |project|
+        if project.status == :blank
+          # project with no builds.
+          # do not change overall status
+          next
+        end
+        
+        case @status
+        when :blank
+          # first project's status unconditionally sets overall status
+          @status = project.status
+        when :success
+          # any status takes precedence over success
+          if project.status != :success
+            @status = project.status
+          end
+        when :pending
+          # building and failed take precedence over pending
+          if project.status != :success && project.status != :pending
+            @status = project.status
+          end
+        when :building
+          # failed takes precedence over building
+          if project.status == :failed
+            @status = :failed
+          end
+        else
+          # overall status is failed, don't change it
+          break
+        end
+      end
+
       show :home, :title => "projects"
     end
 
@@ -87,6 +127,8 @@ module Integrity
         @showing_all_builds = true
       end
 
+      @status = current_project.status
+
       show :project, :title => ["projects", current_project.name]
     end
 
@@ -102,8 +144,8 @@ module Integrity
     get "/:project/ping" do
       login_required unless current_project.public?
 
-      if current_project.last_build.status != :success
-        halt 412, current_build.status.to_s
+      if current_project.status != :success
+        halt 412, current_project.status.to_s
       else
         current_project.last_build.sha1
       end
@@ -143,6 +185,7 @@ module Integrity
     get "/:project/builds/:build" do
       login_required unless current_project.public?
 
+      @status = current_build.status
       show :build, :title => ["projects", current_project.permalink,
         current_build.sha1_short]
     end
