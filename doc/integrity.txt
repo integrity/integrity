@@ -36,6 +36,10 @@ Upgrade:
 $ git fetch origin
 $ git merge origin/master
 
+Note: Integrity ships with different Gemfile.lock files for Ruby 1.8 and 1.9.
+If you wish to use a Gemfile.lock file shipped with Integrity, copy or rename 
+one of Gemfile.lock.ruby18 or Gemfile.lock.ruby19 to Gemfile.lock.
+
 == Configuration
 Integrity is configured via the `init.rb` file using Ruby.
 [source, ruby]
