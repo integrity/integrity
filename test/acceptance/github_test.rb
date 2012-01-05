@@ -16,10 +16,11 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     }
   end
 
-  def payload(repo)
+  def payload(repo, deleted = true)
     { "after"      => repo.head, "ref" => "refs/heads/#{repo.branch}",
       # TODO get GitHub to include git URL in its payload :-)
       # "repository" => { "url" => repo.uri },
+      "deleted"    => !! deleted,
       "uri"        => repo.uri,
       "commits"    => repo.commits }.to_json
   end
@@ -48,6 +49,30 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     visit "/my-test-project"
 
     assert_contain("No builds for this project")
+  end
+
+  scenario "Receiving a deleted: true payload without trim_branches enabled" do
+    Integrity.configure { |c| c.trim_branches = false }
+    repo = git_repo(:my_test_project)
+    repo.add_successful_commit
+    Project.gen(:my_test_project, :uri => repo.uri, :command => "true")
+
+    github_post payload(repo, true)
+    visit "/my-test-project"
+
+    assert_contain("by John Doe")
+  end
+
+  scenario "Receiving a deleted: true payload with trim_branches enabled" do
+    Integrity.configure { |c| c.trim_branches = true }
+    repo = git_repo(:my_test_project)
+    repo.add_successful_commit
+    Project.gen(:my_test_project, :uri => repo.uri, :command => "true")
+
+    github_post payload(repo, true)
+    visit "/my-test-project"
+
+    assert_contain("This is a 404")
   end
 
   scenario "Receiving a payload with build_all option *enabled*" do
