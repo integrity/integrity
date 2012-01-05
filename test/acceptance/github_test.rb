@@ -16,7 +16,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     }
   end
 
-  def payload(repo, deleted = true)
+  def payload(repo, deleted = false)
     { "after"      => repo.head, "ref" => "refs/heads/#{repo.branch}",
       # TODO get GitHub to include git URL in its payload :-)
       # "repository" => { "url" => repo.uri },
