@@ -10,7 +10,8 @@ module Integrity
       :log,
       :username,
       :password,
-      :project_default_build_count
+      :project_default_build_count,
+      :trim_branches
 
     def build_all?
       !! @build_all
@@ -22,6 +23,10 @@ module Integrity
 
     def github_enabled?
       !! @github_token
+    end
+
+    def trim_branches?
+      !! @trim_branches
     end
 
     def protected?

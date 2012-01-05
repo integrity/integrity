@@ -10,7 +10,7 @@ module Integrity
     end
 
     def build
-      if @payload.deleted?
+      if @payload.deleted? and Integrity.config.trim_branches?
           projects.each { |project| project.destroy }
       else
           builds.each { |build| build.run }.size
