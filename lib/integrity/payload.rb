@@ -29,6 +29,10 @@ module Integrity
       }
     end
 
+    def deleted?
+      @payload["deleted"]
+    end
+
     def uri
       if uri = @payload["uri"]
         return uri
