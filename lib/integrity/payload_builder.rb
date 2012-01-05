@@ -10,7 +10,11 @@ module Integrity
     end
 
     def build
-      builds.each { |build| build.run }.size
+      if payload.deleted?
+          projects.each { |project| project.destroy }
+      else
+          builds.each { |build| build.run }.size
+      end
     end
 
     def builds
