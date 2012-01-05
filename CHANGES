@@ -5,6 +5,10 @@
 
  * psych compatibility fixes.
 
+ * Integrity now has a trim_branches option which detects when a branch has
+   been deleted based on the GitHub post-receive hook, and will subsequently
+   delete the project and all of its builds.
+
 = 23 / 2011-12-20
 
  * The length of branch and permalink fields was increased to 255 characters
