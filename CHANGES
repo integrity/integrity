@@ -7,7 +7,8 @@
 
  * Integrity now has a trim_branches option which detects when a branch has
    been deleted based on the GitHub post-receive hook, and will subsequently
-   delete the project and all of its builds.
+   delete the project and all of its builds. The setting is intended to be used
+   with the auto_branch setting, in order to trim stale branches.
 
 = 23 / 2011-12-20
 
