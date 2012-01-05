@@ -33,6 +33,7 @@ Integrity.configure do |c|
   c.log                         = "integrity.log"
   c.github_token                = "SECRET"
   c.build_all                   = true
+  c.trim_branches               = false
   c.builder                     = :threaded, 5
   c.project_default_build_count = 10
 end
