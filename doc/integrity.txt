@@ -80,7 +80,7 @@ project_default_build_count:: How many builds to initially show on project
 pages. nil, which is the default, means show all builds.
 HTTP authentication:: If both the `user` and `pass` settings are set then only
 the logged-in users can administer the projects and see the private ones.
-trim_builds:: When _Integrity_ is set to auto branch, it is possible for a
+trim_branches:: When _Integrity_ is set to auto branch, it is possible for a
 large number of stale branches to stick around which no longer exists. Turning
 this on will automatically detect when a branch is deleted via the GitHub
 post-receive hook and delete the build history for the branch.
