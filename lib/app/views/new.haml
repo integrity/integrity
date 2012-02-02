@@ -23,6 +23,11 @@
       &== Build script #{errors_on(@project, :command)}
     %textarea#project_build_script{ :name => "project_data[command]", :cols => 40, :rows => 2 }
       &== #{@project.command.to_s}
+  
+  %p.normal{ :class => error_class(@project, :artifacts) }
+    %label{ :for => "project_artifacts" }<
+      &== Artifacts to provide per-build (comma separated)
+    %input.text#project_artifacts{ :name => "project_data[artifacts]", :type => "text", :value => h(@project.artifacts) }
 
   %p.normal.checkbox
     %label{ :for => "project_public" } Public project

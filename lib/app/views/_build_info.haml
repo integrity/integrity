@@ -26,10 +26,26 @@
         %a{ :href => github_commit_url(build) } view on GitHub
 
 - if build.completed?
+  - if build.successful?
+    %h2
+      Artifacts
+      %blockquote
+        %ul#artifacts
+          - if ! @project.artifacts_empty?
+            - @project.get_artifacts.each do |artifact|
+              - if File.exists?("#{Integrity.config.directory}/#{@build.id}/#{artifact}")
+                %a{ :title => "#{artifact}", :href => "#{root_url}artifacts/#{@project.name.downcase}/#{@build.id}/#{artifact}" } #{artifact}
+              - elsif artifact.include? "*"
+                - Dir["#{Integrity.config.directory}/#{@build.id}/#{artifact}"].each do |wildcarded|
+                  %a{ :title => "#{artifact}",
+                      :href => "#{root_url}artifacts/#{@project.name.downcase}/#{@build.id}/#{File.basename(wildcarded)}" } #{File.basename(wildcarded)}
+          - elsif @project.artifacts_empty?
+            %a{ :title => "No artifacts for this project :/" } No artifacts for this project :/
+
   %h2
     Build Output
     %a{:href => build_path(build, :raw)} (raw)
-
+  
   %pre.output
     :preserve
       #{bash_color_codes h(build.output)}
