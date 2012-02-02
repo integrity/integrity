@@ -113,6 +113,26 @@ module Integrity
       end
     end
 
+    get "/artifacts" do
+      redirect root_path.to_s
+    end
+
+    get "/artifacts/:project/:artifact" do |project, artifact|
+      login_required unless current_project.public?
+      
+      unless current_project.artifacts_empty? and File.exists?(artifact)
+        send_file "#{Integrity.config.directory}/#{current_project.last_build_id}/#{artifact}"
+      end
+    end
+
+    get "/artifacts/:project/:id/:artifact" do |project, id, artifact|
+      login_required unless current_project.public?
+      
+      unless current_project.artifacts_empty? and File.exists?(artifact)
+        send_file "#{Integrity.config.directory}/#{id}/#{artifact}"
+      end
+    end
+    
     get "/:project\.png" do
       login_required unless current_project.public?
 
