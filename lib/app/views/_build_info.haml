@@ -6,6 +6,8 @@
   - elsif !build.pending?
     &== in #{build.human_duration}
 
+- @build = build
+
 %form{ :action => build_path(build), :method => :post }
   %p.submit
     %button{ :type => :submit, :title => "Rebuild this commit" }<
@@ -26,19 +28,19 @@
         %a{ :href => github_commit_url(build) } view on GitHub
 
 - if build.completed?
-  - if build.successful?
+  - if build.successful? && ! current_project.artifacts_empty?
     %h2
       Artifacts
       %blockquote
         %ul#artifacts
-          - if ! @project.artifacts_empty?
-            - @project.get_artifacts.each do |artifact|
+          - if ! current_project.artifacts_empty?
+            - current_project.get_artifacts.each do |artifact|
               - if File.exists?("#{Integrity.config.directory}/#{@build.id}/#{artifact}")
-                %a{ :title => "#{artifact}", :href => "#{root_url}artifacts/#{@project.name.downcase}/#{@build.id}/#{artifact}" } #{artifact}
+                %a{ :title => "#{artifact}", :href => "#{root_url}artifacts/#{current_project.name.downcase}/#{@build.id}/#{artifact}" } #{artifact}
               - elsif artifact.include? "*"
                 - Dir["#{Integrity.config.directory}/#{@build.id}/#{artifact}"].each do |wildcarded|
                   %a{ :title => "#{artifact}",
-                      :href => "#{root_url}artifacts/#{@project.name.downcase}/#{@build.id}/#{File.basename(wildcarded)}" } #{File.basename(wildcarded)}
+                      :href => "#{root_url}artifacts/#{current_project.name.downcase}/#{@build.id}/#{File.basename(wildcarded)}" } #{File.basename(wildcarded)}
           - elsif @project.artifacts_empty?
             %a{ :title => "No artifacts for this project :/" } No artifacts for this project :/
 
