@@ -35,14 +35,24 @@
         %ul#artifacts
           - if ! current_project.artifacts_empty?
             - current_project.get_artifacts.each do |artifact|
-              - if File.exists?("#{Integrity.config.directory}/#{@build.id}/#{artifact}")
-                %a{ :title => "#{artifact}", :href => "#{root_url}artifacts/#{current_project.name.downcase}/#{@build.id}/#{artifact}" } #{artifact}
-              - elsif artifact.include? "*"
+              - if File.exists?("#{Integrity.config.directory}/#{@build.id}/#{artifact}") && ! artifact.include?("*")
+                - if artifact.include? "/"
+                  - artifact_url = artifact.gsub(/(\/)/, "~")
+                - else
+                  - artifact_url = artifact
+                %a{ :title => "#{artifact}",
+                    :href => "#{root_url}artifacts/#{current_project.name.downcase}/#{@build.id}/#{artifact_url}" } #{File.basename(artifact)}
+                %br/
+              - elsif (File.exists?("#{Integrity.config.directory}/#{@build.id}/#{artifact}") && artifact.include?("*")) || artifact.include?("*")
                 - Dir["#{Integrity.config.directory}/#{@build.id}/#{artifact}"].each do |wildcarded|
-                  %a{ :title => "#{artifact}",
-                      :href => "#{root_url}artifacts/#{current_project.name.downcase}/#{@build.id}/#{File.basename(wildcarded)}" } #{File.basename(wildcarded)}
-          - elsif @project.artifacts_empty?
-            %a{ :title => "No artifacts for this project :/" } No artifacts for this project :/
+                  - wildcarded = wildcarded.split("#{Integrity.config.directory}/#{@build.id}/")[1]
+                  - if wildcarded.include? "/"
+                    - wildcard_url = wildcarded.gsub(/(\/)/, "~")
+                  - else
+                    - wildcard_url = wildcarded
+                  %a{ :title => "#{File.basename(wildcarded)}",
+                      :href => "#{root_url}artifacts/#{current_project.name.downcase}/#{@build.id}/#{wildcard_url}" } #{File.basename(wildcarded)}
+                  %br/
 
   %h2
     Build Output
