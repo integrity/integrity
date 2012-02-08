@@ -48,6 +48,35 @@ module Integrity
             :config   => current_project.config_for(name) })
         }
       end
+      
+      def build_artifacts(project, build)
+        artifacts = {}
+        project.get_artifacts.each do |artifact|
+          if File.exists?("#{Integrity.config.directory}/#{build.id}/#{artifact}") && ! artifact.include?("*")
+            if artifact.include?("/")
+              artifact_url = artifact.gsub(/(\/)/, "%2F")
+            else
+              artifact_url = artifact
+            end
+            artifacts.update(
+              { artifact => artifact_url }
+            )
+          elsif (File.exists?("#{Integrity.config.directory}/#{build.id}/#{artifact}") && artifact.include?("*")) || artifact.include?("*")
+            Dir["#{Integrity.config.directory}/#{build.id}/#{artifact}"].each do |wildcarded|
+              wildcarded = wildcarded.split("#{Integrity.config.directory}/#{build.id}/")[1]
+              if wildcarded.include?("/")
+                wildcard_url = wildcarded.gsub(/(\/)/, "%2F")
+              else
+                wildcard_url = wildcarded
+              end
+              artifacts.update(
+                { wildcarded => wildcard_url }
+              )
+            end
+          end
+        end
+        artifacts
+      end
     end
   end
 end
