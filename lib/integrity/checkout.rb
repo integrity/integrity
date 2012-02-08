@@ -1,3 +1,6 @@
+require 'md5'
+require 'pathname'
+
 module Integrity
   class Checkout
     def initialize(repo, commit, directory, logger)
@@ -5,10 +8,12 @@ module Integrity
       @commit    = commit
       @directory = directory
       @logger    = logger
+      @cache_directory = Pathname.new(@directory).join('../../cache').join(MD5.hexdigest(@repo.uri)).cleanpath
     end
 
     def run
-      runner.run! "git clone #{@repo.uri} #{@directory}"
+      update_cache
+      runner.run! "git clone #{@cache_directory} #{@directory}"
 
       in_dir do |c|
         c.run! "git fetch origin"
@@ -17,6 +22,19 @@ module Integrity
         # run init separately for compatibility with old versions of git
         c.run! "git submodule init"
         c.run! "git submodule update"
+      end
+    end
+
+    def update_cache
+      unless @cache_directory.exist?
+        clone_directory = "#{@cache_directory}.cloning"
+        runner.run! "rm -rf #{clone_directory}"
+        runner.run! "git clone --mirror #{@repo.uri} #{clone_directory}"
+        runner.run! "mv #{clone_directory} #{@cache_directory}"
+      end
+
+      in_dir(@cache_directory) do |c|
+        c.run! "git fetch origin"
       end
     end
 
@@ -74,8 +92,9 @@ module Integrity
       in_dir { |r| r.run!(command) }
     end
 
-    def in_dir(&block)
-      runner.cd(@directory, &block)
+    def in_dir(dir=nil, &block)
+      dir ||= @directory
+      runner.cd(dir, &block)
     end
 
     def runner
