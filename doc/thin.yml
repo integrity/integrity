@@ -1,13 +1,16 @@
----
-environment: production
-chdir: /usr/home/www-data/integrity
+--- 
 address: 127.0.0.1
-port: 8910
-rackup: config.ru
-pid: tmp/thin.pid
+pid: tmp/pids/thin.pid
+port: 3000
+timeout: 30
+wait: 30
 log: logs/thin.log
 max_conns: 1024
-timeout: 30
+require: []
+
+environment: production
+servers: 2
+rackup: config.ru
 max_persistent_conns: 512
 daemonize: true
-servers: 2
+chdir: /var/www/integrity/
