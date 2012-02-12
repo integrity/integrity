@@ -33,7 +33,7 @@
         %ul#artifacts
           - build_artifacts(current_project, build).each do |artifact, artifact_url|
             %a{ :title => "#{artifact}",
-                :href => "#{root_url}#{current_project.name.downcase}/builds/#{build.id}/artifacts/#{artifact_url}"} #{File.basename(artifact)}
+                :href => "#{project_path(current_project)}/builds/#{build.id}/artifacts/#{artifact_url}"} #{File.basename(artifact)}
             %br/
 
   %h2
