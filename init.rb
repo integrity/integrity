@@ -28,6 +28,10 @@ require "integrity"
 
 Integrity.configure do |c|
   c.database                    = "sqlite3:integrity.db"
+  # Postgres via the local socket to "integrity" database:
+  # c.database                  = "postgres:///integrity"
+  # Postgres via a more full specification:
+  # c.database                  = "postgres://user:pass@host:port/database"
   c.directory                   = "builds"
   c.base_url                    = "http://ci.example.org"
   c.log                         = "integrity.log"
