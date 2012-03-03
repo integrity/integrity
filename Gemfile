@@ -29,6 +29,9 @@ gem "rack",                  "1.1.0"
 # If you want to use Thin:
 # gem "thin"
 
+# If you want to use Unicorn:
+# gem "unicorn"
+
 # These are dependencies for the various notifiers. Uncomment as appropriate.
 # = Email
 # gem "pony", "1.1"
