@@ -215,6 +215,16 @@ server {
 </VirtualHost>
 ----
 
+=== http://unicorn.bogomips.org/[Unicorn]
+1. Uncomment the `unicorn` line in the Gemfile
+2. Run `bundle install` to install Unicorn
+
+[source, shell]
+$ $EDITOR doc/unicorn.rb
+$ unicorn -c doc/unicorn.rb -D
+
+Then, configure a web proxy as outlined above for Thin.
+
 NOTE: If you run Integrity with another deployment strategy please drop us
       us a line at <info@integrityapp.com> and let us know what config
       worked for you so we can include it here.
