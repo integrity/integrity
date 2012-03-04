@@ -31,7 +31,7 @@
       Artifacts
       %blockquote
         %ul#artifacts
-          - build_artifacts(build.project, build).each do |artifact, artifact_url|
+          - build_artifacts(build).each do |artifact, artifact_url|
             %a{ :title => "#{artifact}",
                 :href => "#{project_path(build.project)}/builds/#{build.id}/artifacts/#{artifact_url}"} #{File.basename(artifact)}
             %br/
