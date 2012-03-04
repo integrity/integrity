@@ -26,14 +26,14 @@
         %a{ :href => github_commit_url(build) } view on GitHub
 
 - if build.completed?
-  - if build.successful? && ! current_project.artifacts_empty?
+  - if build.successful? && ! build.project.artifacts_empty?
     %h2
       Artifacts
       %blockquote
         %ul#artifacts
-          - build_artifacts(current_project, build).each do |artifact, artifact_url|
+          - build_artifacts(build.project, build).each do |artifact, artifact_url|
             %a{ :title => "#{artifact}",
-                :href => "#{project_path(current_project)}/builds/#{build.id}/artifacts/#{artifact_url}"} #{File.basename(artifact)}
+                :href => "#{project_path(build.project)}/builds/#{build.id}/artifacts/#{artifact_url}"} #{File.basename(artifact)}
             %br/
 
   %h2
