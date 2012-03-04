@@ -49,9 +49,9 @@ module Integrity
         }
       end
       
-      def build_artifacts(project, build)
+      def build_artifacts(build)
         artifacts = {}
-        project.get_artifacts.each do |artifact|
+        build.project.get_artifacts.each do |artifact|
           if File.exists?("#{Integrity.config.directory}/#{build.id}/#{artifact}") && ! artifact.include?("*")
             if artifact.include?("/")
               artifact_url = artifact.gsub(/(\/)/, "%2F")
