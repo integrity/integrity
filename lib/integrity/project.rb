@@ -30,7 +30,7 @@ module Integrity
     end
 
     def get_artifacts
-      artifacts.split(",")
+      artifacts.split(";")
     end
     
     def artifacts_empty?
