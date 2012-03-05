@@ -79,6 +79,8 @@ a {
     position: relative; }
     #content form p.checkbox label {
       margin-top: 0 !important; }
+  #content form p.explanation {
+    margin-left: 8.75em; }
   #content form input.text, #content form textarea, #content form select {
     width: 30em;
     padding: 0.2em 0.4em;

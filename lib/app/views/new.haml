@@ -26,8 +26,9 @@
   
   %p.normal{ :class => error_class(@project, :artifacts) }
     %label{ :for => "project_artifacts" }<
-      &== Artifacts to provide per-build (comma separated)
+      &== Artifacts to provide
     %input.text#project_artifacts{ :name => "project_data[artifacts]", :type => "text", :value => h(@project.artifacts) }
+    %p.explanation Relative paths of files to expose per build. Separate multiple paths with semicolons. Wildcards are allowed (?, *, []) and must be escaped with a backslash if part of a filename.
 
   %p.normal.checkbox
     %label{ :for => "project_public" } Public project
