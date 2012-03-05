@@ -191,18 +191,6 @@ module Integrity
       redirect build_url(@build).to_s
     end
 
-    get "/:project/artifacts/:artifact" do |project, artifact|
-      login_required unless current_project.public?
-      
-      unless current_project.artifacts_empty? or File.exists?(artifact)
-        if artifact.include? "%2F"
-          artifact.gsub!(/(\%2F)/, "/")
-        end
-        send_file "#{Integrity.config.directory}/#{current_project.last_build_id}/#{artifact}",
-                  :filename => "#{File.basename(artifact)}"
-      end
-    end
-
     get "/:project/builds/:build/artifacts/:artifact" do |project, build, artifact|
       login_required unless current_project.public?
       
