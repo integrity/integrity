@@ -34,7 +34,7 @@ module Integrity
     end
     
     def artifacts_empty?
-      artifacts.empty?
+      artifacts.nil? || artifacts.empty?
     end
 
     def repo
