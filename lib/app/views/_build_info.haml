@@ -31,9 +31,9 @@
       Artifacts
       %blockquote
         %ul#artifacts
-          - build_artifacts(build).each do |artifact, artifact_url|
-            %a{ :title => "#{artifact}",
-                :href => "#{project_path(build.project)}/builds/#{build.id}/artifacts/#{artifact_url}"} #{File.basename(artifact)}
+          - artifact_files(build).each do |file|
+            %a{ :title => file[:relative_path],
+                :href => file[:url] } #{file[:name]}
             %br/
 
   %h2
