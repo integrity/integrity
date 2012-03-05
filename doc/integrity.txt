@@ -165,6 +165,8 @@ require "integrity/notifier/email"
 
 == Deployment
 === http://modrails.com[Phusion Passenger]
+NOTE: Using the DelayedBuilder or ResqueBuilder is required with Passenger due to it's multithreading limitations.
+
 Please see Passenger's documentation for
 http://www.modrails.com/documentation/Users%20guide%20Apache.html[Apache] and
 http://www.modrails.com/documentation/Users%20guide%20Nginx.html[Nginx].
