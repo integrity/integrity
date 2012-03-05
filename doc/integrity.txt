@@ -168,6 +168,9 @@ Please see Passenger's documentation for
 http://www.modrails.com/documentation/Users%20guide%20Apache.html[Apache] and
 http://www.modrails.com/documentation/Users%20guide%20Nginx.html[Nginx].
 
+NOTE: Currently ThreadedBuilder does not work with Passenger (issue #156).
+      Please use DelayedBuilder or ResqueBuilder.
+
 === http://code.macournoyer.com/thin/[Thin]
 1. Uncomment the `thin` line in the Gemfile
 2. Run `bundle install` to install Thin
