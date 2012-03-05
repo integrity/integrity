@@ -1,3 +1,5 @@
+require 'cgi'
+
 module Integrity
   module Helpers
     module Urls
@@ -63,6 +65,10 @@ module Integrity
 
       def build_path(build, *path)
         project_path(build.project, "builds", build.id, *path)
+      end
+      
+      def artifact_path(build, artifact, *path)
+        build_path(build, 'artifacts', CGI.escape(CGI.escape(artifact)))
       end
 
       # Copyright (MIT) Eric Kidd -- http://github.com/emk/sinatra-url-for
