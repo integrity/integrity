@@ -14,6 +14,11 @@ GEM
     addressable (2.2.2)
     ansi (1.4.1)
     arel (2.0.10)
+    aws-ses (0.4.3)
+      builder
+      mail (> 2.2.5)
+      mime-types
+      xml-simple
     bcat (0.5.2)
       rack (< 1.2)
     broach (0.2.1)
@@ -120,6 +125,7 @@ GEM
       nokogiri (>= 1.2.0)
       rack (>= 1.0)
       rack-test (>= 0.5.3)
+    xml-simple (1.1.1)
 
 PLATFORMS
   ruby
@@ -127,6 +133,7 @@ PLATFORMS
 DEPENDENCIES
   activerecord (= 3.0.3)
   addressable (= 2.2.2)
+  aws-ses (= 0.4.3)
   bcat (= 0.5.2)
   broach (= 0.2.1)
   bunny (= 0.6.0)
