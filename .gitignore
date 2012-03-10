@@ -1,7 +1,9 @@
 .bundle/*
 doc/integrity.html
 builds
+Gemfile.lock
 *.db
 *.log
+.DS_Store
 .rvmrc
 *.tmproj
