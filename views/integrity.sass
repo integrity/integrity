@@ -1,407 +1,407 @@
-!default_fonts   = "Helvetica Neue, Helvetica, Arial, sans-serif"
-!nice_fonts      = "Georgia, Times New Roman, serif"
-!monospace_fonts = "Monaco, Deja Vu Sans Mono, Inconsolata, Consolas, monospace"
+$default_fonts   : Helvetica Neue, Helvetica, Arial, sans-serif
+$nice_fonts      : Georgia, Times New Roman, serif
+$monospace_fonts : Monaco, Deja Vu Sans Mono, Inconsolata, Consolas, monospace
 
-!page_bg       = #e0e0e0
-!content_bg    = #eee
-!header_bg     = #fff
-!text_color    = #333
-!light_color   = #999
-!title_color   = #4e4e4e
-!link_color    = #ed1556
-!link_bg       = #fff
-!rule_color    = #c0c0c0
-!watermark     = #ccc
-!quote_bg      = #fff
-!success_bg    = #bbf8aa
-!success_color = #337022
-!failed_bg     = #fba
-!failed_color  = #f10
-!building_bg   = #ccc
-!building_color = #777
+$page_bg       : #e0e0e0
+$content_bg    : #eee
+$header_bg     : #fff
+$text_color    : #333
+$light_color   : #999
+$title_color   : #4e4e4e
+$link_color    : #ed1556
+$link_bg       : #fff
+$rule_color    : #c0c0c0
+$watermark     : #ccc
+$quote_bg      : #fff
+$success_bg    : #bbf8aa
+$success_color : #337022
+$failed_bg     : #fba
+$failed_color  : #f10
+$building_bg   : #ccc
+$building_color : #777
 
 html
-  :background-color = !page_bg
+  background-color: $page_bg
 
 body
-  :font-size 100%
-  :font-family = !default_fonts
-  :color = !text_color
+  font-size: 100%
+  font-family: $default_fonts
+  color: $text_color
 
 a
-  :color = !link_color
-  :text-decoration none
+  color: $link_color
+  text-decoration: none
   &:hover
-    :color = !link_bg
-    :background-color = !link_color
+    color: $link_bg
+    background-color: $link_color
 
 #header, #content, #footer
-  :width 40em
-  :margin 0 auto
-  :background = !content_bg
-  :padding 0 2em
-  :z-index 0
-  :position relative
-  :font-size 1em
+  width: 40em
+  margin: 0 auto
+  background: $content_bg
+  padding: 0 2em
+  z-index: 0
+  position: relative
+  font-size: 1em
 
 #header
-  :background = !header_bg
+  background: $header_bg
   h1
-    :font-weight bold
-    :font-size 1.5em
+    font-weight: bold
+    font-size: 1.5em
   address.watermark
-    :position absolute
-    :font-weight bold
-    :right 3em
-    :top 0
-    :font-size .75em
-    :color = !watermark
+    position: absolute
+    font-weight: bold
+    right: 3em
+    top: 0
+    font-size: .75em
+    color: $watermark
     a
-      :color = !watermark
-      :font-weight bold
-      :font-size 2em
+      color: $watermark
+      font-weight: bold
+      font-size: 2em
       &:hover
-        :background transparent
-        :color = !watermark - #222
+        background: transparent
+        color: $watermark - #222
 
 #content
-  :padding-top 1em
-  :padding-bottom 2em
+  padding-top: 1em
+  padding-bottom: 2em
 
   strong
-    :font-weight bold
+    font-weight: bold
   em
-    :font-style italic
+    font-style: italic
 
   h1, h2, h3, h4, h5, h6
-    :color = !title_color
+    color: $title_color
   h1
-    :font-size 2em
-    :font-weight bold
-    :margin-bottom .75em
-    :padding .25em 0
-    :line-height 1.2
-    :border-bottom = 1px "solid" !rule_color
+    font-size: 2em
+    font-weight: bold
+    margin-bottom: .75em
+    padding: .25em 0
+    line-height: 1.2
+    border-bottom: 1px solid $rule_color
   h2
-    :font-weight bold
-    :font-size 1.5em
-    :margin 1em 0 .2em
+    font-weight: bold
+    font-size: 1.5em
+    margin: 1em 0 .2em
   h3
-    :font-weight bold
-    :font-size 1.25em
-    :margin .25em 0
+    font-weight: bold
+    font-size: 1.25em
+    margin: .25em 0
   h4, h5, h6
-    :font-weight bold
-    :margin-top .5em
+    font-weight: bold
+    margin-top: .5em
 
   code, pre, textarea, input
-    :font-family = !monospace_fonts
+    font-family: $monospace_fonts
   pre
-    :margin .5em
-    :padding .5em
+    margin: .5em
+    padding: .5em
 
   form
     p
-      :margin-top 1em
-      :position relative
+      margin-top: 1em
+      position: relative
       &.checkbox label
-        :margin-top 0 !important
+        margin-top: 0 !important
     input.text, textarea, select
-      :width 30em
-      :padding .2em .4em
-      :color = !title_color
+      width: 30em
+      padding: .2em .4em
+      color: $title_color
     input.text
-      :height 1.4em
+      height: 1.4em
     label
-      :float left
-      :display block
-      :margin-top .5em
-      :width 8em
-      :margin-right .75em
+      float: left
+      display: block
+      margin-top: .5em
+      width: 8em
+      margin-right: .75em
     .with_errors
       label
-        :background red
-        :color white
-        :position relative
-        :top -.7em
+        background: red
+        color: white
+        position: relative
+        top: -.7em
       &.required
         label
-          :position static
-          :margin-right .25em
-          :padding 0 .2em
+          position: static
+          margin-right: .25em
+          padding: 0 .2em
       input, textarea, select
-        :border 2px solid #f22
-        :background #fee
-        :color = !text_color - #111
+        border: 2px solid #f22
+        background: #fee
+        color: $text_color - #111
     .required
       label
-        :float none
-        :display block
-        :width auto
-        :position relative
-        :font-weight bold
-        :margin-top 1em
-        :text-indent -.65em
+        float: none
+        display: block
+        width: auto
+        position: relative
+        font-weight: bold
+        margin-top: 1em
+        text-indent: -.65em
         &:before
-          :content "* "
-          :color = !link_color
+          content: "* "
+          color: $link_color
       input.text
-        :width 25.6em
-        :font-size 24px
-        :font-weight bold
+        width: 25.6em
+        font-size: 24px
+        font-weight: bold
     .normal
-      :margin-top 2em
+      margin-top: 2em
     h2.notifier label
-      :float none
-      :width auto
-      :margin-right 0
+      float: none
+      width: auto
+      margin-right: 0
       .warning
-        :font-size .5em
-        :font-weight normal
-        :color = !light_color
+        font-size: .5em
+        font-weight: normal
+        color: $light_color
     fieldset
-      :padding-bottom 1em
-      :margin-left 1.35em
-      :border-bottom = 1px "solid" !rule_color
-      :margin-bottom 1em
+      padding-bottom: 1em
+      margin-left: 1.35em
+      border-bottom: 1px solid $rule_color
+      margin-bottom: 1em
       h3
-        :margin-top 1em
-        :margin-bottom 0
+        margin-top: 1em
+        margin-bottom: 0
       p.normal
-        :margin-top 1em
+        margin-top: 1em
       p label
-        :width 6.7em
+        width: 6.7em
     p.submit
-      :margin-top 2em
+      margin-top: 2em
       &:after
-        :display block
-        :clear both
-        :float none
-        :content "."
-        :text-indent -9999em
-        :text-align left
+        display: block
+        clear: both
+        float: none
+        content: "."
+        text-indent: -9999em
+        text-align: left
       &.destroy, &.manual-build
         button
-          :float none
-          :display inline
+          float: none
+          display: inline
       &.manual-build
         button
-          :margin-right 0
+          margin-right: 0
 
   #build form, #last_build form
-    :font-size .75em
+    font-size: .75em
     p.submit
-      :margin 0
-      :padding 0
-      :position absolute
-      :right .5em
-      :top 1.25em
+      margin: 0
+      padding: 0
+      position: absolute
+      right: .5em
+      top: 1.25em
 
   .blank_slate, .error
     p
-      :position relative
-      :top .3em
+      position: relative
+      top: .3em
     h1
-      :border-width 0
-      :margin 0
-      :padding 0
+      border-width: 0
+      margin: 0
+      padding: 0
       button
-        :float none
-        :border 0 none
-        :background transparent
-        :display inline
-        :color = !link_color
-        :padding 0.25em 0
-        :margin 0
+        float: none
+        border: 0 none
+        background: transparent
+        display: inline
+        color: $link_color
+        padding: 0.25em 0
+        margin: 0
         &:hover
-          :background = !link_color
-          :color = !link_bg
+          background: $link_color
+          color: $link_bg
 
   .error
     dt
       :margin
-        :top 1.4em
-        :bottom .3em
+        top: 1.4em
+        bottom: .3em
       :font
-        :size 1.75em
-        :family = !nice_fonts
+        size: 1.75em
+        family: $nice_fonts
     dd
-      :line-height 1.4
+      line-height: 1.4
 
     .backtrace
-      :margin 1em 0
-      :overflow "scroll"
-      :height 30em
-      :border = 1px "solid" !rule_color
-      :line-height 1.6
+      margin: 1em 0
+      overflow: scroll
+      height: 30em
+      border: 1px solid $rule_color
+      line-height: 1.6
 
   #projects
-    :margin 1em 0 2em
-    :border-top = 1px "solid" !rule_color
+    margin: 1em 0 2em
+    border-top: 1px solid $rule_color
     li
-      :position relative
-      :border-bottom = 1px "solid" !rule_color
+      position: relative
+      border-bottom: 1px solid $rule_color
       &.odd
-        :background = !content_bg - #080808
+        background: $content_bg - #080808
       a
-        :font-size 2em
-        :padding .25em
-        :line-height 1.2
-        :font-weight bold
-        :display block
+        font-size: 2em
+        padding: .25em
+        line-height: 1.2
+        font-weight: bold
+        display: block
         &.success
-          :color = !success_color
+          color: $success_color
         &.failed
-          :color = !failed_color
+          color: $failed_color
         &.building
-          :color = !building_color
+          color: $building_color
       .meta
-        :position absolute
-        :right .6em
-        :top 1.5em
-        :font-size 0.8em
-        :color = !light_color
-        :text-align right
+        position: absolute
+        right: .6em
+        top: 1.5em
+        font-size: 0.8em
+        color: $light_color
+        text-align: right
 
   #previous_builds
     li
       a
-        :display block
-        :padding .25em
-        :margin-bottom .25em
+        display: block
+        padding: .25em
+        margin-bottom: .25em
         :border
-          :width 1px
-          :style solid
+          width: 1px
+          style: solid
         strong
-          :font-size 1.3em
+          font-size: 1.3em
         .attribution
-          :font-size .9em
+          font-size: .9em
 
   #projects, #previous_builds
     li
       &.success a
-        :background-color = !success_bg
-        :border-color = !success_bg - #222
-        :color = !success_color
+        background-color: $success_bg
+        border-color: $success_bg - #222
+        color: $success_color
         .attribution
-          :color = !success_bg - #444
+          color: $success_bg - #444
         &:hover
-          :background-color = !success_bg + #222
+          background-color: $success_bg + #222
       &.failed a
-        :background-color = !failed_bg
-        :border-color = !failed_bg - #222
-        :color = !failed_color
+        background-color: $failed_bg
+        border-color: $failed_bg - #222
+        color: $failed_color
         .attribution
-          :color = !failed_bg - #444
+          color: $failed_bg - #444
         &:hover
-          :background-color = !failed_bg + #222
+          background-color: $failed_bg + #222
       &.building a
-        :background-color = !building_bg
-        :border-color = !building_bg - #222
-        :color = !building_color
+        background-color: $building_bg
+        border-color: $building_bg - #222
+        color: $building_color
         .attribution
-          :color = !building_bg - #444
+          color: $building_bg - #444
         &:hover
-          :background-color = !building_bg + #222
+          background-color: $building_bg + #222
 
 
   #build, #last_build
-    :position relative
+    position: relative
     h1, blockquote
       :border
-        :width 0 1px
-        :style solid
+        width: 0 1px
+        style: solid
     h1
-      :border-top-width 1px
+      border-top-width: 1px
     blockquote
-      :bottom-bottom-width 1px
-      :line-height 1.4
+      bottom-bottom-width: 1px
+      line-height: 1.4
 
     h2 a
-      :font-size smaller
+      font-size: smaller
 
     &.success
       h1, blockquote
-        :background-color = !success_bg
-        :border-color = (!success_bg - #222) (!success_bg + #111) (!success_bg + #111) (!success_bg - #222)
+        background-color: $success_bg
+        border-color: ($success_bg - #222) ($success_bg + #111) ($success_bg + #111) ($success_bg - #222)
       h1
-        :color = !success_color
+        color: $success_color
       .meta, .github a
-        :color = !success_bg - #444
+        color: $success_bg - #444
         a:hover
-          :color = !success_bg
-          :background-color = !success_color
+          color: $success_bg
+          background-color: $success_color
 
     &.failed
       h1, blockquote
-        :background-color = !failed_bg
-        :border-color = (!failed_bg - #222) (!failed_bg + #111) (!failed_bg + #111) (!failed_bg - #222)
+        background-color: $failed_bg
+        border-color: ($failed_bg - #222) ($failed_bg + #111) ($failed_bg + #111) ($failed_bg - #222)
       h1
-        :color = !failed_color
+        color: $failed_color
       .meta, .github a
-        :color = !failed_bg - #444
+        color: $failed_bg - #444
         a:hover
-          :color = !failed_bg
-          :background-color = !failed_color
+          color: $failed_bg
+          background-color: $failed_color
 
     &.building
       h1, blockquote
-        :background-color = !building_bg
-        :border-color = (!building_bg - #222) (!building_bg + #111) (!building_bg + #111) (!building_bg - #222)
+        background-color: $building_bg
+        border-color: ($building_bg - #222) ($building_bg + #111) ($building_bg + #111) ($building_bg - #222)
       h1
-        :color = !building_color
+        color: $building_color
       .meta, .github a
-        :color = !building_color - #444
+        color: $building_color - #444
         a:hover
-          :color = !building_bg
-          :background-color = !building_color
+          color: $building_bg
+          background-color: $building_color
 
     h1
-      :margin-top .5em
-      :margin-bottom 0
-      :padding .25em
-      :color = !success_color
+      margin-top: .5em
+      margin-bottom: 0
+      padding: .25em
+      color: $success_color
 
     blockquote
-      :padding .75em
-      :margin-bottom 2em
+      padding: .75em
+      margin-bottom: 2em
       .meta
-        :margin-top 1em
-        :display block
-        :font-size .9em
+        margin-top: 1em
+        display: block
+        font-size: .9em
 
     pre.output
-      :background #111
-      :color #fff
-      :padding .5em
-      :overflow auto
-      :max-height 50em
-      :font-size .825em
+      background: #111
+      color: #fff
+      padding: .5em
+      overflow: auto
+      max-height: 50em
+      font-size: .825em
 
   #push_path
-    :display block
+    display: block
     :margin
-      :top 1em
-      :left 2em
+      top: 1em
+      left: 2em
 
 a
   &.success
-    :color = !success_bg
+    color: $success_bg
     &:hover
-      :background-color = !success_bg
-      :color white
+      background-color: $success_bg
+      color: white
   &.failed
-    :color = !failed_bg
+    color: $failed_bg
     &:hover
-      :background-color = !failed_bg
-      :color white
+      background-color: $failed_bg
+      color: white
 
 #footer
-  :padding 1.5em 2.5em
-  :border-top 1px solid #ccc
-  :font-size .8em
-  :width 50em !important
-  :color #666
-  :text-align right
+  padding: 1.5em 2.5em
+  border-top: 1px solid #ccc
+  font-size: .8em
+  width: 50em !important
+  color: #666
+  text-align: right
   strong
-    :font-weight bold
+    font-weight: bold
