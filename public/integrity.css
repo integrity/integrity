@@ -32,7 +32,7 @@ a {
     font-weight: bold;
     right: 3em;
     top: 0;
-    font-size: .75em;
+    font-size: 0.75em;
     color: #cccccc; }
     #header address.watermark a {
       color: #cccccc;
@@ -54,26 +54,26 @@ a {
   #content h1 {
     font-size: 2em;
     font-weight: bold;
-    margin-bottom: .75em;
-    padding: .25em 0;
+    margin-bottom: 0.75em;
+    padding: 0.25em 0;
     line-height: 1.2;
     border-bottom: 1px solid silver; }
   #content h2 {
     font-weight: bold;
     font-size: 1.5em;
-    margin: 1em 0 .2em; }
+    margin: 1em 0 0.2em; }
   #content h3 {
     font-weight: bold;
     font-size: 1.25em;
-    margin: .25em 0; }
+    margin: 0.25em 0; }
   #content h4, #content h5, #content h6 {
     font-weight: bold;
-    margin-top: .5em; }
+    margin-top: 0.5em; }
   #content code, #content pre, #content textarea, #content input {
     font-family: Monaco, Deja Vu Sans Mono, Inconsolata, Consolas, monospace; }
   #content pre {
-    margin: .5em;
-    padding: .5em; }
+    margin: 0.5em;
+    padding: 0.5em; }
   #content form p {
     margin-top: 1em;
     position: relative; }
@@ -81,28 +81,28 @@ a {
       margin-top: 0 !important; }
   #content form input.text, #content form textarea, #content form select {
     width: 30em;
-    padding: .2em .4em;
+    padding: 0.2em 0.4em;
     color: #4e4e4e; }
   #content form input.text {
     height: 1.4em; }
   #content form label {
     float: left;
     display: block;
-    margin-top: .5em;
+    margin-top: 0.5em;
     width: 8em;
-    margin-right: .75em; }
+    margin-right: 0.75em; }
   #content form .with_errors label {
     background: red;
     color: white;
     position: relative;
-    top: -.7em; }
+    top: -0.7em; }
   #content form .with_errors.required label {
     position: static;
-    margin-right: .25em;
-    padding: 0 .2em; }
+    margin-right: 0.25em;
+    padding: 0 0.2em; }
   #content form .with_errors input, #content form .with_errors textarea, #content form .with_errors select {
-    border: 2px solid #f22;
-    background: #fee;
+    border: 2px solid #ff2222;
+    background: #ffeeee;
     color: #222222; }
   #content form .required label {
     float: none;
@@ -111,7 +111,7 @@ a {
     position: relative;
     font-weight: bold;
     margin-top: 1em;
-    text-indent: -.65em; }
+    text-indent: -0.65em; }
     #content form .required label:before {
       content: "* ";
       color: #ed1556; }
@@ -126,7 +126,7 @@ a {
     width: auto;
     margin-right: 0; }
     #content form h2.notifier label .warning {
-      font-size: .5em;
+      font-size: 0.5em;
       font-weight: normal;
       color: #999999; }
   #content form fieldset {
@@ -156,16 +156,16 @@ a {
     #content form p.submit.manual-build button {
       margin-right: 0; }
   #content #build form, #content #last_build form {
-    font-size: .75em; }
+    font-size: 0.75em; }
     #content #build form p.submit, #content #last_build form p.submit {
       margin: 0;
       padding: 0;
       position: absolute;
-      right: .5em;
+      right: 0.5em;
       top: 1.25em; }
   #content .blank_slate p, #content .error p {
     position: relative;
-    top: .3em; }
+    top: 0.3em; }
   #content .blank_slate h1, #content .error h1 {
     border-width: 0;
     margin: 0;
@@ -183,7 +183,7 @@ a {
         color: white; }
   #content .error dt {
     margin-top: 1.4em;
-    margin-bottom: .3em;
+    margin-bottom: 0.3em;
     font-size: 1.75em;
     font-family: Georgia, Times New Roman, serif; }
   #content .error dd {
@@ -204,7 +204,7 @@ a {
         background: #e6e6e6; }
       #content #projects li a {
         font-size: 2em;
-        padding: .25em;
+        padding: 0.25em;
         line-height: 1.2;
         font-weight: bold;
         display: block; }
@@ -216,21 +216,21 @@ a {
           color: #777777; }
       #content #projects li .meta {
         position: absolute;
-        right: .6em;
+        right: 0.6em;
         top: 1.5em;
         font-size: 0.8em;
         color: #999999;
         text-align: right; }
   #content #previous_builds li a {
     display: block;
-    padding: .25em;
-    margin-bottom: .25em;
+    padding: 0.25em;
+    margin-bottom: 0.25em;
     border-width: 1px;
     border-style: solid; }
     #content #previous_builds li a strong {
       font-size: 1.3em; }
     #content #previous_builds li a .attribution {
-      font-size: .9em; }
+      font-size: 0.9em; }
   #content #projects li.success a, #content #previous_builds li.success a {
     background-color: #bbf8aa;
     border-color: #99d688;
@@ -298,24 +298,24 @@ a {
         color: #cccccc;
         background-color: #777777; }
     #content #build h1, #content #last_build h1 {
-      margin-top: .5em;
+      margin-top: 0.5em;
       margin-bottom: 0;
-      padding: .25em;
+      padding: 0.25em;
       color: #337022; }
     #content #build blockquote, #content #last_build blockquote {
-      padding: .75em;
+      padding: 0.75em;
       margin-bottom: 2em; }
       #content #build blockquote .meta, #content #last_build blockquote .meta {
         margin-top: 1em;
         display: block;
-        font-size: .9em; }
+        font-size: 0.9em; }
     #content #build pre.output, #content #last_build pre.output {
-      background: #111;
-      color: #fff;
-      padding: .5em;
+      background: #111111;
+      color: white;
+      padding: 0.5em;
       overflow: auto;
       max-height: 50em;
-      font-size: .825em; }
+      font-size: 0.825em; }
   #content #push_path {
     display: block;
     margin-top: 1em;
@@ -334,10 +334,10 @@ a.failed {
 
 #footer {
   padding: 1.5em 2.5em;
-  border-top: 1px solid #ccc;
-  font-size: .8em;
+  border-top: 1px solid #cccccc;
+  font-size: 0.8em;
   width: 50em !important;
-  color: #666;
+  color: #666666;
   text-align: right; }
   #footer strong {
     font-weight: bold; }
