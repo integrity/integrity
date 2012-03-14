@@ -74,4 +74,13 @@ module Integrity
 
     Integrity::App
   end
+
+  # DateTime#to_time copied from activesupport
+  def self.datetime_to_time(datetime)
+    if datetime.offset == 0
+      ::Time.utc(datetime.year, datetime.month, datetime.day, datetime.hour, datetime.min, datetime.sec)
+    else
+      raise ArgumentError, "Datetime with an offset (#{datetime.offset}) cannot be converted to Time"
+    end
+  end
 end

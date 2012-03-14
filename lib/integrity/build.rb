@@ -141,7 +141,8 @@ module Integrity
     
     def human_duration
       return if pending? || building?
-      ChronicDuration.output((completed_at.to_time.to_i - started_at.to_time.to_i), :format => :micro)
+      delta = Integrity.datetime_to_time(completed_at).to_i - Integrity.datetime_to_time(started_at).to_i
+      ChronicDuration.output(delta, :format => :micro)
     end
     
   end
