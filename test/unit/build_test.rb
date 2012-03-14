@@ -36,8 +36,11 @@ class BuildTest < IntegrityTest
   
   it "has a human readable duration" do
     assert_match '2m',
-      Build.gen(:successful).human_duration
-  end 
+      Build.gen(:successful,
+        :started_at => Time.mktime(2008, 12, 15, 4, 0),
+        :completed_at => Time.mktime(2008, 12, 15, 4, 2)
+      ).human_duration
+  end
 
   test "commit data" do
     build = Build.gen(:commit => Commit.gen(
