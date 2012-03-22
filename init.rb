@@ -34,7 +34,11 @@ Integrity.configure do |c|
   # c.database                  = "postgres:///integrity"
   # PostgreSQL via a more full specification:
   # c.database                  = "postgres://user:pass@host:port/database"
+  # Heroku
+  # c.database                  = ENV['DATABASE_URL']
   c.directory                   = "builds"
+  # Heroku
+  # c.directory                 = File.dirname(__FILE__) + '/tmp/builds'
   c.base_url                    = "http://ci.example.org"
   c.log                         = "integrity.log"
   c.github_token                = "SECRET"
