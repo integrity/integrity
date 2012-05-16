@@ -3,6 +3,7 @@ require "rr"
 require "extlib"
 require "dm-sweatshop"
 require "contest"
+require "sqlite3"
 
 require "integrity"
 require "fixtures"
