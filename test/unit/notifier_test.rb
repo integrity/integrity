@@ -29,7 +29,7 @@ class NotifierTest < IntegrityTest
     irc     = Notifier.gen(:irc, :project => project)
 
     assert_no_change(project.notifiers, :count) {
-      project.notifiers << Notifier.gen(:irc, :config => "foo")
+      project.notifiers << Notifier.gen(:irc, :config => { :url => "foo" })
       # returns false, does not save project
       project.save
     }
