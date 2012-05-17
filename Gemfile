@@ -4,12 +4,13 @@ gem "data_mapper",       "~> 1.2.0"
 gem "dm-sqlite-adapter"
 gem "do_sqlite3"
 
-gem "haml",                  "3.0.25"
-gem "json"
+gem "haml",                  "~> 3.1.6"
+gem "sass",                  "~> 3.1.18"
+
 gem "sinatra",               "1.1.2"
 gem "sinatra-authorization", "1.0.0"
+
 gem "bcat",                  "0.5.2"
-gem "rack",                  "1.1.0"
 
 # If you want to use Thin:
 # gem "thin"
