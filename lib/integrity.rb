@@ -19,7 +19,6 @@ require "dm-migrations"
 require "addressable/uri"
 require "bcat/ansi"
 
-require "app/helpers"
 require "app/app"
 
 require "integrity/configuration"
