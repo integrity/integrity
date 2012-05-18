@@ -43,9 +43,9 @@ DataMapper.finalize
 Addressable::URI.class_eval { def gsub(*a); to_s.gsub(*a); end }
 
 module Integrity
-  autoload :ThreadedBuilder, "integrity/threaded_builder"
-  autoload :DelayedBuilder,  "integrity/delayed_builder"
-  autoload :ResqueBuilder,   "integrity/resque_builder"
+  autoload :ThreadedBuilder, "integrity/builders/threaded_builder"
+  autoload :DelayedBuilder,  "integrity/builders/delayed_builder"
+  autoload :ResqueBuilder,   "integrity/builders/resque_builder"
 
   Repository = Struct.new(:uri, :branch)
 
