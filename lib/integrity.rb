@@ -19,6 +19,9 @@ require "dm-migrations"
 require "addressable/uri"
 require "bcat/ansi"
 
+require "app/helpers"
+require "app/app"
+
 require "integrity/configuration"
 require "integrity/bootstrapper"
 require "integrity/project"
@@ -31,11 +34,10 @@ require "integrity/notifier"
 require "integrity/notifier/base"
 require "integrity/payload"
 require "integrity/payload_builder"
-require "integrity/helpers"
-require "integrity/app"
 require "integrity/checkout"
 require "integrity/command_runner"
 require "integrity/builder"
+
 
 DataMapper.finalize
 
