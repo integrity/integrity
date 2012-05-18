@@ -37,6 +37,8 @@ require "integrity/checkout"
 require "integrity/command_runner"
 require "integrity/builder"
 
+DataMapper.finalize
+
 # TODO
 Addressable::URI.class_eval { def gsub(*a); to_s.gsub(*a); end }
 
