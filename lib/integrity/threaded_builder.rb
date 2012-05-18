@@ -86,10 +86,10 @@ module Integrity
 
       # Default pool size is 2 threads.
       def initialize(size, logger)
+        @logger  = logger
         @jobs    = Queue.new
         @njobs   = Incrementor.new
         @workers = Array.new(size) { spawn }
-        @logger  = logger
       end
 
       # Adds a job to the queue, the job can be any number of objects
