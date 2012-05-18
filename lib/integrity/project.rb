@@ -11,6 +11,7 @@ module Integrity
     property :uri,        URI,      :required => true, :length => 255
     property :branch,     String,   :required => true, :length => 255, :default => "master"
     property :command,    String,   :required => true, :length => 255, :default => "rake"
+    property :artifacts,  String,   :required => false, :length => 1000
     property :public,     Boolean,  :default  => true
     property :last_build_id, Integer, :required => false
 
@@ -26,6 +27,14 @@ module Integrity
 
     before :destroy do
       builds.destroy!
+    end
+
+    def get_artifacts
+      artifacts.split(";")
+    end
+    
+    def artifacts_empty?
+      artifacts.nil? || artifacts.empty?
     end
 
     def repo

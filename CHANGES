@@ -1,5 +1,9 @@
 = master
 
+ * Integrity now can expose artifacts created by the builds.
+   Specify what files should be exposed in project settings.
+   Shell wildcards are allowed if your file names change from build to build.
+
  * Integrity now has favicons for the home page, project pages and build pages
    reflecting the respective build statuses.
 
