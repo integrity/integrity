@@ -33,8 +33,12 @@ module Integrity
       @username && @password
     end
 
+    def log_dir
+      @log_dir ||= File.dirname(__FILE__) + '/../../' + 'log'
+    end
+
     def logger
-      @logger ||= Logger.new(@log)
+      @logger ||= Logger.new(log_dir + '/' + @log)
     end
 
     def database=(uri)
