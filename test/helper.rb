@@ -3,6 +3,7 @@ require "rr"
 require "extlib"
 require "dm-sweatshop"
 require "contest"
+require 'sqlite3' # Bugfix for: undefined method `busy_timeout=' for class `SQLite3::Database'
 
 require "integrity"
 require "fixtures"

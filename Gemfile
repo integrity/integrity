@@ -76,11 +76,14 @@ group :test do
   gem "ruby-debug",      "0.10.4" if RUBY_VERSION < '1.9'
   gem "extlib",          "0.9.15"
   gem "sqlite3-ruby",    "~> 1.3.2"
-  gem "delayed_job",     "2.1.2"
-  # If running on ruby 1.9 with psych:
-  # https://github.com/collectiveidea/delayed_job/issues/199
-  # gem "delayed_job",   "3.0.0"
-  # gem "delayed_job_active_record", "0.3.1"
+  if RUBY_VERSION < '1.9'
+    gem "delayed_job",     "2.1.2"
+  else
+    # If running on ruby 1.9 with psych:
+    # https://github.com/collectiveidea/delayed_job/issues/199
+    gem "delayed_job",   "3.0.0"
+    gem "delayed_job_active_record", "0.3.1"
+  end
   gem "activerecord",    "3.0.3"
   gem "i18n",            "0.5.0"
   gem "rr",              "1.0.2"

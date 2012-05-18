@@ -8,6 +8,9 @@ end
 
 require "integrity"
 
+# Uncomment if using DelayedBuilder with sqlite3 adapter.
+# require 'sqlite3' # Bugfix for: undefined method `busy_timeout=' for class `SQLite3::Database'
+
 # Uncomment as appropriate for the notifier you want to use
 # = Email
 # require "integrity/notifier/email"
