@@ -8,16 +8,7 @@ module Integrity
     end
 
     def run
-      runner.run! "git clone #{@repo.uri} #{@directory}"
-
-      in_dir do |c|
-        c.run! "git fetch origin"
-        c.run! "git checkout origin/#{@repo.branch}"
-        c.run! "git reset --hard #{sha1}"
-        # run init separately for compatibility with old versions of git
-        c.run! "git submodule init"
-        c.run! "git submodule update"
-      end
+      runner.run! "git scclone #{@repo.uri} #{@directory} #{sha1}"
     end
 
     def metadata
@@ -32,7 +23,7 @@ module Integrity
 
       result = run_in_dir!("git show -s --pretty=format:\"%b\" #{sha1}")
       dump['full_message'] = message + "\n\n" + result.output
-      
+
       # message (subject in git parlance) may be over 255 characters
       # which is our limit for the column; if so, truncate it intelligently
       if message.length > 255
