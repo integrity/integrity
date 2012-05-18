@@ -67,7 +67,7 @@ module Integrity
     end
 
     def run_in_dir(command)
-      in_dir { |r| r.run(command) }
+      in_dir { |r| r.run("INTEGRITY_BRANCH=\"#{@repo.branch}\" " + command) }
     end
 
     def run_in_dir!(command)
