@@ -1,7 +1,7 @@
 .bundle/*
 doc/integrity.html
 builds
-db
+*.db
 *.log
 .rvmrc
 *.tmproj
