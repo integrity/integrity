@@ -43,9 +43,12 @@ module Integrity
       @log_dir
     end
 
+    def log_file
+      @log_file ||= log_dir + '/' + @log if @log
+    end
+
     def logger
-      use_log = log_dir + '/' + @log if @log
-      @logger ||= Logger.new(use_log)
+      @logger ||= Logger.new(log_file)
     end
 
     def database=(uri)
