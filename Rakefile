@@ -25,7 +25,7 @@ desc "Create the database"
 task :db do
   require "init"
   DataMapper.auto_upgrade!
-  
+
   Integrity::Project.all(:last_build_id => nil).each do |project|
     project.last_build = project.sorted_builds.first
     project.raise_on_save_failure = true
