@@ -34,7 +34,7 @@ module Integrity
     end
 
     def log_dir
-      @log_dir ||= File.dirname(__FILE__) + '/../../' + 'log'
+      @log_dir ||= File.join(File.dirname(__FILE__),  '..', '..', 'log')
 
       if not File.directory? @log_dir
         Dir.mkdir @log_dir, 0775
@@ -44,7 +44,7 @@ module Integrity
     end
 
     def log_file
-      @log_file ||= log_dir + '/' + @log if @log
+      @log_file ||= File.join(log_dir, @log) if @log
     end
 
     def logger
