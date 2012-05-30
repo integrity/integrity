@@ -35,12 +35,6 @@ module Integrity
 
     def log_dir
       @log_dir ||= File.join(File.dirname(__FILE__),  '..', '..', 'log')
-
-      if not File.directory? @log_dir
-        Dir.mkdir @log_dir, 0775
-      end
-
-      @log_dir
     end
 
     def log_file
