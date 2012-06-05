@@ -2,7 +2,7 @@ require "app/helpers"
 
 module Integrity
   class App < Sinatra::Base
-    set     :root, File.expand_path("../../..", __FILE__)
+    set     :root, File.dirname(__FILE__)
     enable  :methodoverride, :static
     disable :build_all
 
