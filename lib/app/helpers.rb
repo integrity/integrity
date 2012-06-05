@@ -1,9 +1,9 @@
-require "integrity/helpers/authorization"
-require "integrity/helpers/breadcrumbs"
-require "integrity/helpers/pretty_output"
-require "integrity/helpers/rendering"
-require "integrity/helpers/resources"
-require "integrity/helpers/urls"
+require "app/helpers/authorization"
+require "app/helpers/breadcrumbs"
+require "app/helpers/pretty_output"
+require "app/helpers/rendering"
+require "app/helpers/resources"
+require "app/helpers/urls"
 
 module Integrity
   module Helpers

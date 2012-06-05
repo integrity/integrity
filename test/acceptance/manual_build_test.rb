@@ -172,10 +172,10 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     old_builder = Integrity.config.builder
 
     begin
-      FileUtils.rm_f("dj.db")
+      FileUtils.rm_f("db/dj.db")
 
       Integrity.configure { |c|
-        c.builder   = :dj, {:adapter => "sqlite3", :database => "dj.db"}
+        c.builder   = :dj, {:adapter => "sqlite3", :database => "db/dj.db"}
       }
 
       repo = git_repo(:my_test_project)

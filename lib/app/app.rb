@@ -1,6 +1,8 @@
+require "app/helpers"
+
 module Integrity
   class App < Sinatra::Base
-    set     :root, File.expand_path("../../..", __FILE__)
+    set     :root, File.dirname(__FILE__)
     enable  :methodoverride, :static
     disable :build_all
 
@@ -56,7 +58,7 @@ module Integrity
           # do not change overall status
           next
         end
-        
+
         case @status
         when :blank
           # first project's status unconditionally sets overall status

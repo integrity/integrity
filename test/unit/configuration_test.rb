@@ -35,7 +35,7 @@ class ConfiguratorTest < IntegrityTest
 
   test "logging" do
     Integrity.configure { |c| c.log = "test.log" }
-    assert_equal "test.log", Integrity.config.logger.
+    assert_match "../../log/test.log", Integrity.config.logger.
       instance_variable_get(:@logdev).
       instance_variable_get(:@dev).path
   end

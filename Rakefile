@@ -25,7 +25,7 @@ desc "Create the database"
 task :db do
   require "init"
   DataMapper.auto_upgrade!
-  
+
   Integrity::Project.all(:last_build_id => nil).each do |project|
     project.last_build = project.sorted_builds.first
     project.raise_on_save_failure = true
@@ -80,8 +80,8 @@ file "doc/integrity.html" => ["doc/htmlize",
 end
 
 desc "Re-generate stylesheet"
-file "public/integrity.css" => "views/integrity.sass" do |f|
-  sh "sass views/integrity.sass > #{f.name}"
+file "public/integrity.css" => "lib/app/views/integrity.sass" do |f|
+  sh "sass lib/app/views/integrity.sass > #{f.name}"
 end
 
 CLOBBER.include("doc/integrity.html")
