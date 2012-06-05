@@ -80,8 +80,8 @@ file "doc/integrity.html" => ["doc/htmlize",
 end
 
 desc "Re-generate stylesheet"
-file "public/integrity.css" => "views/integrity.sass" do |f|
-  sh "sass views/integrity.sass > #{f.name}"
+file "public/integrity.css" => "lib/app/views/integrity.sass" do |f|
+  sh "sass lib/app/views/integrity.sass > #{f.name}"
 end
 
 CLOBBER.include("doc/integrity.html")
