@@ -16,7 +16,8 @@ module Integrity
       runner.run! "git clone #{@cache_directory} #{@directory}"
 
       in_dir do |c|
-        c.run! "git fetch origin"
+        # should be useless since we're using a cache dir
+        # c.run! "git fetch origin"
         c.run! "git checkout origin/#{@repo.branch}"
         c.run! "git reset --hard #{sha1}"
         # run init separately for compatibility with old versions of git
@@ -26,15 +27,17 @@ module Integrity
     end
 
     def update_cache
-      unless @cache_directory.exist?
-        clone_directory = "#{@cache_directory}.cloning"
-        runner.run! "rm -rf #{clone_directory}"
-        runner.run! "git clone --mirror #{@repo.uri} #{clone_directory}"
-        runner.run! "mv #{clone_directory} #{@cache_directory}"
-      end
+      with_lock("#{@cache_directory}.lock") do
+        unless @cache_directory.exist?
+          clone_directory = "#{@cache_directory}.cloning"
+          runner.run! "rm -rf #{clone_directory}"
+          runner.run! "git clone --mirror #{@repo.uri} #{clone_directory}"
+          runner.run! "mv #{clone_directory} #{@cache_directory}"
+        end
 
-      in_dir(@cache_directory) do |c|
-        c.run! "git fetch origin"
+        in_dir(@cache_directory) do |c|
+          c.run! "git fetch origin"
+        end
       end
     end
 
@@ -100,5 +103,21 @@ module Integrity
     def runner
       @runner ||= CommandRunner.new(@logger)
     end
+
+
+    private
+
+
+    def with_lock(path)
+      File.open(path,'w') do |file|
+        begin
+          file.flock(File::LOCK_EX)
+          yield
+        ensure
+          file.flock(File::LOCK_UN)
+        end
+      end
+    end
+
   end
 end
