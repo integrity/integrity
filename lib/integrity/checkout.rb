@@ -8,7 +8,8 @@ module Integrity
       @commit    = commit
       @directory = directory
       @logger    = logger
-      @cache_directory = Pathname.new(@directory).join('../../cache').join(MD5.hexdigest(@repo.uri)).cleanpath
+      @cache_directory = Pathname.new(@directory).join('../../cache', MD5.hexdigest(@repo.uri)).cleanpath
+      @cache_directory.mkpath
     end
 
     def run
