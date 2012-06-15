@@ -8,8 +8,7 @@ module Integrity
       @commit    = commit
       @directory = directory
       @logger    = logger
-      @cache_directory = Pathname.new(@directory).join('../../cache', MD5.hexdigest(@repo.uri)).cleanpath
-      @cache_directory.mkpath
+      @cache_directory = shared_cache_directory.join(MD5.hexdigest(@repo.uri)).cleanpath
     end
 
     def run
@@ -107,6 +106,13 @@ module Integrity
 
 
     private
+
+
+    def shared_cache_directory
+      Pathname.new(Integrity.config.directory).join('cache').tap do |path|
+        path.mkpath
+      end
+    end
 
 
     def with_lock(path)
