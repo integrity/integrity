@@ -19,6 +19,8 @@ require "dm-migrations"
 require "addressable/uri"
 require "bcat/ansi"
 
+require "app/app"
+
 require "integrity/configuration"
 require "integrity/bootstrapper"
 require "integrity/project"
@@ -31,11 +33,10 @@ require "integrity/notifier"
 require "integrity/notifier/base"
 require "integrity/payload"
 require "integrity/payload_builder"
-require "integrity/helpers"
-require "integrity/app"
 require "integrity/checkout"
 require "integrity/command_runner"
 require "integrity/builder"
+
 
 DataMapper.finalize
 
@@ -43,9 +44,9 @@ DataMapper.finalize
 Addressable::URI.class_eval { def gsub(*a); to_s.gsub(*a); end }
 
 module Integrity
-  autoload :ThreadedBuilder, "integrity/threaded_builder"
-  autoload :DelayedBuilder,  "integrity/delayed_builder"
-  autoload :ResqueBuilder,   "integrity/resque_builder"
+  autoload :ThreadedBuilder, "integrity/builders/threaded_builder"
+  autoload :DelayedBuilder,  "integrity/builders/delayed_builder"
+  autoload :ResqueBuilder,   "integrity/builders/resque_builder"
 
   Repository = Struct.new(:uri, :branch)
 

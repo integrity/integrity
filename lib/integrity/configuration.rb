@@ -33,8 +33,16 @@ module Integrity
       @username && @password
     end
 
+    def log_dir
+      @log_dir ||= File.join(File.dirname(__FILE__),  '..', '..', 'log')
+    end
+
+    def log_file
+      @log_file ||= File.join(log_dir, @log) if @log
+    end
+
     def logger
-      @logger ||= Logger.new(@log)
+      @logger ||= Logger.new(log_file)
     end
 
     def database=(uri)
