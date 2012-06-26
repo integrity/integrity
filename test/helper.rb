@@ -20,7 +20,7 @@ class IntegrityTest < Test::Unit::TestCase
 
   def setup
     Integrity.configure { |c|
-      c.database  = "sqlite3:test.db"
+      c.database  = "sqlite3:db/test.db"
       c.directory = File.expand_path(File.dirname(__FILE__) + "/../tmp")
       c.base_url  = "http://www.example.com"
       c.log       = "test.log"

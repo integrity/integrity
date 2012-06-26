@@ -29,7 +29,7 @@ require "integrity"
 # require "integrity/notifier/coop"
 
 Integrity.configure do |c|
-  c.database                    = "sqlite3:integrity.db"
+  c.database                    = "sqlite3:db/integrity.db"
   # PostgreSQL via the local socket to "integrity" database:
   # c.database                  = "postgres:///integrity"
   # PostgreSQL via a more full specification:
