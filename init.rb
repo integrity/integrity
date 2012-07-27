@@ -40,6 +40,7 @@ Integrity.configure do |c|
   # Heroku
   # c.directory                 = File.dirname(__FILE__) + '/tmp/builds'
   c.base_url                    = "http://ci.example.org"
+  # Heroku - Comment out c.log
   c.log                         = "integrity.log"
   c.github_token                = "SECRET"
   c.build_all                   = true
