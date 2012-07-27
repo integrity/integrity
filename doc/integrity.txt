@@ -100,6 +100,14 @@ end
 run Integrity.app
 ----
 
+You may also override the user and pass credentials in your
+environment config variables, `ADMIN_USER` and `ADMIN_PASSWORD`. For
+example, on Heroku:
+[source, bash]
+----
+heroku config:add ADMIN_USER=my_secret_user ADMIN_PASSWORD=my_secret_password
+----
+
 === Automating the builds
 Integrity provides two HTTP endpoints to trigger new builds:
 
