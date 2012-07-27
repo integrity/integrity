@@ -49,7 +49,7 @@ gem "bcat",                  "0.5.2"
 
 # Uncomment if you're using pg or mysql instead of sqlite
 # gem "pg"
-# gem "dm-postgres-adapter", "1.0.2"
+# gem "dm-postgres-adapter", "~> 1.2.0"
 # If installing dependencies with rpg:
 # gem "do_postgres", "0.10.2"
 
