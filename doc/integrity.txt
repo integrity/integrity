@@ -6,7 +6,9 @@ and makes sure everything works fine. It then reports the build status using
 various notifiers back to you and your team so everyone is on the same page
 and problems can be fixed right away.
 
-Checkout Integrity watching itself at http://builder.integrityapp.com.
+Checkout Integrity watching itself:
+
+image:screenshot.png[Screenshot]
 
 Read more about about Continuous Integration on
 http://martinfowler.com/articles/continuousIntegration.html[Martin Fowler's
@@ -58,7 +60,7 @@ end
 
 === Basic settings
 database:: Any valid database URI supported by
-http://datamapper.rubyforge.org/dm-core/DataMapper.html[DataMapper].
+http://datamapper.org/[DataMapper].
 * `sqlite3:integrity.db`
 * `mysql://user:password@localhost/integrity`
 * `postgres://user:password@localhost/integrity`
@@ -108,7 +110,7 @@ repository and build it. Note that HTTP authentication applies to it if set.
 This endpoint can't be disabled.
 
 POST /github/:token:: Supports GitHub's
-http://github.com/guides/post-receive-hooks[Post-Receive Hook]. Enable it:
+https://help.github.com/articles/post-receive-hooks[Post-Receive Hook]. Enable it:
 [source, ruby]
 ----
 c.github_token = "TOKEN"
@@ -136,7 +138,7 @@ dependencies by uncommenting the relevant lines in the `Gemfile` and run
 c.builder = :dj, { :adapter => "sqlite3", :database => "dj.db" }
 
 The second argument must be a valid
-http://api.rubyonrails.org/classes/ActiveRecord/Base.html#M002364[ActiveRecord
+http://api.rubyonrails.org/classes/ActiveRecord/Base.html#method-c-establish_connection[ActiveRecord
 connection hash].
 
 Run a worker with `rake jobs:work`. See
@@ -228,10 +230,6 @@ $ $EDITOR doc/unicorn.rb
 $ unicorn -c doc/unicorn.rb -D
 
 Then, configure a web proxy as outlined above for Thin.
-
-NOTE: If you run Integrity with another deployment strategy please drop us
-      us a line at <info@integrityapp.com> and let us know what config
-      worked for you so we can include it here.
 
 == Support / Contributing
 You can get in touch via IRC at irc://irc.freenode.net/integrity[#integrity on
