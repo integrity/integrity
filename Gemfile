@@ -6,6 +6,7 @@ gem "do_sqlite3"
 
 gem "haml",                  "~> 3.1.6"
 gem "sass",                  "~> 3.1.18"
+gem "rake",                  "0.8.7"
 
 gem "sinatra",               "1.1.2"
 gem "sinatra-authorization", "1.0.0"
@@ -17,6 +18,15 @@ gem "bcat",                  "0.5.2"
 
 # If you want to use Unicorn:
 # gem "unicorn"
+gem "rainbows"
+
+gem "capistrano"
+gem "capistrano-ext"
+gem "capistrano_colors"
+
+gem "newrelic_rpm"
+gem "rpm_contrib"
+
 
 # These are dependencies for the various notifiers. Uncomment as appropriate.
 # = Email
@@ -36,13 +46,11 @@ gem "bcat",                  "0.5.2"
 # gem "notifo", "0.1.0"
 
 # = Dependencies for the :dj builder
-# gem "sqlite3-ruby", "1.3.2"
-# gem "activerecord", "3.0.3"
-# gem "delayed_job", "2.1.2"
-# If running on ruby 1.9 with psych:
-# https://github.com/collectiveidea/delayed_job/issues/199
-# gem "delayed_job", "3.0.0"
-# gem "delayed_job_active_record", "0.3.1"
+# gem "sqlite3-ruby", "~> 1.3.2"
+gem "mysql2", '~> 0.2.11'
+gem "activerecord", "3.0.3"
+gem "delayed_job"
+gem "delayed_job_active_record"
 
 # = Dependency for the :resque builder
 # gem "resque", "1.10.0"
@@ -54,15 +62,15 @@ gem "bcat",                  "0.5.2"
 # gem "do_postgres", "0.10.2"
 
 # gem "mysql"
-# gem "dm-mysql-adapter", "1.0.2"
+gem "dm-mysql-adapter"#, "1.0.2"
+
+gem 'whenever', :require => false
 
 # = Development dependencies.
 group :test do
   gem 'aws-ses', '0.4.3', :require => 'aws/ses'
   gem "extlib",          "0.9.15"
   gem "sqlite3"
-  gem "delayed_job"
-  gem "delayed_job_active_record"
   gem "activerecord",    "3.0.3"
   gem "i18n",            "0.5.0"
   gem "rr",              "1.0.2"
@@ -82,4 +90,10 @@ group :test do
   gem "bunny",           "0.6.0"
   gem "webmock",         "1.6.2"
   gem "turn",            "0.8.1"
+end
+
+
+group :development do
+  gem 'pry'
+  # gem 'ruby-debug'
 end

@@ -67,6 +67,26 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("pre.output",   :content => "This is the build output")
   end
 
+  scenario "Looking for details on the a build by hash" do
+    build = Build.gen(:successful, :output => "This is the build output")
+    build.commit.raise_on_save_failure = true
+    build.commit.update(
+      :identifier => "7fee3f0014b529e2b76d591a8085d76eab0ff923",
+      :author  => "Nicolas Sanguinetti <contacto@nicolassanguinetti.info>",
+      :message => "No more pending tests :)",
+      :committed_at => Time.mktime(2008, 12, 15, 18)
+    )
+    p = Project.gen(:integrity, :builds => [build], :last_build => build)
+
+    visit "/integrity/#{p.name}/build_by_hash/7fee3f0014b529e2b76d591a8085d76eab0ff923"
+
+    assert_have_tag("h1",           :content => "Built 7fee3f0 successfully")
+    assert_have_tag("blockquote p", :content => "No more pending tests")
+    assert_have_tag("span.who",     :content => "by: Nicolas Sanguinetti")
+    assert_have_tag("span.when",    :content => "Dec 15th")
+    assert_have_tag("pre.output",   :content => "This is the build output")
+  end
+
   scenario "Browsing to an individual build page" do
     builds = [
       Build.gen(:successful, :commit => Commit.gen(:identifier => "87e673a")),
