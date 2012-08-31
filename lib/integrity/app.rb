@@ -199,12 +199,28 @@ module Integrity
 
     get "/:project/build_by_hash/:hash" do
       login_required unless current_project.public?
-      commit = Integrity::Commit.first(:identifier => params[:hash])
+      commit = Integrity::Commit.first(:identifier.like => "#{params[:hash]}%")
       if commit
         @build = commit.build
         current_project = commit.build.project
         @status = current_build.status
         show :build, :title => ["projects", current_project.permalink, @build.sha1_short]
+      else
+        raise not_found
+      end
+    end
+
+    get "/:project/build_by_hash/:hash/ping" do
+      login_required unless current_project.public?
+      commit = Integrity::Commit.first(:identifier.like => "#{params[:hash]}%")
+      if commit
+        current_project = commit.build.project
+        @status = commit.build.status
+        if current_project.status != :success
+          halt 412, current_project.status.to_s
+        else
+          current_project.last_build.sha1
+        end
       else
         raise not_found
       end
