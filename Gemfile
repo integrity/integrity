@@ -95,5 +95,4 @@ end
 
 group :development do
   gem 'pry'
-  # gem 'ruby-debug'
 end
