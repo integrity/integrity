@@ -91,12 +91,24 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
     build = Build.gen(:successful, :output => "This is the build output")
     build.commit.raise_on_save_failure = true
     build.commit.update(
+      :identifier => "c76dbadbe76dbd67adb4a3dfb3ef5e5f5e3db5b5",
+      :author  => "Nicolas Sanguinetti <contacto@nicolassanguinetti.info>",
+      :message => "No more pending tests :)",
+      :committed_at => Time.mktime(2008, 12, 15, 18)
+    )
+
+    build = Build.gen(:successful, :output => "This is the build output")
+    build.commit.raise_on_save_failure = true
+    build.commit.update(
       :identifier => "7fee3f0014b529e2b76d591a8085d76eab0ff923",
       :author  => "Nicolas Sanguinetti <contacto@nicolassanguinetti.info>",
       :message => "No more pending tests :)",
       :committed_at => Time.mktime(2008, 12, 15, 18)
     )
     p = Project.gen(:integrity, :builds => [build], :last_build => build)
+
+    visit "/integrity/build_by_hash/c76dba/ping"
+    assert_equal last_response.body, "c76dbadbe76dbd67adb4a3dfb3ef5e5f5e3db5b5"
 
     visit "/integrity/build_by_hash/7fee3f/ping"
     assert_equal last_response.body, "7fee3f0014b529e2b76d591a8085d76eab0ff923"

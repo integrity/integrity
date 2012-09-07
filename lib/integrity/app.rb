@@ -219,7 +219,7 @@ module Integrity
         if current_project.status != :success
           halt 412, current_project.status.to_s
         else
-          current_project.last_build.sha1
+          commit.build.sha1
         end
       else
         raise not_found
