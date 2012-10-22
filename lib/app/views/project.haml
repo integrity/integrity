@@ -1,5 +1,7 @@
 #administrative
   %a{ :href => project_path(@project, :edit) } Edit
+  = " / "
+  %a{ :href => project_status_image_url(@project) } Status Image
   - if @project.github?
     = " / "
     %a{ :href => github_project_url(@project) }= github_project_link(@project)
