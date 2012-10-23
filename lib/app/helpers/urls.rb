@@ -30,7 +30,7 @@ module Integrity
       end
 
       def project_status_image_url(project)
-        path(project.permalink.concat('.png'))
+        project_path(project).to_s.concat('.png')
       end
 
       def root_url
