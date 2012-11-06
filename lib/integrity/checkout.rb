@@ -8,6 +8,10 @@ module Integrity
       @logger    = logger
     end
 
+    def additional_command= command
+        @additional_command = command
+    end
+
     def run
       runner.run! "git clone #{@repo.uri} #{@directory}"
 
@@ -15,6 +19,7 @@ module Integrity
         c.run! "git fetch origin"
         c.run! "git checkout origin/#{@repo.branch}"
         c.run! "git reset --hard #{sha1}"
+        c.run! @additional_command unless @additional_command.nil?
         # run init separately for compatibility with old versions of git
         c.run! "git submodule init"
         c.run! "git submodule update"

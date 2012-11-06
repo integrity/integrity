@@ -32,16 +32,23 @@ module Integrity
       @repo ||= Repository.new(uri, branch)
     end
 
-    def build_head
-      build(Commit.new(:identifier => "HEAD"))
+    def build_head(opts = {})
+
+      args = { :identifier => "HEAD" }
+      unless opts[:additional_command].nil?
+        args[:additional_command] = opts[:additional_command]
+      end
+
+      build(Commit.new(args))
     end
 
     def build(commit)
       _build = builds.create(:commit => {
-        :identifier   => commit.identifier,
-        :author       => commit.author,
-        :message      => commit.message,
-        :committed_at => commit.committed_at
+        :identifier         =>  commit.identifier,
+        :author             =>  commit.author,
+        :message            =>  commit.message,
+        :committed_at       =>  commit.committed_at,
+        :additional_command =>  commit.additional_command
       })
       _build.run
       _build

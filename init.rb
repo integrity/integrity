@@ -47,4 +47,6 @@ Integrity.configure do |c|
   c.trim_branches               = false
   c.builder                     = :threaded, 5
   c.project_default_build_count = 10
+  # Whether you can pass additional_command as POST argument for /:project/builds
+  c.build_additional_command    = false
 end

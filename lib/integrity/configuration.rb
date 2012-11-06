@@ -11,7 +11,8 @@ module Integrity
       :username,
       :password,
       :project_default_build_count,
-      :trim_branches
+      :trim_branches,
+      :build_additional_command
 
     def build_all?
       !! @build_all
@@ -27,6 +28,10 @@ module Integrity
 
     def trim_branches?
       !! @trim_branches
+    end
+
+    def additional_command?
+      !! @build_additional_command
     end
 
     def protected?

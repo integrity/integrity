@@ -29,6 +29,7 @@ module Integrity
       @build.raise_on_save_failure = true
       @build.update(:started_at => Time.now)
       @build.project.enabled_notifiers.each { |n| n.notify_of_build_start(@build) }
+      checkout.additional_command = @build.commit.additional_command
       checkout.run
       # checkout.metadata invokes git and may fail
       @build.commit.raise_on_save_failure = true
@@ -73,7 +74,9 @@ module Integrity
     end
 
     def checkout
-      @checkout ||= Checkout.new(repo, commit, directory, @logger)
+      return @checkout unless @checkout.nil?
+
+      @checkout = Checkout.new(repo, commit, directory, @logger)
     end
 
     def directory
