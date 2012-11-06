@@ -1,5 +1,6 @@
 module Integrity
   class Checkout
+
     def initialize(repo, commit, directory, logger)
       @repo      = repo
       @commit    = commit
@@ -32,7 +33,7 @@ module Integrity
 
       result = run_in_dir!("git show -s --pretty=format:\"%b\" #{sha1}")
       dump['full_message'] = message + "\n\n" + result.output
-      
+
       # message (subject in git parlance) may be over 255 characters
       # which is our limit for the column; if so, truncate it intelligently
       if message.length > 255
