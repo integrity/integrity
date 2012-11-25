@@ -29,6 +29,10 @@ module Integrity
           "/commit/#{build.sha1}"
       end
 
+      def project_status_image_url(project)
+        project_path(project).to_s.concat('.png')
+      end
+
       def root_url
         @root_url ||= Addressable::URI.parse(url_for("/", :full))
       end
