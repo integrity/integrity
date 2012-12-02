@@ -1,5 +1,12 @@
 = master
 
+ * Travis-style status images are now available for projects.
+
+ * Branch being built is now passed to all commands via INTEGRITY_BRANCH
+   environment variable.
+
+ * AWS SES email notifier added.
+
  * Integrity now has favicons for the home page, project pages and build pages
    reflecting the respective build statuses.
 
