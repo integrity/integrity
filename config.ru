@@ -1,6 +1,7 @@
 require File.expand_path("../init", __FILE__)
-use Rack::Auth::Basic do |user, pass|
-  # If ENV['ADMIN_USER'] and ENV['ADMIN_PASSWORD'] exist, use those, otherwise use "admin" / "secret"
-  user == (ENV['ADMIN_USER'] || "admin") && pass == (ENV['ADMIN_PASSWORD'] || "secret")
+if ENV['ADMIN_USER'] && ENV['ADMIN_PASSWORD']
+  use Rack::Auth::Basic do |user, pass|
+    user == ENV['ADMIN_USER'] && pass == ENV['ADMIN_PASSWORD']
+  end
 end
 run Integrity.app
