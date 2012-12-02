@@ -93,21 +93,17 @@ c.username = "admin"
 c.password = "password"
 ----
 
-To protect the whole Integrity instance do this in your `config.ru` file:
-[source, ruby]
-----
-use Rack::Auth::Basic do |user, pass|
-  user == "admin" && pass == "secret"
-end
-run Integrity.app
-----
-
-You may also override the user and pass credentials in your
-environment config variables, `ADMIN_USER` and `ADMIN_PASSWORD`. For
-example, on Heroku:
+To protect the whole Integrity instance, set ADMIN_USER and ADMIN_PASSWORD
+environment variables before starting Integrity:
 [source, bash]
 ----
-heroku config:add ADMIN_USER=my_secret_user ADMIN_PASSWORD=my_secret_password
+export ADMIN_USER=admin ADMIN_PASSWORD=secret
+----
+
+On Heroku:
+[source, bash]
+----
+heroku config:add ADMIN_USER=admin ADMIN_PASSWORD=secret
 ----
 
 === Automating the builds
