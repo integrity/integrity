@@ -1,7 +1,6 @@
 language: ruby
 
 before_install:
-  - rm Gemfile.loc*
   - sudo apt-get install wamerican-small
 
 rvm:
