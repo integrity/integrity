@@ -93,17 +93,17 @@ c.username = "admin"
 c.password = "password"
 ----
 
-To protect the whole Integrity instance, set ADMIN_USER and ADMIN_PASSWORD
+To protect the whole Integrity instance, set ADMIN_USERNAME and ADMIN_PASSWORD
 environment variables before starting Integrity:
 [source, bash]
 ----
-export ADMIN_USER=admin ADMIN_PASSWORD=secret
+export ADMIN_USERNAME=admin ADMIN_PASSWORD=secret
 ----
 
 On Heroku:
 [source, bash]
 ----
-heroku config:add ADMIN_USER=admin ADMIN_PASSWORD=secret
+heroku config:add ADMIN_USERNAME=admin ADMIN_PASSWORD=secret
 ----
 
 === Automating the builds
