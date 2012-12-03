@@ -21,6 +21,7 @@ gem "bcat",                  "0.5.2"
 # These are dependencies for the various notifiers. Uncomment as appropriate.
 # = Email
 # gem "pony", "1.1"
+# gem 'activesupport' 
 
 # = SES Email
 # gem 'aws-ses', '0.4.3', :require => 'aws/ses'

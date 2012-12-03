@@ -5,3 +5,4 @@ builds
 *.log
 .rvmrc
 *.tmproj
+.DS_Store
