@@ -79,14 +79,14 @@ auto_branch!:: Say the project _Integrity_ is tracking the master branch, and
 I push my _build-duration_ topic branch to GitHub, Integrity will create and
 build a new project named _Integrity (build-duration)_ using the same build
 command and notifiers.
-project_default_build_count:: How many builds to initially show on project
-pages. nil, which is the default, means show all builds.
-HTTP authentication:: If both the `user` and `pass` settings are set then only
-the logged-in users can administer the projects and see the private ones.
 trim_branches:: When _Integrity_ is set to auto branch, it is possible for a
 large number of stale branches to stick around which no longer exist. Turning
 this on will automatically detect when a branch is deleted via the GitHub
 post-receive hook and delete the build history for the branch.
+project_default_build_count:: How many builds to initially show on project
+pages. nil, which is the default, means show all builds.
+HTTP authentication:: If both the `user` and `pass` settings are set then only
+the logged-in users can administer the projects and see the private ones.
 [source, ruby]
 ----
 c.username = "admin"
