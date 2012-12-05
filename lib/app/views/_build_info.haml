@@ -26,7 +26,7 @@
         %a{ :href => github_commit_url(build) } view on GitHub
 
 - if build.completed?
-  - if build.successful? && ! build.project.artifacts_empty?
+  - if ! build.project.artifacts_empty? && !artifact_files(build).empty?
     %h2
       Artifacts
       %blockquote
