@@ -26,12 +26,12 @@
         %a{ :href => github_commit_url(build) } view on GitHub
 
 - if build.completed?
-  - if ! build.project.artifacts_empty? && !artifact_files(build).empty?
+  - if ! build.project.artifacts_empty? && !(files = artifact_files(build)).empty?
     %h2
       Artifacts
       %blockquote
         %ul#artifacts
-          - artifact_files(build).each do |file|
+          - files.each do |file|
             %a{ :title => file[:relative_path],
                 :href => file[:url] } #{file[:name]}
             %br/
@@ -39,7 +39,7 @@
   %h2
     Build Output
     %a{:href => build_path(build, :raw)} (raw)
-  
+
   %pre.output
     :preserve
       #{bash_color_codes h(build.output)}
