@@ -99,6 +99,27 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
     click_link(/Build 87e673a/)
 
     assert_have_tag("h1", :content => "Built 87e673a successfully")
+    assert_have_no_tag('h2', :content => 'Artifacts')
+  end
+  
+  scenario "Browsing a build with a fixed specified and existing artifact" do
+    build = Build.gen(:successful, :commit => Commit.gen(:identifier => "87e673a"))
+    Project.gen(:integrity, :builds => [build], :last_build => build, :artifacts => '2f8375806436491fe106e2151edb0ffd')
+    
+    build_directory = build.build_directory
+    assert !File.exist?(build_directory)
+    FileUtils.mkdir_p(build_directory)
+    File.open(File.join(build_directory, '2f8375806436491fe106e2151edb0ffd'), 'w') do |f|
+      f << '2f8375806436491fe106e2151edb0ffd'
+    end
+    
+    visit "/integrity"
+    click_link(/Build 87e673a/)
+
+    assert_have_tag("h1", :content => "Built 87e673a successfully")
+    assert_have_tag('h2', :content => 'Artifacts')
+    # link to artifact
+    assert_have_tag('a', :content => '2f8375806436491fe106e2151edb0ffd')
   end
   
   scenario "Browsing a build with a specified but missing wildcard artifact" do
@@ -109,5 +130,30 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
     click_link(/Build 87e673a/)
 
     assert_have_tag("h1", :content => "Built 87e673a successfully")
+    assert_have_no_tag('h2', :content => 'Artifacts')
+  end
+  
+  scenario "Browsing a build with specified and existing wildcard artifacts" do
+    build = Build.gen(:successful, :commit => Commit.gen(:identifier => "87e673a"))
+    Project.gen(:integrity, :builds => [build], :last_build => build, :artifacts => 'artifact*')
+    
+    build_directory = build.build_directory
+    assert !File.exist?(build_directory)
+    FileUtils.mkdir_p(build_directory)
+    File.open(File.join(build_directory, 'artifactb46be9dce08b0a5486342b90e732be49'), 'w') do |f|
+      f << 'b46be9dce08b0a5486342b90e732be49'
+    end
+    File.open(File.join(build_directory, 'artifactc46b6d4e8839b5eb33f739d47268168a'), 'w') do |f|
+      f << 'c46b6d4e8839b5eb33f739d47268168a'
+    end
+    
+    visit "/integrity"
+    click_link(/Build 87e673a/)
+
+    assert_have_tag("h1", :content => "Built 87e673a successfully")
+    assert_have_tag('h2', :content => 'Artifacts')
+    # links to artifacts
+    assert_have_tag('a', :content => 'b46be9dce08b0a5486342b90e732be49')
+    assert_have_tag('a', :content => 'c46b6d4e8839b5eb33f739d47268168a')
   end
 end
