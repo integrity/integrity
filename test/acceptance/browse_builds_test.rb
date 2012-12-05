@@ -90,4 +90,24 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
     assert_have_no_tag("h2", :content => "Build Output")
     assert_have_tag("button", :content => "Rebuild")
   end
+  
+  scenario "Browsing a build with a fixed specified but missing artifact" do
+    build = Build.gen(:successful, :commit => Commit.gen(:identifier => "87e673a"))
+    Project.gen(:integrity, :builds => [build], :last_build => build, :artifacts => 'artifact')
+    
+    visit "/integrity"
+    click_link(/Build 87e673a/)
+
+    assert_have_tag("h1", :content => "Built 87e673a successfully")
+  end
+  
+  scenario "Browsing a build with a specified but missing wildcard artifact" do
+    build = Build.gen(:successful, :commit => Commit.gen(:identifier => "87e673a"))
+    Project.gen(:integrity, :builds => [build], :last_build => build, :artifacts => 'artifact*')
+    
+    visit "/integrity"
+    click_link(/Build 87e673a/)
+
+    assert_have_tag("h1", :content => "Built 87e673a successfully")
+  end
 end

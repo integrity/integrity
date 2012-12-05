@@ -159,12 +159,27 @@ module Integrity
     
     def escape_glob(path)
       escaped = path
-      GLOB_CHARS.each do |char|
+      each_char(GLOB_CHARS) do |char|
         escaped = escaped.sub(char, "\\" + char)
       end
       escaped
     end
     private :escape_glob
+    
+    def each_char(str)
+      # ruby 1.9
+      if str.respond_to?(:each_char)
+        str.each_char do |char|
+          yield char
+        end
+      else
+        # ruby 1.8
+        str.each do |char|
+          yield char
+        end
+      end
+    end
+    private :each_char
     
     def artifact_files
       build_dir = build_directory
