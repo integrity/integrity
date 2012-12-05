@@ -167,8 +167,8 @@ module Integrity
     private :escape_glob
     
     def each_char(str)
-      # ruby 1.9
       if str.respond_to?(:each_char)
+        # ruby 1.9
         str.each_char do |char|
           yield char
         end
