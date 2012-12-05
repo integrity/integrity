@@ -18,10 +18,12 @@ module Integrity
       end
 
       def artifact_files(build)
-        files = build.artifact_files.dup
-        files.each do |file|
+        files = build.artifact_files
+        files = files.map do |file|
+          file = file.dup
           url = artifact_path(build, file[:relative_path])
           file[:url] = url
+          file
         end
         files
       end
