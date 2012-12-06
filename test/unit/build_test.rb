@@ -33,6 +33,14 @@ class BuildTest < IntegrityTest
     assert_equal "This commit hasn't been built yet",
       Build.gen(:pending, :commit => {:identifier => nil}).human_status
   end
+  
+  it "has a human readable duration" do
+    assert_match '2m',
+      Build.gen(:successful,
+        :started_at => Time.mktime(2008, 12, 15, 4, 0),
+        :completed_at => Time.mktime(2008, 12, 15, 4, 2)
+      ).human_duration
+  end
 
   test "commit data" do
     build = Build.gen(:commit => Commit.gen(
