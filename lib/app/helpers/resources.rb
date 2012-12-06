@@ -16,6 +16,17 @@ module Integrity
           project.update_notifiers(params["enabled_notifiers"] || [], params["notifiers"])
         end
       end
+
+      def artifact_files(build)
+        files = build.artifact_files
+        files = files.map do |file|
+          file = file.dup
+          url = artifact_path(build, file[:relative_path])
+          file[:url] = url
+          file
+        end
+        files
+      end
     end
   end
 end
