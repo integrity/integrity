@@ -145,5 +145,10 @@ module Integrity
       ChronicDuration.output(delta, :format => :micro)
     end
     
+    def human_time_since_start
+      return if pending?
+      delta = Time.now.utc.to_i - Integrity.datetime_to_time(started_at).utc.to_i
+      ChronicDuration.output(delta, :format => :micro)
+    end
   end
 end
