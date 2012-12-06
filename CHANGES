@@ -1,5 +1,9 @@
 = master
 
+ * Integrity now can expose artifacts created by the builds.
+   Specify what files should be exposed in project settings.
+   Shell wildcards are allowed if your file names change from build to build.
+
  * Travis-style status images are now available for projects.
 
  * Branch being built is now passed to all commands via INTEGRITY_BRANCH

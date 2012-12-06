@@ -8,6 +8,8 @@ module Integrity
       :pending  => "%s hasn't been built yet",
       :building => "%s is building"
     }
+    
+    GLOB_CHARS = '*?[]'
 
     property :id,           Serial
     property :project_id,   Integer   # TODO :nullable => false
@@ -149,6 +151,86 @@ module Integrity
       return if pending?
       delta = Time.now.utc.to_i - Integrity.datetime_to_time(started_at).utc.to_i
       ChronicDuration.output(delta, :format => :micro)
+    end
+
+    def build_directory
+      Pathname.new(Integrity.config.directory).join(self.id.to_s)
+    end
+    
+    def escape_glob(path)
+      escaped = path
+      each_char(GLOB_CHARS) do |char|
+        escaped = escaped.sub(char, "\\" + char)
+      end
+      escaped
+    end
+    private :escape_glob
+    
+    def each_char(str)
+      if str.respond_to?(:each_char)
+        # ruby 1.9
+        str.each_char do |char|
+          yield char
+        end
+      else
+        # ruby 1.8
+        str.each do |char|
+          yield char
+        end
+      end
+    end
+    private :each_char
+    
+    def artifact_files
+      build_dir = build_directory
+=begin
+      # for file in build dir check below
+      build_dir = File.expand_path(build_dir)
+=end
+      escaped_build_dir = nil
+      all_files = []
+      project.get_artifacts.each do |artifact|
+        if GLOB_CHARS.split('').any? { |char| artifact.include?(char) }
+          if escaped_build_dir.nil?
+            escaped_build_dir = escape_glob(build_dir.to_s)
+          end
+
+          pattern = File.join(escaped_build_dir, artifact)
+          all_files += Dir[pattern]
+        else
+          file = build_dir.join(artifact).to_s
+          if File.exist?(file)
+            all_files << file
+          end
+        end
+      end
+
+      build_dir_with_slash = build_dir.to_s + '/'
+
+=begin
+      # check that all files are under the build dir
+      all_files.map! do |file|
+        File.expand_path(file)
+      end
+      all_files.delete_if do |file|
+        file[0, build_dir_with_slash.length] != build_dir_with_slash
+      end
+=end
+
+      all_files.map! do |file|
+        if file[0, build_dir_with_slash.length] == build_dir_with_slash
+          relative_path = file[build_dir_with_slash.length..-1]
+        else
+          relative_path = file
+        end
+        {
+          :name => File.basename(file),
+          :relative_path => relative_path,
+        }
+      end
+      all_files.sort do |a, b|
+        a[:name] <=> b[:name]
+      end
     end
   end
 end
