@@ -13,5 +13,7 @@ Mailing List: integrity@librelist.com
 
 Archives: http://librelist.com/browser/integrity/
 
+Build status: ![Travis build status](https://secure.travis-ci.org/integrity/integrity.png)
+
 NOTE: The website, integrityapp.com has been abandoned by the original owners,
 and I am unable to resolve that.
