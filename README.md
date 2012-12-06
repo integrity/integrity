@@ -7,7 +7,7 @@ Docs: http://integrity.github.com/
 
 Bugs: http://github.com/integrity/integrity/issues
 
-IRC: irc://irc.freenode.net/integrity
+IRC: [irc://irc.freenode.net/integrity](irc://irc.freenode.net/integrity)
 
 Mailing List: integrity@librelist.com
 
