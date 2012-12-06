@@ -138,5 +138,17 @@ module Integrity
     def human_status
       HUMAN_STATUS[status] % sha1_short
     end
+    
+    def human_duration
+      return if pending? || building?
+      delta = Integrity.datetime_to_time(completed_at).to_i - Integrity.datetime_to_time(started_at).to_i
+      ChronicDuration.output(delta, :format => :micro)
+    end
+    
+    def human_time_since_start
+      return if pending?
+      delta = Time.now.utc.to_i - Integrity.datetime_to_time(started_at).utc.to_i
+      ChronicDuration.output(delta, :format => :micro)
+    end
   end
 end
