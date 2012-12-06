@@ -73,9 +73,9 @@ module Integrity
   Build.fixture do
     { :output       => /[:paragraph:]/.gen,
       :successful   => [true, false].pick,
-      :started_at   => unique(:build_started_at) {|i| Time.mktime(2008, 12, 15, i / 60, i % 60) },
-      :created_at   => unique(:build_created_at) {|i| Time.mktime(2008, 12, 15, i / 60, i % 60) },
-      :completed_at => unique(:build_completed_at) {|i| Time.mktime(2008, 12, 15, i / 60, i % 60) },
+      :started_at   => unique(:build_started_at) {|i| Time.mktime(2008, 12, 15, i / 60, i % 40) },
+      :created_at   => unique(:build_created_at) {|i| Time.mktime(2008, 12, 15, i / 60, i % 40) },
+      :completed_at => unique(:build_completed_at) {|i| Time.mktime(2008, 12, 15, i / 60, i % 40 + 2) },
       :commit       => Commit.gen,
       :project      => Project.gen }
   end

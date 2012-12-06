@@ -7,6 +7,7 @@ gem "do_sqlite3"
 gem "haml",                  "~> 3.1.6"
 gem "sass",                  "~> 3.1.18"
 
+gem "chronic_duration",      "~> 0.9.6"
 gem "sinatra",               "1.1.2"
 gem "sinatra-authorization", "1.0.0"
 

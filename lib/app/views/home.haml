@@ -16,9 +16,12 @@
         .meta
           - case project.status
           - when :building
-            Building!
+            Building! Started at 
+            &= project.last_build.started_at.strftime('%H:%M')
           - when :blank
             Never built yet
+          - else
+            == #{project.human_status} in #{project.human_duration}
   %p
     %a{ :href => path("new"), :id => "new" } Add a new project
 
