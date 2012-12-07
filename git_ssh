@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [[ "$1" != "run" && "$1" != "head" && "$1" != "show" ]]; then
+  exec ssh -i "$IDENTITY_FILE" -o "StrictHostKeyChecking no" "$@"
+fi
+
+export IDENTITY_FILE="`mktemp /tmp/tmp.XXXXXXXX`"
+echo "$DEPLOY_PRIVATE_KEY" > "$IDENTITY_FILE"
+echo "$DEPLOY_PUBLIC_KEY" > "$IDENTITY_FILE.pub"
+
+self="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"/"$(basename $0)"
+export GIT_SSH="$self"
+
+if [ "$1" == "run" ]; then
+  git clone $2 $3
+  cd $3 && git fetch origin && git checkout origin/$4 && git reset --hard $5 && git submodule init && git submodule update
+elif [ "$1" == "head" ]; then
+  echo "$(git ls-remote --heads $2 $3)"
+elif [ "$1" == "show" ]; then
+  echo "$(cd $2 && git show -s --pretty=format:"$3" $4)"
+fi
+
+rm -f "$IDENTITY_FILE"
+rm -f "$IDENTITY_FILE.pub"
+
+exit 0

@@ -5,18 +5,24 @@ module Integrity
       @commit    = commit
       @directory = directory
       @logger    = logger
+      @setup_script = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'git_ssh'))
     end
 
     def run
-      runner.run! "git clone #{@repo.uri} #{@directory}"
+      if ENV['DEPLOY_PRIVATE_KEY']
+        puts "running script"
+        puts runner.run!("#{@setup_script} run #{@repo.uri} #{@directory} #{@repo.branch} #{sha1}").output
+      else
+        puts runner.run!("git clone #{@repo.uri} #{@directory} #{@repo.branch} #{sha1}").output
 
-      in_dir do |c|
-        c.run! "git fetch origin"
-        c.run! "git checkout origin/#{@repo.branch}"
-        c.run! "git reset --hard #{sha1}"
-        # run init separately for compatibility with old versions of git
-        c.run! "git submodule init"
-        c.run! "git submodule update"
+        in_dir do |c|
+          c.run! "git fetch origin"
+          c.run! "git checkout origin/#{@repo.branch}"
+          c.run! "git reset --hard #{sha1}"
+          # run init separately for compatibility with old versions of git
+          c.run! "git submodule init"
+          c.run! "git submodule update"
+        end
       end
     end
 
@@ -26,11 +32,19 @@ module Integrity
         "author: %an <%ae>%n" \
         "message: >-%n  %s%n" \
         "committed_at: %ci%n"
-      result = run_in_dir!("git show -s --pretty=format:\"#{format}\" #{sha1}")
+      if ENV['DEPLOY_PRIVATE_KEY']
+        result = runner.run!("#{@setup_script} show #{@directory} \"#{format}\" #{sha1}")
+      else
+        result = run_in_dir!("git show -s --pretty=format:\"#{format}\" #{sha1}")
+      end
       dump   = YAML.load(result.output)
       message = dump['message']
 
-      result = run_in_dir!("git show -s --pretty=format:\"%b\" #{sha1}")
+      if ENV['DEPLOY_PRIVATE_KEY']
+        result = runner.run!("#{@setup_script} show #{@directory} \"%b\" #{sha1}")
+      else
+        result = run_in_dir!("git show -s --pretty=format:\"%b\" #{sha1}")
+      end
       dump['full_message'] = message + "\n\n" + result.output
       
       # message (subject in git parlance) may be over 255 characters
@@ -62,8 +76,14 @@ module Integrity
     end
 
     def head
-      runner.run!("git ls-remote --heads #{@repo.uri} #{@repo.branch}").
-        output.split.first
+      if ENV['DEPLOY_PRIVATE_KEY']
+        out = runner.run!("#{@setup_script} head #{@repo.uri} #{@repo.branch}")
+          .output.split
+        out[out.size - 2]
+      else
+        runner.run!("git ls-remote --heads #{@repo.uri} #{@repo.branch}").
+          output.split.first
+      end
     end
 
     def run_in_dir(command)
