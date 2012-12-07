@@ -17,9 +17,11 @@ module Integrity
     property :full_message, Text
     property :author,       Author,   :length => 255
     property :committed_at, DateTime
+    property :additional_command, String, :length => 255
 
     timestamps :at
 
     belongs_to :build
+
   end
 end

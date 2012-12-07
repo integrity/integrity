@@ -29,6 +29,7 @@ module Integrity
       @build.raise_on_save_failure = true
       @build.update(:started_at => Time.now)
       @build.project.enabled_notifiers.each { |n| n.notify_of_build_start(@build) }
+      checkout.additional_command = @build.commit.additional_command
       checkout.run
       # checkout.metadata invokes git and may fail
       @build.commit.raise_on_save_failure = true
@@ -49,17 +50,17 @@ module Integrity
         :output       => @result.output
       )
     end
-    
+
     def fail(exception)
       failure_message = "#{exception.class}: #{exception.message}"
-      
+
       @logger.info "Build #{commit} failed with an exception: #{failure_message}"
-      
+
       failure_message << "\n\n"
       exception.backtrace.each do |line|
         failure_message << line << "\n"
       end
-      
+
       @build.raise_on_save_failure = true
       @build.update(
         :completed_at => Time.now,
@@ -73,7 +74,9 @@ module Integrity
     end
 
     def checkout
-      @checkout ||= Checkout.new(repo, commit, directory, @logger)
+      return @checkout unless @checkout.nil?
+
+      @checkout = Checkout.new(repo, commit, directory, @logger)
     end
 
     def directory

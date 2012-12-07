@@ -184,10 +184,17 @@ module Integrity
       show :new, :title => ["projects", current_project.permalink, "edit"]
     end
 
+    # Note that :additional_command is not validated in any way; allow only trusted users to use
+    # this feature
     post "/:project/builds" do
       login_required
 
-      @build = current_project.build_head
+      additional_command = nil
+      if Integrity.config.additional_command?
+        additional_command = params[:additional_command] unless params[:additional_command].nil?
+      end
+
+      @build = current_project.build_head :additional_command => additional_command
       redirect build_url(@build).to_s
     end
 
