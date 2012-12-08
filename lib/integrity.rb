@@ -75,37 +75,15 @@ module Integrity
     Integrity::App
   end
 
-  def self.datetime_to_time(datetime)
-    if datetime.respond_to?(:to_time)
-      # ruby 1.9 or activesupport
-      time = datetime.to_time
-      if time.is_a?(Time)
-        return time
-      end
-      
-      # in activesupport, to_time does not always return Time
-      # http://pathfindersoftware.com/2009/09/rails-datetimetotime-time-case-why-that/
-      if datetime.respond_to?(:utc)
-        # but activesupport adds a utc conversion which can then
-        # be converted to time!
-        if datetime.utc.respond_to?(:to_time)
-          time = datetime.utc.to_time
-          if time.is_a?(Time)
-            return time
-          end
-        end
-      end
+  def self.datetime_to_utc_time(datetime)
+    if datetime.offset != 0
+      # This converts to utc
+      # borrowed from activesupport DateTime#to_utc
+      datetime = datetime.new_offset(0)
     end
     
-    datetime_to_time_manually(datetime)
-  end
-  
-  # based on DateTime#to_time of activesupport but saner
-  def self.datetime_to_time_manually(datetime)
-    if datetime.offset == 0
-      ::Time.utc(datetime.year, datetime.month, datetime.day, datetime.hour, datetime.min, datetime.sec)
-    else
-      raise ArgumentError, "DateTime with a non-zero offset (#{datetime.offset}) cannot be converted to Time"
-    end
+    # This is what DateTime#to_time does some of the time.
+    # Our offset is always 0 and therefore we always produce a Time
+    ::Time.utc(datetime.year, datetime.month, datetime.day, datetime.hour, datetime.min, datetime.sec)
   end
 end
