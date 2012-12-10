@@ -8,6 +8,14 @@ module Integrity
     end
 
     def run
+      if Integrity.config.checkout_proc
+        Integrity.config.checkout_proc.call(runner, @repo.uri, @repo.branch, sha1, @directory)
+      else
+        default_checkout
+      end
+    end
+
+    def default_checkout
       runner.run! "git clone #{@repo.uri} #{@directory}"
 
       in_dir do |c|

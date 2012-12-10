@@ -11,7 +11,8 @@ module Integrity
       :username,
       :password,
       :project_default_build_count,
-      :trim_branches
+      :trim_branches,
+      :checkout_proc
 
     def build_all?
       !! @build_all
