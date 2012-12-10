@@ -85,25 +85,25 @@ this on will automatically detect when a branch is deleted via the GitHub
 post-receive hook and delete the build history for the branch.
 project_default_build_count:: How many builds to initially show on project
 pages. nil, which is the default, means show all builds.
-HTTP authentication:: If both the `user` and `pass` settings are set then only
-the logged-in users can administer the projects and see the private ones.
+HTTP authentication:: If both `username` and `password` settings are set then
+only the logged-in users can administer the projects and see the private ones.
 [source, ruby]
 ----
 c.username = "admin"
 c.password = "password"
 ----
 
-To protect the whole Integrity instance, set ADMIN_USER and ADMIN_PASSWORD
+To protect the whole Integrity instance, set ADMIN_USERNAME and ADMIN_PASSWORD
 environment variables before starting Integrity:
 [source, bash]
 ----
-export ADMIN_USER=admin ADMIN_PASSWORD=secret
+export ADMIN_USERNAME=admin ADMIN_PASSWORD=secret
 ----
 
 On Heroku:
 [source, bash]
 ----
-heroku config:add ADMIN_USER=admin ADMIN_PASSWORD=secret
+heroku config:add ADMIN_USERNAME=admin ADMIN_PASSWORD=secret
 ----
 
 === Building private repositories
