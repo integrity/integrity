@@ -105,6 +105,15 @@ On Heroku:
 ----
 heroku config:add ADMIN_USERNAME=admin ADMIN_PASSWORD=secret
 ----
+checkout_proc:: Set to a Proc instance to override default checkout mechanism.
+For example, to use https://github.com/grahamc/git-cachecow[git-cachecow]
+to cache repositories locally:
+[source, ruby]
+----
+c.checkout_proc = Proc.new do |runner, repo_uri, branch, sha1, target_directory|
+  runner.run! "git scclone #{repo_uri} #{target_directory} ${sha1}"
+end
+----
 
 === Building private repositories
 Integrity will use keys configured in its environment for repository access.
