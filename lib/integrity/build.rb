@@ -143,13 +143,14 @@ module Integrity
     
     def human_duration
       return if pending? || building?
-      delta = Integrity.datetime_to_time(completed_at).to_i - Integrity.datetime_to_time(started_at).to_i
+      delta = Integrity.datetime_to_utc_time(completed_at).to_i - Integrity.datetime_to_utc_time(started_at).to_i
       ChronicDuration.output(delta, :format => :micro)
     end
     
     def human_time_since_start
       return if pending?
-      delta = Time.now.utc.to_i - Integrity.datetime_to_time(started_at).utc.to_i
+      # to_i returns utc timestamp
+      delta = Time.now.to_i - Integrity.datetime_to_utc_time(started_at).to_i
       ChronicDuration.output(delta, :format => :micro)
     end
 
