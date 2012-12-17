@@ -1,5 +1,13 @@
 = master
 
+ * Checkout command can be overridden in configuration, allowing for example
+   making use of a local repository cache.
+
+ * Integrity will now show how long each build took/is taking.
+
+ * Build page for builds in pending status will be automatically reloaded
+   until the build succeeds or fails.
+
  * Integrity now can expose artifacts created by the builds.
    Specify what files should be exposed in project settings.
    Shell wildcards are allowed if your file names change from build to build.
