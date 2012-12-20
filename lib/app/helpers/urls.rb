@@ -35,6 +35,10 @@ module Integrity
         project_path(project).to_s.concat('.png')
       end
 
+      def project_json_url(project)
+        project_path(project).to_s.concat('.json')
+      end
+
       def root_url
         @root_url ||= Addressable::URI.parse(url_for("/", :full))
       end
@@ -66,7 +70,7 @@ module Integrity
       def build_path(build, *path)
         project_path(build.project, "builds", build.id, *path)
       end
-      
+
       def artifact_path(build, artifact, *path)
         build_path(build, 'artifacts', CGI.escape(CGI.escape(artifact)))
       end

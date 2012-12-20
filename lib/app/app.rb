@@ -120,6 +120,14 @@ module Integrity
       send_file File.join(File.dirname(__FILE__), 'public', 'status', current_project.status.to_s + '.png')
     end
 
+    get "/:project\.json" do
+      if current_project.public? || authorized?
+        json current_project
+      else
+        json_error 401, "Authorization Required"
+      end
+    end
+
     get "/:project" do
       login_required unless current_project.public?
 
@@ -193,18 +201,18 @@ module Integrity
 
     get "/:project/builds/:build/artifacts/:artifact" do |project, build, artifact|
       login_required unless current_project.public?
-      
+
       artifact = CGI.unescape(artifact)
-      
+
       artifact_files = current_build.artifact_files
       file = artifact_files.detect do |file|
         file[:relative_path] == artifact
       end
-      
+
       if file.nil?
         halt 404
       end
-      
+
       fs_path = current_build.build_directory.join(file[:relative_path])
       unless File.exist?(fs_path)
         halt 404
@@ -212,7 +220,7 @@ module Integrity
 
       send_file fs_path, :filename => file[:name]
     end
-    
+
     get "/:project/builds/:build" do
       login_required unless current_project.public?
 
