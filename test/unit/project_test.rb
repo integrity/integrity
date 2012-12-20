@@ -88,4 +88,18 @@ class ProjectTest < IntegrityTest
     assert ! Project.gen(:my_test_project).github?
   end
 
+  test "to_json" do
+    project = Project.gen :successful
+
+    parsed_json = JSON.parse project.to_json
+    json = {
+      "project" => {
+        "name" => project.name,
+        "status" => "success"
+      }
+    }
+
+    assert_equal json, parsed_json
+  end
+
 end

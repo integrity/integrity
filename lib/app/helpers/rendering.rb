@@ -48,6 +48,16 @@ module Integrity
             :config   => current_project.config_for(name) })
         }
       end
+
+      def json(resource)
+        headers "Content-Type" => "application/json;charset=utf-8"
+        resource.to_json
+      end
+
+      def json_error(code, message)
+        status code
+        json({ "error" => { "code" => code, "message" => message } })
+      end
     end
   end
 end
