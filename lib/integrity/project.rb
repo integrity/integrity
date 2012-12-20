@@ -32,7 +32,7 @@ module Integrity
     def get_artifacts
       artifacts.split(";")
     end
-    
+
     def artifacts_empty?
       artifacts.nil? || artifacts.empty?
     end
@@ -96,9 +96,18 @@ module Integrity
     def human_status
       ! blank? && last_build.human_status
     end
-    
+
     def human_duration
       ! blank? && last_build.human_duration
+    end
+
+    def to_json
+      {
+        "project" => {
+          "name" => name,
+          "status" => status
+        }
+      }.to_json
     end
 
     private

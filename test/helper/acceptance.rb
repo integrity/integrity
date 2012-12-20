@@ -31,6 +31,14 @@ module AcceptanceHelper
     rack_test_session.header("Authorization", nil)
   end
 
+  def parse_response_as_json
+    JSON.parse response.body
+  end
+
+  def response_content_type
+    response.headers["Content-Type"]
+  end
+
   # thanks http://github.com/ichverstehe
   def mock_socket
     socket, server = MockSocket.new, MockSocket.new
