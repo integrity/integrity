@@ -50,7 +50,7 @@ module Integrity
       end
 
       def json(resource)
-        headers "Content-Type" => "application/json;charset=utf-8"
+        headers "Content-Type" => "application/json; charset=utf-8"
         resource.to_json
       end
 

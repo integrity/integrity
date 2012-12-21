@@ -11,7 +11,7 @@ class StatusTest < Test::Unit::AcceptanceTestCase
 
     get "/#{successful_project.permalink}.json"
 
-    assert_equal "application/json;charset=utf-8", response_content_type
+    assert_equal "application/json; charset=utf-8", response_content_type
 
     assert_equal parse_response_as_json, {
       "project" => {
@@ -26,7 +26,7 @@ class StatusTest < Test::Unit::AcceptanceTestCase
 
     get "/#{private_project.permalink}.json"
 
-    assert_equal "application/json;charset=utf-8", response_content_type
+    assert_equal "application/json; charset=utf-8", response_content_type
 
     assert_equal 401, response_code
 
