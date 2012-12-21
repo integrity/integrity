@@ -23,7 +23,13 @@ module Integrity
 
       def unauthorized!(realm=authorization_realm)
         response["WWW-Authenticate"] = %(Basic realm="#{realm}")
-        throw :halt, [401, show(:unauthorized, :title => "incorrect credentials")]
+        body = case @format
+        when :json
+          json_error 401, "Authorization Required"
+        else
+          show(:unauthorized, :title => "incorrect credentials")
+        end
+        throw :halt, [401, body]
       end
     end
   end
