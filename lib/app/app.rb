@@ -121,11 +121,10 @@ module Integrity
     end
 
     get "/:project\.json" do
-      if current_project.public? || authorized?
-        json current_project
-      else
-        json_error 401, "Authorization Required"
-      end
+      @format = :json
+      login_required unless current_project.public?
+      
+      json current_project
     end
 
     get "/:project" do
