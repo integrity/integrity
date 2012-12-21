@@ -4,7 +4,7 @@ class UnauthorizedPageTest < Test::Unit::AcceptanceTestCase
   story <<-EOS
     As an administrator,
     I want to be shown a friendly login error page
-    So that I don't feel guilty of loosing my password
+    So that I don't feel guilty of losing my password
   EOS
 
   scenario "an administrator (who's amnesiac) tries to login" do
