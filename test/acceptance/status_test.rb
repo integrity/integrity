@@ -3,7 +3,8 @@ require "helper/acceptance"
 class StatusTest < Test::Unit::AcceptanceTestCase
   story <<-EOS
     As a user,
-    I want to check my project status
+    I want to retrieve my project status in JSON,
+    In order to use it in applications
   EOS
 
   scenario "Get public project info in JSON format" do
