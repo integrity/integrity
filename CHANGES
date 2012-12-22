@@ -1,4 +1,4 @@
-= master
+= 24 / 2012-12-22
 
  * Checkout command can be overridden in configuration, allowing for example
    making use of a local repository cache.
