@@ -111,7 +111,7 @@ to cache repositories locally:
 [source, ruby]
 ----
 c.checkout_proc = Proc.new do |runner, repo_uri, branch, sha1, target_directory|
-  runner.run! "git scclone #{repo_uri} #{target_directory} ${sha1}"
+  runner.run! "git scclone #{repo_uri} #{target_directory} #{sha1}"
 end
 ----
 
