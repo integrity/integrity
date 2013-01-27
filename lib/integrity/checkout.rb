@@ -29,6 +29,15 @@ module Integrity
     end
 
     def metadata
+      # Note: Git disallows invalid UTF-8 for commit messages thusly:
+      #
+      # Warning: commit message did not conform to UTF-8.
+      # You may want to amend it after fixing the message, or set the config
+      # variable i18n.commitencoding to the encoding your project uses.
+      #
+      # Therefore currently there seems to be no way to obtain invalid
+      # UTF-8 from Git.
+      
       format = "---%n" \
         "identifier: %H%n" \
         "author: %an <%ae>%n" \
