@@ -63,6 +63,14 @@ module TestHelper
       }
     end
 
+    def add_commit_with_utf8_command_output
+      add_commit("This commit will work") {
+        `echo '#{utf8_script(0)}' > test`
+        `chmod +x test`
+        `git add test`
+      }
+    end
+
     def head
       Dir.chdir(@path) { `git log --pretty=format:%H | head -1`.chomp }
     end
@@ -102,6 +110,14 @@ module TestHelper
       <<SH
   #!/bin/sh
   echo "Running tests..."
+  exit #{status}
+SH
+    end
+
+    def utf8_script(status)
+      <<SH
+  #!/bin/sh
+  echo "Тесты выполняются..."
   exit #{status}
 SH
     end
