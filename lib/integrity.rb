@@ -1,6 +1,10 @@
 if Object.const_defined?(:Encoding) && Encoding.respond_to?(:default_internal=)
   # ruby 1.9
+  # Internal encoding is what is used on ruby strings.
   Encoding.default_internal = Encoding::UTF_8
+  # External encoding is what is used on pipes used to communicate with
+  # launched command runners and writing to the log file.
+  Encoding.default_external = Encoding::UTF_8
 end
 
 require "yaml"
