@@ -1,3 +1,5 @@
+Encoding.default_internal = Encoding::UTF_8
+
 require "yaml"
 require "logger"
 require "digest/sha1"

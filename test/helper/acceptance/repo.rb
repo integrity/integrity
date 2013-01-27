@@ -1,3 +1,5 @@
+# coding: utf-8
+
 module TestHelper
   class GitRepo
     attr_reader :path, :branch
@@ -43,6 +45,16 @@ module TestHelper
     def add_commit_with_very_long_commit_message_lines
       # 2000 chars
       subject = '123456789 ' * 200
+      message = "#{subject} end-subject\n\nAnd again in body:\n\n#{subject} end-body"
+      add_commit(message) {
+        `echo '#{script(0)}' > test`
+        `chmod +x test`
+        `git add test`
+      }
+    end
+    
+    def add_commit_with_utf8_subject_and_body
+      subject = 'Коммит'
       message = "#{subject} end-subject\n\nAnd again in body:\n\n#{subject} end-body"
       add_commit(message) {
         `echo '#{script(0)}' > test`
