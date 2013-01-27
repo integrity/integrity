@@ -16,13 +16,28 @@ module Integrity
     end
 
     def run(command)
-      cmd = normalize(command)
-
-      @logger.debug(cmd)
+      @logger.debug(command)
 
       output = ""
+      rd, wr = IO.pipe
       with_clean_env do
-        IO.popen(cmd, "r") { |io| output = io.read }
+        if pid = fork
+          # parent
+          wr.close
+          output = rd.read
+          rd.close
+          Process.waitpid(pid)
+        else
+          # child
+          rd.close
+          STDOUT.reopen(wr)
+          wr.close
+          STDERR.reopen(STDOUT)
+          if @dir
+            Dir.chdir(@dir)
+          end
+          exec(command)
+        end
       end
       
       # output may be invalid UTF-8, as it is produced by the build command.
@@ -40,20 +55,6 @@ module Integrity
       end
 
       result
-    end
-
-    def normalize(cmd)
-      # bash requires lists to end with a semicolon (or a newline).
-      # see http://wiki.bash-hackers.org/syntax/ccmd/grouping_plain
-      # zsh has no such restriction.
-      unless cmd[-1] == ?;
-        cmd += ';'
-      end
-      if @dir
-        "cd #{@dir} && { #{cmd} } 2>&1"
-      else
-        "{ #{cmd} } 2>&1"
-      end
     end
 
     SIDE_EFFECT_VARS = %w(BUNDLE_GEMFILE RUBYOPT BUNDLE_BIN_PATH RBENV_DIR)
