@@ -43,4 +43,23 @@ class Utf8Test < Test::Unit::AcceptanceTestCase
     assert_have_tag("span.when",    :content => "today")
     assert_have_tag("pre.output",   :content => "Running tests...")
   end
+
+  scenario "Building a commit with UTF-8 in command output" do
+    repo = git_repo(:my_test_project)
+    repo.add_commit_with_utf8_command_output
+    Project.gen(:my_test_project, :uri => repo.uri)
+
+    login_as "admin", "test"
+    visit "/my-test-project"
+    click_button "manual build"
+
+    build
+    reload
+
+    assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
+    assert_have_tag("blockquote p", :content => "This commit will work")
+    assert_have_tag("span.who",     :content => "by: John Doe")
+    assert_have_tag("span.when",    :content => "today")
+    assert_have_tag("pre.output",   :content => "Тесты выполняются...")
+  end
 end
