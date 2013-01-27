@@ -71,6 +71,14 @@ module TestHelper
       }
     end
 
+    def add_commit_with_invalid_utf8_command_output
+      add_commit("This commit will work") {
+        `echo '#{invalid_utf8_script(0)}' > test`
+        `chmod +x test`
+        `git add test`
+      }
+    end
+
     def head
       Dir.chdir(@path) { `git log --pretty=format:%H | head -1`.chomp }
     end
@@ -118,6 +126,14 @@ SH
       <<SH
   #!/bin/sh
   echo "Тесты выполняются..."
+  exit #{status}
+SH
+    end
+
+    def invalid_utf8_script(status)
+      <<SH
+  #!/bin/sh
+  echo "Bogus \250 UTF-8..."
   exit #{status}
 SH
     end
