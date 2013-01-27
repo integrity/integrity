@@ -1,4 +1,7 @@
-Encoding.default_internal = Encoding::UTF_8
+if Object.const_defined?(:Encoding) && Encoding.respond_to?(:default_internal=)
+  # ruby 1.9
+  Encoding.default_internal = Encoding::UTF_8
+end
 
 require "yaml"
 require "logger"
