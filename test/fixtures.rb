@@ -33,6 +33,14 @@ module Integrity
       :public  => true }
   end
 
+  Project.fixture(:echo_integrity_branch) do
+    { :name    => "My Test Project",
+      :uri     => File.dirname(__FILE__) + "/../../",
+      :branch  => "master",
+      :command => "echo branch=$INTEGRITY_BRANCH",
+      :public  => true }
+  end
+
   Project.fixture(:misc_builds) do
     builds = 
       2.of { Build.gen(:failed) }     +
