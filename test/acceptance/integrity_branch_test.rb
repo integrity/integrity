@@ -48,6 +48,25 @@ class IntegrityBranchTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("span.when",    :content => "today")
     assert_have_tag("pre.output",   :content => "branch=master")
   end
+  
+  scenario "Checking INTEGRITY_BRANCH in chained build command" do
+    repo = git_repo(:my_test_project)
+    repo.add_successful_commit
+    Project.gen(:echo_integrity_branch_chained, :uri => repo.uri)
+
+    login_as "admin", "test"
+    visit "/my-test-project"
+    click_button "manual build"
+
+    build
+    reload
+
+    assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
+    assert_have_tag("blockquote p", :content => "This commit will work")
+    assert_have_tag("span.who",     :content => "by: John Doe")
+    assert_have_tag("span.when",    :content => "today")
+    assert_have_tag("pre.output",   :content => "branch=master")
+  end
 
   # This test in particular checks that environment variables are
   # exported to subprocesses correctly.
