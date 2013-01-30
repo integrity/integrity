@@ -117,7 +117,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
 
     begin
       Integrity.configure { |c|
-        c.builder   = :threaded, 1
+        c.builder = :explicit, 1
         c.build_all = true
       }
 
@@ -167,7 +167,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
 
     begin
       Integrity.configure { |c|
-        c.builder   = :threaded, 1
+        c.builder   = :explicit, 1
         c.build_all = false
       }
 
@@ -200,6 +200,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
 
   scenario "Auto branching" do
     Integrity.configure { |c|
+      c.builder = :explicit, 1
       c.auto_branch = true
       c.build_all   = false
     }
@@ -212,6 +213,8 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     github_post payload(repo)
     assert_equal "1", last_response.body
 
+    Integrity.config.builder.wait!
+    
     visit "/"
     click_link "My Test Project"
     assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
@@ -221,6 +224,10 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
 
     github_post payload(repo)
     assert_equal "1", last_response.body
+
+    # TODO
+    Integrity.config.builder.wait!
+    reload
 
     visit "/"
     click_link "My Test Project (wip)"
