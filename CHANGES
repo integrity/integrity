@@ -2,6 +2,10 @@
 
  * UTF-8 text is now correctly handled in commit messages and build output.
 
+ * Build command length increased to 2000 characters. This change applies only
+   to new Integrity installations; existing installations must manually alter
+   their projects table.
+
 = 24 / 2012-12-22
 
  * Checkout command can be overridden in configuration, allowing for example
@@ -38,7 +42,7 @@
  * The length of branch and permalink fields was increased to 255 characters
    from 60, allowing longer branch names. This change applies only to new
    Integrity installations; existing installations must manually alter their
-   project table.
+   projects table.
 
  * Integrity home page now loads much faster thanks to projects keeping track
    of their last builds.
