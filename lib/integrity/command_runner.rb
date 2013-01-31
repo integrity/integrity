@@ -24,6 +24,9 @@ module Integrity
       with_clean_env do
         IO.popen(cmd, "r") { |io| output = io.read }
       end
+      
+      # output may be invalid UTF-8, as it is produced by the build command.
+      output = Integrity.clean_utf8(output)
 
       Result.new($?.success?, output.chomp)
     end

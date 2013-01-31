@@ -1,3 +1,13 @@
+if Object.const_defined?(:Encoding) && Encoding.respond_to?(:default_internal=)
+  # ruby 1.9
+  # Internal encoding is what is used on ruby strings.
+  Encoding.default_internal = Encoding::UTF_8
+  # External encoding is what is used on pipes used to communicate with
+  # launched command runners and is the default encoding used when opening
+  # e.g. the log file.
+  Encoding.default_external = Encoding::UTF_8
+end
+
 require "yaml"
 require "logger"
 require "digest/sha1"
@@ -85,5 +95,47 @@ module Integrity
     # This is what DateTime#to_time does some of the time.
     # Our offset is always 0 and therefore we always produce a Time
     ::Time.utc(datetime.year, datetime.month, datetime.day, datetime.hour, datetime.min, datetime.sec)
+  end
+  
+  # Replace or delete invalid UTF-8 characters from text, which is assumed
+  # to be in UTF-8.
+  #
+  # The text is expected to come from external to Integrity sources such as
+  # commit messages or build output.
+  #
+  # On ruby 1.9, invalid UTF-8 characters are replaced with question marks.
+  # On ruby 1.8, if iconv extension is present, invalid UTF-8 characters
+  # are removed.
+  # On ruby 1.8, if iconv extension is not present, the string is unmodified.
+  def self.clean_utf8(text)
+    # http://po-ru.com/diary/fixing-invalid-utf-8-in-ruby-revisited/
+    # http://stackoverflow.com/questions/9126782/how-to-change-deprecated-iconv-to-stringencode-for-invalid-utf8-correction
+    if text.respond_to?(:encoding)
+      # ruby 1.9
+      text = text.force_encoding('utf-8').encode('utf-16', :invalid => :replace, :replace => '?').encode('UTF-8')
+    else
+      # ruby 1.8
+      # As no encoding checks are done, any string will be accepted.
+      # But delete invalid utf-8 characters anyway for consistency with 1.9.
+      iconv = clean_utf8_iconv
+      if iconv
+        output = iconv.iconv(text)
+      end
+    end
+    text
+  end
+  
+  def self.clean_utf8_iconv
+    unless @iconv_loaded
+      begin
+        require 'iconv'
+      rescue LoadError
+        @iconv = nil
+      else
+        @iconv = Iconv.new('utf-8//translit//ignore', 'utf-8')
+      end
+      @iconv_loaded = true
+    end
+    @iconv
   end
 end

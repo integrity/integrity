@@ -1,3 +1,5 @@
+# coding: utf-8
+
 module TestHelper
   class GitRepo
     attr_reader :path, :branch
@@ -50,6 +52,32 @@ module TestHelper
         `git add test`
       }
     end
+    
+    def add_commit_with_utf8_subject_and_body
+      subject = 'Коммит'
+      message = "#{subject} end-subject\n\nAnd again in body:\n\n#{subject} end-body"
+      add_commit(message) {
+        `echo '#{script(0)}' > test`
+        `chmod +x test`
+        `git add test`
+      }
+    end
+
+    def add_commit_with_utf8_command_output
+      add_commit("This commit will work") {
+        `echo '#{utf8_script(0)}' > test`
+        `chmod +x test`
+        `git add test`
+      }
+    end
+
+    def add_commit_with_invalid_utf8_command_output
+      add_commit("This commit will work") {
+        `echo '#{invalid_utf8_script(0)}' > test`
+        `chmod +x test`
+        `git add test`
+      }
+    end
 
     def add_commit_echoing_integrity_branch
       add_commit("This commit echoes INTEGRITY_BRANCH") {
@@ -98,6 +126,22 @@ module TestHelper
       <<SH
   #!/bin/sh
   echo "Running tests..."
+  exit #{status}
+SH
+    end
+
+    def utf8_script(status)
+      <<SH
+  #!/bin/sh
+  echo "Тесты выполняются..."
+  exit #{status}
+SH
+    end
+
+    def invalid_utf8_script(status)
+      <<SH
+  #!/bin/sh
+  echo "Bogus \250 UTF-8..."
   exit #{status}
 SH
     end
