@@ -51,6 +51,14 @@ module TestHelper
       }
     end
 
+    def add_commit_echoing_integrity_branch
+      add_commit("This commit echoes INTEGRITY_BRANCH") {
+        `echo 'echo branch=$INTEGRITY_BRANCH' > test`
+        `chmod +x test`
+        `git add test`
+      }
+    end
+
     def head
       Dir.chdir(@path) { `git log --pretty=format:%H | head -1`.chomp }
     end
