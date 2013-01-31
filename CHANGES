@@ -1,5 +1,7 @@
 = master
 
+ * UTF-8 text is now correctly handled in commit messages and build output.
+
 = 24 / 2012-12-22
 
  * Checkout command can be overridden in configuration, allowing for example
