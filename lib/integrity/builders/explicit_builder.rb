@@ -12,8 +12,8 @@ module Integrity
     end
     
     def wait!
-      @builds.each do |build|
-        build.run!
+      until @builds.empty?
+        @builds.shift.run!
       end
     end
   end
