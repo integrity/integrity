@@ -12,7 +12,7 @@ class Utf8Test < Test::Unit::AcceptanceTestCase
   setup do
     @builder = Integrity.config.builder
     Integrity.configure { |c|
-      c.builder = :threaded, 1
+      c.builder = :explicit, 1
     }
   end
 

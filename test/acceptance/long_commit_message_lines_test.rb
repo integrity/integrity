@@ -14,7 +14,7 @@ class LongCommitMessageLinesTest < Test::Unit::AcceptanceTestCase
     
     @builder = Integrity.config.builder
     Integrity.configure { |c|
-      c.builder = :threaded, 1
+      c.builder = :explicit, 1
     }
   end
 
