@@ -69,6 +69,8 @@ module Integrity
           Integrity::DelayedBuilder.new(args)
         when :resque
           Integrity::ResqueBuilder
+        when :explicit
+          Integrity::ExplicitBuilder.new
         else
           raise ArgumentError, "Unknown builder #{name}"
         end

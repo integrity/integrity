@@ -58,6 +58,7 @@ module Integrity
   autoload :ThreadedBuilder, "integrity/builders/threaded_builder"
   autoload :DelayedBuilder,  "integrity/builders/delayed_builder"
   autoload :ResqueBuilder,   "integrity/builders/resque_builder"
+  autoload :ExplicitBuilder, "integrity/builders/explicit_builder"
 
   Repository = Struct.new(:uri, :branch)
 
