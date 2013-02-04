@@ -24,6 +24,7 @@ module Integrity
     belongs_to :last_build, 'Build'
 
     before :save, :set_permalink
+    before :save, :fix_line_endings
 
     before :destroy do
       builds.destroy!
@@ -120,6 +121,14 @@ module Integrity
           gsub(/[^a-z0-9]+/, "-").
           gsub(/-*$/, "")
         )
+      end
+      
+      def fix_line_endings
+        command = self.command
+        unless command.empty?
+          command = command.gsub("\r\n", "\n").gsub("\r", "\n")
+          attribute_set(:command, command)
+        end
       end
   end
 end
