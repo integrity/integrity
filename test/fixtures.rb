@@ -48,6 +48,14 @@ module Integrity
       :command => "true && echo branch=$INTEGRITY_BRANCH",
       :public  => true }
   end
+  
+  Project.fixture(:unparseable_command) do
+    { :name    => "My Test Project",
+      :uri     => File.dirname(__FILE__) + "/../../",
+      :branch  => "master",
+      :command => "if true; then",
+      :public  => true }
+  end
 
   Project.fixture(:misc_builds) do
     builds = 
