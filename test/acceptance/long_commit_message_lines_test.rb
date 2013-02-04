@@ -32,14 +32,12 @@ class LongCommitMessageLinesTest < Test::Unit::AcceptanceTestCase
     visit "/my-test-project"
     click_button "manual build"
 
-=begin build is run asynchronously and may be not started, pending or finished
     within "#build" do
       assert_have_tag("h1",         :content => "HEAD hasn't been built yet")
       assert_have_tag("blockquote", :content => "message not loaded")
       assert_have_tag(".who",       :content => "author not loaded")
       assert_have_tag(".when",      :content => "commit date not loaded")
     end
-=end
 
     build
     reload

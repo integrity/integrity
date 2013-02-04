@@ -181,9 +181,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
       assert_equal "1", last_response.body
 
       visit "/my-test-project"
-=begin build is run asynchronously and may be not started, pending or finished
       assert_have_tag "#last_build h1", :content => "#{repo.short_head} hasn't"
-=end
       assert_have_tag "p", :content => "foo/bar: This commit will work"
       assert_have_tag "span.who", :content => "by: John Doe"
       assert_have_tag "span.when", :content => "today"
