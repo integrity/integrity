@@ -20,6 +20,8 @@
             &= project.last_build.started_at.strftime('%H:%M')
           - when :blank
             Never built yet
+          - when :pending
+            == #{project.human_status}
           - else
             == #{project.human_status} in #{project.human_duration}
   %p
