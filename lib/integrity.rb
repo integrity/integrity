@@ -6,6 +6,8 @@ if Object.const_defined?(:Encoding) && Encoding.respond_to?(:default_internal=)
   # launched command runners and is the default encoding used when opening
   # e.g. the log file.
   Encoding.default_external = Encoding::UTF_8
+else
+  $KCODE = 'u'
 end
 
 require "yaml"
