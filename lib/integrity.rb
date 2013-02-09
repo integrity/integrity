@@ -125,7 +125,7 @@ module Integrity
       if iconv
         begin
           output = iconv.iconv(text)
-        rescue Iconv::IllegalSequence:
+        rescue Iconv::IllegalSequence
           output = iconv_fallback.iconv(text)
         end
       end
