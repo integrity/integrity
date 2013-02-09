@@ -6,8 +6,6 @@ if Object.const_defined?(:Encoding) && Encoding.respond_to?(:default_internal=)
   # launched command runners and is the default encoding used when opening
   # e.g. the log file.
   Encoding.default_external = Encoding::UTF_8
-else
-  $KCODE = 'u'
 end
 
 require "yaml"
@@ -123,9 +121,13 @@ module Integrity
       # ruby 1.8
       # As no encoding checks are done, any string will be accepted.
       # But delete invalid utf-8 characters anyway for consistency with 1.9.
-      iconv = clean_utf8_iconv
+      iconv, iconv_fallback = clean_utf8_iconv
       if iconv
-        output = iconv.iconv(text)
+        begin
+          output = iconv.iconv(text)
+        rescue Iconv::IllegalSequence:
+          output = iconv_fallback.iconv(text)
+        end
       end
     end
     text
@@ -139,10 +141,13 @@ module Integrity
         @iconv = nil
       else
         @iconv = Iconv.new('utf-8//translit//ignore', 'utf-8')
+        # On some systems (Linux appears to be vulnerable, FreeBSD not)
+        # iconv chokes on invalid utf-8 with //translit//ignore.
+        @iconv_fallback = Iconv.new('utf-8//ignore', 'utf-8')
       end
       @iconv_loaded = true
     end
-    @iconv
+    [@iconv, @iconv_fallback]
   end
   
   # Apparently utf-16 is not available everywhere, in particular not on travis.
