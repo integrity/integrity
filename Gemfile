@@ -83,4 +83,5 @@ group :test do
   gem "bunny",           "0.6.0"
   gem "webmock",         "1.6.2"
   gem "turn",            "0.8.1"
+  gem "timecop"
 end

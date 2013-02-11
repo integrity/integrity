@@ -1,4 +1,5 @@
 require "helper/acceptance"
+require 'timecop'
 
 class HomepageTest < Test::Unit::AcceptanceTestCase
   story <<-EOS
@@ -37,19 +38,38 @@ class HomepageTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "I can see the state of my various projects" do
-    Project.gen(:successful)
-    Project.gen(:failed)
-    Project.gen(:building)
-    Project.gen(:blank)
+    # Freeze time because build time keeps growing otherwise
+    time = Time.now
+    Timecop.freeze(time) do
+      Project.gen(:successful)
+      Project.gen(:failed)
+      project = Project.gen(:building)
+      # Need to adjust build start time, otherwise the project appears to
+      # have been building for years
+      build = project.last_build
+      build.started_at = time - 2 * 60
+      build.save!
+      Project.gen(:blank)
 
-    visit "/"
+      visit "/"
 
-    # TODO
-    assert_have_tag("li[@class~=success]",  :content => "successfully in 2m")
-    assert_have_tag("li[@class~=failed]",   :content => "and failed in 2m")
+      # TODO
+      assert_have_tag("li[@class~=success]",  :content => "successfully in 2m")
+      assert_have_tag("li[@class~=failed]",   :content => "and failed in 2m")
 
-    assert_have_tag("li[@class~=blank]",    :content => "Never built yet")
-    assert_have_tag("li[@class~=building]", :content => "Building! Started at")
+      assert_have_tag("li[@class~=blank]",    :content => "Never built yet")
+      assert_have_tag("li[@class~=building]", :content => "Building for")
+      
+      # http://stackoverflow.com/questions/1474045/finding-a-label-with-webrat-that-contains-a-link
+      # field is not defined here, thus convert css query to xpath
+      field = field_by_xpath('//li[contains(@class,"building")]')
+      # and what that returns is a TextField which is not at all what I want
+      text = field.element.text
+      # fold whitespace
+      text = text.gsub!(/\s+/, ' ')
+      # finally check the content
+      assert text =~ /Building for 2m/
+    end
   end
 
   scenario "Clicking on a project from the homepage" do

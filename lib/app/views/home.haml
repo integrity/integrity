@@ -16,8 +16,8 @@
         .meta
           - case project.status
           - when :building
-            Building! Started at 
-            &= project.last_build.started_at.strftime('%H:%M')
+            Building for
+            &= project.last_build.human_time_since_start
           - when :blank
             Never built yet
           - when :pending
