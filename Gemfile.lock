@@ -136,6 +136,7 @@ GEM
     sqlite3 (1.3.6)
     stringex (1.3.3)
     tilt (1.3.3)
+    timecop (0.5.9.1)
     treetop (1.4.10)
       polyglot
       polyglot (>= 0.3.1)
@@ -186,6 +187,7 @@ DEPENDENCIES
   sinatra (= 1.1.2)
   sinatra-authorization (= 1.0.0)
   sqlite3
+  timecop
   turn (= 0.8.1)
   webmock (= 1.6.2)
   webrat (= 0.7.3)
