@@ -220,6 +220,13 @@ module Integrity
       send_file fs_path, :filename => file[:name]
     end
 
+    get "/:project/builds/:build\.json" do
+      @format = :json
+      login_required unless current_project.public?
+      
+      json current_build
+    end
+
     get "/:project/builds/:build" do
       login_required unless current_project.public?
 

@@ -1,3 +1,11 @@
+#administrative
+  %a{ :href => project_path(@build.project, :edit) } Edit
+  = " / "
+  %a{ :href => build_json_url(@build) } JSON
+  - if @project.github?
+    = " / "
+    %a{ :href => github_commit_url(@build) } View on GitHub
+
 #build{ :class => @build.status }
   = partial(:build_info, :build => @build)
 %form{ :action => build_path(@build), :method => :post }

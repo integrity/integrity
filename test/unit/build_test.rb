@@ -86,4 +86,21 @@ class BuildTest < IntegrityTest
       build.destroy
     end
   end
+
+  test "to_json" do
+    build = Build.gen(:successful)
+
+    parsed_json = JSON.parse build.to_json
+    json = {
+      'build' => {
+        "project" => {
+          "name" => build.project.name,
+        },
+        'id' => build.id,
+        "status" => "success",
+      }
+    }
+
+    assert_equal json, parsed_json
+  end
 end

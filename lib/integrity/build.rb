@@ -233,5 +233,17 @@ module Integrity
         a[:name] <=> b[:name]
       end
     end
+    
+    def to_json
+      {
+        'build' => {
+          "project" => {
+            "name" => project.name,
+          },
+          'id' => self.id,
+          "status" => status,
+        }
+      }.to_json
+    end
   end
 end

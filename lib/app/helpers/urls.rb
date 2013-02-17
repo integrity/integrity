@@ -67,6 +67,10 @@ module Integrity
         project_url(build.project, "builds", build.id, *path)
       end
 
+      def build_json_url(build, *path)
+        build_url(build, *path).to_s.concat('.json')
+      end
+
       def build_path(build, *path)
         project_path(build.project, "builds", build.id, *path)
       end
