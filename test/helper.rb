@@ -14,6 +14,8 @@ begin
 rescue LoadError
 end
 
+INTEGRITY_TEST_TMP = File.expand_path(File.dirname(__FILE__) + "/../tmp")
+
 class IntegrityTest < Test::Unit::TestCase
   include RR::Adapters::TestUnit
   include Integrity
@@ -21,7 +23,7 @@ class IntegrityTest < Test::Unit::TestCase
   def setup
     Integrity.configure { |c|
       c.database  = "sqlite3:db/test.db"
-      c.directory = File.expand_path(File.dirname(__FILE__) + "/../tmp")
+      c.directory = INTEGRITY_TEST_TMP
       c.base_url  = "http://www.example.com"
       c.log       = "test.log"
       c.username  = "admin"
