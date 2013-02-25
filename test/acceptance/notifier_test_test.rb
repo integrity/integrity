@@ -19,7 +19,7 @@ class NotifierTestTest < Test::Unit::TestCase
     DataMapper.auto_migrate!
 
     @notifier = Integrity::Notifier::Textfile
-    @config   = {"file" => "/tmp/integrity.txt"}
+    @config   = {"file" => File.join(INTEGRITY_TEST_TMP, "notifier_test_notifications.txt")}
 
     FileUtils.rm @config["file"] if File.exists?(@config["file"])
   end

@@ -4,6 +4,10 @@ require "helper/acceptance/email_notifier"
 
 class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
   include NotifierHelper
+  
+  def textfile_notifications_path
+    File.join(INTEGRITY_TEST_TMP, 'textfile_notifications.txt')
+  end
 
   story <<-EOS
     As an administrator,
@@ -25,7 +29,7 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
   scenario "an admin sets up a notifier and issues a manual build" do
     git_repo(:my_test_project).add_successful_commit
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
-    rm_f "/tmp/textfile_notifications.txt"
+    rm_f textfile_notifications_path
 
     login_as "admin", "test"
 
@@ -33,12 +37,12 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
 
     click_link "Edit"
     check "enabled_notifiers_textfile"
-    fill_in "File", :with => "/tmp/textfile_notifications.txt"
+    fill_in "File", :with => textfile_notifications_path
     click_button "Update Project"
 
     click_button "manual build"
 
-    notification = File.read("/tmp/textfile_notifications.txt")
+    notification = File.read(textfile_notifications_path)
     assert_match(/=== Built #{git_repo(:my_test_project).short_head} successfully ===/, notification)
     #assert_match /Build #{git_repo(:my_test_project).head} was successful/, notification
     #assert_match %r(http://www.example.com/my-test-project/commits/#{git_repo(:my_test_project).head}), notification
@@ -51,7 +55,7 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
   scenario "an admin sets up the Textfile notifier but does not enable it" do
     git_repo(:my_test_project).add_successful_commit
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
-    rm_f "/tmp/textfile_notifications.txt"
+    rm_f textfile_notifications_path
 
     login_as "admin", "test"
 
@@ -59,12 +63,12 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
 
     click_link "Edit"
     uncheck "enabled_notifiers_textfile"
-    fill_in "File", :with => "/tmp/textfile_notifications.txt"
+    fill_in "File", :with => textfile_notifications_path
     click_button "Update Project"
 
     click_button "manual build"
 
-    assert ! File.file?("/tmp/textfile_notifications.txt")
+    assert ! File.file?(textfile_notifications_path)
   end
 
   scenario "an admin can setup a notifier without enabling it" do
@@ -90,16 +94,16 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
 
     click_link "Edit"
     check "enabled_notifiers_textfile"
-    fill_in "File", :with => "/tmp/textfile_notifications.txt"
+    fill_in "File", :with => textfile_notifications_path
     click_button "Update Project"
 
     Notifier.send(:remove_const, :Textfile)
     Notifier.available.clear
-    rm_f "/tmp/textfile_notifications.txt"
+    rm_f textfile_notifications_path
 
     click_button "manual build"
 
-    assert ! File.file?("/tmp/textfile_notifications.txt")
+    assert ! File.file?(textfile_notifications_path)
   end
 
   scenario "an admin configures various notifiers across multiple projects" do
