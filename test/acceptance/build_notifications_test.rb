@@ -22,7 +22,7 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     Notifier.register(Integrity::Notifier::Email)
   end
 
-  scenario "an admin sets up a notifier and issue a manual build" do
+  scenario "an admin sets up a notifier and issues a manual build" do
     git_repo(:my_test_project).add_successful_commit
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
     rm_f "/tmp/textfile_notifications.txt"
@@ -48,7 +48,7 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     assert_match /Build Output:\n\nRunning tests...\n/, notification
   end
 
-  scenario "an admin sets up the Textfile notifier but do not enable it" do
+  scenario "an admin sets up the Textfile notifier but does not enable it" do
     git_repo(:my_test_project).add_successful_commit
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
     rm_f "/tmp/textfile_notifications.txt"
@@ -81,7 +81,7 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     assert_have_email_notifier
   end
 
-  scenario "an admin enables the Textfile notifier and get rid of it later" do
+  scenario "an admin enables the Textfile notifier and gets rid of it later" do
     git_repo(:my_test_project).add_successful_commit
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)
 
@@ -102,7 +102,7 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     assert ! File.file?("/tmp/textfile_notifications.txt")
   end
 
-  scenario "an admin configures various notifiers accros multiple projects" do
+  scenario "an admin configures various notifiers across multiple projects" do
     project = Project.first(:permalink => "integrity")
     assert_nil project
 
