@@ -1,4 +1,5 @@
 __END__
+# test notifier removed in d07d0b7020ab002a710f577c87a633df01b6421b
 require "helper/acceptance"
 require "helper/acceptance/email_notifier"
 require "helper/acceptance/textfile_notifier"
