@@ -33,13 +33,13 @@ module NotifierHelper
     click_button "Create Project"
 
     assert_have_tag("h1", :content => name)
-    click_link 'Edit Project'
+    click_link 'Edit'
     assert_have_email_notifier
   end
 
   def edit_project(name)
     visit "/#{name}"
-    click_link "Edit Project"
+    click_link "Edit"
     assert_have_email_notifier
     fill_in :branch, :with => "testing"
     click_button "Update Project"

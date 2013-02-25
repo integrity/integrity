@@ -1,4 +1,3 @@
-__END__
 require "helper/acceptance"
 require "helper/acceptance/notifier_helper"
 require "helper/acceptance/email_notifier"
@@ -12,7 +11,7 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     So that I get alerts with every build
   EOS
 
-  before(:each) do
+  setup do
     # This is needed before any available notifier is unset
     # in the global #before.
     # But, we need the reload this one because we remove_const
@@ -32,7 +31,7 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
 
     visit "/my-test-project"
 
-    click_link "Edit Project"
+    click_link "Edit"
     check "enabled_notifiers_textfile"
     fill_in "File", :with => "/tmp/textfile_notifications.txt"
     click_button "Update Project"
@@ -40,14 +39,13 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     click_button "manual build"
 
     notification = File.read("/tmp/textfile_notifications.txt")
-    notification.should =~ /=== Built #{git_repo(:my_test_project).short_head} successfully ===/
-    notification.should =~ /Build #{git_repo(:my_test_project).head} was successful/
-    notification.should =~
-      %r(http://www.example.com/my-test-project/commits/#{git_repo(:my_test_project).head})
-    notification.should =~ /Commit Author: John Doe/
-    notification.should =~ /Commit Date: (.+)/
-    notification.should =~ /Commit Message: This commit will work/
-    notification.should =~ /Build Output:\n\nRunning tests...\n/
+    assert_match(/=== Built #{git_repo(:my_test_project).short_head} successfully ===/, notification)
+    #assert_match /Build #{git_repo(:my_test_project).head} was successful/, notification
+    #assert_match %r(http://www.example.com/my-test-project/commits/#{git_repo(:my_test_project).head}), notification
+    assert_match /Commit Author: John Doe/, notification
+    assert_match /Commit Date: (.+)/, notification
+    assert_match /Commit Message: master: This commit will work/, notification
+    assert_match /Build Output:\n\nRunning tests...\n/, notification
   end
 
   scenario "an admin sets up the Textfile notifier but do not enable it" do
@@ -59,7 +57,7 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
 
     visit "/my-test-project"
 
-    click_link "Edit Project"
+    click_link "Edit"
     uncheck "enabled_notifiers_textfile"
     fill_in "File", :with => "/tmp/textfile_notifications.txt"
     click_button "Update Project"
@@ -75,7 +73,7 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     login_as "admin", "test"
 
     visit "/integrity"
-    click_link "Edit Project"
+    click_link "Edit"
     fill_in_email_notifier
     click_button "Update Project"
 
@@ -90,7 +88,7 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     login_as "admin", "test"
     visit "/my-test-project"
 
-    click_link "Edit Project"
+    click_link "Edit"
     check "enabled_notifiers_textfile"
     fill_in "File", :with => "/tmp/textfile_notifications.txt"
     click_button "Update Project"
@@ -105,7 +103,8 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "an admin configures various notifiers accros multiple projects" do
-    Project.first(:permalink => "integrity").should be_nil
+    project = Project.first(:permalink => "integrity")
+    assert_nil project
 
     login_as "admin", "test"
 
@@ -125,15 +124,15 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     edit_project "rails"
 
     visit "/integrity"
-    click_link "Edit Project"
+    click_link "Edit"
     assert_have_email_notifier
 
     visit "/webrat"
-    click_link "Edit Project"
+    click_link "Edit"
     assert_have_email_notifier
 
     visit "/rails"
-    click_link "Edit Project"
+    click_link "Edit"
     assert_have_email_notifier
   end
 end
