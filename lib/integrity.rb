@@ -101,6 +101,14 @@ module Integrity
     ::Time.utc(datetime.year, datetime.month, datetime.day, datetime.hour, datetime.min, datetime.sec)
   end
   
+  def self.human_duration(delta)
+    if delta > 0
+      ChronicDuration.output(delta, :format => :micro)
+    else
+      '0s'
+    end
+  end
+  
   # Replace or delete invalid UTF-8 characters from text, which is assumed
   # to be in UTF-8.
   #

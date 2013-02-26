@@ -41,6 +41,14 @@ class BuildTest < IntegrityTest
         :completed_at => Time.mktime(2008, 12, 15, 4, 2)
       ).human_duration
   end
+  
+  it 'has a non-empty duration when elapsed time is zero' do
+    assert_match '0s',
+      Build.gen(:successful,
+        :started_at => Time.mktime(2008, 12, 15, 4, 2),
+        :completed_at => Time.mktime(2008, 12, 15, 4, 2)
+      ).human_duration
+  end
 
   test "commit data" do
     build = Build.gen(:commit => Commit.gen(

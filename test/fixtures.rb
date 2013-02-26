@@ -93,6 +93,14 @@ module Integrity
       1.of{Build.gen(:building)}
     Project.gen_attrs.update(:builds => builds, :last_build => builds.last)
   end
+  
+  Project.fixture(:bogus_repo_project) do
+    { :name    => "My Test Project",
+      :uri     => 'nonexistent',
+      :branch  => "master",
+      :command => "./test",
+      :public  => true }
+  end
 
   Build.fixture do
     { :output       => /[:paragraph:]/.gen,
