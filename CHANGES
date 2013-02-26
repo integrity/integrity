@@ -1,6 +1,15 @@
 = master
 
+ * Integrity will convert CR/LF newlines to LF only in build commands, for
+   compatibility with Unices. This should fix inability to enter complex
+   shell commands as build commands in Integrity UI.
+
+ * Improvements in output collection for launched commands, especially
+   when the commands fail.
+
  * UTF-8 text is now correctly handled in commit messages and build output.
+
+ * INTEGRITY_BRANCH passing fixed for complex build commands.
 
  * Build command length increased to 2000 characters. This change applies only
    to new Integrity installations; existing installations must manually alter
