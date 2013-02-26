@@ -102,12 +102,16 @@ module Integrity
       ! blank? && last_build.human_duration
     end
 
+    def attributes_for_json
+      {
+        "name" => name,
+        "status" => status
+      }
+    end
+    
     def to_json
       {
-        "project" => {
-          "name" => name,
-          "status" => status
-        }
+        "project" => attributes_for_json
       }.to_json
     end
 
