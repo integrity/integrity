@@ -13,6 +13,11 @@
   %p
     %button{ :title => "Delete this build" }
       Delete this build
+
+%form{ :action => build_path(@build, :notify), :method => :post }
+  %p
+    %button{ :title => "Notify of this build" }
+      Notify of this build
 - if @build.pending? || @build.building?
   %script{ :type => 'text/javascript' }
     setTimeout(function() { window.location.reload(); }, 5000);
