@@ -52,6 +52,39 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     assert_match /Build Output:\n\nRunning tests...\n/, notification
   end
 
+  scenario "an admin sets up a notifier and requests a simulated notification" do
+    repo = git_repo(:my_test_project)
+    repo.add_successful_commit
+    project = Project.gen(:my_test_project, :uri => repo.uri)
+
+    login_as "admin", "test"
+
+    visit "/my-test-project"
+
+    click_button "manual build"
+    
+    assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
+    
+    rm_f textfile_notifications_path
+    click_link "Edit"
+    check "enabled_notifiers_textfile"
+    fill_in "File", :with => textfile_notifications_path
+    click_button "Update Project"
+
+    project.reload
+    visit "/my-test-project/builds/#{project.builds.last.id}"
+    click_button "Notify of this build"
+
+    notification = File.read(textfile_notifications_path)
+    assert_match(/=== Built #{git_repo(:my_test_project).short_head} successfully ===/, notification)
+    #assert_match /Build #{git_repo(:my_test_project).head} was successful/, notification
+    #assert_match %r(http://www.example.com/my-test-project/commits/#{git_repo(:my_test_project).head}), notification
+    assert_match /Commit Author: John Doe/, notification
+    assert_match /Commit Date: (.+)/, notification
+    assert_match /Commit Message: master: This commit will work/, notification
+    assert_match /Build Output:\n\nRunning tests...\n/, notification
+  end
+
   scenario "an admin sets up the Textfile notifier but does not enable it" do
     git_repo(:my_test_project).add_successful_commit
     Project.gen(:my_test_project, :uri => git_repo(:my_test_project).uri)

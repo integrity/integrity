@@ -249,6 +249,12 @@ module Integrity
       redirect build_url(@build).to_s
     end
 
+    post "/:project/builds/:build/notify" do
+      login_required unless current_project.public?
+      current_build.notify
+      redirect build_url(current_build).to_s
+    end
+
     delete "/:project/builds/:build" do
       login_required
 
