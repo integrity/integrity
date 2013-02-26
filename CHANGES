@@ -1,5 +1,8 @@
 = master
 
+ * It is now possible to manually send build notifications (without running
+   the builds).
+
  * Integrity will convert CR/LF newlines to LF only in build commands, for
    compatibility with Unices. This should fix inability to enter complex
    shell commands as build commands in Integrity UI.
