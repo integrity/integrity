@@ -4,8 +4,9 @@ module Integrity
 
     Result = Struct.new(:success, :output)
 
-    def initialize(logger)
+    def initialize(logger, build_output_interval=nil)
       @logger = logger
+      @build_output_interval = build_output_interval || 5
     end
 
     def cd(dir)
@@ -24,7 +25,24 @@ module Integrity
         if pid = fork
           # parent
           wr.close
-          output = rd.read
+          while true
+            fds, = IO.select([rd], nil, nil, @build_output_interval)
+            if fds
+              # should have some data to read
+              begin
+                chunk = rd.read_nonblock(10240)
+                if block_given?
+                  yield chunk
+                end
+                output += chunk
+              rescue Errno::EAGAIN, Errno::EWOULDBLOCK
+                # do select again
+              rescue EOFError
+                break
+              end
+            end
+            # if fds are empty, timeout expired - run another iteration
+          end
           rd.close
           Process.waitpid(pid)
         else
