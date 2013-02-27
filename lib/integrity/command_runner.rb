@@ -25,7 +25,7 @@ module Integrity
           # parent
           wr.close
           while true
-            fds, = IO.select([rd], nil, nil, 5)
+            fds, = IO.select([rd], nil, nil, Integrity.config.build_output_interval)
             unless fds.empty?
               # should have some data to read
               begin

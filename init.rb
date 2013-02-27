@@ -47,6 +47,7 @@ Integrity.configure do |c|
   c.trim_branches               = false
   c.builder                     = :threaded, 5
   c.project_default_build_count = 10
+  c.build_output_interval       = 5
   # Use https://github.com/grahamc/git-cachecow to cache repository locally
   # c.checkout_proc             = Proc.new do |runner, repo_uri, branch, sha1, target_directory|
   #   runner.run! "git scclone #{repo_uri} #{target_directory} #{sha1}"
