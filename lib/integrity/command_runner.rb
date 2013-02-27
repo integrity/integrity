@@ -27,7 +27,7 @@ module Integrity
           wr.close
           while true
             fds, = IO.select([rd], nil, nil, @build_output_interval)
-            unless fds.empty?
+            if fds
               # should have some data to read
               begin
                 chunk = rd.read_nonblock(10240)

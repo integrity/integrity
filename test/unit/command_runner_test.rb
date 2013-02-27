@@ -52,6 +52,20 @@ class CommandRunnerTest < IntegrityTest
     assert_equal "hello world\n", chunked_output
   end
   
+  test "collecting output chunks when timeout happens before first output" do
+    logger = Logger.new('/dev/null')
+    runner = CommandRunner.new(logger, 0.1)
+    
+    chunked_output = ''
+    result = runner.run('sleep 0.5; echo hello world') do |chunk|
+      chunked_output += chunk
+    end
+    assert result.success
+    assert_equal 'hello world', result.output
+    # newline is removed from final output by CommandRunner
+    assert_equal "hello world\n", chunked_output
+  end
+  
   test "collecting output chunks - threaded intermediate check" do
     logger = Logger.new('/dev/null')
     runner = CommandRunner.new(logger)
