@@ -4,8 +4,9 @@ module Integrity
 
     Result = Struct.new(:success, :output)
 
-    def initialize(logger)
+    def initialize(logger, build_output_interval=nil)
       @logger = logger
+      @build_output_interval = build_output_interval || 5
     end
 
     def cd(dir)
@@ -25,7 +26,7 @@ module Integrity
           # parent
           wr.close
           while true
-            fds, = IO.select([rd], nil, nil, Integrity.config.build_output_interval)
+            fds, = IO.select([rd], nil, nil, @build_output_interval)
             unless fds.empty?
               # should have some data to read
               begin

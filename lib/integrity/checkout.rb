@@ -117,7 +117,7 @@ module Integrity
     end
 
     def runner
-      @runner ||= CommandRunner.new(@logger)
+      @runner ||= CommandRunner.new(@logger, Integrity.config.build_output_interval)
     end
   end
 end
