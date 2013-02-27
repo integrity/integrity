@@ -124,6 +124,9 @@ c.checkout_proc = Proc.new do |runner, repo_uri, branch, sha1, target_directory|
 end
 ----
 
+build_output_interval:: How long to wait, in seconds, between updating build
+output for in progress builds. Default is 5.
+
 === Building private repositories
 Integrity will use keys configured in its environment for repository access.
 
