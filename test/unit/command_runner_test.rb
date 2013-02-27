@@ -51,4 +51,30 @@ class CommandRunnerTest < IntegrityTest
     # newline is removed from final output by CommandRunner
     assert_equal "hello world\n", chunked_output
   end
+  
+  test "collecting output chunks - threaded intermediate check" do
+    logger = Logger.new('/dev/null')
+    runner = CommandRunner.new(logger)
+    
+    chunked_output = ''
+    result = nil
+    worker_thread = Thread.new do
+      result = runner.run('echo before sleep; sleep 1; echo after sleep') do |chunk|
+        chunked_output += chunk
+      end
+    end
+    
+    worker_thread.run
+    sleep(0.5)
+    assert_nil result
+    assert_equal "before sleep\n", chunked_output
+    
+    worker_thread.join
+    
+    assert result
+    assert result.success
+    assert_equal "before sleep\nafter sleep", result.output
+    # newline is removed from final output by CommandRunner
+    assert_equal "before sleep\nafter sleep\n", chunked_output
+  end
 end
