@@ -30,6 +30,9 @@ module Integrity
               # should have some data to read
               begin
                 chunk = rd.read_nonblock(10240)
+                if block_given?
+                  yield chunk
+                end
                 output += chunk
               rescue Errno::EAGAIN, Errno::EWOULDBLOCK
                 # do select again
