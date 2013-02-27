@@ -102,6 +102,14 @@ module Integrity
       :public  => true }
   end
 
+  Project.fixture(:long_building) do
+    { :name    => "Long building",
+      :uri     => "git://github.com/foca/integrity.git",
+      :branch  => "master",
+      :command => "echo before sleep; sleep 1; echo after sleep",
+      :public  => true }
+  end
+
   Build.fixture do
     { :output       => /[:paragraph:]/.gen,
       :successful   => [true, false].pick,
