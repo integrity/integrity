@@ -12,6 +12,7 @@ module Integrity
       :password,
       :project_default_build_count,
       :trim_branches,
+      :build_output_interval,
       :checkout_proc
 
     def build_all?

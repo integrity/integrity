@@ -25,7 +25,7 @@
       %span.github<
         %a{ :href => github_commit_url(build) } view on GitHub
 
-- if build.completed?
+- if build.building? || build.completed?
   - if ! build.project.artifacts_empty? && !(files = artifact_files(build)).empty?
     %h2
       Artifacts
@@ -36,6 +36,7 @@
                 :href => file[:url] } #{file[:name]}
             %br/
 
+- if build.completed? || build.building? && !build.output.empty?
   %h2
     Build Output
     %a{:href => build_path(build, :raw)} (raw)
