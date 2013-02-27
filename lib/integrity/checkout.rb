@@ -84,11 +84,32 @@ module Integrity
     end
 
     def run_in_dir(command)
-      in_dir { |r| r.run("export INTEGRITY_BRANCH=\"#{@repo.branch}\"; " + command) }
+      command = "export INTEGRITY_BRANCH=\"#{@repo.branch}\"; " + command
+      if block_given?
+        in_dir do |r|
+          r.run(command) do |chunk|
+            yield chunk
+          end
+        end
+      else
+        in_dir do |r|
+          r.run(command)
+        end
+      end
     end
 
     def run_in_dir!(command)
-      in_dir { |r| r.run!(command) }
+      if block_given?
+        in_dir do |r|
+          r.run!(command) do |chunk|
+            yield chunk
+          end
+        end
+      else
+        in_dir do |r|
+          r.run!(command)
+        end
+      end
     end
 
     def in_dir(&block)

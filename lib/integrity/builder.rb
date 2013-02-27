@@ -13,7 +13,9 @@ module Integrity
     def build
       begin
         start
-        run
+        run do |chunk|
+          add_output(chunk)
+        end
       rescue Interrupt, SystemExit
         raise
       rescue Exception => e
@@ -36,9 +38,15 @@ module Integrity
     end
 
     def run
-      @result = checkout.run_in_dir(command)
+      @result = checkout.run_in_dir(command) do |chunk|
+        yield chunk
+      end
     end
 
+    def add_output(chunk)
+      @build.update(:output => @build.output + chunk)
+    end
+    
     def complete
       @logger.info "Build #{commit} exited with #{@result.success} got:\n #{@result.output}"
 

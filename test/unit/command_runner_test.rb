@@ -37,4 +37,18 @@ class CommandRunnerTest < IntegrityTest
     assert !result.success
     assert result.output =~ /Syntax error/
   end
+  
+  test "collecting output chunks" do
+    logger = Logger.new('/dev/null')
+    runner = CommandRunner.new(logger)
+    
+    chunked_output = ''
+    result = runner.run('echo hello world') do |chunk|
+      chunked_output += chunk
+    end
+    assert result.success
+    assert_equal 'hello world', result.output
+    # newline is removed from final output by CommandRunner
+    assert_equal "hello world\n", chunked_output
+  end
 end
