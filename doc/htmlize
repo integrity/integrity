@@ -28,7 +28,7 @@ cat <<EOF
     and <a href="http://atonie.org">Simon Rozet</a>
   </div>
   <div class=links>
-    <a href="http://integrity.lighthouseapp.com/projects/14308-integrity">Bugs / Support</a>
+    <a href="http://github.com/integrity/integrity/issues">Bugs / Support</a>
         |
     <a href="http://github.com/integrity/integrity">Source Code</a>
   </div>
