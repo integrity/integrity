@@ -81,7 +81,7 @@ file "doc/integrity.html" => ["doc/htmlize",
 end
 
 desc "Re-generate stylesheet"
-file "public/integrity.css" => "lib/app/views/integrity.sass" do |f|
+file "lib/app/public/integrity.css" => "lib/app/views/integrity.sass" do |f|
   sh "sass lib/app/views/integrity.sass > #{f.name}"
 end
 
