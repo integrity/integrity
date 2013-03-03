@@ -235,6 +235,28 @@ require "integrity/notifier/email"
 3. Restart Integrity and go to a project settings screen where you can
    enable and configure the notifier.
 
+=== HTTP Notifier
+
+This notifier sends an HTTP POST request to the specified URL. The payload is
+sent as HTML form fields, with `application/x-www-form-urlencoded` content
+type. The fields are as follows:
+
+* `name`: project name
+* `status`: build status string (success/failed)
+* `url`: url to build page in Integrity
+* `repo`: URI specified for repository in project configuration
+* `branch`: branch specified in project configuration
+* `commit`: SHA1 of the commit that was built
+* `author`: Commit's author name (without email address)
+* `message`: Commit message, prefixed with branch name
+
+Example request body:
+
+[source, txt]
+----
+name=My+Test+Project&status=success&url=http%3A%2F%2Fwww.example.com%2Fmy-test-project%2Fbuilds%2F1&repo=%2Ftmp%2Fi%2Ftmp%2Fmy_test_project&branch=master&commit=d669c99c26419806c80326e1b09eda378e65491d&author=John+Doe&message=master%3A+This+commit+will+work
+----
+
 == Deployment
 === http://modrails.com[Phusion Passenger]
 Please see Passenger's documentation for
