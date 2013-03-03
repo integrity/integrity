@@ -12,6 +12,10 @@ body {
 	color:#333;
 }
 
+img {
+	border: 1px solid;
+}
+
 em {
 	font-style:italic;
 }
