@@ -73,6 +73,7 @@ rescue LoadError
 end
 
 desc "Generate HTML documentation."
+task :html => ['doc/integrity.html']
 file "doc/integrity.html" => ["doc/htmlize",
   "doc/integrity.txt",
   "doc/integrity.css"] do |f|
