@@ -30,7 +30,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     @thread.join
   end
 
-  scenario "Buliding" do
+  scenario "Building" do
     repo = git_repo(:my_test_project)
     repo.add_successful_commit
     Project.gen(:long_building, :uri => repo.uri)
