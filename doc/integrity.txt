@@ -353,3 +353,13 @@ usual ;-)
 Once you're done, make sure your changes are rebased on on top of the `master`
 branch and open a new ticket in our bug tracker to let us know where we can
 pull from.
+
+== Documentation
+
+To build HTML documentation, run `rake html`. This is what goes on the
+Integrity website (http://integrity.github.com).
+
+Dependencies for HTML documentation generation:
+
+* [asciidoc](http://www.methods.co.nz/asciidoc/)
+* [source-highlight](http://www.gnu.org/software/src-highlite/)
