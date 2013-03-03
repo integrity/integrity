@@ -323,6 +323,20 @@ $ unicorn -c doc/unicorn.rb -D
 
 Then, configure a web proxy as outlined above for Thin.
 
+== FAQ
+=== Does it support Subversion or any other SCM?
+[[faq-scm]]
+Integrity only works with http://git-scm.org[git]. However, git can mirror
+other SCMs, for example Subversion via git-svn, and Integrity will work with
+such mirrored repositories. It is up to you to keep the mirrored repositories
+up to date with your primary repositories.
+
+=== But does it work with <insert tech here>?
+[[faq-tech]]
+**Absolutely!** As long as your build process can be run from an UNIX-y
+environment and that it returns a *zero* status code for success and
+*non-zero* for failure, then Integrity works for you.
+
 == Support / Contributing
 You can get in touch via IRC at irc://irc.freenode.net/integrity[#integrity on
 freenode]. If no one happens to be around, you can ask our mailing list at
@@ -339,17 +353,3 @@ usual ;-)
 Once you're done, make sure your changes are rebased on on top of the `master`
 branch and open a new ticket in our bug tracker to let us know where we can
 pull from.
-
-== FAQ
-=== Does it support Subversion or any other SCM?
-[[faq-scm]]
-Integrity only works with http://git-scm.org[git]. However, git can mirror
-other SCMs, for example Subversion via git-svn, and Integrity will work with
-such mirrored repositories. It is up to you to keep the mirrored repositories
-up to date with your primary repositories.
-
-=== But does it work with <insert tech here>?
-[[faq-tech]]
-**Absolutely!** As long as your build process can be run from an UNIX-y
-environment and that it returns a *zero* status code for success and
-*non-zero* for failure, then Integrity works for you.
