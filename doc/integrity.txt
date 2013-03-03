@@ -124,9 +124,6 @@ c.checkout_proc = Proc.new do |runner, repo_uri, branch, sha1, target_directory|
 end
 ----
 
-build_output_interval:: How long to wait, in seconds, between updating build
-output for in progress builds. Default is 5.
-
 === Building private repositories
 Integrity will use keys configured in its environment for repository access.
 
@@ -208,10 +205,21 @@ http://github.com/tobi/delayed_job#readme[Delayed::Job's documentation]
 for more details.
 
 == Notification
-After a build status is available, you want to know it **immediately**,
-Integrity currently supports three notification mediums: Email, IRC and
-http://campfirenow.com[Campfire]. To set it up and use one of these with
-your projects:
+
+After a build status is available, you want to know it **immediately**.
+Integrity supports a number of notification mechanisms:
+
+* AMQP
+* http://campfirenow.com[Campfire]
+* Co-op
+* Email
+* HTTP
+* Notifo
+* Amazon SES
+* Shell
+* TCP
+
+To enable and use a notifier with your projects:
 
 1. Open the `Gemfile`, uncomment the relevant lines and run
    `bundle lock && bundle install` to install the notifier's dependencies.
@@ -224,7 +232,7 @@ require "integrity"
 require "integrity/notifier/email"
 ----
 +
-3. Restart Integrity and go to the project settings screen where you can
+3. Restart Integrity and go to a project settings screen where you can
    enable and configure the notifier.
 
 == Deployment
