@@ -56,6 +56,11 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("blockquote p", :content => "This commit will work")
     assert_have_tag("span.who",     :content => "by: John Doe")
     assert_have_tag("span.when",    :content => "today")
-    assert_have_tag("pre.output",   :content => "before sleep\nafter sleep")
+    # on ruby 1.8.7 xpath does not understand newlines apparently
+    #assert_have_tag("pre.output",   :content => "before sleep\nafter sleep")
+    field = field_by_xpath('//pre[@class="output"]')
+    assert field
+    text = field.element.text.strip
+    assert_equal "before sleep\nafter sleep", text
   end
 end
