@@ -1,3 +1,8 @@
+%form{ :action => build_path(build), :method => :post }
+  %p.submit
+    %button{ :type => :submit, :title => "Rebuild this commit" }<
+      Rebuild
+
 %h1
   = build.human_status
   - if build.building?
@@ -5,11 +10,6 @@
       &== for #{build.human_time_since_start}
   - elsif !build.pending?
     &== in #{build.human_duration}
-
-%form{ :action => build_path(build), :method => :post }
-  %p.submit
-    %button{ :type => :submit, :title => "Rebuild this commit" }<
-      Rebuild
 
 %blockquote
   %p
