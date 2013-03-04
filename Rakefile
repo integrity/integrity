@@ -1,6 +1,7 @@
 $LOAD_PATH.unshift(File.expand_path(File.dirname(".")))
 require "rake/testtask"
 require "rake/clean"
+require 'fileutils'
 
 desc "Default: run all tests"
 task :default => :test
@@ -73,11 +74,31 @@ rescue LoadError
 end
 
 desc "Generate HTML documentation."
-task :html => ['doc/integrity.html']
-file "doc/integrity.html" => ["doc/htmlize",
+task :html => %w(
+  doc/build
+  doc/build/integrity.html
+)
+
+file "doc/build/integrity.html" => ["doc/htmlize",
   "doc/integrity.txt",
   "doc/integrity.css"] do |f|
   sh "cat doc/integrity.txt | doc/htmlize > #{f.name}"
+end
+
+task "doc/build" do
+  FileUtils.mkdir_p('doc/build')
+end
+
+doc_dependencies = %w(
+  integrity.css
+  screenshot.png
+)
+
+doc_dependencies.each do |file|
+  task "doc/build/#{file}" => "doc/#{file}" do
+    FileUtils.cp("doc/#{file}", "doc/build/#{file}")
+  end
+  task :html => "doc/build/#{file}"
 end
 
 desc "Re-generate stylesheet"
