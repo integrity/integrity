@@ -162,9 +162,9 @@ a {
     #content #build form p.submit, #content #last_build form p.submit {
       margin: 0;
       padding: 0;
-      position: absolute;
-      right: 0.5em;
-      top: 1.25em; }
+      float: right;
+      margin-right: 0.5em;
+      margin-top: 1.25em; }
   #content .blank_slate p, #content .error p {
     position: relative;
     top: 0.3em; }
