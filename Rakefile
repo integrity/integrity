@@ -76,10 +76,10 @@ end
 desc "Generate HTML documentation."
 task :html => %w(
   doc/build
-  doc/build/integrity.html
+  doc/build/index.html
 )
 
-file "doc/build/integrity.html" => ["doc/htmlize",
+file "doc/build/index.html" => ["doc/htmlize",
   "doc/integrity.txt",
   "doc/integrity.css"] do |f|
   sh "cat doc/integrity.txt | doc/htmlize > #{f.name}"
