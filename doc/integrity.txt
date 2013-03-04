@@ -77,7 +77,7 @@ This setting is optional but is required to have proper links in notifications.
 
 log:: Path to the Integrity log file; mostly useful for troubleshooting
 
-build_all!:: Tells Integirty to build every single commit it is notified about.
+build_all!:: Tells Integrity to build every single commit it is notified about.
 Only builds the newest otherwise.
 
 auto_branch!:: Say the project _Integrity_ is tracking the master branch, and
