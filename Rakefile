@@ -106,4 +106,4 @@ file "lib/app/public/integrity.css" => "lib/app/views/integrity.sass" do |f|
   sh "sass lib/app/views/integrity.sass > #{f.name}"
 end
 
-CLOBBER.include("doc/integrity.html")
+CLOBBER.include("doc/build")
