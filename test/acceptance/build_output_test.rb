@@ -30,7 +30,10 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     @thread.join
   end
 
-  scenario "Building" do
+  # This test checks that the intermediate build output is:
+  # 1) non-empty, and
+  # 2) different from final build output.
+  scenario "Checking that intermediate build output is shown" do
     repo = git_repo(:my_test_project)
     repo.add_successful_commit
     Project.gen(:long_building, :uri => repo.uri)
@@ -39,16 +42,32 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     visit "/long-building"
     click_button "manual build"
     
+    # starts the build.
+    # the build sleeps for 1 second after the repository is cloned, etc.
     start_build
-    sleep 0.5
-    visit "/long-building"
+    
+    count = 0
+    # wait at most 1 second, should be enough given build's sleep time
+    while count < 10
+      sleep 0.1
+      visit "/long-building"
+      if !response.body.include?('HEAD is building')
+        break
+      end
+      count += 1
+    end
 
+    # if there was a problem with the build machinery itself,
+    # we may have never gotten to the building phase,
+    # and body here would include "HEAD is building"
     assert_have_tag("h1", :content => "#{repo.short_head} is building")
     assert_have_tag("blockquote p", :content => "This commit will work")
     assert_have_tag("span.who",     :content => "by: John Doe")
     assert_have_tag("span.when",    :content => "today")
+    # partial output
     assert_have_tag("pre.output",   :content => "before sleep")
     
+    # wait for the build to finish
     finish_build
     visit "/long-building"
     
@@ -56,6 +75,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("blockquote p", :content => "This commit will work")
     assert_have_tag("span.who",     :content => "by: John Doe")
     assert_have_tag("span.when",    :content => "today")
+    # complete output
     # on ruby 1.8.7 xpath does not understand newlines apparently
     #assert_have_tag("pre.output",   :content => "before sleep\nafter sleep")
     field = field_by_xpath('//pre[@class="output"]')
