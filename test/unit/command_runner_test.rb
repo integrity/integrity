@@ -35,7 +35,7 @@ class CommandRunnerTest < IntegrityTest
     
     result = runner.run('if (')
     assert !result.success
-    assert result.output =~ /Syntax error/
+    assert result.output =~ /Syntax error/i
   end
   
   test "collecting output chunks" do
