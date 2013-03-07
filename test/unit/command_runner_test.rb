@@ -35,7 +35,13 @@ class CommandRunnerTest < IntegrityTest
     
     result = runner.run('if (')
     assert !result.success
-    assert result.output =~ /Syntax error/
+    # bash 3.2.48 prints "syntax error" in lowercase.
+    # freebsd 9.1 /bin/sh prints "Syntax error" with capital S.
+    # zsh 5.0.2 prints "parse error" which we do not handle.
+    # localized systems will print the message in not English which
+    # we do not handle either.
+    # XXX do this better
+    assert result.output.downcase.index('syntax error')
   end
   
   test "collecting output chunks" do
