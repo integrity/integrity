@@ -39,6 +39,10 @@ class UnparseableCommandTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("blockquote p", :content => "This commit will work")
     assert_have_tag("span.who",     :content => "by: John Doe")
     assert_have_tag("span.when",    :content => "today")
-    assert_have_tag("pre.output",   :content => "Syntax error")
+    field = field_by_xpath('//pre[@class="output"]')
+    text = field.element.text
+    # see the comment in test/unit/command_runner_test.rb
+    # regarding the various ways shells spell "syntax error"
+    assert text.downcase.include?('syntax error')
   end
 end
