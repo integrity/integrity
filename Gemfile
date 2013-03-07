@@ -33,9 +33,6 @@ gem "bcat",                  "0.5.2"
 # = AMQP
 # gem "bunny", "0.6.0"
 
-# = Notifo
-# gem "notifo", "0.1.0"
-
 # = Dependencies for the :dj builder
 # gem "sqlite3-ruby", "1.3.2"
 # gem "activerecord", "3.0.3"
@@ -72,7 +69,6 @@ group :test do
   gem "dm-sweatshop"
   gem "randexp",         "~> 0.1.6"
   gem "pony",            "1.1"
-  gem "notifo",          "0.1.0"
   gem "rack-test",       "0.5.7"
   gem "nokogiri",        "1.4.4"
   gem "hpricot",         "0.8.3"
