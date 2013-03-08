@@ -19,8 +19,6 @@ require "integrity"
 # require "integrity/notifier/tcp"
 # = HTTP
 # require "integrity/notifier/http"
-# = Notifo
-# require "integrity/notifier/notifo"
 # = AMQP
 # require "integrity/notifier/amqp"
 # = Shell

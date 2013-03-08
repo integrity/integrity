@@ -209,7 +209,6 @@ Integrity supports a number of notification mechanisms:
 * Co-op
 * Email
 * HTTP
-* Notifo
 * Amazon SES
 * Shell
 * TCP
