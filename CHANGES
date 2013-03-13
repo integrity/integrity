@@ -1,5 +1,9 @@
 = master
 
+ * delayed_jobs table was missing queue column, of type string.
+   This column will be added in new installations. Existing installations
+   must add it to the schema manually.
+
  * Notifo notifier was removed, because notifo service had been retired.
 
  * Website sources are back in main Integrity repository.
