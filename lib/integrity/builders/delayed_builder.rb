@@ -13,6 +13,7 @@ module Integrity
         unless Delayed::Job.table_exists?
           ActiveRecord::Schema.define {
             create_table :delayed_jobs, :force => true do |table|
+              table.string   :queue
               table.integer  :priority, :default => 0
               table.integer  :attempts, :default => 0
               table.text     :handler
