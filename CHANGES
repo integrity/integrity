@@ -1,5 +1,14 @@
 = master
 
+ * Notifo notifier was removed, because notifo service had been retired.
+
+ * Website sources are back in main Integrity repository.
+
+ * Integrity now periodically collects output from running builds, and
+   will show it on build pages.
+
+ * Added JSON endpoint for project list (/ with Accept: application-json).
+
  * It is now possible to manually send build notifications (without running
    the builds).
 
