@@ -47,8 +47,8 @@ class ConfiguratorTest < IntegrityTest
   end
 
   test "public_status" do
-    Integrity.configure { |c| c.allow_public_status = true }
-    assert Integrity.config.allow_public_status?
+    Integrity.configure { |c| c.status_image_always_public = true }
+    assert Integrity.config.status_image_always_public?
   end
 
   test "auto_branch" do
