@@ -128,7 +128,7 @@ module Integrity
     end
 
     get "/:project\.png" do
-      login_required unless current_project.public?
+      login_required unless current_project.public? or Integrity.config.allow_public_status?
 
       send_file File.join(File.dirname(__FILE__), 'public', 'status', current_project.status.to_s + '.png')
     end
