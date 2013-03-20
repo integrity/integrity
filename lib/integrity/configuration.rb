@@ -14,14 +14,14 @@ module Integrity
       :trim_branches,
       :build_output_interval,
       :checkout_proc,
-      :allow_public_status
+      :status_image_always_public
 
     def build_all?
       !! @build_all
     end
 
-    def allow_public_status?
-      !! @allow_public_status
+    def status_image_always_public?
+      !! @status_image_always_public
     end
 
     def auto_branch?
