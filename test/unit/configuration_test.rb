@@ -46,6 +46,11 @@ class ConfiguratorTest < IntegrityTest
     assert Integrity.config.github_enabled?
   end
 
+  test "public_status" do
+    Integrity.configure { |c| c.allow_public_status = true }
+    assert Integrity.config.allow_public_status?
+  end
+
   test "auto_branch" do
     begin
       Integrity.configure { |c| c.auto_branch = true }

@@ -13,10 +13,15 @@ module Integrity
       :project_default_build_count,
       :trim_branches,
       :build_output_interval,
-      :checkout_proc
+      :checkout_proc,
+      :allow_public_status
 
     def build_all?
       !! @build_all
+    end
+
+    def allow_public_status?
+      !! @allow_public_status
     end
 
     def auto_branch?
