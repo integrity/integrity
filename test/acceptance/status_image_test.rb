@@ -31,4 +31,17 @@ class StatusImageTest < Test::Unit::AcceptanceTestCase
     assert_equal 200, response_code
     assert_equal "image/png", response_content_type
   end
+
+  scenario "Get private project status image when images are always public" do
+    Integrity.configure { |c|
+      c.status_image_always_public = true
+    }
+
+    private_project = Project.gen :successful, :public => false
+
+    get "/#{private_project.permalink}.png"
+
+    assert_equal 200, response_code
+    assert_equal "image/png", response_content_type
+  end
 end
