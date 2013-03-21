@@ -1,4 +1,4 @@
-= master
+= 25 / 2013-03-20
 
  * delayed_jobs table was missing queue column, of type string.
    This column will be added in new installations. Existing installations
