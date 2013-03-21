@@ -56,6 +56,18 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
       end
       count += 1
     end
+    
+    # here commit message may have been retrieved but no output
+    # was collected yet, check and wait agian
+    count = 0
+    while count < 10
+      field = field_by_xpath('//pre[@class="output"]')
+      if field
+        break
+      end
+      sleep 0.1
+      count += 1
+    end
 
     # if there was a problem with the build machinery itself,
     # we may have never gotten to the building phase,
