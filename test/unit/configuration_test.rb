@@ -46,7 +46,7 @@ class ConfiguratorTest < IntegrityTest
     assert Integrity.config.github_enabled?
   end
 
-  test "public_status" do
+  test "status_image_always_public" do
     Integrity.configure { |c| c.status_image_always_public = true }
     assert Integrity.config.status_image_always_public?
   end
