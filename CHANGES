@@ -1,5 +1,9 @@
 = master
 
+ * Added status_image_always_public configuration option, to make status
+   images for private projects publicly viewable. For further information
+   please see https://github.com/integrity/integrity/issues/229.
+
 = 25 / 2013-03-20
 
  * delayed_jobs table was missing queue column, of type string.
