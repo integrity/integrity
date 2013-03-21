@@ -73,7 +73,7 @@ Integrity.configure do |c|
 
   # Make status badge public for all projects? Otherwise, login is
   # required to see status badge for private projects.
-  c.status_image_always_public  = true
+  c.status_image_always_public  = false
 
   # Use https://github.com/grahamc/git-cachecow to cache repository locally
   # c.checkout_proc             = Proc.new do |runner, repo_uri, branch, sha1, target_directory|
