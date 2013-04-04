@@ -206,6 +206,7 @@ Integrity supports a number of notification mechanisms:
 
 * AMQP
 * http://campfirenow.com[Campfire]
+* https://www.flowdock.com[Flowdock]
 * Co-op
 * Email
 * HTTP

@@ -15,6 +15,8 @@ require "integrity"
 # require "integrity/notifier/ses"
 # = Campfire
 # require "integrity/notifier/campfire"
+# = Flowdock
+# require "integrity/notifier/flowdock"
 # = TCP
 # require "integrity/notifier/tcp"
 # = HTTP
