@@ -1,0 +1,11 @@
+%p.normal
+  %label{ :for => "flowdock_notifier_token" } API Token
+  %input.text#flowdock_notifier_token{ :name => "notifiers[Flowdock][token]", :value => config["token"], :type => "text" }
+
+%p.normal
+  %label{ :for => "flowdock_notifier_from_address" } From address (used for Gravatar)
+  %input.text#flowdock_from_address{ :name => "notifiers[Flowdock][from_address]", :value => config["from_address"], :type => "email", :placeholder => 'integrity@yourdomain.com' }
+
+%p.normal
+  %label{ :for => "flowdock_notifier_announce_success" } Notify on success?
+  %input#flowdock_notifier_announce_success{ :name => "notifiers[Flowdock][announce_success]", :type => "checkbox", :checked => config['announce_success'], :value => "1" }
