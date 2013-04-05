@@ -140,6 +140,7 @@ a {
       margin-top: 1em;
       margin-bottom: 0; }
     #content form fieldset p.normal {
+      clear: both;
       margin-top: 1em; }
     #content form fieldset p label {
       width: 6.7em; }
