@@ -22,6 +22,7 @@ module Integrity
               table.datetime :locked_at
               table.datetime :failed_at
               table.string   :locked_by
+              table.string   :queue
               table.timestamps
             end
           }

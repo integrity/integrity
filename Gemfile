@@ -1,17 +1,17 @@
 source "http://rubygems.org"
 
-gem "data_mapper",       "~> 1.2.0"
+gem "data_mapper"
 gem "dm-sqlite-adapter"
 gem "do_sqlite3"
 
-gem "haml",                  "~> 3.1.6"
-gem "sass",                  "~> 3.1.18"
+gem "haml"
+gem "sass"
 
-gem "chronic_duration",      "~> 0.9.6"
-gem "sinatra",               "1.1.2"
-gem "sinatra-authorization", "1.0.0"
+gem "chronic_duration"
+gem "sinatra"
+gem "sinatra-authorization"
 
-gem "bcat",                  "0.5.2"
+gem "bcat"
 
 # If you want to use Thin:
 # gem "thin"
@@ -56,28 +56,29 @@ gem "bcat",                  "0.5.2"
 
 # = Development dependencies.
 group :test do
-  gem 'aws-ses', '0.4.3', :require => 'aws/ses'
-  gem "extlib",          "0.9.15"
+  gem 'aws-ses', :require => 'aws/ses'
+  gem "extlib"
   gem "sqlite3"
   gem "delayed_job"
   gem "delayed_job_active_record"
-  gem "activerecord",    "3.0.3"
-  gem "i18n",            "0.5.0"
-  gem "rr",              "1.0.2"
-  gem "mocha",           "0.9.10"
-  gem "redgreen",        "1.2.2"
+  gem "activerecord",    "~> 3.2"
+  gem "rr"
+  gem "mocha"
+  gem "redgreen"
   gem "dm-sweatshop"
-  gem "randexp",         "~> 0.1.6"
-  gem "pony",            "1.1"
-  gem "rack-test",       "0.5.7"
-  gem "nokogiri",        "1.4.4"
-  gem "hpricot",         "0.8.3"
-  gem "contest",         "0.1.2"
-  gem "webrat",          "0.7.3"
-  gem "broach",          "0.2.1"
-  gem "nap",             "0.4"
-  gem "bunny",           "0.6.0"
-  gem "webmock",         "1.6.2"
-  gem "turn",            "0.8.1"
+  gem "randexp"
+  gem "pony"
+  gem "rack-test"
+  gem "nokogiri"
+  gem "hpricot"
+  gem "contest"
+  gem "webrat"
+  gem "broach"
+  gem "nap"
+  gem "bunny"
+  gem "webmock"
+  gem "turn"
   gem "timecop"
+  gem "rake"
+  gem 'ZenTest', '~> 4.8.4'
 end
