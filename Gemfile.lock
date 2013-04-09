@@ -1,12 +1,15 @@
+GIT
+  remote: git://github.com/p/dm-sweatshop-without-parsetree
+  revision: 623ed21c1e75072401a85530c09cc2c8ff029ac2
+  branch: integrity
+  specs:
+    dm-sweatshop (1.2.0)
+      dm-core (~> 1.2.0)
+      randexp (~> 0.1.5)
+
 GEM
   remote: http://rubygems.org/
   specs:
-    ParseTree (3.0.9)
-      RubyInline (~> 3.9.0)
-      sexp_processor (~> 3.2.0)
-    RubyInline (3.9.0)
-      ZenTest (~> 4.3)
-    ZenTest (4.8.0)
     activemodel (3.0.3)
       activesupport (= 3.0.3)
       builder (~> 2.1.2)
@@ -74,10 +77,6 @@ GEM
     dm-sqlite-adapter (1.2.0)
       dm-do-adapter (~> 1.2.0)
       do_sqlite3 (~> 0.10.6)
-    dm-sweatshop (1.2.0)
-      ParseTree (~> 3.0.7)
-      dm-core (~> 1.2.0)
-      randexp (~> 0.1.5)
     dm-timestamps (1.2.0)
       dm-core (~> 1.2.0)
     dm-transactions (1.2.0)
@@ -123,7 +122,6 @@ GEM
     redgreen (1.2.2)
     rr (1.0.2)
     sass (3.1.18)
-    sexp_processor (3.2.0)
     sinatra (1.1.2)
       rack (~> 1.1)
       tilt (~> 1.2)
@@ -164,7 +162,7 @@ DEPENDENCIES
   delayed_job
   delayed_job_active_record
   dm-sqlite-adapter
-  dm-sweatshop
+  dm-sweatshop!
   do_sqlite3
   extlib (= 0.9.15)
   haml (~> 3.1.6)
