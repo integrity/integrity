@@ -80,4 +80,6 @@ group :test do
   gem "webmock",         "1.6.2"
   gem "turn",            "0.8.1"
   gem "timecop"
+  # Fix ZenTest braindamage by locking it to a version that is known to work
+  gem 'ZenTest',         '~> 4.8.4'
 end
