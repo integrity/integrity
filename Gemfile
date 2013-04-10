@@ -66,7 +66,9 @@ group :test do
   gem "rr",              "1.0.2"
   gem "mocha",           "0.9.10"
   gem "redgreen",        "1.2.2"
-  gem "dm-sweatshop"
+  gem "dm-sweatshop",
+    :git => 'git://github.com/p/dm-sweatshop-without-parsetree',
+    :branch => 'integrity'
   gem "randexp",         "~> 0.1.6"
   gem "pony",            "1.1"
   gem "rack-test",       "0.5.7"
