@@ -60,7 +60,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     # here commit message may have been retrieved but no output
     # was collected yet, check and wait agian
     count = 0
-    while count < 10
+    while count < 20
       field = field_by_xpath('//pre[@class="output"]')
       if field
         break
