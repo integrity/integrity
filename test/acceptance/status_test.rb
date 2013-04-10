@@ -72,7 +72,7 @@ class StatusTest < Test::Unit::AcceptanceTestCase
     }
   end
 
-  scenario "Get private project info in JSON format" do
+  scenario "Get private build info in JSON format" do
     private_build = Build.gen(:successful, :project => Project.gen(:public => false))
 
     get "/#{private_build.project.permalink}/builds/#{private_build.id}.json"
