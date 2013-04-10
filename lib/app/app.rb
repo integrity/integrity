@@ -42,8 +42,13 @@ module Integrity
         Integrity.config.build_all?
       ).to_s
     end
-    
-    get '/?', :provides => 'application/json' do
+
+    get "/?", :provides => 'html' do
+      load_projects
+      show :home, :title => "projects"
+    end
+
+    get '/?', :provides => 'json' do
       load_projects
       projects_json = @projects.map do |project|
         project.attributes_for_json
@@ -52,11 +57,6 @@ module Integrity
       json wrapped_projects
     end
 
-    get "/?" do
-      load_projects
-      show :home, :title => "projects"
-    end
-    
     def load_projects
       @projects = authorized? ? Project.all : Project.all(:public => true)
 
