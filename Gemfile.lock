@@ -6,7 +6,7 @@ GEM
       sexp_processor (~> 3.2.0)
     RubyInline (3.9.0)
       ZenTest (~> 4.3)
-    ZenTest (4.8.0)
+    ZenTest (4.9.0)
     activemodel (3.0.3)
       activesupport (= 3.0.3)
       builder (~> 2.1.2)
