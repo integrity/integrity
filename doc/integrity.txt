@@ -356,5 +356,5 @@ Integrity website (http://integrity.github.com).
 
 Dependencies for HTML documentation generation:
 
-* [asciidoc](http://www.methods.co.nz/asciidoc/)
-* [source-highlight](http://www.gnu.org/software/src-highlite/)
+* http://www.methods.co.nz/asciidoc/[asciidoc]
+* http://www.gnu.org/software/src-highlite/[source-highlight]
