@@ -54,4 +54,16 @@ class EditTest < Test::Unit::AcceptanceTestCase
     click_link "Edit"
     assert_equal 401, last_response.status
   end
+  
+  scenario 'Escaping of project name in the form' do
+    Project.gen(:integrity, :public => true, :branch => 'testbranch&')
+    login_as "admin", "test"
+    
+    visit "/integrity"
+    click_link "Edit"
+    
+    field = field_by_xpath('//input[@name="project_data[branch]"]')
+    branch = field.element['value']
+    assert_equal 'testbranch&', branch
+  end
 end
