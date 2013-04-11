@@ -6,17 +6,17 @@
   %p.required{ :class => error_class(@project, :name) }
     %label{ :for => "project_name" }<
       &== Name #{errors_on(@project, :name)}
-    %input.text#project_name{ :name => "project_data[name]", :type => "text", :value => h(@project.name) }
+    %input.text#project_name{ :name => "project_data[name]", :type => "text", :value => @project.name }
 
   %p.required{ :class => error_class(@project, :uri) }
     %label{ :for => "project_repository" }<
       &== Repository URI#{errors_on(@project, :uri)}
-    %input.text#project_repository{ :name => "project_data[uri]", :type => "text", :value => h(@project.uri) }
+    %input.text#project_repository{ :name => "project_data[uri]", :type => "text", :value => @project.uri }
 
   %p.normal{ :class => error_class(@project, :branch) }
     %label{ :for => "project_branch" }<
       &== Branch to track #{errors_on(@project, :branch)}
-    %input.text#project_branch{ :name => "project_data[branch]", :type => "text", :value => h(@project.branch) }
+    %input.text#project_branch{ :name => "project_data[branch]", :type => "text", :value => @project.branch }
 
   %p.normal{ :class => error_class(@project, :command) }
     %label{ :for => "project_build_script" }
@@ -27,7 +27,7 @@
   %p.normal{ :class => error_class(@project, :artifacts) }
     %label{ :for => "project_artifacts" }<
       &== Artifacts to provide
-    %input.text#project_artifacts{ :name => "project_data[artifacts]", :type => "text", :value => h(@project.artifacts) }
+    %input.text#project_artifacts{ :name => "project_data[artifacts]", :type => "text", :value => @project.artifacts }
     %p.explanation Relative paths of files to expose per build. Separate multiple paths with semicolons. Wildcards are allowed (?, *, []) and must be escaped with a backslash if part of a filename.
 
   %p.normal.checkbox
