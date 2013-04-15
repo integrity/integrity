@@ -66,4 +66,18 @@ class EditTest < Test::Unit::AcceptanceTestCase
     branch = field.element['value']
     assert_equal 'testbranch&', branch
   end
+
+  scenario "Preserve multiline command formating" do
+    content = "build\nscript"
+    Project.gen(:integrity, :public => true, :command => content)
+    login_as "admin", "test"
+
+    visit "/integrity"
+    click_link "Edit"
+
+    field = field_by_xpath('//textarea[@name="project_data[command]"]')
+    command = field.element.text
+    assert_equal content, command
+  end
+
 end
