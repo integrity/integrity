@@ -18,6 +18,7 @@ gem 'sinatra'
 gem 'sinatra-authorization'
 
 gem 'bcat'
+gem 'rake'
 
 # If you want to use Thin:
 # gem 'thin'
@@ -88,5 +89,4 @@ group :test do
   gem 'webmock'
   gem 'turn'
   gem 'timecop'
-  gem 'rake'
 end
