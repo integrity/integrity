@@ -281,13 +281,28 @@ NOTE: Currently ThreadedBuilder does not work with Passenger (issue
 $ $EDITOR doc/thin.yml
 $ thin -C doc/thin.yml start
 
-Then, configure a web proxy. Examples:
+=== http://unicorn.bogomips.org/[Unicorn]
+1. Uncomment the `unicorn` line in the Gemfile
+2. Run `bundle install` to install Unicorn
 
-.Nginx as a reverse-proxy
+[source, shell]
+$ $EDITOR doc/unicorn.rb
+$ unicorn -c doc/unicorn.rb -D
+
+=== Reverse Proxy
+
+You will want to run a reverse proxy such as Nginx or Apache in front of
+Thin or Unicorn servers.
+
+==== Nginx
+Nginx can be configured as follows:
+
 ----
 http {
   upstream builder-integrityapp-com {
+  # thin or unicorn - first instance
   server 127.0.0.1:8910;
+  # thin only - specify all remaining instances
   server 127.0.0.1:8911;
 }
 
@@ -299,7 +314,9 @@ server {
 }
 ----
 
-.Apache acting as reverse proxy to a cluster of thin instances
+==== Apache
+Apache can be configured as follows:
+
 ----
 <VirtualHost *:80>
         ServerName ci.example.org
@@ -319,16 +336,6 @@ server {
         ProxyPassReverse / http://127.0.0.1:8911/
 </VirtualHost>
 ----
-
-=== http://unicorn.bogomips.org/[Unicorn]
-1. Uncomment the `unicorn` line in the Gemfile
-2. Run `bundle install` to install Unicorn
-
-[source, shell]
-$ $EDITOR doc/unicorn.rb
-$ unicorn -c doc/unicorn.rb -D
-
-Then, configure a web proxy as outlined above for Thin.
 
 == FAQ
 === Does it support Subversion or any other SCM?
