@@ -199,6 +199,13 @@ Run a worker with `rake jobs:work`. See
 http://github.com/tobi/delayed_job#readme[Delayed::Job's documentation]
 for more details.
 
+==== Resque
+The +resque+ builder, as the name implies, uses
+https://github.com/defunkt/resque[resque] to store jobs.
+
+[source, ruby]
+c.builder = :resque
+
 == Notification
 
 After a build status is available, you want to know it **immediately**.
