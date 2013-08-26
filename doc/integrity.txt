@@ -290,8 +290,8 @@ server {
 .Apache acting as reverse proxy to a cluster of thin instances
 ----
 <VirtualHost *:80>
-        ServerName integrity.nationalfield.org
-        ServerAlias integrity
+        ServerName ci.example.org
+        ServerAlias ci
 
         ProxyRequests Off
         ProxyPreserveHost On
