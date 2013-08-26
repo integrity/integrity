@@ -183,7 +183,7 @@ c.builder = :threaded, 5
 The second argument is the size of the thread pool.
 
 ==== Delayed::Job
-The +dj+ builder queue up the builds into a SQL database using
+The +dj+ builder queues up the builds into an SQL database using
 http://github.com/tobi/delayed_job[Delayed::Job]. To use it, install its
 dependencies by uncommenting the relevant lines in the `Gemfile` and run
 `bundle lock && bundle install`.
