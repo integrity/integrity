@@ -152,9 +152,9 @@ to allow multi-line config var value
 end of private key-----------"
 ----
 
-Warning: storing secret data such as private keys in environment is inherently
-insecure. If you do this, restrict access to your Integrity installation
-to trusted users only.
+WARNING: Storing secret data such as private keys in environment is inherently
+         insecure. If you do this, restrict access to your Integrity
+         installation to trusted users only.
 
 === Automating the builds
 Integrity provides two HTTP endpoints to trigger new builds:
