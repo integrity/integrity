@@ -171,7 +171,7 @@ c.github_token = "TOKEN"
 ----
 
 === Choosing a builder
-Integrity ships with two ways of building your codes in the background.
+Integrity ships with three ways of building your codes in the background.
 
 ==== Threaded
 The +threaded+ builder pushes the build job to an in-memory queue and processes
@@ -181,6 +181,10 @@ dependency nor requires to run other processes.
 c.builder = :threaded, 5
 
 The second argument is the size of the thread pool.
+
+NOTE: The threaded builder
+      https://github.com/integrity/integrity/issues/156[cannot be used
+      with Passenger].
 
 ==== Delayed::Job
 The +dj+ builder queues up the builds into an SQL database using
