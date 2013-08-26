@@ -6,7 +6,7 @@ and makes sure everything works fine. It then reports the build status using
 various notifiers back to you and your team so everyone is on the same page
 and problems can be fixed right away.
 
-Checkout Integrity watching itself:
+Check out Integrity watching itself:
 
 image:screenshot.png[Screenshot]
 
