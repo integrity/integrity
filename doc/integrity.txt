@@ -294,7 +294,7 @@ $ unicorn -c doc/unicorn.rb -D
 You will want to run a reverse proxy such as Nginx or Apache in front of
 Thin or Unicorn servers.
 
-==== Nginx
+==== http://nginx.org/[Nginx]
 Nginx can be configured as follows:
 
 ----
@@ -314,7 +314,7 @@ server {
 }
 ----
 
-==== Apache
+==== http://httpd.apache.org/[Apache]
 Apache can be configured as follows:
 
 ----
