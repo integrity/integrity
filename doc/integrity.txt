@@ -281,13 +281,28 @@ NOTE: Currently ThreadedBuilder does not work with Passenger (issue
 $ $EDITOR doc/thin.yml
 $ thin -C doc/thin.yml start
 
-Then, configure a web proxy. Examples:
+=== http://unicorn.bogomips.org/[Unicorn]
+1. Uncomment the `unicorn` line in the Gemfile
+2. Run `bundle install` to install Unicorn
 
-.Nginx as a reverse-proxy
+[source, shell]
+$ $EDITOR doc/unicorn.rb
+$ unicorn -c doc/unicorn.rb -D
+
+=== Reverse Proxy
+
+You will want to run a reverse proxy such as Nginx or Apache in front of
+Thin or Unicorn servers.
+
+==== http://nginx.org/[Nginx]
+Nginx can be configured as follows:
+
 ----
 http {
   upstream builder-integrityapp-com {
+  # thin or unicorn - first instance
   server 127.0.0.1:8910;
+  # thin only - specify all remaining instances
   server 127.0.0.1:8911;
 }
 
@@ -299,7 +314,9 @@ server {
 }
 ----
 
-.Apache acting as reverse proxy to a cluster of thin instances
+==== http://httpd.apache.org/[Apache]
+Apache can be configured as follows:
+
 ----
 <VirtualHost *:80>
         ServerName ci.example.org
@@ -320,15 +337,38 @@ server {
 </VirtualHost>
 ----
 
-=== http://unicorn.bogomips.org/[Unicorn]
-1. Uncomment the `unicorn` line in the Gemfile
-2. Run `bundle install` to install Unicorn
+If you wish Apache to serve static files:
 
-[source, shell]
-$ $EDITOR doc/unicorn.rb
-$ unicorn -c doc/unicorn.rb -D
+----
+<VirtualHost *:80>
+        ServerName ci.example.org
+        ServerAlias ci
 
-Then, configure a web proxy as outlined above for Thin.
+        ProxyRequests Off
+        ProxyPreserveHost On
+
+        <Proxy *>
+                Order allow,deny
+                Allow from all
+        </Proxy>
+
+        DocumentRoot /path/to/integrity/lib/app/public
+        RewriteEngine On
+        RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
+        RewriteRule ^/(.*)$ http://localhost:8910/$1 [P]
+</VirtualHost>
+
+<Directory /path/to/integrity/lib/app/public>
+        Order allow,deny
+        Allow from all
+        Options None
+        AllowOverride None
+        
+        # Apache 2.4+
+        AuthType None
+        Require all granted
+</Directory>
+----
 
 == FAQ
 === Does it support Subversion or any other SCM?
