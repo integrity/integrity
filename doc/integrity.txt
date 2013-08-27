@@ -337,6 +337,39 @@ Apache can be configured as follows:
 </VirtualHost>
 ----
 
+If you wish Apache to serve static files:
+
+----
+<VirtualHost *:80>
+        ServerName ci.example.org
+        ServerAlias ci
+
+        ProxyRequests Off
+        ProxyPreserveHost On
+
+        <Proxy *>
+                Order allow,deny
+                Allow from all
+        </Proxy>
+
+        DocumentRoot /path/to/integrity/lib/app/public
+        RewriteEngine On
+        RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
+        RewriteRule ^/(.*)$ http://localhost:8910/$1 [P]
+</VirtualHost>
+
+<Directory /path/to/integrity/lib/app/public>
+        Order allow,deny
+        Allow from all
+        Options None
+        AllowOverride None
+        
+        # Apache 2.4+
+        AuthType None
+        Require all granted
+</Directory>
+----
+
 == FAQ
 === Does it support Subversion or any other SCM?
 [[faq-scm]]
