@@ -1,5 +1,11 @@
 = master
 
+ * Support for Ruby 1.8.6 officially dropped.
+
+ * Integrity now runs under Ruby 2.0.0.
+
+ * Added Flowdock notification support.
+
  * Added status_image_always_public configuration option, to make status
    images for private projects publicly viewable. For further information
    please see https://github.com/integrity/integrity/issues/229.
