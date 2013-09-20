@@ -205,10 +205,12 @@ for more details.
 
 ==== Resque
 The +resque+ builder, as the name implies, uses
-https://github.com/defunkt/resque[resque] to store jobs.
+https://github.com/defunkt/resque[resque] to store jobs. Configure it:
 
 [source, ruby]
 c.builder = :resque
+
+Then run a worker with `rake resque:work`.
 
 == Notification
 
