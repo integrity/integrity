@@ -372,6 +372,11 @@ If you wish Apache to serve static files:
 </Directory>
 ----
 
+=== Deleting Old Build Directories
+
+You will want to run `rake cleanup` from cron on a regular basis to delete
+old build directories.
+
 == FAQ
 === Does it support Subversion or any other SCM?
 [[faq-scm]]
