@@ -205,10 +205,12 @@ for more details.
 
 ==== Resque
 The +resque+ builder, as the name implies, uses
-https://github.com/defunkt/resque[resque] to store jobs.
+https://github.com/defunkt/resque[resque] to store jobs. Configure it:
 
 [source, ruby]
 c.builder = :resque
+
+Then run a worker with `rake resque:work`.
 
 == Notification
 
@@ -369,6 +371,11 @@ If you wish Apache to serve static files:
         Require all granted
 </Directory>
 ----
+
+=== Deleting Old Build Directories
+
+You will want to run `rake cleanup` from cron on a regular basis to delete
+old build directories.
 
 == FAQ
 === Does it support Subversion or any other SCM?
