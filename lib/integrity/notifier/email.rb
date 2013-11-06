@@ -70,6 +70,11 @@ module Integrity
           Pony.options = { :via => :sendmail, :via_options => options }
         end
 
+        def success_changed?
+          return true if @previous_build.nil?
+          return @previous_build.successful != @build.successful
+        end
+
         def set_previous_build
           previous_builds = @build.project.builds.select { |b| b.id < @build.id }
           return previous_builds.last
