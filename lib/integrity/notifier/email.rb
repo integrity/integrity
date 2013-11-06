@@ -8,7 +8,7 @@ end
 module Integrity
   class Notifier
     class Email < Notifier::Base
-      attr_reader :to, :from
+      attr_reader :to, :from, :build, :previous_build, :only_success_changed
 
       def self.to_haml
         @haml ||= File.read(File.dirname(__FILE__) + "/email.haml")
@@ -17,7 +17,11 @@ module Integrity
       def initialize(build, config={})
         @to     = config["to"]
         @from   = config["from"]
-        super(build, config)
+        @build  = build
+        @previous_build  = set_previous_build
+        @only_success_changed = config["only_success_changed"]
+
+        super(@build, config)
         configure_mailer
       end
 
@@ -64,6 +68,11 @@ module Integrity
         def configure_sendmail
           options = { :location => @config["sendmail"] }
           Pony.options = { :via => :sendmail, :via_options => options }
+        end
+
+        def set_previous_build
+          previous_builds = @build.project.builds.select { |b| b.id < @build.id }
+          return previous_builds.last
         end
     end
 
