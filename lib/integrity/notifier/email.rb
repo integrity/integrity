@@ -72,7 +72,7 @@ module Integrity
 
         def success_changed?
           return true if @previous_build.nil?
-          return @previous_build.successful != @build.successful
+          return @previous_build.successful? != @build.successful?
         end
 
         def set_previous_build
