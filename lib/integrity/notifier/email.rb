@@ -19,7 +19,7 @@ module Integrity
         @from   = config["from"]
         @build  = build
         @previous_build  = set_previous_build
-        @only_success_changed = config["only_success_changed"]
+        @only_success_changed = (config["only_success_changed"].to_s == "1")
 
         super(@build, config)
         configure_mailer

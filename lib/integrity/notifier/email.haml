@@ -8,7 +8,7 @@
 
 %p.normal
   %label{ :for => "email_notifier_starttls" } Only when changed
-  %input#email_notifier_only_success_changed{ :name => "notifiers[Email][only_success_changed]", :type => "checkbox", :checked => config["only_success_changed"], :value => "0" }
+  %input#email_notifier_only_success_changed{ :name => "notifiers[Email][only_success_changed]", :type => "checkbox", :checked => config["only_success_changed"], :value => "1" }
   %p When checked, only send when the status has changed. When unchecked, sends after every build. Will always send on the first build.
 
 
