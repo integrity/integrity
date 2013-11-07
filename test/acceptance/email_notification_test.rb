@@ -1,4 +1,5 @@
 require "helper/acceptance"
+require "mocha/setup"
 
 class EmailNotificationTest < Test::Unit::AcceptanceTestCase
   story <<-EOS
@@ -66,5 +67,50 @@ class EmailNotificationTest < Test::Unit::AcceptanceTestCase
     click_button "Manual Build"
 
     assert_equal :sendmail, Pony.options[:via]
+  end
+end
+
+class EmailNotificationStatusChangedTest < Test::Unit::AcceptanceTestCase
+  story <<-EOS
+    As an administrator,
+    I want to recieve email notifications only when a project's build status has changed
+    So that the alerts are more informative
+  EOS
+
+  setup do
+    load "integrity/notifier/email.rb"
+  end
+
+  teardown do
+    Notifier.available.replace({})
+  end
+
+  scenario "With change-only alerts enabled" do
+    repo    = git_repo(:my_test_project)
+    project = Project.gen(:my_test_project, :uri => repo.uri)
+    repo.add_successful_commit
+    login_as "admin", "test"
+
+    visit "/my-test-project"
+    click_link "Edit"
+    check "enabled_notifiers_email"
+    fill_in "email_notifier_to",   :with => "hacker@example.org"
+    fill_in "email_notifier_from", :with => "ci@example.org"
+    fill_in "email_notifier_sendmail", :with => "/usr/local/bin/sendmail"
+    check "email_notifier_only_success_changed"
+    click_button "Update"
+
+    Pony.expects(:mail).times(1) # initial mail
+    click_button "Manual Build"
+
+    visit "/my-test-project"
+    Pony.expects(:mail).times(0) # same success as above
+    click_button "Fetch and build"
+
+    repo.add_failing_commit
+
+    visit "/my-test-project"
+    Pony.expects(:mail).times(1) # now failing
+    click_button "Fetch and build"
   end
 end
