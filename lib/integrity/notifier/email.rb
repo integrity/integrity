@@ -31,7 +31,7 @@ module Integrity
           :from    => from,
           :body    => body,
           :subject => subject
-        ) if (@only_success_changed && success_changed?) || !@only_success_changed
+        ) if !@only_success_changed || success_changed?
       end
 
       def subject
