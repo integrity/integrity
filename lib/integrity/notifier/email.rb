@@ -8,7 +8,7 @@ end
 module Integrity
   class Notifier
     class Email < Notifier::Base
-      attr_reader :to, :from, :build, :previous_build, :only_success_changed
+      attr_reader :to, :from, :build, :previous_build, :previous_build_set, :only_success_changed
 
       def self.to_haml
         @haml ||= File.read(File.dirname(__FILE__) + "/email.haml")
@@ -18,8 +18,8 @@ module Integrity
         @to     = config["to"]
         @from   = config["from"]
         @build  = build
-        @previous_build  = set_previous_build
         @only_success_changed = (config["only_success_changed"].to_s == "1")
+        @previous_build_set = false
 
         super(@build, config)
         configure_mailer
@@ -71,13 +71,14 @@ module Integrity
         end
 
         def success_changed?
-          return true if @previous_build.nil?
+          set_previous_build! unless @previous_build_set
+          return true unless @previous_build.is_a?(Integrity::Build) # no previous build
           return @previous_build.successful? != @build.successful?
         end
 
-        def set_previous_build
-          previous_builds = @build.project.builds.select { |b| b.id < @build.id }
-          return previous_builds.last
+        def set_previous_build!
+          @previous_build = @build.project.sorted_builds.at(1)
+          @previous_build_set = true
         end
     end
 
