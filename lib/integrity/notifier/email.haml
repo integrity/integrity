@@ -37,7 +37,7 @@
   - dropdown("notifiers[Email][auth]", "email_notifier_auth", %w[plain login cram_md5], config["auth"])
 
 %p.normal
-  %label{ :for => "email_notifier_domain" } Domain
+  %label{ :for => "email_notifier_domain" } HELO hostname
   %input.text#email_notifier_domain{ :name => "notifiers[Email][domain]", :value => config["domain"], :type => "text" }
 
 
