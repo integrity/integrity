@@ -59,10 +59,19 @@ module Integrity
             :user_name            => user,
             :password             => pass,
             :authentication       => @config["auth"],
-            :domain               => @config["domain"]
+            :domain               => helo_hostname,
           }
 
           Pony.options = { :via => :smtp, :via_options => options }
+        end
+        
+        def helo_hostname
+          domain = @config["domain"]
+          if domain && !domain.empty?
+            domain
+          else
+            Socket.gethostname
+          end
         end
 
         def configure_sendmail
