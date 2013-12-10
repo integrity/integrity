@@ -29,9 +29,7 @@ class IRCNotificationTest < Test::Unit::AcceptanceTestCase
     check "enabled_notifiers_irc"
     fill_in "irc_notifier_uri", :with => irc
 
-    stub(ShoutBot).shout do |shout|
-      assert_equal irc, shout
-    end
+    mock(ShoutBot).shout(irc) { nil }
 
     click_button "Update"
     click_button "Manual Build"
