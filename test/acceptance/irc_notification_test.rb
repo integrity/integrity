@@ -30,7 +30,7 @@ class IRCNotificationTest < Test::Unit::AcceptanceTestCase
     fill_in "irc_notifier_uri", :with => irc
 
     stub(ShoutBot).shout do |shout|
-      assert_equal shout, irc
+      assert_equal irc, shout
     end
 
     click_button "Update"
