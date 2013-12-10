@@ -33,9 +33,6 @@ class IRCNotificationTest < Test::Unit::AcceptanceTestCase
 
     click_button "Update"
     click_button "Manual Build"
-
-    visit "/my-test-project"
-    click_link "Edit"
   end
 
 end
