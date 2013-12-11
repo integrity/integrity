@@ -40,6 +40,9 @@ gem 'rake'
 # = AMQP
 # gem 'bunny', '0.6.0'
 
+# = IRC
+# gem 'shout-bot', '0.0.7'
+
 # = Dependencies for the :dj builder
 # gem 'sqlite3-ruby', '1.3.2'
 # gem 'activerecord', '3.0.3'
@@ -86,6 +89,7 @@ group :test do
   gem 'broach'
   gem 'nap'
   gem 'bunny'
+  gem 'shout-bot'
   gem 'webmock'
   gem 'turn'
   gem 'timecop'

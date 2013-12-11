@@ -27,6 +27,8 @@ require "integrity"
 # require "integrity/notifier/shell"
 # = Co-op
 # require "integrity/notifier/coop"
+# = IRC
+# require "integrity/notifier/irc"
 
 Integrity.configure do |c|
   # DataMapper database connection URI
