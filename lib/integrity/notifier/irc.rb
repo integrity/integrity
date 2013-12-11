@@ -9,15 +9,7 @@ module Integrity
   class Notifier
     class IRC < Notifier::Base
       def self.to_haml
-        <<-HAML
-%p.normal
-  %label{ :for => "irc_notifier_uri" } Send to
-  %input.text#irc_notifier_uri{ |
-    :name => "notifiers[IRC][uri]", |
-    :type => "text", |
-    :value => config["uri"] || |
-      "irc://ci-bot@irc.freenode.net:6667/#example" } |
-HAML
+        @haml ||= File.read(File.dirname(__FILE__) + "/irc.haml")
       end
 
       def initialize(build, config={})
