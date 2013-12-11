@@ -1,5 +1,7 @@
 = master
 
+ * Added IRC notifier. [David Somers]
+
  * Added option to email notifier to email only when build status changes.
 
 = 26 / 2013-08-27
