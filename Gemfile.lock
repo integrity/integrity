@@ -133,6 +133,8 @@ GEM
     redgreen (1.2.2)
     rr (1.0.5)
     sass (3.2.7)
+    shout-bot (0.0.7)
+      addressable
     sinatra (1.4.2)
       rack (~> 1.5, >= 1.5.2)
       rack-protection (~> 1.4)
@@ -191,6 +193,7 @@ DEPENDENCIES
   redgreen
   rr
   sass
+  shout-bot
   sinatra
   sinatra-authorization
   sqlite3
