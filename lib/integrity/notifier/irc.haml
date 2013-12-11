@@ -2,6 +2,6 @@
   %label{ :for => "irc_notifier_uri" } Send to
   %input.text#irc_notifier_uri{:name => "notifiers[IRC][uri]", :type => "text", :value => (config["uri"] || "irc://ci-bot@irc.freenode.net:6667/#example")}
   %small
-    You should minimise the time your server takes to connect to your chosen
+    You should minimize the time your server takes to connect to your chosen
     IRC network to avoid the notifier timing out. This may require opening up
     your ident port if it is currently blocked by a firewall.
