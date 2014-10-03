@@ -8,60 +8,71 @@ if Object.const_defined?(:Encoding) && Encoding.respond_to?(:default_internal=)
   Encoding.default_external = Encoding::UTF_8
 end
 
-require "yaml"
-require "logger"
-require "digest/sha1"
-require "timeout"
-require "ostruct"
-require "pathname"
+require 'yaml'
+require 'logger'
+require 'digest/sha1'
+require 'timeout'
+require 'ostruct'
+require 'pathname'
 
-require "sinatra/base"
-require "sinatra/authorization"
-require "json"
-require "haml"
-require "sass"
-require "dm-core"
-require "dm-validations"
-require "dm-types"
-require "dm-timestamps"
-require "dm-aggregates"
-require "dm-migrations"
-require "addressable/uri"
-require "chronic_duration"
-require "bcat/ansi"
+require 'sinatra/base'
+require 'sinatra/authorization'
+require 'json'
+require 'haml'
+require 'sass'
+require 'dm-core'
+require 'dm-validations'
+require 'dm-types'
+require 'dm-timestamps'
+require 'dm-aggregates'
+require 'dm-migrations'
+require 'addressable/uri'
+require 'chronic_duration'
+require 'bcat/ansi'
+require 'rconfig'
 
-require "app/app"
+require 'rconfig_opts'
+require 'commands'
+require 'utilities'
+require 'runnable'
+require 'docker'
 
-require "integrity/configuration"
-require "integrity/bootstrapper"
-require "integrity/project"
-require "integrity/project_finder"
-require "integrity/author"
-require "integrity/commit"
-require "integrity/build"
-require "integrity/builder"
-require "integrity/notifier"
-require "integrity/notifier/base"
-require "integrity/payload"
-require "integrity/payload_builder"
-require "integrity/checkout"
-require "integrity/command_runner"
-require "integrity/builder"
+require 'app/app'
 
+require 'integrity/configuration'
+require 'integrity/bootstrapper'
+require 'integrity/project'
+require 'integrity/project_finder'
+require 'integrity/author'
+require 'integrity/commit'
+require 'integrity/build'
+require 'integrity/builder'
+require 'integrity/notifier'
+require 'integrity/notifier/base'
+require 'integrity/payload'
+require 'integrity/payload_builder'
+require 'integrity/checkout'
+require 'integrity/command_runner'
+require 'integrity/builder'
 
 DataMapper.finalize
 
 # TODO
 Addressable::URI.class_eval { def gsub(*a); to_s.gsub(*a); end }
 
+Commands
+Docker
+Runnable
+Utilities
+
 module Integrity
   class CannotFindEncoding < StandardError
   end
   
-  autoload :ThreadedBuilder, "integrity/builders/threaded_builder"
-  autoload :DelayedBuilder,  "integrity/builders/delayed_builder"
-  autoload :ResqueBuilder,   "integrity/builders/resque_builder"
-  autoload :ExplicitBuilder, "integrity/builders/explicit_builder"
+  autoload :ThreadedBuilder, 'integrity/builders/threaded_builder'
+  autoload :DelayedBuilder,  'integrity/builders/delayed_builder'
+  autoload :ResqueBuilder,   'integrity/builders/resque_builder'
+  autoload :ExplicitBuilder, 'integrity/builders/explicit_builder'
 
   Repository = Struct.new(:uri, :branch)
 

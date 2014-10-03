@@ -1,4 +1,4 @@
-require "resque"
+require 'resque'
 
 module Integrity
   module ResqueBuilder

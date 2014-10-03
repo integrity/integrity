@@ -1,7 +1,14 @@
+require 'commands'
+
 module Integrity
   class Builder
+
     def self.build(_build, directory, logger)
       new(_build, directory, logger).build
+    end
+
+    def self.docker(_build, directory, logger)
+      new(_build, directory, logger).build_docker_image
     end
 
     def initialize(build, directory, logger)
@@ -99,5 +106,37 @@ module Integrity
     def commit
       @build.sha1
     end
+
+    def docker_start
+      @logger.info "Started building #{repo.uri} at #{commit}"
+      @build.raise_on_save_failure = true
+      @build.update(started_at: Time.now)
+      @build.project.enabled_notifiers.each {|n| n.notify_of_build_start(@build) }
+      # checkout.metadata invokes git and may fail
+      @build.commit.raise_on_save_failure = true
+      @build.commit.update(checkout.metadata)
+    end
+
+    def build_docker_image
+      docker = Docker.new(directory, @logger)
+      docker.build!
+      docker.run(:mysql) do |chunk|
+        puts chunk
+        add_output(chunk)
+      end
+      docker.run(:image) do |chunk|
+        puts chunk
+        add_output(chunk)
+      end
+    end
+
+    private
+
+    def run_cmd(cmd)
+      checkout.run_in_dir(cmd) do |chunk|
+        add_output(chunk)
+      end
+    end
+
   end
 end

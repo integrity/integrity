@@ -1,10 +1,10 @@
 module Integrity
   class CommandRunner
-    class Error < StandardError; end
+    CommandException = Class.new(StandardError)
 
     Result = Struct.new(:success, :output)
 
-    def initialize(logger, build_output_interval=nil)
+    def initialize(logger, build_output_interval = Integrity.config.build_output_interval)
       @logger = logger
       @build_output_interval = build_output_interval || 5
     end
@@ -69,7 +69,7 @@ module Integrity
 
       unless result.success
         @logger.error(result.output.inspect)
-        raise Error, "Failed to run '#{command}': #{result.output}"
+        raise CommandException, "Failed to run '#{command}': #{result.output}"
       end
 
       result
@@ -80,14 +80,14 @@ module Integrity
     # The idea is shamelessly stolen from Bundler.
     #
     # In general, Bundler sets several environment variables to operate,
-    # the issue is that parent shell propogate its evironment to
+    # the issue is that parent shell propogates its own evironment to
     # subshells, which breaks builds, because your build is
     # trying to use Integrity's gemfile.
     #
-    # So here we unset some of that environment variables to let
+    # So here we unset some of the environment variables to let the
     # build's bundler create its own environment.
     #
-    # When build is done we rollback to previous environment.
+    # When the build is done we rollback to the previous environment.
     #
     # Bundler team will probably create a way to avoid this, but
     # most likely it won't be sooner than Bundler 1.1
