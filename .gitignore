@@ -1,8 +1,30 @@
+# Hidden files
+.idea
+.bundle
+.rvmrc
+.DS_Store
+.sass-cache
+.ruby-*
+.idea
+.idea/*
 .bundle/*
-doc/integrity.html
-builds
+
+
+# File types
+*.sqlite3
+*.tmproj
 *.db
 *.log
-.rvmrc
-*.tmproj
-/tmp
+*.dat
+*.rdb
+*.swp
+*.*~
+
+# Directories
+builds
+doc
+log
+tags
+tmp
+bin
+coverage

@@ -1,10 +1,11 @@
 module Integrity
   class Checkout
+    include Runnable
+
     def initialize(repo, commit, directory, logger)
-      @repo      = repo
-      @commit    = commit
-      @directory = directory
-      @logger    = logger
+      super(directory, logger)
+      @repo   = repo
+      @commit = commit
     end
 
     def run
@@ -83,41 +84,11 @@ module Integrity
         output.split.first
     end
 
-    def run_in_dir(command)
-      command = "export INTEGRITY_BRANCH=\"#{@repo.branch}\"; " + command
-      if block_given?
-        in_dir do |r|
-          r.run(command) do |chunk|
-            yield chunk
-          end
-        end
-      else
-        in_dir do |r|
-          r.run(command)
-        end
-      end
+    private
+
+    def command_prefix
+      "export INTEGRITY_BRANCH=\"#{@repo.branch}\"; "
     end
 
-    def run_in_dir!(command)
-      if block_given?
-        in_dir do |r|
-          r.run!(command) do |chunk|
-            yield chunk
-          end
-        end
-      else
-        in_dir do |r|
-          r.run!(command)
-        end
-      end
-    end
-
-    def in_dir(&block)
-      runner.cd(@directory, &block)
-    end
-
-    def runner
-      @runner ||= CommandRunner.new(@logger, Integrity.config.build_output_interval)
-    end
   end
 end

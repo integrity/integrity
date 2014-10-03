@@ -1,12 +1,11 @@
 module Integrity
   class Configuration
-    attr_reader :directory,
-      :base_url,
-      :builder
+    attr_reader :directory, :base_url, :builder
 
     attr_accessor :build_all,
       :auto_branch,
       :github_token,
+      :github_account,
       :log,
       :username,
       :password,
