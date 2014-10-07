@@ -1,4 +1,8 @@
-$LOAD_PATH.unshift(File.expand_path('../lib', __FILE__))
+ROOT_DIR = File.expand_path('..', __FILE__)
+
+exec "source #{ROOT_DIR}/.integrity-env"
+
+$LOAD_PATH.unshift(File.join(ROOT_DIR, 'lib'))
 
 begin
   require '.bundle/environment'
