@@ -22,6 +22,7 @@ set :rvm_install_ruby_params, '--disable-binary'
 set :rvm_install_ruby, :reinstall
 
 require "rvm/capistrano"
+load 'config/overrides'
 
 before 'deploy:setup', 'rvm:install_rvm'
 before 'deploy:setup', 'rvm:install_ruby'
