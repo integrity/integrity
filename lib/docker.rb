@@ -15,13 +15,17 @@ class Docker
     runner.run! "mkdir -p #{directory}"
   end
 
-  def get_build_script_template!
+  def fetch_file!(file)
     token = github_token
     acct  = github_account
     repo  = 'tp' #@build.repo
-    cmd   = Commands.build_template token, acct, repo
+    cmd   = Commands.fetch_file token, acct, repo, file
     puts cmd
     run_in_dir!(cmd)
+  end
+
+  def get_build_script_template!
+    fetch_file! '.integrity.erb'
   end
 
   def process_erb!
@@ -76,18 +80,17 @@ class Docker
   end
 
   def create_docker_file!
-    puts 'Making Dockerfile...'
-    in_dir do
-      runner.run! 'echo "FROM grnds/tp" >> Dockerfile'
-      runner.run! 'echo "MAINTAINER ops@grnds.com" >> Dockerfile'
-      runner.run! 'echo "USER root" >> Dockerfile'
-      runner.run! 'echo "ADD integrity.sh /usr/local/bin/integrity.sh" >> Dockerfile'
-      runner.run! 'echo "RUN chmod +x /usr/local/bin/integrity.sh" >> Dockerfile'
-      runner.run! 'echo "ENTRYPOINT /usr/local/bin/integrity.sh" >> Dockerfile'
-      # runner.run! 'echo "ENTRYPOINT [/bin/bash -e /usr/local/bin/integrity.sh]" >> Dockerfile'
-      # runner.run! 'echo "/bin/sh -c #(nop) ENV SHELL=/bin/bash" >> Dockerfile'
-      # runner.run! 'echo "/bin/sh -c #(nop) ADD file:941c890fb393daad911c10766a340e1c189422dd1c5118e6630b94fd48f258a1 in /usr/local/bin/" >> Dockerfile'
-    end
-    puts 'Dockerfile done.'
+    puts 'Getting Dockerfile...'
+    fetch_file! 'Dockerfile'
+    # puts 'Making Dockerfile...'
+    # in_dir do
+    #   runner.run! 'echo "FROM grnds/tp" >> Dockerfile'
+    #   runner.run! 'echo "MAINTAINER ops@grnds.com" >> Dockerfile'
+    #   runner.run! 'echo "USER root" >> Dockerfile'
+    #   runner.run! 'echo "ADD integrity.sh /usr/local/bin/integrity.sh" >> Dockerfile'
+    #   runner.run! 'echo "RUN chmod +x /usr/local/bin/integrity.sh" >> Dockerfile'
+    #   runner.run! 'echo "ENTRYPOINT /usr/local/bin/integrity.sh" >> Dockerfile'
+    # end
+    # puts 'Dockerfile done.'
   end
 end

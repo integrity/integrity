@@ -3,8 +3,16 @@ class Commands
   class << self
 
     # curl -H "Authorization: token put-token-here" https://api.github.com/repos/ConsultingMD/tp/contents/.integrity.erb
-    def build_template(token, acct, repo)
-      render :build_template, token, acct, repo
+    def fetch_build_template(token, acct, repo)
+      fetch_file(token, acct, repo, '.integrity.erb')
+    end
+
+    def fetch_docker_file(token, acct, repo)
+      fetch_file(token, acct, repo, 'Dockerfile')
+    end
+
+    def fetch_file(token, acct, repo, file)
+      render [:git, :checkout, :file], token, acct, repo, file
     end
 
     def docker_build(token)

@@ -1,7 +1,13 @@
-build_template: 'curl -H "Authorization: token %s" -H "Accept: application/vnd.github.v3.raw" --remote-name --location https://api.github.com/repos/%s/%s/contents/.integrity.erb'
-
+git:
+  checkout:
+    file: 'curl -H "Authorization: token %s" -H "Accept: application/vnd.github.v3.raw" --remote-name --location https://api.github.com/repos/%s/%s/contents/%s'
+  show:
+    metadata: "git show -s --pretty=format:\"#{format}\" %s"
 docker:
   build: 'docker build -t %s .'
   run:
     mysql: 'docker run -d --name %s -p 3306 grnds/mysql'
     image: 'docker run -v /tmp/bundler:/root/bundler -i -t --link %s:mysql %s'
+
+format:
+  pretty: "---%n identifier: %H%n author: %an <%ae>%n message: >-%n  %s%n committed_at: %ci%n"

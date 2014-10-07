@@ -20,4 +20,8 @@
       Notify of this build
 - if @build.pending? || @build.building?
   %script{ :type => 'text/javascript' }
-    setTimeout(function() { window.location.reload(); }, 5000);
+    setTimeout(function(){window.location.reload();},5000);
+
+  %script{ :type => 'text/javascript' }
+    var div = document.getElementById('output');
+    div.scrollTop = div.scrollHeight;

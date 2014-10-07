@@ -38,19 +38,23 @@ module Integrity
       #
       # Therefore currently there seems to be no way to obtain invalid
       # UTF-8 from Git.
-      
+
       format = "---%n" \
         "identifier: %H%n" \
         "author: %an <%ae>%n" \
         "message: >-%n  %s%n" \
         "committed_at: %ci%n"
-      result = run_in_dir!("git show -s --pretty=format:\"#{format}\" #{sha1}")
+      commit = sha1
+      cmd = "git show -s --pretty=format:\"#{format}\" #{commit}"
+      puts 'Fetching metadata...'
+      puts cmd
+      result = run_in_dir!(cmd)
       dump   = YAML.load(result.output)
       message = dump['message']
 
       result = run_in_dir!("git show -s --pretty=format:\"%b\" #{sha1}")
       dump['full_message'] = message + "\n\n" + result.output
-      
+
       # message (subject in git parlance) may be over 255 characters
       # which is our limit for the column; if so, truncate it intelligently
       if message.length > 255
@@ -68,20 +72,20 @@ module Integrity
         dump['message'] = message
       end
 
-      unless dump["committed_at"].kind_of? Time
-        dump["committed_at"] = Time.parse(dump["committed_at"])
+      committed_at = dump['committed_at']
+      unless committed_at.kind_of? Time
+        dump['committed_at'] = Time.parse(committed_at)
       end
 
       dump
     end
 
     def sha1
-      @sha1 ||= @commit == "HEAD" ? head : @commit
+      @sha1 ||= @commit == 'HEAD' ? head : @commit
     end
 
     def head
-      runner.run!("git ls-remote --heads #{@repo.uri} #{@repo.branch}").
-        output.split.first
+      runner.run!("git ls-remote --heads #{@repo.uri} #{@repo.branch}").output.split.first
     end
 
     private

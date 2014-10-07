@@ -43,6 +43,14 @@ module Integrity
       Builder.docker(self, Integrity.config.directory, Integrity.logger)
     end
 
+    def complete!(result)
+      set_as_complete(result.output, result.success)
+    end
+
+    def fail!(message)
+      set_as_complete(message)
+    end
+
     def notify
       project.enabled_notifiers.each { |n| n.notify(self) }
     end
@@ -158,7 +166,13 @@ module Integrity
     def build_directory
       Pathname.new(Integrity.config.directory).join(self.id.to_s)
     end
-    
+
+    def set_as_complete(message, success = false)
+      self.raise_on_save_failure = true
+      update(completed_at: Time.now, successful: success, output: message)
+    end
+    private :set_as_complete
+
     def escape_glob(path)
       escaped = path
       each_char(GLOB_CHARS) do |char|

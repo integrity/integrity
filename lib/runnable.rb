@@ -27,7 +27,7 @@ module Runnable
   private
 
   def _run_in_dir(method, command, &block)
-    raise ArgumentError, "[#{method}] invalid run method" unless method.in?(:run, :run!)
+    raise ArgumentError, "[#{method}] invalid run method" unless run?(method)
     command = "#{command_prefix}#{command}"
     if block_given?
       in_dir do |r|
@@ -40,6 +40,10 @@ module Runnable
         r.send(method, command)
       end
     end
+  end
+
+  def run?(method)
+    [:run, :run!].include?(method)
   end
 
   def command_prefix

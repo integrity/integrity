@@ -51,18 +51,13 @@ module Integrity
     end
 
     def add_output(chunk)
-      @build.update(:output => @build.output + chunk)
+      @build.update(output: @build.output + chunk)
     end
     
     def complete
       @logger.info "Build #{commit} exited with #{@result.success} got:\n #{@result.output}"
-
       @build.raise_on_save_failure = true
-      @build.update(
-        :completed_at => Time.now,
-        :successful   => @result.success,
-        :output       => @result.output
-      )
+      @build.complete!(@result)
     end
     
     def fail(exception)
@@ -76,11 +71,7 @@ module Integrity
       end
       
       @build.raise_on_save_failure = true
-      @build.update(
-        :completed_at => Time.now,
-        :successful => false,
-        :output => failure_message
-      )
+      @build.fail!(failure_message)
     end
 
     def notify
@@ -113,21 +104,31 @@ module Integrity
       @build.update(started_at: Time.now)
       @build.project.enabled_notifiers.each {|n| n.notify_of_build_start(@build) }
       # checkout.metadata invokes git and may fail
-      @build.commit.raise_on_save_failure = true
-      @build.commit.update(checkout.metadata)
+      # @build.commit.raise_on_save_failure = true
+      # @build.commit.update(checkout.metadata)
     end
 
     def build_docker_image
-      docker = Docker.new(directory, @logger)
-      docker.build!
-      docker.run(:mysql) do |chunk|
-        puts chunk
-        add_output(chunk)
+      begin
+        docker_start
+        docker = Docker.new(directory, @logger)
+        docker.build!
+        docker.run(:mysql) do |chunk|
+          puts chunk
+          add_output(chunk)
+        end
+        @result = docker.run(:image) do |chunk|
+          puts chunk
+          add_output(chunk)
+        end
+      rescue Interrupt, SystemExit
+        raise
+      rescue Exception => e
+        fail(e)
+      else
+        complete
       end
-      docker.run(:image) do |chunk|
-        puts chunk
-        add_output(chunk)
-      end
+      notify
     end
 
     private
