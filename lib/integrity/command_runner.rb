@@ -60,10 +60,6 @@ module Integrity
       
       # output may be invalid UTF-8, as it is produced by the build command.
       output = Integrity.clean_utf8(output)
-      puts 'LAST CMD STATUS'
-      puts '==============='
-      puts $?
-      puts '==============='
       Result.new($?.success?, output.chomp)
     end
 

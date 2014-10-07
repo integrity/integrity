@@ -46,8 +46,6 @@ module Integrity
         "committed_at: %ci%n"
       commit = sha1
       cmd = "git show -s --pretty=format:\"#{format}\" #{commit}"
-      puts 'Fetching metadata...'
-      puts cmd
       result = run_in_dir!(cmd)
       dump   = YAML.load(result.output)
       message = dump['message']

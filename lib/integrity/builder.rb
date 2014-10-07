@@ -114,11 +114,9 @@ module Integrity
         docker = Docker.new(directory, @logger)
         docker.build!
         docker.run(:mysql) do |chunk|
-          puts chunk
           add_output(chunk)
         end
         @result = docker.run(:image) do |chunk|
-          puts chunk
           add_output(chunk)
         end
       rescue Interrupt, SystemExit
