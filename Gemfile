@@ -19,6 +19,10 @@ gem 'bcat'
 gem 'rake'
 gem 'rconfig', '0.4.3.1', require: 'rconfig'
 
+gem 'capistrano', '2.15.4'
+gem 'rvm-capistrano', '1.3.4'
+gem 'capistrano-deploytags'
+
 # Dependency for Resque builder
 gem 'resque'
 
