@@ -20,11 +20,13 @@ set :rvm_require_role, :rvm
 set :rvm_ruby_string, lambda {File.read(".ruby-version").chop + "@" + File.read(".ruby-gemset").chop}
 set :rvm_install_ruby_params, '--disable-binary'
 
-require "rvm/capistrano"
+require 'rvm/capistrano'
 load 'config/overrides'
 load 'config/upstart'
 load 'config/restart'
+load 'config/db_setup'
 
 before 'deploy:setup', 'rvm:install_rvm'
 before 'deploy:setup', 'rvm:install_ruby'
 after  'deploy:setup', 'write_upstart_envs'
+after  'deploy:setup', 'db:setup'
