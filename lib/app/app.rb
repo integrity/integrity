@@ -6,6 +6,7 @@ module Integrity
     set     :root, File.dirname(__FILE__)
     enable  :methodoverride, :static
     disable :build_all
+    enable :logging
 
     helpers Integrity::Helpers
 
