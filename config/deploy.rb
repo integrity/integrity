@@ -3,8 +3,8 @@ require 'capistrano/ext/multistage'
 require 'capistrano-deploytags'
 require 'erb'
 
-set :stages, %w(ci)
-set :default_stage, "ci"
+set :stages, %w(development)
+set :default_stage, 'development'
 set :branch, 'master'
 
 set :user, "ubuntu"
