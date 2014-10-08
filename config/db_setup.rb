@@ -2,7 +2,7 @@ namespace :db do
 
   task :setup, :roles => :db, :except => { :no_release => true } do
     with_servers do |servers|
-      run 'rake db'
+      run "cd '#{current_path}' && RAILS_ENV=#{rails_env} #{rake} db"
     end
   end
 
