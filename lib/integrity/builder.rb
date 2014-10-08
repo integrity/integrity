@@ -115,8 +115,10 @@ module Integrity
         docker.build!
         docker.run(:mysql) do |chunk|
           add_output(chunk)
+          logger.debug chunk
         end
         @result = docker.run(:image) do |chunk|
+          logger.debug chunk
           add_output(chunk)
         end
       rescue Interrupt, SystemExit

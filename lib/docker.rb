@@ -8,14 +8,15 @@ class Docker
     super
     @token   = generate_sha1(timestamp)
     @running = {}
-
   end
 
   def make_tmp_dir!
+    logger.debug "Making tmp directory: #{directory}"
     runner.run! "mkdir -p #{directory}"
   end
 
   def fetch_file!(file)
+    logger.debug "Fetching file from github: #{file}"
     token = github_token
     acct  = github_account
     repo  = 'tp' #@build.repo
@@ -28,9 +29,12 @@ class Docker
   end
 
   def process_erb!
+    logger.debug "Processing build template..."
     template = ERB.new(File.new("#{directory}/.integrity.erb").read, nil, '%')
     sh_commands = template.result(binding)
     sh_file = "#{directory}/integrity.sh"
+    logger.debug sh_commands
+    logger.debug "Creating build script: #{sh_file}"
     File.open(sh_file, 'w'){|f| f.write(sh_commands) }
   end
 
@@ -39,13 +43,16 @@ class Docker
       when :mysql
         uuid = "mysql-#{timestamp}"
         running[:mysql] = uuid
+        logger.debug "Running mysql: #{uuid}"
         Commands.docker_run_mysql(uuid)
       when :image
         running[:image] = token
         mysql = running[:mysql].presence || 'mysql'
+        logger.debug "Running image: #{token}"
         Commands.docker_run_image(mysql, token)
       else
         running[image]  = token
+        logger.debug "Running image: #{token}"
         Commands.docker_run(image, token)
       end
 
