@@ -25,10 +25,10 @@ gem 'capistrano-deploytags'
 
 # Dependency for Resque builder
 gem 'resque'
+gem 'unicorn'
 
 group :web_servers do
   # gem 'thin'
-  # gem 'unicorn'
 end
 
 # These are dependencies for the various notifiers. Uncomment as appropriate.
