@@ -19,7 +19,6 @@ set :ssh_options, { :forward_agent => true }
 set :rvm_require_role, :rvm
 set :rvm_ruby_string, lambda {File.read(".ruby-version").chop + "@" + File.read(".ruby-gemset").chop}
 set :rvm_install_ruby_params, '--disable-binary'
-set :rvm_install_ruby, :reinstall
 
 require "rvm/capistrano"
 load 'config/overrides'
