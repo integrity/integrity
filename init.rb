@@ -1,7 +1,5 @@
 ROOT_DIR = File.expand_path('..', __FILE__)
 
-require "#{ROOT_DIR}/.integrity-env"
-
 $LOAD_PATH.unshift(File.join(ROOT_DIR, 'lib'))
 
 begin
