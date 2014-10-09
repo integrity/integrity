@@ -1,4 +1,4 @@
-require 'config/utils'
+require File.join(File.dirname(__FILE__), 'utils')
 
 namespace :deploy do
   task :restart, roles: :webapp, except: {no_release: true} do
