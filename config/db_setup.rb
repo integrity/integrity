@@ -1,4 +1,4 @@
-require 'config/utils'
+require File.join(File.dirname(__FILE__), 'utils')
 
 namespace :db do
   task :setup, roles: :db, except: {no_release: true} do
