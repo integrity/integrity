@@ -4,15 +4,14 @@ module Integrity
   module Helpers
     module Urls
       def github_project_url(project, branch=true)
-        parts = project.uri.path.split("/").reject { |x| x.empty? }
+        parts = project.uri.path.split('/').reject { |x| x.empty? }
         user  = parts.first
-        repo  = parts.last.chomp(".git")
+        repo  = parts.last.chomp('.git')
 
-        if ! branch || project.branch == "master"
+        if !branch || project.branch == 'master'
           "http://github.com/#{user}/#{repo}"
         else
-          "http://github.com/#{user}/#{repo}/compare/" \
-            "master...#{project.branch}"
+          "http://github.com/#{user}/#{repo}/compare/master...#{project.branch}"
         end
       end
 
@@ -20,9 +19,9 @@ module Integrity
         url = github_project_url(project)
 
         if url.include?("/compare/master")
-          "Compare on GitHub"
+          'Compare on GitHub'
         else
-          "Browse on GitHub"
+          'Browse on GitHub'
         end
       end
 
@@ -40,11 +39,11 @@ module Integrity
       end
 
       def root_url
-        @root_url ||= Addressable::URI.parse(url_for("/", :full))
+        @root_url ||= Addressable::URI.parse(url_for('/', :full))
       end
 
       def root_path
-        @root_path ||= Addressable::URI.parse(url_for("/", :path_only))
+        @root_path ||= Addressable::URI.parse(url_for('/', :path_only))
       end
 
       def url(*path)
@@ -64,7 +63,7 @@ module Integrity
       end
 
       def build_url(build, *path)
-        project_url(build.project, "builds", build.id, *path)
+        project_url(build.project, 'builds', build.id, *path)
       end
 
       def build_json_url(build, *path)
@@ -72,7 +71,7 @@ module Integrity
       end
 
       def build_path(build, *path)
-        project_path(build.project, "builds", build.id, *path)
+        project_path(build.project, 'builds', build.id, *path)
       end
 
       def artifact_path(build, artifact, *path)

@@ -2,7 +2,7 @@ module Integrity
   module Helpers
     module Resources
       def current_project
-        @project ||= Project.first(:permalink => params[:project]) or
+        @project ||= Project.first(permalink: params[:project]) or
           raise Sinatra::NotFound
       end
 
@@ -12,8 +12,9 @@ module Integrity
       end
 
       def update_notifiers_of(project)
-        if params["notifiers"]
-          project.update_notifiers(params["enabled_notifiers"] || [], params["notifiers"])
+        if notifiers = params[:notifiers]
+          enabled = params[:enabled_notifiers] || []
+          project.update_notifiers(enabled, notifiers)
         end
       end
 
