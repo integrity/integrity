@@ -31,6 +31,10 @@ module Integrity
       config.github_enabled?
     end
 
+    def github_secret
+      config.github_secret
+    end
+
     def load_projects
       @projects = authorized? ? Project.all : Project.all(:public => true)
 

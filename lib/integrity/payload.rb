@@ -6,7 +6,7 @@ module Integrity
 
     def initialize(payload)
       payload = JSON.parse(payload) if payload.is_a?(String)
-      @payload = payload.symbolize
+      @payload = payload.symbolize_keys
     end
 
     def build(all)
@@ -41,7 +41,7 @@ module Integrity
     def uri
       return uri if uri = @payload[:uri]
 
-      repository = @payload[:repository].symbolize
+      repository = @payload[:repository].symbolize_keys
       url = repository[:url]
       uri = URI(url)
 
@@ -58,7 +58,7 @@ module Integrity
     end
 
     def normalize_author(author)
-      author = author.symbolize
+      author = author.symbolize_keys
       "#{author[:name]} <#{author[:email]}>"
     end
   end

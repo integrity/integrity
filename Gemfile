@@ -25,7 +25,6 @@ gem 'capistrano-deploytags'
 
 # Dependency for Resque builder
 gem 'resque'
-gem 'resque-web', require: 'resque_web'
 gem 'unicorn'
 
 group :web_servers do

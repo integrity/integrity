@@ -6,7 +6,7 @@ class Docker
 
   def initialize(directory, logger)
     super
-    @token   = generate_sha1(timestamp)
+    @token   = Integrity.generate_sha1
     @running = {}
   end
 
@@ -41,7 +41,7 @@ class Docker
   def run(image, &block)
     cmd = case image
       when :mysql
-        uuid = "mysql-#{timestamp}"
+        uuid = "mysql-#{Integrity.timestamp}"
         running[:mysql] = uuid
         logger.debug "Running mysql: #{uuid}"
         Commands.docker_run_mysql(uuid)

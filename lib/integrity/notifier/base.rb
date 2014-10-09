@@ -16,19 +16,25 @@ module Integrity
         end
       end
 
+      # def self.to_haml
+      #   raise NotImplementedError, "you need to implement this method in your notifier"
+      # end
+
       def self.to_haml
-        raise NotImplementedError, "you need to implement this method in your notifier"
+        name = self.name.underscore.to_sym
+        raise NotImplementedError, 'you need to call this method on your notifier' if name == :base
+        @haml ||= File.read(File.dirname(__FILE__) + "/templates/#{name}.haml")
       end
 
       attr_reader :build
 
       def initialize(build, config)
         @build  = build
-        @config = config
+        @config = config.symbolize_keys
       end
 
       def deliver!
-        raise NotImplementedError, "you need to implement this method in your notifier"
+        raise NotImplementedError, 'you need to implement this method in your notifier'
       end
 
       def short_message
@@ -52,27 +58,28 @@ EOM
       end
 
       def build_url
-        base_url = Integrity.config.base_url ||
-          Addressable::URI.parse("http://example.org")
+        base_url = Integrity.config.base_url || Addressable::URI.parse('http://example.org')
         base_url.join("/#{@build.project.permalink}/builds/#{@build.id}")
       end
 
       def build_output
-        @build.output.gsub("\e[0m", "").gsub(/\e\[3[1-7]m/, "")
+        escape(@build.output)
       end
+
       private
 
-        def escape(s)
-          s.gsub("\e[0m", "").gsub(/\e\[3[1-7]m/, "")
-        end
+      def escape(s)
+        s.gsub("\e[0m", '').gsub(/\e\[3[1-7]m/, '')
+      end
 
-        def self.log_and_notify_with_timeout(log_message, &block)
-          Integrity.logger.info(log_message)
-          Timeout.timeout(8) { yield }
-        rescue Timeout::Error
-          Integrity.logger.info("#{to_s} notifier timed out")
-          false
-        end
+      def self.log_and_notify_with_timeout(log_message, &block)
+        Integrity.logger.info(log_message)
+        Timeout.timeout(8) { yield }
+      rescue Timeout::Error
+        Integrity.logger.info("#{to_s} notifier timed out")
+        false
+      end
+
     end
   end
 end

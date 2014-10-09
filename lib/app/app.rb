@@ -29,6 +29,11 @@ module Integrity
       end
     end
 
+    post '/hook' do |token|
+      pass unless github_enabled?
+      Payload.build(params[:payload], build_all?).to_s
+    end
+
     post '/github/:token' do |token|
       pass unless github_enabled?
 

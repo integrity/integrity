@@ -7,14 +7,14 @@ set :stages, %w(development)
 set :default_stage, 'development'
 set :branch, 'master'
 
-set :user, "ubuntu"
+set :user, 'ubuntu'
 set :use_sudo, false
 
 set :application, 'integrity'
 set :repository,  'git@github.com:ConsultingMD/integrity.git'
-set :deploy_to, "/home/ubuntu/app/integrity"
+set :deploy_to, '/home/ubuntu/app/integrity'
 set :deploy_via, :remote_cache
-set :ssh_options, { :forward_agent => true }
+set :ssh_options, {forward_agent: true }
 
 set :rvm_require_role, :rvm
 set :rvm_ruby_string, lambda {File.read(".ruby-version").chop + "@" + File.read(".ruby-gemset").chop}

@@ -57,17 +57,14 @@ require 'integrity/builder'
 
 DataMapper.finalize
 
-# TODO
-Addressable::URI.class_eval { def gsub(*a); to_s.gsub(*a); end }
-
-Commands
-Docker
-Runnable
-Utilities
+Addressable::URI.class_eval do
+  def gsub(*args)
+    to_s.gsub(*args)
+  end
+end
 
 module Integrity
-  class CannotFindEncoding < StandardError
-  end
+  CannotFindEncoding = Class.new(StandardError)
   
   autoload :ThreadedBuilder, 'integrity/builders/threaded_builder'
   autoload :DelayedBuilder,  'integrity/builders/delayed_builder'
@@ -93,9 +90,7 @@ module Integrity
   end
 
   def self.app
-    unless config.base_url
-      warn "the base_url setting isn't set"
-    end
+    warn "the base_url setting isn't set" unless config.base_url
 
     Integrity::App
   end
@@ -113,11 +108,7 @@ module Integrity
   end
   
   def self.human_duration(delta)
-    if delta > 0
-      ChronicDuration.output(delta, :format => :micro)
-    else
-      '0s'
-    end
+    delta > 0 ? ChronicDuration.output(delta, format: :micro) : '0s'
   end
   
   # Replace or delete invalid UTF-8 characters from text, which is assumed
@@ -183,4 +174,14 @@ module Integrity
     end
     raise CannotFindEncoding, 'Cannot find an intermediate encoding for conversion to UTF-8'
   end
+
+  def self.generate_sha1(key = '')
+    key = key.presence || timestamp
+    Digest::SHA1.hexdigest(key.to_s)
+  end
+
+  def self.timestamp
+    Time.now.to_i.to_s
+  end
+
 end
