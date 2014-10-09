@@ -21,6 +21,7 @@
 
 # Directories
 builds
+db
 doc
 log
 tags
