@@ -1,4 +1,4 @@
-require 'utils'
+require 'config/utils'
 
 namespace :workers do
   task :start, roles: :worker, except: {no_release: true} do

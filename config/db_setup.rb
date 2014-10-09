@@ -1,4 +1,4 @@
-require 'utils'
+require 'config/utils'
 
 namespace :db do
   task :setup, roles: :db, except: {no_release: true} do

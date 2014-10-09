@@ -33,7 +33,6 @@ require 'rconfig'
 
 require 'rconfig_opts'
 require 'commands'
-require 'utilities'
 require 'runnable'
 require 'docker'
 

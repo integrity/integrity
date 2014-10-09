@@ -1,5 +1,3 @@
-require 'commands'
-
 module Integrity
   class Builder
 

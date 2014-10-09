@@ -1,4 +1,4 @@
-require 'utils'
+require 'config/utils'
 
 namespace :deploy do
   task :restart, roles: :webapp, except: {no_release: true} do

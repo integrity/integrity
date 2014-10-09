@@ -5,6 +5,7 @@ module Integrity
     attr_accessor :build_all,
       :auto_branch,
       :github_token,
+      :github_secret,
       :github_account,
       :log,
       :username,

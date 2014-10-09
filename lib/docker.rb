@@ -1,6 +1,5 @@
 class Docker
   include Runnable
-  include Utilities
 
   attr_reader :token, :running
 
