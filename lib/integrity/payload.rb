@@ -5,6 +5,7 @@ module Integrity
     end
 
     def initialize(payload)
+      Integrity.logger.info "PARAMS:\n#{payload.inspect}"
       payload = JSON.parse(payload) if payload.is_a?(String)
       @payload = payload.symbolize_keys
     end

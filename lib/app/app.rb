@@ -42,7 +42,7 @@ module Integrity
       puts "PARAMS:\n#{params.inspect}"
       Integrity.logger.info "PARAMS:\n#{params.inspect}"
 
-      Payload.build(params[:payload], build_all?).to_s
+      Payload.build(params, build_all?).to_s
     end
 
     get '/?', provides: 'html' do
