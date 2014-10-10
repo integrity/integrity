@@ -4,4 +4,6 @@ if (ENV['ADMIN_USERNAME'] || ENV['ADMIN_USER']) && ENV['ADMIN_PASSWORD']
     username == (ENV['ADMIN_USERNAME'] || ENV['ADMIN_USER']) && password == ENV['ADMIN_PASSWORD']
   end
 end
+
+set :protection, :origin_whitelist => ['chrome-extension://hgmloofddffdnphfgcellkdfbfbjeloo']
 run Integrity.app
