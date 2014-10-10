@@ -32,7 +32,6 @@ module Integrity
 
     post '/:project/hook' do |token|
       pass unless github_enabled?
-      puts "PARAMS:\n#{params.inspect}"
       Integrity.logger.info "PARAMS:\n#{params.inspect}"
       Payload.build(params[:payload], build_all?).to_s
     end
@@ -72,9 +71,10 @@ module Integrity
       show :new, title: ['projects', 'new project']
     end
 
-    get '/?' do
+    post '/?' do
       login_required
 
+      Integrity.logger.info "PARAMS:\n#{params.inspect}"
       @project = Project.new(params[:project_data])
 
       if @project.save
@@ -162,7 +162,7 @@ module Integrity
       show :new, title: ['projects', current_project.permalink, 'edit']
     end
 
-    get '/:project/builds' do
+    post '/:project/builds' do
       login_required
 
       @build = current_project.build_head
@@ -213,7 +213,7 @@ module Integrity
       current_build.output
     end
 
-    get '/:project/builds/:build' do
+    post '/:project/builds/:build' do
       login_required
 
       @build = current_project.build(current_build.commit)

@@ -6,6 +6,7 @@ gem 'do_sqlite3'
 
 gem 'mysql2'
 gem 'dm-mysql-adapter'
+gem 'rack-contrib'
 
 # Workaround until https://github.com/datamapper/dm-core/issues/242
 # is fixed in a released version of datamapper.
@@ -58,9 +59,9 @@ group :databases do
   # gem 'dm-mysql-adapter'
 end
 
-  gem 'debugger'
-  gem 'pry'
-  gem 'pry-debugger'
+gem 'debugger'
+gem 'pry'
+gem 'pry-debugger'
 
 group :development do
 end

@@ -14,18 +14,24 @@ require 'digest/sha1'
 require 'timeout'
 require 'ostruct'
 require 'pathname'
-
-require 'sinatra/base'
-require 'sinatra/authorization'
 require 'json'
 require 'haml'
 require 'sass'
+
+require 'sinatra/base'
+require 'sinatra/authorization'
+
+require 'active_support'
+require 'active_support/core_ext'
+require 'active_support/hash_with_indifferent_access'
+
 require 'dm-core'
 require 'dm-validations'
 require 'dm-types'
 require 'dm-timestamps'
 require 'dm-aggregates'
 require 'dm-migrations'
+
 require 'addressable/uri'
 require 'chronic_duration'
 require 'bcat/ansi'

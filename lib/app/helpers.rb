@@ -35,6 +35,10 @@ module Integrity
       config.github_secret
     end
 
+    def config
+      Integrity.config
+    end
+
     def load_projects
       @projects = authorized? ? Project.all : Project.all(:public => true)
 
@@ -78,8 +82,5 @@ module Integrity
       end
     end
 
-    def config
-      Integrity.config
-    end
   end
 end

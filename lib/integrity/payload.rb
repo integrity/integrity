@@ -7,6 +7,7 @@ module Integrity
     def initialize(payload)
       payload = JSON.parse(payload) if payload.is_a?(String)
       @payload = payload.symbolize_keys
+      Integrity.logger.info "payload:\n#{@payload.inspect}"
     end
 
     def build(all)
@@ -44,7 +45,7 @@ module Integrity
       return uri if uri = @payload[:uri]
 
       repository = @payload[:repository].symbolize_keys
-      url = repository[:url]
+      url = "https://github.com/#{repository[:full_name]}"
       uri = URI(url)
 
       if private?
