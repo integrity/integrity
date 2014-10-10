@@ -1,5 +1,6 @@
 require 'app/helpers'
 require 'cgi'
+require 'pry'
 
 module Integrity
   class App < Sinatra::Base
@@ -31,6 +32,8 @@ module Integrity
 
     post '/:project/hook' do |token|
       pass unless github_enabled?
+      puts "PARAMS:\n#{params.inspect}"
+      Integrity.logger.info "PARAMS:\n#{params.inspect}"
       Payload.build(params[:payload], build_all?).to_s
     end
 
@@ -38,9 +41,6 @@ module Integrity
       pass unless github_enabled?
 
       halt 403 unless token == github_token
-
-      puts "PARAMS:\n#{params.inspect}"
-      Integrity.logger.info "PARAMS:\n#{params.inspect}"
 
       Payload.build(params, build_all?).to_s
     end

@@ -31,6 +31,7 @@ require 'chronic_duration'
 require 'bcat/ansi'
 require 'rconfig'
 
+require 'resque_config'
 require 'rconfig_opts'
 require 'commands'
 require 'runnable'

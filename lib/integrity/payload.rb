@@ -5,7 +5,6 @@ module Integrity
     end
 
     def initialize(payload)
-      Integrity.logger.info "PARAMS:\n#{payload.inspect}"
       payload = JSON.parse(payload) if payload.is_a?(String)
       @payload = payload.symbolize_keys
     end
@@ -15,20 +14,22 @@ module Integrity
     end
 
     def repo
-      Repository.new(uri, branch)
+      Integrity::Repository.new(uri, branch)
     end
 
     def head
-      commits.detect { |c| c[:identifier] == @payload[:after] }
+      commits.detect {|c| c[:identifier] == @payload[:after] }
     end
 
     def commits
-      @commits ||= @payload[:commits].map {|commit|
-        { :identifier   => commit[:id],
-          :author       => normalize_author(commit[:author]),
-          :message      => commit[:message],
-          :committed_at => commit[:timestamp] }
-      }
+      @commits ||= @payload[:commits].map do |commit|
+        {
+          identifier:   commit[:id],
+          author:       normalize_author(commit[:author]),
+          message:      commit[:message],
+          committed_at: commit[:timestamp]
+        }
+      end
     end
 
     def deleted?

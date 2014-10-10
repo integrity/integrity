@@ -29,12 +29,11 @@ class Docker
 
   def process_erb!
     logger.debug "Processing build template..."
-    template = ERB.new(File.new("#{directory}/.integrity.erb").read, nil, '%')
-    sh_commands = template.result(binding)
     sh_file = "#{directory}/integrity.sh"
-    logger.debug sh_commands
-    logger.debug "Creating build script: #{sh_file}"
-    File.open(sh_file, 'w'){|f| f.write(sh_commands) }
+    sh_commands = ERB.new(File.read("#{directory}/.integrity.erb")).result(binding)
+    logger.debug "Creating build script: #{sh_file}\n----------------\n#{sh_commands}\n----------------"
+    # File.open(sh_file, 'w'){|f| f.write(sh_commands) }
+    File.new(sh_file, 'w').write(sh_commands)
   end
 
   def run(image, &block)

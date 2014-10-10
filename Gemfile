@@ -4,6 +4,9 @@ gem 'data_mapper', '~> 1.2'
 gem 'dm-sqlite-adapter'
 gem 'do_sqlite3'
 
+gem 'mysql2'
+gem 'dm-mysql-adapter'
+
 # Workaround until https://github.com/datamapper/dm-core/issues/242
 # is fixed in a released version of datamapper.
 gem 'dm-core', git: 'git://github.com/datamapper/dm-core', branch: 'release-1.2'
@@ -53,6 +56,13 @@ group :databases do
   # gem 'do_postgres'  # If installing dependencies with rpg.
   # gem 'mysql'
   # gem 'dm-mysql-adapter'
+end
+
+  gem 'debugger'
+  gem 'pry'
+  gem 'pry-debugger'
+
+group :development do
 end
 
 # Development dependencies

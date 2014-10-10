@@ -14,10 +14,10 @@ set :application, 'integrity'
 set :repository,  'git@github.com:ConsultingMD/integrity.git'
 set :deploy_to, '/home/ubuntu/app/integrity'
 set :deploy_via, :remote_cache
-set :ssh_options, {forward_agent: true }
+set :ssh_options, {forward_agent: true}
 
 set :rvm_require_role, :rvm
-set :rvm_ruby_string, lambda {File.read(".ruby-version").chop + "@" + File.read(".ruby-gemset").chop}
+set :rvm_ruby_string, lambda {File.read('.ruby-version').strip + "@" + File.read('.ruby-gemset').strip}
 set :rvm_install_ruby_params, '--disable-binary'
 
 require 'rvm/capistrano'

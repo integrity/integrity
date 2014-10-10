@@ -8,10 +8,6 @@ def with_servers(&block)
   end
 end
 
-def shared_path
-  current_path.gsub('current', 'shared')
-end
-
 def db_path
   File.join(shared_path, 'db')
 end
