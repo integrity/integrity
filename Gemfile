@@ -68,7 +68,6 @@ end
 group :test do
   gem 'aws-ses', '~> 0.4.3', require: 'aws/ses'
   gem 'extlib'
-  gem 'sqlite3'
   gem 'delayed_job'
   gem 'delayed_job_active_record'
   gem 'activerecord',    '~> 3.2'

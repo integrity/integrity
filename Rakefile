@@ -27,8 +27,6 @@ task :db do
   require 'init'
 
   DataMapper::Logger.new($stdout, :debug)
-  DataMapper.setup(:default, Integrity.config.database)
-  DataMapper.finalize
   DataMapper.auto_upgrade!
 
   Integrity::Project.all(last_build_id: nil).each do |project|
