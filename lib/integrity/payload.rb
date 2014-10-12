@@ -45,7 +45,7 @@ module Integrity
       return uri if uri = @payload[:uri]
 
       repository = @payload[:repository].symbolize_keys
-      url = "https://github.com/#{repository[:full_name]}"
+      url = repository[:url]
       uri = URI(url)
 
       if private?
