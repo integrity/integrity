@@ -31,9 +31,8 @@ class Docker
     logger.debug "Processing build template..."
     sh_file = "#{directory}/integrity.sh"
     sh_commands = ERB.new(File.read("#{directory}/.integrity.erb")).result(binding)
-    logger.debug "Creating build script: #{sh_file}\n----------------\n#{sh_commands}\n----------------"
-    # File.open(sh_file, 'w'){|f| f.write(sh_commands) }
-    File.new(sh_file, 'w').write(sh_commands)
+    logger.debug "Creating build script: #{sh_file}\n----------------\n#{sh_commands}----------------"
+    File.open(sh_file, 'w'){|f| f.write(sh_commands) }
   end
 
   def run(image, &block)
