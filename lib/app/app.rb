@@ -138,7 +138,7 @@ module Integrity
       end
     end
 
-    get '/:project' do
+    put '/:project' do
       login_required
 
       if current_project.update(params[:project_data])
@@ -149,7 +149,7 @@ module Integrity
       end
     end
 
-    get '/:project' do
+    delete '/:project' do
       login_required
 
       current_project.destroy
