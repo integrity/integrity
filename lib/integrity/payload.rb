@@ -24,6 +24,7 @@ module Integrity
 
     def commits
       @commits ||= @payload[:commits].map do |commit|
+        commit.symbolize_keys!
         {
           identifier:   commit[:id],
           author:       normalize_author(commit[:author]),
@@ -61,6 +62,7 @@ module Integrity
     end
 
     def normalize_author(author)
+      return 'unknown' unless author
       author = author.symbolize_keys
       "#{author[:name]} <#{author[:email]}>"
     end
