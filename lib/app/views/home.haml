@@ -3,30 +3,20 @@
     %p None yet, huh?
     %h1
       Why don't you
-      = succeed "?" do
-        %a{ :href => path("new") } create your first project
+      = succeed '?' do
+        %a{href: path('new')} create your first project
         - if show_login?
           or
-          %a{ :href => path("login"), :id => "login" } login
+          %a{href: path('login'), id: 'login'} login
 - else
   %ul#projects
     - @projects.each do |project|
-      %li{ :class => cycle("odd", "even") + ' ' + project.status.to_s }
-        %a{ :href => project_path(project) }&= project.name
-        .meta
-          - case project.status
-          - when :building
-            Building for
-            &= project.last_build.human_time_since_start
-          - when :blank
-            Never built yet
-          - when :pending
-            == #{project.human_status}
-          - else
-            == #{project.human_status} in #{project.human_duration}
+      %li{class: "#{cycle('odd', 'even')} #{project.status}"}
+        %a{href: project_path(project)}&= project.name
+        .meta = project_metadata(project)
   %p
-    %a{ :href => path("new"), :id => "new" } Add a new project
+    %a{href: path('new'), id: 'new'} Add a new project
 
     - if show_login?
       or
-      %a{ :href => path("login"), :id => "login" } Login
+      %a{href: path('login'), id: 'login'} Login

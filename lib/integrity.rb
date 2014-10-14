@@ -102,15 +102,20 @@ module Integrity
   end
 
   def self.datetime_to_utc_time(datetime)
-    if datetime.offset != 0
-      # This converts to utc
-      # borrowed from activesupport DateTime#to_utc
-      datetime = datetime.new_offset(0)
-    end
-    
+    # This converts to utc (borrowed from activesupport DateTime#to_utc)
+    datetime = datetime.new_offset(0) unless datetime.offset.zero?
+
     # This is what DateTime#to_time does some of the time.
     # Our offset is always 0 and therefore we always produce a Time
     ::Time.utc(datetime.year, datetime.month, datetime.day, datetime.hour, datetime.min, datetime.sec)
+  end
+
+  def self.to_timestamp(datetime)
+    datetime_to_utc_time(datetime).to_i
+  end
+
+  def self.delta(time1, time2)
+    to_timestamp(time1) - to_timestamp(time2)
   end
   
   def self.human_duration(delta)

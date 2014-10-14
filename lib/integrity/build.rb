@@ -152,16 +152,17 @@ module Integrity
     
     def human_duration
       return if pending? || building?
-      delta = Integrity.datetime_to_utc_time(completed_at).to_i - Integrity.datetime_to_utc_time(started_at).to_i
+      delta = Integrity.delta(completed_at, started_at)
       Integrity.human_duration(delta)
     end
     
     def human_time_since_start
       return if pending?
       # to_i returns utc timestamp
-      delta = Time.now.to_i - Integrity.datetime_to_utc_time(started_at).to_i
+      delta = Integrity.delta(Time.now, started_at)
       Integrity.human_duration(delta)
     end
+    alias_method :time_elapsed, :human_time_since_start
 
     def build_directory
       Pathname.new(Integrity.config.directory).join(self.id.to_s)

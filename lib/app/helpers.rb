@@ -39,8 +39,20 @@ module Integrity
       Integrity.config
     end
 
+    def project_metadata(project)
+      label = project.human_status
+      duration = project.human_duration
+      time_elapsed = project.last_build.time_elapsed
+      case project.status
+        when :building then "Building for #{time_elapsed}"
+        when :blank    then 'No builds found'
+        when :pending  then label
+        else "#{label} in #{duration}"
+      end
+    end
+
     def load_projects
-      @projects = authorized? ? Project.all : Project.all(:public => true)
+      @projects = authorized? ? Project.all : Project.all(public: true)
 
       # we may have no projects defined yet
       @status = :blank
@@ -50,11 +62,9 @@ module Integrity
       # any of displayed projects.
       # statuses are listed in lib/integrity/build.rb.
       @projects.each do |project|
-        if project.status == :blank
-          # project with no builds.
-          # do not change overall status
-          next
-        end
+
+        # Project with no builds; Do not change overall status.
+        next if project.blank?
 
         case @status
           when :blank
@@ -62,19 +72,13 @@ module Integrity
             @status = project.status
           when :success
             # any status takes precedence over success
-            if project.status != :success
-              @status = project.status
-            end
+            @status = project.status unless project.successful?
           when :pending
             # building and failed take precedence over pending
-            if project.status != :success && project.status != :pending
-              @status = project.status
-            end
+            @status = project.status unless project.in?(:success, :pending)
           when :building
             # failed takes precedence over building
-            if project.status == :failed
-              @status = :failed
-            end
+            @status = project.status project.failed?
           else
             # overall status is failed, don't change it
             break
