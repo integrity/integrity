@@ -53,9 +53,11 @@ module Integrity
     ##########################
 
     # List Projects (Index)
-    get '/?', '/projects', provides: 'html' do
-      load_projects
-      show :home, title: 'projects'
+    ['/?', '/projects'].each do |path|
+      get path, provides: 'html' do
+        load_projects
+        show :home, title: 'projects'
+      end
     end
 
     # Get Project (Show)
@@ -104,13 +106,16 @@ module Integrity
     end
 
     # Fetch Projects List As JSON
-    get '/?', '/projects', provides: 'json' do
-      load_projects
-      projects_json = @projects.map do |project|
-        project.attributes_for_json
+    ['/?', "/projects\.json"].each do |path|
+      get path, provides: 'json' do
+        @format = :json
+        load_projects
+        projects_json = @projects.map do |project|
+          project.attributes_for_json
+        end
+        wrapped_projects = {projects: projects_json}
+        json wrapped_projects
       end
-      wrapped_projects = {projects: projects_json}
-      json wrapped_projects
     end
 
     # Fetch Project As JSON
