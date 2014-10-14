@@ -21,12 +21,16 @@ set :rvm_ruby_string, lambda {File.read('.ruby-version').strip + "@" + File.read
 set :rvm_install_ruby_params, '--disable-binary'
 
 require 'rvm/capistrano'
+
 load 'config/overrides'
 load 'config/upstart'
 load 'config/restart'
 load 'config/db_setup'
+load 'config/resque'
 
 before 'deploy:setup', 'rvm:install_rvm'
 before 'deploy:setup', 'rvm:install_ruby'
 after  'deploy:setup', 'write_upstart_envs'
 before 'deploy:setup', 'db:setup'
+
+before 'deploy:restart', 'workers:start'
