@@ -13,7 +13,8 @@
     - @projects.each do |project|
       %li{class: "#{cycle('odd', 'even')} #{project.status}"}
         %a{href: project_path(project)}&= project.name
-        .meta = project_metadata(project)
+        .meta
+          = project_metadata(project)
   %p
     %a{href: path('new'), id: 'new'} Add a new project
 
