@@ -110,8 +110,8 @@ module Integrity
     ::Time.utc(datetime.year, datetime.month, datetime.day, datetime.hour, datetime.min, datetime.sec)
   end
 
-  def self.to_timestamp(datetime)
-    datetime_to_utc_time(datetime).to_i
+  def self.to_timestamp(time)
+    time.is_a?(::Time) ? time.to_i : datetime_to_utc_time(time).to_i
   end
 
   def self.delta(time1, time2)
