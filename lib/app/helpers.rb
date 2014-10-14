@@ -17,6 +17,18 @@ module Integrity
       Integrity.config.protected? && !authorized?
     end
 
+    def project_metadata(project)
+      label = project.human_status
+      duration = project.human_duration
+      time_elapsed = project.last_build.time_elapsed
+      case project.status
+        when :building then "Building for #{time_elapsed}"
+        when :blank    then 'No builds found'
+        when :pending  then label
+        else "#{label} in #{duration}"
+      end
+    end
+
     private
 
     def build_all?
@@ -37,18 +49,6 @@ module Integrity
 
     def config
       Integrity.config
-    end
-
-    def project_metadata(project)
-      label = project.human_status
-      duration = project.human_duration
-      time_elapsed = project.last_build.time_elapsed
-      case project.status
-        when :building then "Building for #{time_elapsed}"
-        when :blank    then 'No builds found'
-        when :pending  then label
-        else "#{label} in #{duration}"
-      end
     end
 
     def load_projects
