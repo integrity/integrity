@@ -37,52 +37,53 @@ module Integrity
       alias_method :body, :full_message
 
       private
-        def configure_mailer
-          return configure_sendmail unless @config[:sendmail].blank?
-          configure_smtp
-        end
 
-        def configure_smtp
-          user = @config[:user].presence
-          pass = @config[:pass].presence
+      def configure_mailer
+        return configure_sendmail unless @config[:sendmail].blank?
+        configure_smtp
+      end
 
-          options = {
-            address:              @config[:host],
-            port:                 @config[:port],
-            enable_starttls_auto: @config[:starttls],
-            user_name:            user,
-            password:             pass,
-            authentication:       @config[:auth],
-            domain:               helo_hostname,
-          }
+      def configure_smtp
+        user = @config[:user].presence
+        pass = @config[:pass].presence
 
-          Pony.options = {via: :smtp, via_options: options}
-        end
-        
-        def helo_hostname
-          domain = @config[:domain]
-          if domain && !domain.empty?
-            domain
-          else
-            Socket.gethostname
-          end
-        end
+        options = {
+          address:              @config[:host],
+          port:                 @config[:port],
+          enable_starttls_auto: @config[:starttls],
+          user_name:            user,
+          password:             pass,
+          authentication:       @config[:auth],
+          domain:               helo_hostname,
+        }
 
-        def configure_sendmail
-          options = {location: @config[:sendmail]}
-          Pony.options = {via: :sendmail, via_options: options}
-        end
+        Pony.options = {via: :smtp, via_options: options}
+      end
 
-        def success_changed?
-          set_previous_build! unless @previous_build_set
-          return true unless @previous_build.is_a?(Integrity::Build) # no previous build
-          return @previous_build.successful? != @build.successful?
+      def helo_hostname
+        domain = @config[:domain]
+        if domain && !domain.empty?
+          domain
+        else
+          Socket.gethostname
         end
+      end
 
-        def set_previous_build!
-          @previous_build = @build.project.sorted_builds.at(1)
-          @previous_build_set = true
-        end
+      def configure_sendmail
+        options = {location: @config[:sendmail]}
+        Pony.options = {via: :sendmail, via_options: options}
+      end
+
+      def success_changed?
+        set_previous_build! unless @previous_build_set
+        return true unless @previous_build.is_a?(Integrity::Build) # no previous build
+        return @previous_build.successful? != @build.successful?
+      end
+
+      def set_previous_build!
+        @previous_build = @build.project.sorted_builds.at(1)
+        @previous_build_set = true
+      end
     end
 
     register Email

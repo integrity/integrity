@@ -66,20 +66,13 @@ module Integrity
 
     def builder=(builder)
       name, args = builder
-
-      @builder =
-        case name
-        when :threaded
-          Integrity::ThreadedBuilder.new(args || 2, logger)
-        when :dj
-          Integrity::DelayedBuilder.new(args)
-        when :resque
-          Integrity::ResqueBuilder
-        when :explicit
-          Integrity::ExplicitBuilder.new
-        else
-          raise ArgumentError, "Unknown builder #{name}"
-        end
+      @builder = case name
+        when :threaded then Integrity::ThreadedBuilder.new(args || 2, logger)
+        when :dj       then Integrity::DelayedBuilder.new(args)
+        when :resque   then Integrity::ResqueBuilder
+        when :explicit then Integrity::ExplicitBuilder.new
+        else raise ArgumentError, "Unknown builder #{name}"
+      end
     end
   end
 end

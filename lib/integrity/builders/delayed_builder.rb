@@ -1,5 +1,5 @@
-require "delayed_job"
-require "active_record"
+require 'delayed_job'
+require 'active_record'
 
 module Integrity
   class DelayedBuilder
@@ -11,29 +11,28 @@ module Integrity
 
       ActiveRecord::Migration.suppress_messages do
         unless Delayed::Job.table_exists?
-          ActiveRecord::Schema.define {
-            create_table :delayed_jobs, :force => true do |table|
-              table.string   :queue
-              table.integer  :priority, :default => 0
-              table.integer  :attempts, :default => 0
-              table.text     :handler
-              table.text     :last_error
-              table.datetime :run_at
-              table.datetime :locked_at
-              table.datetime :failed_at
-              table.string   :locked_by
-              table.timestamps
+          ActiveRecord::Schema.define do
+            create_t :delayed_jobs, force: true do |t|
+              t.string   :queue
+              t.integer  :priority, default: 0
+              t.integer  :attempts, default: 0
+              t.text     :handler
+              t.text     :last_error
+              t.datetime :run_at
+              t.datetime :locked_at
+              t.datetime :failed_at
+              t.string   :locked_by
+              t.timestamps
             end
-          }
+          end
         end
       end
 
-      # TODO
-      Delayed::Job.class_eval {
+      Delayed::Job.class_eval do
         def logger
           @_logger ||= Integrity.logger
         end
-      }
+      end
     end
 
     def enqueue(build)

@@ -10,21 +10,22 @@ end
 
 require 'integrity'
 
+# Notifiers - Uncomment as appropriate for the notifier you want to use
+require 'integrity/notifier/email'      # = Email
+# require 'integrity/notifier/ses'      # = SES Email
+# require 'integrity/notifier/campfire' # = Campfire
+# require 'integrity/notifier/flowdock' # = Flowdock
+# require 'integrity/notifier/tcp'      # = TCP
+# require 'integrity/notifier/http'     # = HTTP
+# require 'integrity/notifier/amqp'     # = AMQP
+# require 'integrity/notifier/shell'    # = Shell
+# require 'integrity/notifier/coop'     # = Co-op
+
 env = RConfig.application
 job_db = {adapter: 'mysql2', database: env.database}
-# Notifiers - Uncomment as appropriate for the notifier you want to use
-# require "integrity/notifier/email"    # = Email
-# require "integrity/notifier/ses"      # = SES Email
-# require "integrity/notifier/campfire" # = Campfire
-# require "integrity/notifier/flowdock" # = Flowdock
-# require "integrity/notifier/tcp"      # = TCP
-# require "integrity/notifier/http"     # = HTTP
-# require "integrity/notifier/amqp"     # = AMQP
-# require "integrity/notifier/shell"    # = Shell
-# require "integrity/notifier/coop"     # = Co-op
 
 Integrity.configure do |c|
-  c.database                    = env.database                   # DataMapper database connection URI
+  c.database                     = env.database                   # DataMapper database connection URI
   c.username                    = env.auth.username              # Admin username
   c.password                    = env.auth.password              # Admin password
   c.directory                   = '/tmp/docker/builds'           # Parent directory for builds, relative to Integrity root
