@@ -10,6 +10,20 @@ end
 
 require 'integrity'
 
+env = RConfig.application
+# env = Struct.new(
+#   database:   ENV['INTEGRITY_DATABASE_URL'],
+#   auth: {
+#     username: ENV['INTEGRITY_USERNAME'],
+#     password: ENV['INTEGRITY_PASSWORD']
+#   },
+#   github: {
+#     account:  ENV['GITHUB_ACCOUNT'],
+#     token:    ENV['GITHUB_TOKEN'],
+#     secret:   ENV['GITHUB_HOOK_SECRET']
+#   }
+# )
+
 # Notifiers - Uncomment as appropriate for the notifier you want to use
 # require "integrity/notifier/email"    # = Email
 # require "integrity/notifier/ses"      # = SES Email
@@ -22,19 +36,20 @@ require 'integrity'
 # require "integrity/notifier/coop"     # = Co-op
 
 Integrity.configure do |c|
-  c.database                    = ENV['INTEGRITY_DATABASE_URL']  # DataMapper database connection URI
-  c.username                    = ENV['INTEGRITY_USERNAME']      # Admin username
-  c.password                    = ENV['INTEGRITY_PASSWORD']      # Admin password
+  c.database                    = env.database                   # DataMapper database connection URI
+  c.username                    = env.auth.username              # Admin username
+  c.password                    = env.auth.password              # Admin password
   c.directory                   = '/tmp/docker/builds'           # Parent directory for builds, relative to Integrity root
   c.base_url                    = 'http://0.0.0.0:9292/'         # URL to the root of Integrity installation, used in notification emails.
   c.log                         = 'integrity.log'                # Where to write the log file.
-  c.github_token                = ENV['GITHUB_TOKEN']            # Enable GitHub post-receive hook
-  c.github_secret               = ENV['GITHUB_HOOK_SECRET']      # Auth for GitHub post-receive hook
-  c.github_account              = 'ConsultingMD'                 # Name of primary github account, usually owner of token.
+  c.github_token                = env.github.token               # Enable GitHub post-receive hook
+  c.github_secret               = env.github.secret              # Auth for GitHub post-receive hook
+  c.github_account              = env.github.account             # Name of primary github account, usually owner of token.
   c.build_all                   = false                          # If true, build all commits. If false, only build HEAD after each push
   c.auto_branch                 = true                           # Automatically create projects for newly pushed branches
   c.trim_branches               = true                           # Automatically delete projects when their corresponding branches are deleted
-  c.builder                     = :resque                        # Which builder to use [:threaded, :delayed_job, :resque]
+  # c.builder                     = :resque                      # Which builder to use [:threaded, :delayed_job, :resque]
+  c.builder = :dj, {adapter: 'mysql2', database: env.database}   # Which builder to use [:threaded, :delayed_job, :resque, :explicit]
   c.project_default_build_count = 10                             # How many builds to show by default on project pages
   c.build_output_interval       = 5                              # How often to collect build output from running builds (in secs)
   c.status_image_always_public  = false                          # Make status public for all projects? If false, login required to see status for private projects.
