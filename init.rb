@@ -11,7 +11,7 @@ end
 require 'integrity'
 
 env = RConfig.application
-
+job_db = {adapter: 'mysql2', database: env.database}
 # Notifiers - Uncomment as appropriate for the notifier you want to use
 # require "integrity/notifier/email"    # = Email
 # require "integrity/notifier/ses"      # = SES Email
@@ -36,8 +36,7 @@ Integrity.configure do |c|
   c.build_all                   = false                          # If true, build all commits. If false, only build HEAD after each push
   c.auto_branch                 = true                           # Automatically create projects for newly pushed branches
   c.trim_branches               = true                           # Automatically delete projects when their corresponding branches are deleted
-  # c.builder                     = :resque                      # Which builder to use [:threaded, :delayed_job, :resque]
-  c.builder = :dj, {adapter: 'mysql2', database: env.database}   # Which builder to use [:threaded, :delayed_job, :resque, :explicit]
+  c.builder                     = :dj, job_db                    # Which builder to use [:threaded, :delayed_job, :resque, :explicit]
   c.project_default_build_count = 10                             # How many builds to show by default on project pages
   c.build_output_interval       = 5                              # How often to collect build output from running builds (in secs)
   c.status_image_always_public  = false                          # Make status public for all projects? If false, login required to see status for private projects.
