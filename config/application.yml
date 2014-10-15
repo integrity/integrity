@@ -1,0 +1,8 @@
+database:   <%= ENV['INTEGRITY_DATABASE_URL'] %>
+auth:
+  username: <%= ENV['INTEGRITY_USERNAME'] %>
+  password: <%= ENV['INTEGRITY_PASSWORD'] %>
+github:
+  account:  <%= ENV['GITHUB_ACCOUNT']     %>
+  token:    <%= ENV['GITHUB_TOKEN']       %>
+  secret:   <%= ENV['GITHUB_HOOK_SECRET'] %>

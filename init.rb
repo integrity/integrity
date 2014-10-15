@@ -11,18 +11,6 @@ end
 require 'integrity'
 
 env = RConfig.application
-# env = Struct.new(
-#   database:   ENV['INTEGRITY_DATABASE_URL'],
-#   auth: {
-#     username: ENV['INTEGRITY_USERNAME'],
-#     password: ENV['INTEGRITY_PASSWORD']
-#   },
-#   github: {
-#     account:  ENV['GITHUB_ACCOUNT'],
-#     token:    ENV['GITHUB_TOKEN'],
-#     secret:   ENV['GITHUB_HOOK_SECRET']
-#   }
-# )
 
 # Notifiers - Uncomment as appropriate for the notifier you want to use
 # require "integrity/notifier/email"    # = Email
