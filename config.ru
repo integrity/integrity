@@ -1,5 +1,7 @@
 require 'rack/contrib'
-require File.expand_path('../init', __FILE__)
+require 'rack/urlmap'
+require 'delayed_job_web'
+require './init'
 
 use Rack::PostBodyContentTypeParser
 
@@ -9,4 +11,10 @@ if (ENV['ADMIN_USERNAME'] || ENV['ADMIN_USER']) && ENV['ADMIN_PASSWORD']
   end
 end
 
-run Integrity.app
+run Rack::URLMap.new(
+  '/'     => Integrity.app,
+  '/jobs' => DelayedJobWeb
+)
+
+# run Delayed::Web::Engine, at: '/jobs'
+# run Integrity.app

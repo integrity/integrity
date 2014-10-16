@@ -86,6 +86,10 @@ GEM
     delayed_job_active_record (0.4.4)
       activerecord (>= 2.1.0, < 4)
       delayed_job (~> 3.0)
+    delayed_job_web (1.2.5)
+      activerecord (> 3.0.0)
+      delayed_job (> 2.0.3)
+      sinatra (>= 0.9.2)
     dm-aggregates (1.2.0)
       dm-core (~> 1.2.0)
     dm-constraints (1.2.0)
@@ -228,6 +232,7 @@ DEPENDENCIES
   debugger
   delayed_job
   delayed_job_active_record
+  delayed_job_web
   dm-core!
   dm-mysql-adapter
   dm-sweatshop!

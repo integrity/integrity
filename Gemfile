@@ -30,6 +30,7 @@ gem 'capistrano-deploytags'
 # Dependency for DelayedJob builder
 gem 'delayed_job'
 gem 'delayed_job_active_record'
+gem 'delayed_job_web'
 
 # These are dependencies for the various notifiers. Uncomment as appropriate.
 gem 'pony'                                      # E-mail

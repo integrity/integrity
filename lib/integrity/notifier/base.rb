@@ -21,7 +21,7 @@ module Integrity
       # end
 
       def self.to_haml
-        name = self.name.underscore.to_sym
+        name = self.name.underscore.split('/').last.to_sym
         raise NotImplementedError, 'you need to call this method on your notifier' if name == :base
         @haml ||= File.read(File.dirname(__FILE__) + "/templates/#{name}.haml")
       end
