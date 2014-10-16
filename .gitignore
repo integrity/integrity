@@ -12,6 +12,7 @@
 # File types
 *.sqlite3
 *.tmproj
+*_local.yml
 *.db
 *.log
 *.dat
