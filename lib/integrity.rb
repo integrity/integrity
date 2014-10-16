@@ -195,4 +195,8 @@ module Integrity
     Time.now.to_i.to_s
   end
 
+  def self.say(message)
+    STDOUT.puts message
+    logger.info message
+  end
 end

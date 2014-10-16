@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
-ENV['RAILS_ENV']    = 'development'
-ENV['DATABASE_URL'] = ENV['INTEGRITY_DATABASE_URL']
+ENV['RAILS_ENV'] = 'development'
 
 require './init'
 require 'integrity/builders/delayed_builder'
@@ -18,15 +17,15 @@ class Delayed::Command
   end
 end
 
-puts "#{ARGV.first}ing workers..."
-Integrity.logger.info "#{ARGV.first}ing workers..."
+action  = "#{ARGV.first}ing"
+message = "#{action} workers..."
+Integrity.say message
 
 begin
   Delayed::Command.new(ARGV).daemonize
 rescue => e
-  msg = "ERROR STARTING WORKERS:\n#{e.inspect}"
-  puts  msg
-  Integrity.logger.info msg
+  message = "ERROR: [#{action}]:\n#{e.inspect}"
+  Integrity.say message
 end
 
 Delayed::Command.new(ARGV).daemonize
