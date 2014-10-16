@@ -37,7 +37,8 @@ require 'chronic_duration'
 require 'bcat/ansi'
 require 'rconfig'
 
-require 'rconfig_opts'
+require 'opts/rconfig'
+
 require 'commands'
 require 'runnable'
 require 'docker'

@@ -59,6 +59,23 @@ namespace :jobs do
     require 'integrity/builders/delayed_builder'
     Delayed::Worker.new.start
   end
+
+  namespace :daemons do
+    desc 'start daemonized worker(s)'
+    task :start do
+      system './script/delayed_job start'
+    end
+
+    desc 'stop daemonized worker(s)'
+    task :stop do
+      system './script/delayed_job stop'
+    end
+
+    desc 'restart daemonized worker(s)'
+    task :restart do
+      system './script/delayed_job restart'
+    end
+  end
 end
 
 begin

@@ -1,4 +1,5 @@
 require 'delayed_job'
+require 'opts/delayed_job'
 require 'active_record'
 
 module Integrity

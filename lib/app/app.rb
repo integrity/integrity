@@ -1,6 +1,5 @@
 require 'app/helpers'
 require 'cgi'
-require 'pry'
 
 module Integrity
   class App < Sinatra::Base
