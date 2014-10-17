@@ -57,7 +57,7 @@ module Integrity
           exec(command)
         end
       end
-      
+
       # output may be invalid UTF-8, as it is produced by the build command.
       output = Integrity.clean_utf8(output)
       Result.new($?.success?, output.chomp)

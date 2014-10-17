@@ -111,13 +111,21 @@ module Integrity
         docker_start
         docker = Docker.new(directory, @logger)
         docker.build!
-        docker.run(:mysql) do |chunk|
+        result = docker.run(:mysql) do |chunk|
           add_output(chunk)
           @logger.debug chunk
         end
+        @logger.info "MySQL Running: #{result.success}"
+        @logger.info "MySQL ContainerID: #{result.output}"
         @result = docker.run(:image) do |chunk|
           add_output(chunk)
           @logger.debug chunk
+        end
+        if @result.output.blank?
+          @result = docker.run(:image) do |chunk|
+            add_output(chunk)
+            @logger.debug chunk
+          end
         end
       rescue Interrupt, SystemExit
         raise
