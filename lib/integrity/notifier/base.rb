@@ -46,7 +46,7 @@ module Integrity
 == #{short_message}
 
 Commit Message: #{@build.message}
-Commit Date: #{@build.committed_at}
+Commit Date: #{@build.committed_at.in_time_zone('Pacific Time (US & Canada)')}
 Commit Author: #{@build.author}
 
 Link: #{build_url}

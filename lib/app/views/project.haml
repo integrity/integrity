@@ -32,7 +32,7 @@
             %strong.build<
               &== Build #{build.sha1_short}
             %span.attribution<
-              &== by #{build.author}, #{pretty_date build.committed_at}
+              &== by #{build.author}, #{pretty_date build.committed_at.in_time_zone('Pacific Time (US & Canada)')}
 
   - unless @showing_all_builds
     %p
