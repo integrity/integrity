@@ -1,9 +1,9 @@
 database:
-  url: <%= ENV['INTEGRITY_DATABASE_URL'] %>
-  adapter: mysql2
-  database: 'integrity'
+  url:      <%= ENV['INTEGRITY_DATABASE_URL'] %>
+  adapter:  mysql2
+  database: integrity
   username: root
-  host: 172.31.44.67
+  host:     172.31.44.67
 
 auth:
   username: <%= ENV['INTEGRITY_USERNAME'] %>

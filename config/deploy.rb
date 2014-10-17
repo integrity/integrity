@@ -33,4 +33,4 @@ before 'deploy:setup', 'rvm:install_ruby'
 after  'deploy:setup', 'write_upstart_envs'
 before 'deploy:setup', 'db:setup'
 
-before 'deploy:restart', 'workers:start'
+before 'deploy:restart', 'workers:restart'
