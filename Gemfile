@@ -22,6 +22,7 @@ gem 'sinatra-authorization'
 gem 'bcat'
 gem 'rake'
 gem 'rconfig', '0.4.3.1', require: 'rconfig'
+gem 'i18n'
 
 gem 'capistrano', '2.15.4'
 gem 'rvm-capistrano', '1.3.4'

@@ -8,6 +8,9 @@ rescue LoadError
   require 'bundler/setup'
 end
 
+require 'i18n'
+I18n.load_path << "#{ROOT_DIR}/config/locale/dates.en.yml"
+
 require 'integrity'
 
 # Notifiers - Uncomment as appropriate for the notifier you want to use

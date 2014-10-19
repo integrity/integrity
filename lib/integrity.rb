@@ -36,6 +36,7 @@ require 'addressable/uri'
 require 'chronic_duration'
 require 'bcat/ansi'
 require 'rconfig'
+require 'i18n'
 
 require 'opts/rconfig'
 

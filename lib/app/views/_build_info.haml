@@ -18,8 +18,8 @@
     %span.who<
       &== by: #{build.author}
     |
-    %span.when{title: in_pst build.committed_at }<
-      &= pretty_date build.committed_at
+    %span.when{title: formatted_time(build.committed_at) }<
+      &= time_ago_in_words(build.committed_at)
     - if build.project.github?
       |
       %span.github<

@@ -1,6 +1,7 @@
 module Integrity
   module Helpers
     module PrettyOutput
+
       def cycle(*values)
         @cycles ||= {}
         @cycles[values] ||= -1 # first value returned is 0
@@ -34,17 +35,7 @@ module Integrity
         date_time.strftime(format_string.gsub('%o', date_time.day.to_s + ordinal))
       end
 
-      def date_in_pst(time)
-        as_date(in_pst(time))
-      end
 
-      def as_date(time)
-        Date.new(time.year, time.month, time.day)
-      end
-
-      def in_pst(time)
-        time.to_time.in_time_zone('Pacific Time (US & Canada)')
-      end
     end
   end
 end
