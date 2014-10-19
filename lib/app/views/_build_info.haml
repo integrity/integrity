@@ -18,8 +18,8 @@
     %span.who<
       &== by: #{build.author}
     |
-    %span.when{ :title => build.committed_at.in_time_zone('Pacific Time (US & Canada)') }<
-      &= pretty_date build.committed_at.in_time_zone('Pacific Time (US & Canada)')
+    %span.when{title: in_pst build.committed_at }<
+      &= pretty_date build.committed_at
     - if build.project.github?
       |
       %span.github<
