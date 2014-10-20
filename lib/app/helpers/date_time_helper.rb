@@ -59,6 +59,7 @@ module Integrity
       end
 
       def time_ago_in_words(from_time, include_seconds = false)
+        return unless from_time
         right_now = in_pst(Time.now)
         from_time = in_pst(from_time)
         qualifier = (from_time < right_now) ? 'ago' : 'from now'
@@ -72,15 +73,18 @@ module Integrity
       end
 
       def as_date(time)
+        return unless time
         Date.new(time.year, time.month, time.day)
       end
 
       def in_pst(time)
+        return unless time
         time.to_time.in_time_zone('Pacific Time (US & Canada)')
       end
 
-      def formatted_time(time, fmt = '%a, %b %d, %Y')
-        time.to_time.strftime(fmt)
+      def formatted_time(time, fmt = '%a, %b %d, %Y @ %I:%M:%S%p')
+        return unless time
+        in_pst(time).strftime(fmt)
       end
     end
   end
