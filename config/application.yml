@@ -2,9 +2,8 @@ database:
   url:      <%= ENV['INTEGRITY_DATABASE_URL'] %>
   adapter:  mysql2
   database: integrity
-  username: gr
-  password: 8yIZ78rYJmmUtxzE
-  host:     gr-db.ctply7pjpfnc.us-west-2.rds.amazonaws.com
+  username: root
+  host:     localhost
 
 auth:
   username: <%= ENV['INTEGRITY_USERNAME'] %>
