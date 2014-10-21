@@ -3,7 +3,7 @@ class Docker
 
   attr_reader :token, :running
 
-  def initialize(directory, logger)
+  def initialize(repo, directory, logger)
     super
     @token   = Integrity.generate_sha1
     @running = {}
@@ -18,7 +18,7 @@ class Docker
     logger.debug "Fetching file from github: #{file}"
     token = github_token
     acct  = github_account
-    repo  = 'tp' #@build.repo
+    repo  = github_repo
     cmd   = Commands.fetch_file token, acct, repo, file
     run_in_dir!(cmd)
   end
@@ -69,8 +69,16 @@ class Docker
     Integrity.config.github_token
   end
 
+  def github_path
+    repo.uri.path.split('/')[1..-1] rescue []
+  end
+
   def github_account
-    Integrity.config.github_account
+    github_path.first.presence || Integrity.config.github_account
+  end
+
+  def github_repo
+    github_path.last
   end
 
   def create_docker_file!

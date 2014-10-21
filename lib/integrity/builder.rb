@@ -1,6 +1,8 @@
 module Integrity
   class Builder
 
+    attr_reader :build, :logger
+
     def self.build(_build, directory, logger)
       new(_build, directory, logger).build
     end
@@ -32,7 +34,7 @@ module Integrity
     end
 
     def start
-      @logger.info "Started building #{repo.uri} at #{commit}"
+      logger.info "Started building #{repo.uri} at #{commit}"
       @build.raise_on_save_failure = true
       @build.update(:started_at => Time.now)
       @build.project.enabled_notifiers.each { |n| n.notify_of_build_start(@build) }
@@ -53,7 +55,7 @@ module Integrity
     end
     
     def complete
-      @logger.info "Build #{commit} exited with #{@result.success} got:\n #{@result.output}"
+      logger.info "Build #{commit} exited with #{@result.success} got:\n #{@result.output}"
       @build.raise_on_save_failure = true
       @build.complete!(@result)
     end
@@ -61,7 +63,7 @@ module Integrity
     def fail(exception)
       failure_message = "#{exception.class}: #{exception.message}"
       
-      @logger.info "Build #{commit} failed with an exception: #{failure_message}"
+      logger.info "Build #{commit} failed with an exception: #{failure_message}"
       
       failure_message << "\n\n"
       exception.backtrace.each do |line|
@@ -77,7 +79,7 @@ module Integrity
     end
 
     def checkout
-      @checkout ||= Checkout.new(repo, commit, directory, @logger)
+      @checkout ||= Checkout.new(repo, commit, directory, logger)
     end
 
     def directory
@@ -97,7 +99,7 @@ module Integrity
     end
 
     def docker_start
-      @logger.info "Started building #{repo.uri} at #{commit}"
+      logger.info "Started building #{repo.uri} at #{commit}"
       @build.raise_on_save_failure = true
       @build.update(started_at: Time.now)
       @build.project.enabled_notifiers.each {|n| n.notify_of_build_start(@build) }
@@ -109,22 +111,22 @@ module Integrity
     def build_docker_image
       begin
         docker_start
-        docker = Docker.new(directory, @logger)
+        docker = Docker.new(repo, directory, logger)
         docker.build!
         result = docker.run(:mysql) do |chunk|
           add_output(chunk)
-          @logger.debug chunk
+          logger.debug chunk
         end
-        @logger.info "MySQL Running: #{result.success}"
-        @logger.info "MySQL ContainerID: #{result.output}"
+        logger.info "MySQL Running: #{result.success}"
+        logger.info "MySQL ContainerID: #{result.output}"
         @result = docker.run(:image) do |chunk|
           add_output(chunk)
-          @logger.debug chunk
+          logger.debug chunk
         end
         if @result.output.blank?
           @result = docker.run(:image) do |chunk|
             add_output(chunk)
-            @logger.debug chunk
+            logger.debug chunk
           end
         end
       rescue Interrupt, SystemExit

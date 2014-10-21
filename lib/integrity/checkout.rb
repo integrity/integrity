@@ -2,9 +2,10 @@ module Integrity
   class Checkout
     include Runnable
 
+    attr_reader :commit
+
     def initialize(repo, commit, directory, logger)
-      super(directory, logger)
-      @repo   = repo
+      super(repo, directory, logger)
       @commit = commit
     end
 

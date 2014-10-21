@@ -2,11 +2,12 @@ module Runnable
 
   def self.included(base)
     base.class_eval do
-      attr_reader :directory, :logger, :runner
+      attr_reader :repo, :directory, :logger, :runner
     end
   end
 
-  def initialize(directory, logger)
+  def initialize(repo, directory, logger)
+    @repo      = repo
     @directory = directory
     @logger    = logger
     @runner    = Integrity::CommandRunner.new(logger)

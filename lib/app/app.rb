@@ -83,6 +83,7 @@ module Integrity
 
     # New Project (Form)
     get '/new' do
+      binding.pry
       login_required
 
       @project = Project.new

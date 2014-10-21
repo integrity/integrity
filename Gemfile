@@ -51,7 +51,6 @@ end
 group :test do
   gem 'aws-ses', '~> 0.4.3', require: 'aws/ses'
   gem 'extlib'
-  gem 'i18n'
   gem 'rr'
   gem 'mocha'
   gem 'redgreen'
