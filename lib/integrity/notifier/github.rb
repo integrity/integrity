@@ -2,13 +2,13 @@ module Integrity
   class Notifier
     class Github < Notifier::Base
 
-      VALID_STATES = %w[started pending success failure error]
+      VALID_STATES = %w[started pending success failure failed error]
 
       attr_reader :status, :desc
 
       def initialize(build, config={})
         super
-        status = config[:status].presence || :pending
+        status = build.status.presence || :pending
         update_status!(status)
       end
 
@@ -19,7 +19,7 @@ module Integrity
       # FIXME: Great choice for config and i18n.
       def update_status!(status)
         return false unless status.to_s.in?(VALID_STATES)
-        @status = status
+        @status = (@status == :failed) ? :failure : status
         @desc   = case @status.to_sym
                     when :started then 'The build has started on Integrity CI'
                     when :pending then 'The build has started on Integrity CI'
@@ -37,7 +37,7 @@ module Integrity
       private
 
       def payload
-        {state: status, target_url: url, description: desc, context: :default}.to_json
+        {state: status, target_url: build_url, description: desc, context: :default}.to_json
       end
 
       def client
