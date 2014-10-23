@@ -4,29 +4,11 @@ require 'bunny'
 module Integrity
   class Notifier
     class AMQP < Notifier::Base
-      def self.to_haml
-        <<-HAML
-%p.normal
-  %label{ :for => "amqp_queue_host" } Host
-  %input.text#amqp_queue_host{                |
-    :name => "notifiers[AMQP][queue_host]",   |
-    :type => "text",                          |
-    :value => config["queue_host"] ||         |
-      "localhost" }                           |
-%p.normal
-  %label{ :for => "amqp_exchange_name" } Exchange
-  %input.text#amqp_exchange_name{                 |
-    :name => "notifiers[AMQP][exchange_name]",    |
-    :type => "text",                              |
-    :value => config["exchange_name"] ||          |
-      "integrity" }                               |
-        HAML
-      end
 
       def initialize(build, config={})
-        @exchange_name = config["exchange_name"]
-        @queue_host = config["queue_host"]
         super
+        @exchange_name = config['exchange_name']
+        @queue_host    = config['queue_host']
       end
 
       def deliver!

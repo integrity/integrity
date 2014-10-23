@@ -34,6 +34,8 @@ module Integrity
       end
     end
 
+    delegate :repo, :command, :github_path, :owner, :repo_name, to: :project
+
     def run
       Integrity.config.builder.enqueue(self)
     end
@@ -75,66 +77,30 @@ module Integrity
       ! pending? && ! building?
     end
 
-    def repo
-      project.repo
-    end
-
-    def command
-      project.command
-    end
-
     def sha1
-      if commit
-        commit.identifier
-      else
-        '(commit is missing)'
-      end
+      commit.try(:identifier).presence || '(commit is missing)'
     end
 
     def sha1_short
-      unless commit
-        return '(commit is missing)'
-      end
-
-      unless sha1
-        return "This commit"
-      end
-
+      return '(commit is missing)' unless commit
+      return 'This commit' unless sha1
       sha1[0..6]
     end
 
     def message
-      if commit
-        commit.message || "message not loaded"
-      else
-        '(commit is missing)'
-      end
+      commit.try(:message).presence || 'message not loaded'
     end
 
     def full_message
-      if commit
-        # commit.message fallback is here because we don't have migrations (yet?)
-        commit.full_message || commit.message || "message not loaded"
-      else
-        '(commit is missing)'
-      end
+      commit.try(:full_message).presence || commit.try(:message).presence || 'message not loaded'
     end
 
     def author
-      if commit
-        (commit.author || Author.unknown).name
-      else
-        '(commit is missing)'
-      end
+      (commit.try(:author) || Author.unknown).name
     end
 
     def committed_at
-      if commit
-        commit.committed_at
-      else
-        # UI expects a date, give it to it
-        Time.utc(1970)
-      end
+      commit.try(:committed_at) || Time.now.utc
     end
 
     def status
@@ -200,10 +166,6 @@ module Integrity
     
     def artifact_files
       build_dir = build_directory
-=begin
-      # for file in build dir check below
-      build_dir = File.expand_path(build_dir)
-=end
       escaped_build_dir = nil
       all_files = []
       project.get_artifacts.each do |artifact|
@@ -224,26 +186,13 @@ module Integrity
 
       build_dir_with_slash = build_dir.to_s + '/'
 
-=begin
-      # check that all files are under the build dir
-      all_files.map! do |file|
-        File.expand_path(file)
-      end
-      all_files.delete_if do |file|
-        file[0, build_dir_with_slash.length] != build_dir_with_slash
-      end
-=end
-
       all_files.map! do |file|
         if file[0, build_dir_with_slash.length] == build_dir_with_slash
           relative_path = file[build_dir_with_slash.length..-1]
         else
           relative_path = file
         end
-        {
-          :name => File.basename(file),
-          :relative_path => relative_path,
-        }
+        {name: File.basename(file), relative_path: relative_path}
       end
       all_files.sort do |a, b|
         a[:name] <=> b[:name]
@@ -251,15 +200,7 @@ module Integrity
     end
     
     def to_json
-      {
-        'build' => {
-          "project" => {
-            "name" => project.name,
-          },
-          'id' => self.id,
-          "status" => status,
-        }
-      }.to_json
+      {build: {id: id, project: {name: project.name}, status: status}}.to_json
     end
   end
 end

@@ -1,4 +1,4 @@
-require "integrity/project/notifiers"
+require 'integrity/project/notifiers'
 
 module Integrity
   class Project
@@ -44,16 +44,28 @@ module Integrity
       @repo ||= Repository.new(uri, branch)
     end
 
+    def github_path
+      repo.uri.path.split('/')[1..-1] rescue []
+    end
+
+    def owner
+      github_path.first.presence || Integrity.config.github_account
+    end
+
+    def repo_name
+      github_path.last
+    end
+
     def build_head
       build(Commit.new(identifier: 'HEAD'))
     end
 
     def build(commit)
       commit = {
-        identifier:   commit.identifier,
-        author:       commit.author,
-        message:      commit.message,
-        committed_at: commit.committed_at
+        identifier:   (commit.try(:identifier)   || 'HEAD'),
+        author:       (commit.try(:author)       || 'Last Committer'),
+        message:      (commit.try(:message)      || 'REBUILD'),
+        committed_at: (commit.try(:committed_at) || Time.now)
       }
       _build = builds.create(commit: commit)
       _build.run

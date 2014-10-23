@@ -37,6 +37,7 @@ require 'chronic_duration'
 require 'bcat/ansi'
 require 'rconfig'
 require 'i18n'
+require 'rest_client'
 
 require 'opts/rconfig'
 
@@ -78,7 +79,19 @@ module Integrity
   autoload :ResqueBuilder,   'integrity/builders/resque_builder'
   autoload :ExplicitBuilder, 'integrity/builders/explicit_builder'
 
-  Repository = Struct.new(:uri, :branch)
+  class Repository
+    attr_reader :uri, :branch, :owner, :name
+    def initialize(uri, branch, owner=nil, name=nil)
+      @uri, @branch, @owner, @name = uri, branch, owner, name
+      @uri &&= ::URI.parse(uri)
+      parse_uri
+    end
+    def parse_uri
+      owner, name = uri.path.split('/')[1..-1] rescue []
+      @owner ||= owner
+      @name  ||= name
+    end
+  end
 
   def self.config
     @config ||= Configuration.new

@@ -16,10 +16,6 @@ module Integrity
         end
       end
 
-      # def self.to_haml
-      #   raise NotImplementedError, "you need to implement this method in your notifier"
-      # end
-
       def self.to_haml
         name = self.name.underscore.split('/').last.to_sym
         raise NotImplementedError, 'you need to call this method on your notifier' if name == :base
@@ -27,6 +23,9 @@ module Integrity
       end
 
       attr_reader :build
+
+      delegate :repo, :github_path, :owner, :repo_name, :sha1, to: :build, alow_nil: true
+
 
       def initialize(build, config)
         @build  = build

@@ -111,7 +111,7 @@ module Integrity
     def build_docker_image
       begin
         docker_start
-        docker = Docker.new(repo, directory, logger)
+        docker = Docker.new(repo, commit, directory, logger)
         docker.build!
         result = docker.run(:mysql) do |chunk|
           add_output(chunk)

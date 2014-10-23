@@ -51,6 +51,14 @@ module Integrity
     ## Project RESTful Endpoints
     ##########################
 
+    # New Project (Form)
+    get '/new' do
+      login_required
+
+      @project = Project.new
+      show :new, title: ['projects', 'new project']
+    end
+
     # List Projects (Index)
     ['/?', '/projects'].each do |path|
       get path, provides: 'html' do
@@ -79,15 +87,6 @@ module Integrity
       @status = current_project.status
 
       show :project, title: ['projects', current_project.name]
-    end
-
-    # New Project (Form)
-    get '/new' do
-      binding.pry
-      login_required
-
-      @project = Project.new
-      show :new, title: ['projects', 'new project']
     end
 
     # Create Project

@@ -16,7 +16,7 @@ module Integrity
     end
 
     def self.register(klass)
-      available[klass.to_s.split(":").last] = klass
+      available[klass.to_s.split(':').last] = klass
     end
 
     def notify(build)

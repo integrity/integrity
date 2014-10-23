@@ -14,6 +14,7 @@ I18n.load_path << "#{ROOT_DIR}/config/locale/dates.en.yml"
 require 'integrity'
 
 # Notifiers - Uncomment as appropriate for the notifier you want to use
+require 'integrity/notifier/github'     # = Github commit status
 require 'integrity/notifier/email'      # = Email
 # require 'integrity/notifier/ses'      # = SES Email
 # require 'integrity/notifier/campfire' # = Campfire

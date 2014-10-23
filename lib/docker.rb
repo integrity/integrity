@@ -3,7 +3,7 @@ class Docker
 
   attr_reader :token, :running
 
-  def initialize(repo, directory, logger)
+  def initialize(repo, commit, directory, logger)
     super
     @token   = Integrity.generate_sha1
     @running = {}
@@ -79,6 +79,18 @@ class Docker
 
   def github_repo
     github_path.last
+  end
+
+  def branch
+    repo.branch
+  end
+
+  def aws_access_key
+    ENV["DOCKER_#{github_repo.upcase}_AWS_ACCESS_KEY_ID"]
+  end
+
+  def aws_secret_key
+    ENV["DOCKER_#{github_repo.upcase}_AWS_SECRET_KEY"]
   end
 
   def create_docker_file!

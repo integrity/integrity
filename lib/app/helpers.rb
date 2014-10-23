@@ -85,7 +85,7 @@ module Integrity
             @status = project.status unless project.in?(:success, :pending)
           when :building
             # failed takes precedence over building
-            @status = project.status project.failed?
+            @status = project.status if project.failed?
           else
             # overall status is failed, don't change it
             break
