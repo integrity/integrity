@@ -80,16 +80,19 @@ module Integrity
   autoload :ExplicitBuilder, 'integrity/builders/explicit_builder'
 
   class Repository
-    attr_reader :uri, :branch, :owner, :name
+    attr_reader :uri, :branch, :name
     def initialize(uri, branch, owner=nil, name=nil)
       @uri, @branch, @owner, @name = uri, branch, owner, name
-      @uri &&= ::URI.parse(uri)
       parse_uri
     end
     def parse_uri
-      owner, name = uri.path.split('/')[1..-1] rescue []
+      @uri &&= ::URI.parse(@uri)
+      owner, name = @uri.path.split('/')[1..-1] rescue []
       @owner ||= owner
       @name  ||= name
+    end
+    def owner
+      @owner.presence || Integrity.config.github_account
     end
   end
 

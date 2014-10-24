@@ -43,7 +43,7 @@ module Integrity
     end
 
     def github_token
-      config.github_token
+      config.github_read_token
     end
 
     def github_enabled?

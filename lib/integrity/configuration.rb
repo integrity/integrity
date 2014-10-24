@@ -4,9 +4,10 @@ module Integrity
 
     attr_accessor :build_all,
       :auto_branch,
-      :github_token,
-      :github_secret,
       :github_account,
+      :github_read_token,
+      :github_write_token,
+      :github_secret,
       :log,
       :username,
       :password,
@@ -29,7 +30,7 @@ module Integrity
     end
 
     def github_enabled?
-      !! @github_token
+      !! @github_read_token
     end
 
     def trim_branches?

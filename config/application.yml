@@ -11,5 +11,7 @@ auth:
 
 github:
   account:  <%= ENV['GITHUB_ACCOUNT']     %>
-  token:    <%= ENV['GITHUB_TOKEN']       %>
-  secret:   <%= ENV['GITHUB_HOOK_SECRET'] %>
+  tokens:
+    read:   <%= ENV['GITHUB_READ_TOKEN']  %>
+    write:  <%= ENV['GITHUB_WRITE_TOKEN'] %>
+    secret: <%= ENV['GITHUB_HOOK_SECRET'] %>

@@ -18,8 +18,7 @@ class Docker
     logger.debug "Fetching file from github: #{file}"
     token = github_token
     acct  = github_account
-    repo  = github_repo
-    cmd   = Commands.fetch_file token, acct, repo, file
+    cmd   = Commands.fetch_file token, acct, repo.name, file
     run_in_dir!(cmd)
   end
 
@@ -66,19 +65,11 @@ class Docker
   end
 
   def github_token
-    Integrity.config.github_token
-  end
-
-  def github_path
-    repo.uri.path.split('/')[1..-1] rescue []
+    Integrity.config.github_read_token
   end
 
   def github_account
-    github_path.first.presence || Integrity.config.github_account
-  end
-
-  def github_repo
-    github_path.last
+    repo.owner.presence || Integrity.config.github_account
   end
 
   def branch
@@ -86,11 +77,15 @@ class Docker
   end
 
   def aws_access_key
-    ENV["DOCKER_#{github_repo.upcase}_AWS_ACCESS_KEY_ID"]
+    ENV["DOCKER_#{repo.name.upcase}_AWS_ACCESS_KEY_ID"]
   end
 
   def aws_secret_key
-    ENV["DOCKER_#{github_repo.upcase}_AWS_SECRET_KEY"]
+    ENV["DOCKER_#{repo.name.upcase}_AWS_SECRET_KEY"]
+  end
+
+  def ruote_database
+      
   end
 
   def create_docker_file!

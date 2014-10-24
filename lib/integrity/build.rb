@@ -34,7 +34,7 @@ module Integrity
       end
     end
 
-    delegate :repo, :command, :github_path, :owner, :repo_name, to: :project
+    delegate :repo, :command, to: :project
 
     def run
       Integrity.config.builder.enqueue(self)

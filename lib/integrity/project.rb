@@ -31,6 +31,7 @@ module Integrity
     end
 
     delegate :status, :human_status, :human_duration, :successful?, :failed?, :pending?, :building?, to: :last_build, allow_nil: true
+    delegate :owner, to: :repo
 
     def get_artifacts
       artifacts.split(";")
@@ -42,18 +43,6 @@ module Integrity
 
     def repo
       @repo ||= Repository.new(uri, branch)
-    end
-
-    def github_path
-      repo.uri.path.split('/')[1..-1] rescue []
-    end
-
-    def owner
-      github_path.first.presence || Integrity.config.github_account
-    end
-
-    def repo_name
-      github_path.last
     end
 
     def build_head

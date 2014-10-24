@@ -9,10 +9,8 @@ module Integrity
       def self.notify_of_build_start(build, config)
         notifier = new(build, config)
         if notifier.respond_to?(:deliver_started_notification!)
-          log_and_notify_with_timeout(msg) do
-            msg = "Notifying of the start of build #{build.sha1_short} with #{to_s}"
-            notifier.deliver_started_notification!
-          end
+          msg = "Notifying of the start of build #{build.sha1_short} with #{to_s}"
+          log_and_notify_with_timeout(msg) { notifier.deliver_started_notification! }
         end
       end
 
@@ -24,7 +22,7 @@ module Integrity
 
       attr_reader :build
 
-      delegate :repo, :github_path, :owner, :repo_name, :sha1, to: :build, alow_nil: true
+      delegate :repo, :sha1, to: :build, alow_nil: true
 
 
       def initialize(build, config)

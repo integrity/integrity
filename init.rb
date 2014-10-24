@@ -34,8 +34,9 @@ Integrity.configure do |c|
   c.directory                   = '/tmp/docker/builds'    # Parent directory for builds, relative to Integrity root
   c.base_url                    = 'http://0.0.0.0:9292/'  # URL to the root of Integrity installation, used in notification emails.
   c.log                         = 'integrity.log'         # Where to write the log file.
-  c.github_token                = env.github.token        # Enable GitHub post-receive hook
-  c.github_secret               = env.github.secret       # Auth for GitHub post-receive hook
+  c.github_read_token           = env.github.tokens.read  # Enable GitHub post-receive hook
+  c.github_write_token          = env.github.tokens.write # Auth for posting to GitHub (statuses)
+  c.github_secret               = env.github.tokens.secret # Auth for GitHub post-receive hook
   c.github_account              = env.github.account      # Name of primary github account, usually owner of token.
   c.build_all                   = false                   # If true, build all commits. If false, only build HEAD after each push
   c.auto_branch                 = true                    # Automatically create projects for newly pushed branches

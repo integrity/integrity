@@ -167,7 +167,7 @@ POST /github/:token:: Supports GitHub's
 https://help.github.com/articles/post-receive-hooks[Post-Receive Hook]. Enable it:
 [source, ruby]
 ----
-c.github_token = "TOKEN"
+c.github_read_token = "TOKEN"
 ----
 
 === Choosing a builder

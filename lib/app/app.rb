@@ -30,21 +30,17 @@ module Integrity
 
     get '/login' do
       login_required
-
       redirect root_url.to_s
     end
 
     post '/:project/hook' do |token|
       pass unless github_enabled?
-      Integrity.logger.info "PARAMS:\n#{params.inspect}"
       Payload.build(params[:payload], build_all?).to_s
     end
 
     post '/github/:token' do |token|
       pass unless github_enabled?
-
       halt 403 unless token == github_token
-
       Payload.build(params, build_all?).to_s
     end
 
