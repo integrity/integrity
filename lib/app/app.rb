@@ -271,9 +271,16 @@ module Integrity
     delete "/:project/builds/:build" do
       login_required
 
-      url = project_url(current_build.project).to_s
+      delete_last_build = current_build == current_project.last_build
+
       current_build.destroy!
-      redirect url
+
+      if delete_last_build
+        current_project.last_build = current_project.sorted_builds.first
+        current_project.save
+      end
+
+      redirect project_url(current_project).to_s
     end
   end
 end
