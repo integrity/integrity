@@ -18,19 +18,4 @@ class DeleteTest < Test::Unit::AcceptanceTestCase
 
     assert_have_no_tag("ul#projects", :content => "Integrity")
   end
-
-  scenario "Deleting some busted build" do
-    builds = [
-      Build.gen(:commit => Commit.gen(:identifier => "foo")),
-      Build.gen(:commit => Commit.gen(:identifier => "bar")),
-    ]
-    Project.gen(:integrity, :builds => builds, :last_build => builds.last)
-
-    login_as "admin", "test"
-    visit "/integrity"
-    click_link "Build foo"
-    click_button "Delete this build"
-
-    assert_not_contain("Previous builds")
-  end
 end
