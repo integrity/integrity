@@ -37,7 +37,7 @@ module Integrity
         halt 403
       end
 
-      Payload.build(
+      Payload::GitHub.build(
         JSON.parse(params[:payload]),
         Integrity.config.build_all?
       ).to_s
