@@ -1,0 +1,34 @@
+<div class="error">
+  <h1>
+    So... you don't know the password? Hmm... You can
+    <a href="<%= path("login") %>">try again</a>
+    or <a href="<%= root_path %>" rel="home">go back</a>
+  </h1>
+  <dl>
+    <dt>Er... So... I'm trying to login without a password...</dt>
+    <dd>
+      Hey pal, sorry, but I can't let in anyone that isn't <strong>on the list</strong>
+      I could lose my job you know? You'll have to come up with
+      a valid password :-(
+    </dd>
+    <dt>What can I do?</dt>
+    <dd>
+      This just means that you can't access some part of this Integrity
+      server, but that shouldn't let you out of some of the
+      <a href="<%= root_path %>">awesome projects</a>
+      hosted here. If this was just a misunderstanding and you
+      <strong>do</strong>
+      have a password, then
+      <a href="<%= path("login") %>">click here to try again</a>
+    </dd>
+    <dt>
+      So what the hell is <strong>Integrity</strong>
+    </dt>
+    <dd>
+      Integrity is your friendly
+      <a href="http://en.wikipedia.org/wiki/Continuous_integration">Continuous Integration</a>
+      server. If you want to know more about us, check our website at
+      <a href="http://integrity.github.com">integrity.github.com</a>
+    </dd>
+  </dl>
+</div>

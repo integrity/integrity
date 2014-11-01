@@ -12,26 +12,29 @@ module Integrity
     GLOB_CHARS = '*?[]'
 
     property :id,           Serial
-    property :project_id,   Integer   # TODO :nullable => false
-    property :output,       Text,     :default => "", :length => 1048576
-    property :successful,   Boolean,  :default => false
+    property :project_id,   Integer, :required => true
+    property :branch_id,    Integer, :required => true
+    property :output,       Text,    :default => "", :length => 1048576
+    property :successful,   Boolean, :default => false
     property :started_at,   DateTime
     property :completed_at, DateTime
 
     timestamps :at
 
     belongs_to :project
+    belongs_to :branch
     has 1,     :commit
 
     after :create do
       project.raise_on_save_failure = true
-      project.update(:last_build_id => id)
+      project.update(last_build_id: id)
+
+      branch.raise_on_save_failure = true
+      branch.update(last_build_id: id)
     end
 
     before :destroy do
-      if commit
-        commit.destroy!
-      end
+      commit.destroy! if commit
     end
 
     delegate :repo, :command, to: :project

@@ -1,0 +1,18 @@
+<div id="administrative">
+  <a href="<%= project_path(project, :edit) %>">Edit</a>
+  &Backslash;
+  <% if build %>
+    <a href="<%= build_json_url(build) %>">JSON</a>
+  <% else %>
+    <a href="<%= project_json_url(project) %>">JSON</a>
+  <% end  %>
+
+  <% if project.github? %>
+    &Backslash;
+    <% if build %>
+      <a href="<%= github_commit_url(build) %>">View on GitHub</a>
+    <% else %>
+      <a href="<%= github_project_url(project) %>"><%= github_project_link(project) %></a>
+    <% end %>
+  <% end %>
+</div>

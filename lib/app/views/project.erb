@@ -1,0 +1,44 @@
+<%= partial(:admin_links, locals: {project: @project, build: false}) %>
+
+<% if @project.blank? %>
+  <form action="<%= project_path(@project, :builds) %>" class="blank_slate" method="<%= :post %>">
+    <p>No builds for this project, buddy</p>
+    <h1>
+      You can request a
+      <button type="<%= :submit %>">manual build</button>
+    </h1>
+  </form>
+<% else %>
+  <div class="<%= @project.status %>" id="last_build">
+    <%= partial(:build_info, locals: {build: @project.last_build}) %>
+  </div>
+  <form action="<%= project_path(@project, :builds) %>" method="<%= :post %>">
+    <p class="submit manual-build">
+      <button title="Fetch the last commit from the remote repository and build it" type="<%= :submit %>">
+        Fetch and build
+      </button>
+    </p>
+  </form>
+  <% unless @project.blank? %>
+    <h2>Builds</h2>
+    <ul id="previous_builds">
+      <% @builds.each do |build| %>
+        <li class="<%= build.status %>">
+          <a href="<%= build_path(build) %>">
+            <strong class="build">
+              <%= "Build #{build.sha1_short}" %>
+            </strong>
+            <span class="attribution">
+              <%= "by #{build.author}, #{time_ago_in_words(build.committed_at)}" %>
+            </span>
+          </a>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+  <% unless @showing_all_builds %>
+    <p>
+      <a href="<%= project_path(@project, :all) %>">See all builds</a>
+    </p>
+  <% end %>
+<% end %>

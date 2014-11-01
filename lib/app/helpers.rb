@@ -5,6 +5,8 @@ require 'app/helpers/pretty_output'
 require 'app/helpers/rendering'
 require 'app/helpers/resources'
 require 'app/helpers/urls'
+require 'app/helpers/partials'
+require 'app/helpers/authentication'
 
 module Integrity
   module Helpers
@@ -15,7 +17,9 @@ module Integrity
     include Rendering
     include Resources
     include Urls
+    include Authentication
 
+    include Sinatra::Partials
     include Rack::Utils
 
     alias :h :escape_html

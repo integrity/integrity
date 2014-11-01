@@ -18,11 +18,16 @@ gem 'sass'
 gem 'chronic_duration'
 gem 'sinatra'
 gem 'sinatra-authorization'
+gem 'omniauth'
+gem 'omniauth-github'
+gem 'hashie'
+
 
 gem 'bcat'
 gem 'rake'
 gem 'rconfig', '0.4.3.1', require: 'rconfig'
 gem 'i18n'
+gem 'rack-flash3'
 
 gem 'capistrano', '2.15.4'
 gem 'rvm-capistrano', '1.3.4'

@@ -47,9 +47,11 @@ require 'docker'
 
 require 'app/app'
 
+require 'integrity/web_utils'
 require 'integrity/configuration'
 require 'integrity/bootstrapper'
 require 'integrity/project'
+require 'integrity/branch'
 require 'integrity/project_finder'
 require 'integrity/author'
 require 'integrity/commit'

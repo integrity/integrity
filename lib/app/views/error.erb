@@ -1,0 +1,44 @@
+<div class="error">
+  <h1>
+    Whatever you do, DON'T PANIC!
+  </h1>
+  <dl>
+    <dt>This is what happened:</dt>
+    <dd>
+      <strong>&= @error.message</strong>
+      <pre class="backtrace">
+        <%= @error.backtrace.join("\n") %>
+      </pre>
+    </dd>
+    <dd>
+      <strong>Query parameters:</strong>
+      <pre class="query_params">
+        <%= params.inspect %>
+      </pre>
+    </dd>
+    <dt>What can I do?</dt>
+    <dd>
+      <% if @project %>
+        Is your
+        <a href="<%= project_url(@project, :edit) %>">config</a>
+        ok?
+      <% end %>
+      Need
+      <a href="http://integrity.github.com/#_configuration">help?</a>
+      Remember to restart Integrity.
+      If you think everything is fine,
+      then drop by our irc channel:
+      <a href="irc://irc.freenode.org:6667/integrity">#integrity</a>
+      on freenode, and we'll try to help.
+    </dd>
+    <dt>
+      What the hell is <strong>Integrity</strong>
+    </dt>
+    <dd>
+      Integrity is your friendly
+      <a href="http://en.wikipedia.org/wiki/Continuous_integration">Continuous Integration</a>
+      server. If you want to know more about us, check our website at
+        <a href="http://integrity.github.com">integrity.github.com</a>
+    </dd>
+  </dl>
+</div>

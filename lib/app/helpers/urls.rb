@@ -8,7 +8,7 @@ module Integrity
         user  = parts.first
         repo  = parts.last.chomp('.git')
 
-        if !branch || project.branch == 'master'
+        if branch.nil? || project.branch == 'master'
           "http://github.com/#{user}/#{repo}"
         else
           "http://github.com/#{user}/#{repo}/compare/master...#{project.branch}"
@@ -34,16 +34,41 @@ module Integrity
         project_path(project).to_s.concat('.png')
       end
 
-      def project_json_url(project)
-        project_path(project).to_s.concat('.json')
+      def project_json_url(project, *path)
+        project_url(project, *path).to_s.concat('.json')
+      end
+
+      def build_json_url(build, *path)
+        build_url(build, *path).to_s.concat('.json')
+      end
+
+      def json_url_for(model, *path)
+        url = case model
+          when Integrity::Project
+            project_url(project, *path)
+          when Integrity::Build
+            build_url(build, *path)
+          end
+        url.to_s.concat('.json')
       end
 
       def root_url
-        @root_url ||= Addressable::URI.parse(url_for('/', :full))
+        root_uri(:full)
       end
 
       def root_path
-        @root_path ||= Addressable::URI.parse(url_for('/', :path_only))
+        root_uri(:path_only)
+      end
+
+      def root_uri(type=:full)
+        sfx = (type == :full) ? :url : :path
+        var = :"@root_#{sfx}"
+        uri = instance_variable_get(var)
+        if uri.blank?
+          uri = Addressable::URI.parse(url_for('/', type))
+          instance_variable_set(var, uri)
+        end
+        uri
       end
 
       def url(*path)
@@ -66,9 +91,6 @@ module Integrity
         project_url(build.project, 'builds', build.id, *path)
       end
 
-      def build_json_url(build, *path)
-        build_url(build, *path).to_s.concat('.json')
-      end
 
       def build_path(build, *path)
         project_path(build.project, 'builds', build.id, *path)

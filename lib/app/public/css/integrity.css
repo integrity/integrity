@@ -224,6 +224,7 @@ a {
         font-size: 0.8em;
         color: #999999;
         text-align: right; }
+
   #content #previous_builds li a {
     display: block;
     padding: 0.25em;
@@ -258,6 +259,8 @@ a {
       color: #888888; }
     #content #projects li.building a:hover, #content #previous_builds li.building a:hover {
       background-color: #eeeeee; }
+
+  /* Build Info - START */
   #content #build, #content #last_build {
     position: relative; }
     #content #build h1, #content #build blockquote, #content #last_build h1, #content #last_build blockquote {
@@ -319,6 +322,10 @@ a {
       overflow: auto;
       max-height: 50em;
       font-size: 0.825em; }
+
+    /* Build Info - END */
+
+
   #content #push_path {
     display: block;
     margin-top: 1em;

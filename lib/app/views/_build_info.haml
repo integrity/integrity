@@ -1,25 +1,24 @@
 %form{ :action => build_path(build), :method => :post }
   %p.submit
-    %button{ :type => :submit, :title => "Rebuild this commit" }<
-      Rebuild
+    %button{ :type => :submit, :title => "Rebuild this commit" } Rebuild
 
 %h1
   = build.human_status
   - if build.building?
-    - if build.human_time_since_start && !build.human_time_since_start.empty?
-      &== for #{build.human_time_since_start}
+    - if build.human_time_since_start.present?
+      = "for #{build.human_time_since_start}"
   - elsif !build.pending?
-    &== in #{build.human_duration}
+    = "in #{build.human_duration}"
 
 %blockquote
   %p
     #{h(build.full_message).gsub("\n", '<br />')}
   %p.meta<
     %span.who<
-      &== by: #{build.author}
+      = "by: #{build.author}"
     |
-    %span.when{title: formatted_time(build.committed_at) }<
-      &= time_ago_in_words(build.committed_at)
+    %span.when{title: formatted_time(build.committed_at) }
+      = time_ago_in_words(build.committed_at)
     - if build.project.github?
       |
       %span.github<
