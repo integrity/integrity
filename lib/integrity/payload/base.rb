@@ -1,16 +1,16 @@
 module Integrity
   module Payload
     class Base
-      def self.build(payload, all)
-        new(payload).build(all)
+      def self.build(payload)
+        new(payload).build
       end
 
       def initialize(payload)
         @payload = payload
       end
 
-      def build(all)
-        PayloadBuilder.build(self, all)
+      def build
+        PayloadBuilder.build(self)
       end
 
       def repo

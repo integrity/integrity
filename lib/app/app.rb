@@ -38,8 +38,7 @@ module Integrity
       end
 
       Payload::GitHub.build(
-        JSON.parse(params[:payload]),
-        Integrity.config.build_all?
+        JSON.parse(params[:payload])
       ).to_s
     end
 
