@@ -3,7 +3,7 @@ Integrity — Continuous Integration server
 
 Code: http://github.com/integrity/integrity
 
-Docs: http://integrity.github.com/
+Docs: http://integrity.github.io/
 
 Bugs: http://github.com/integrity/integrity/issues
 
@@ -13,7 +13,7 @@ Mailing List: integrity@librelist.com
 
 Archives: http://librelist.com/browser/integrity/
 
-<a href="https://travis-ci.org/integrity/integrity"><img src="https://api.travis-ci.org/integrity/integrity.png" alt="Travis build status" /></a>
+[![Travis build status](https://api.travis-ci.org/integrity/integrity.png)](https://travis-ci.org/integrity/integrity)
 
 NOTE: The website, integrityapp.com has been abandoned by the original owners,
 and I am unable to resolve that.
