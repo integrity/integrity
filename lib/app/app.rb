@@ -42,6 +42,15 @@ module Integrity
       ).to_s
     end
 
+    post '/gitlab' do
+      request.body.rewind
+      payload = request.body.read
+
+      Payload::GitLab.build(
+        JSON.parse(payload)
+      ).to_s
+    end
+
     get "/?", :provides => 'html' do
       load_projects
       show :home, :title => "projects"
