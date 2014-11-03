@@ -8,7 +8,7 @@ class CampfireNotificationTest < Test::Unit::AcceptanceTestCase
   EOS
 
   setup do
-    load "integrity/notifier/campfire.rb"
+    Notifier.register('Campfire')
 
     @token   = "fc7795d580b6adacaa90f1ds24030s14a31a6522sed"
     @account = "rush"

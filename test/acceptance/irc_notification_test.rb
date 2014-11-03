@@ -9,7 +9,7 @@ class IRCNotificationTest < Test::Unit::AcceptanceTestCase
   EOS
 
   setup do
-    load "integrity/notifier/irc.rb"
+    Notifier.register('IRC')
   end
 
   teardown do

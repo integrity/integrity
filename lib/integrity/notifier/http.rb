@@ -33,7 +33,5 @@ module Integrity
         )
       end
     end
-
-    register HTTP
   end
 end

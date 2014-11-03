@@ -8,28 +8,6 @@ end
 
 require "integrity"
 
-# Uncomment as appropriate for the notifier you want to use
-# = Email
-# require "integrity/notifier/email"
-# = SES Email
-# require "integrity/notifier/ses"
-# = Campfire
-# require "integrity/notifier/campfire"
-# = Flowdock
-# require "integrity/notifier/flowdock"
-# = TCP
-# require "integrity/notifier/tcp"
-# = HTTP
-# require "integrity/notifier/http"
-# = AMQP
-# require "integrity/notifier/amqp"
-# = Shell
-# require "integrity/notifier/shell"
-# = Co-op
-# require "integrity/notifier/coop"
-# = IRC
-# require "integrity/notifier/irc"
-
 Integrity.configure do |c|
   # DataMapper database connection URI
   c.database                    = "sqlite3:db/integrity.db"
@@ -68,7 +46,7 @@ Integrity.configure do |c|
   # Which builder to use. Please refer to the documentation for the list
   # of builders and their limitations
   c.builder                     = :threaded, 5
-  
+
   # How many builds to show by default on project pages
   c.project_default_build_count = 10
   
@@ -78,6 +56,10 @@ Integrity.configure do |c|
   # Make status badge public for all projects? Otherwise, login is
   # required to see status badge for private projects.
   c.status_image_always_public  = false
+
+  # Known notifiers:
+  # AMQP Campfire Coop Email Flowdock HTTP IRC SES Shell TCP
+  c.notifiers                   = %w()
 
   # Use https://github.com/grahamc/git-cachecow to cache repository locally
   # c.checkout_proc             = Proc.new do |runner, repo_uri, branch, sha1, target_directory|

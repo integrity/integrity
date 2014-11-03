@@ -43,7 +43,5 @@ module Integrity
         build.failed? || config["announce_success"]
       end
     end
-
-    register Flowdock
   end
 end

@@ -8,7 +8,7 @@ class ShellNotificationTest < Test::Unit::AcceptanceTestCase
   EOS
 
   setup do
-    load "integrity/notifier/shell.rb"
+    Notifier.register('Shell')
 
     @success_cmd = "echo \"success\""
     @failed_cmd = "echo \"failed\""

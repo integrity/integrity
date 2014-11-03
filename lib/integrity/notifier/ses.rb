@@ -40,7 +40,5 @@ module Integrity
       alias_method :body, :full_message
 
     end
-
-    register SES
   end
 end

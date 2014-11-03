@@ -8,7 +8,7 @@ class FlowdockNotificationTest < Test::Unit::AcceptanceTestCase
   EOS
 
   setup do
-    load "integrity/notifier/flowdock.rb"
+    Notifier.register('Flowdock')
 
     @token   = "fc7795d580b6adacaa90f1ds24030s14a31a6522sed"
     @repo    = git_repo(:my_test_project)

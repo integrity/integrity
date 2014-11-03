@@ -90,7 +90,5 @@ module Integrity
           @previous_build_set = true
         end
     end
-
-    register Email
   end
 end

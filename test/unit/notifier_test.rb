@@ -40,7 +40,7 @@ TODO
   it "handles notifier timeouts" do
     pending("Move to acceptance tests") {
       irc   = Notifier.gen(:irc)
-      Notifier.register(Integrity::Notifier::IRC)
+      Notifier.register('IRC')
       build = Build.gen
 
       stub.instance_of(Notifier::IRC).deliver! { raise Timeout::Error }

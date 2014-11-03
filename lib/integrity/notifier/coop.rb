@@ -34,7 +34,5 @@ EOM
         'Coop'
       end
     end
-
-    register Coop
   end
 end

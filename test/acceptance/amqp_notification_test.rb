@@ -9,7 +9,7 @@ class AMQPNotificationTest < Test::Unit::AcceptanceTestCase
   EOS
 
   setup do
-    load "integrity/notifier/amqp.rb"
+    Notifier.register('AMQP')
   end
 
   teardown do
