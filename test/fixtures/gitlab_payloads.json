@@ -1,0 +1,81 @@
+{
+  "push": {
+    "before": "a46e157d6ee6222136a9777447d0f7c7ac9146b8",
+    "after": "3e15d04bb252739cfee94cb7607201f20e8464aa",
+    "ref": "refs/heads/master",
+    "user_id": 1,
+    "user_name": "Alex",
+    "project_id": 1,
+    "repository": {
+      "name": "integrity-server",
+      "url": "ssh://git@integrity.example.com:37234/integrity/integrity.git",
+      "description": "",
+      "homepage": "http://integrity.example.com/integrity/integrity"
+    },
+    "commits": [
+      {
+        "id": "3e15d04bb252739cfee94cb7607201f20e8464aa",
+        "message": "Integrity test commit",
+        "timestamp": "2014-10-31T17:45:02+00:00",
+        "url": "http://integrity.example.com/integrity/integrity/commit/3e15d04bb252739cfee94cb7607201f20e8464aa",
+        "author": {
+          "name": "Alex",
+          "email": "alex@example.com"
+        }
+      },
+      {
+        "id": "104f73962ed248fbcd5f887bbbbd3e468275cfd9",
+        "message": "Merge branch 'master' into dev",
+        "timestamp": "2014-10-31T17:01:39+00:00",
+        "url": "http://integrity.example.com/integrity/integrity/commit/104f73962ed248fbcd5f887bbbbd3e468275cfd9",
+        "author": {
+          "name": "Alex",
+          "email": "alex@example.com"
+        }
+      },
+      {
+        "id": "a46e157d6ee6222136a9777447d0f7c7ac9146b8",
+        "message": "Fixed evil bug",
+        "timestamp": "2014-10-31T17:01:26+00:00",
+        "url": "http://integrity.example.com/integrity/integrity/commit/a46e157d6ee6222136a9777447d0f7c7ac9146b8",
+        "author": {
+          "name": "Alex",
+          "email": "alex@example.com"
+        }
+      }
+    ],
+    "total_commits_count": 3
+  },
+  "delete_branch": {
+    "before": "f290ec90f7fef8f048f2cbb5290a0fed14dcce49",
+    "after": "0000000000000000000000000000000000000000",
+    "ref": "refs/heads/experimental",
+    "user_id": 1,
+    "user_name": "Alex",
+    "project_id": 1,
+    "repository": {
+      "name": "integrity-server",
+      "url": "ssh://git@integrity.example.com:37234/integrity/integrity.git",
+      "description": "",
+      "homepage": "http://integrity.example.com/integrity/integrity"
+    },
+    "commits": [],
+    "total_commits_count": 0
+  },
+  "new_branch": {
+    "before": "0000000000000000000000000000000000000000",
+    "after": "f290ec90f7fef8f048f2cbb5290a0fed14dcce49",
+    "ref": "refs/heads/experimental",
+    "user_id": 1,
+    "user_name": "Alex",
+    "project_id": 1,
+    "repository": {
+      "name": "integrity-server",
+      "url": "ssh://git@integrity.example.com:37234/integrity/integrity.git",
+      "description": "",
+      "homepage": "http://integrity.example.com/integrity/integrity"
+    },
+    "commits": [],
+    "total_commits_count": 0
+  }
+}
