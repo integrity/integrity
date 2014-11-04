@@ -9,11 +9,13 @@ module Integrity
     end
 
     def find
-      unless Integrity.config.auto_branch?
-        return branches
+      found = branches
+
+      if found.empty? && Integrity.config.auto_branch?
+        found = [forked]
       end
 
-      Array(branch || forked)
+      found
     end
 
     def branches

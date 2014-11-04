@@ -170,6 +170,9 @@ https://help.github.com/articles/post-receive-hooks[Post-Receive Hook]. Enable i
 c.github_token = "TOKEN"
 ----
 
+POST /gitlab:: Supports GitLab's
+https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/web_hooks/web_hooks.md[Push Web Hook].
+
 === Choosing a builder
 Integrity ships with three ways of building your codes in the background.
 

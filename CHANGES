@@ -4,6 +4,8 @@
 
  * Added option to email notifier to email only when build status changes.
 
+ * Added GitLab as a build trigger
+
 = 26 / 2013-08-27
 
  * Support for Ruby 1.8.6 officially dropped.
