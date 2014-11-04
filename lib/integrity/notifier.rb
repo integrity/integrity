@@ -15,8 +15,8 @@ module Integrity
       @notifiers ||= {}
     end
 
-    def self.register(klass_name)
-      available[klass_name] = const_get(klass_name) if const_defined?(klass_name)
+    def self.register(class_name)
+      available[class_name] = const_get(class_name)
     end
 
     def notify(build)

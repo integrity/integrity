@@ -84,9 +84,10 @@ module Integrity
 
     def notifiers=(notifiers)
       notifiers.each do |notifier|
-        Integrity::Notifier.register(notifier) ||
-            raise(ArgumentError, "Unknown notifier #{notifier}")
+        Integrity::Notifier.register(notifier)
       end
+    rescue NameError => e
+      raise ArgumentError, "Unknown notifier #{e.name}"
     end
   end
 end
