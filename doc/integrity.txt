@@ -219,6 +219,8 @@ c.builder = :resque
 
 Then run a worker with `rake resque:work`.
 
+Resque web backend is available at `/resque` path.
+
 == Notification
 
 After a build status is available, you want to know it **immediately**.
