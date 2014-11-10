@@ -26,13 +26,4 @@
       = succeed "." do
         %a{ :href => path("login") } click here to try again
 
-    %dt
-      So what the hell is
-      = succeed "?" do
-        %strong Integrity
-    %dd
-      Integrity is your friendly
-      %a{ :href => "http://en.wikipedia.org/wiki/Continuous_integration" } Continuous Integration
-      server. If you want to know more about us, check our website at
-      = succeed "." do
-        %a{ :href => "http://integrity.github.com" } integrity.github.com
+    = partial(:about)
