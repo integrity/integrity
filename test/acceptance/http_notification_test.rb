@@ -8,7 +8,7 @@ class HTTPNotificationTest < Test::Unit::AcceptanceTestCase
   EOS
 
   setup do
-    load "integrity/notifier/http.rb"
+    Notifier.register('HTTP')
     stub_request(:any, "http://example.com/")
   end
 

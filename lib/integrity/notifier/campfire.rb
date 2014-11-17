@@ -35,7 +35,5 @@ EOM
         build.failed? || config["announce_success"]
       end
     end
-
-    register Campfire
   end
 end

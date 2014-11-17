@@ -8,7 +8,7 @@ class SESNotificationTest < Test::Unit::AcceptanceTestCase
   EOS
 
   setup do
-    load "integrity/notifier/ses.rb"
+    Notifier.register('SES')
   end
 
   teardown do

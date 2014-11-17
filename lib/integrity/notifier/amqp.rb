@@ -54,7 +54,5 @@ module Integrity
         b.stop
       end
     end
-
-    register AMQP
   end
 end

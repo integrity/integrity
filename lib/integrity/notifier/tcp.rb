@@ -30,7 +30,5 @@ module Integrity
         s.close
       end
     end
-
-    register TCP
   end
 end

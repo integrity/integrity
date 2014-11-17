@@ -15,8 +15,8 @@ module Integrity
       @notifiers ||= {}
     end
 
-    def self.register(klass)
-      available[klass.to_s.split(":").last] = klass
+    def self.register(class_name)
+      available[class_name] = const_get(class_name)
     end
 
     def notify(build)
@@ -30,5 +30,16 @@ module Integrity
     def notify_of_build_start(build)
       klass.notify_of_build_start(build, config) if klass
     end
+
+    autoload :AMQP, 'integrity/notifier/amqp'
+    autoload :Campfire, 'integrity/notifier/campfire'
+    autoload :Coop, 'integrity/notifier/coop'
+    autoload :Email, 'integrity/notifier/email'
+    autoload :Flowdock, 'integrity/notifier/flowdock'
+    autoload :HTTP, 'integrity/notifier/http'
+    autoload :IRC, 'integrity/notifier/irc'
+    autoload :SES, 'integrity/notifier/ses'
+    autoload :Shell, 'integrity/notifier/shell'
+    autoload :TCP, 'integrity/notifier/tcp'
   end
 end

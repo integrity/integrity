@@ -50,6 +50,7 @@ Integrity.configure do |c|
   c.builder                     = :threaded, 5
   c.build_all                   = true
   c.project_default_build_count = 10
+  c.notifiers                   = %w(Email)
 end
 ----
 
@@ -87,6 +88,9 @@ post-receive hook and delete the build history for the branch.
 
 project_default_build_count:: How many builds to initially show on project
 pages. nil, which is the default, means show all builds.
+
+notifiers:: List of enabled notifiers. See details above in Notification
+section.
 
 HTTP authentication:: If both `username` and `password` settings are set then
 only the logged-in users can administer the projects and see the private ones.
@@ -234,15 +238,7 @@ To enable and use a notifier with your projects:
 
 1. Open the `Gemfile`, uncomment the relevant lines and run
    `bundle lock && bundle install` to install the notifier's dependencies.
-2. Edit the `init.rb` file to require it. Example:
-+
-[source, ruby]
-----
-require "integrity"
-# You need to add this line:
-require "integrity/notifier/email"
-----
-+
+2. Edit the `init.rb` file to enable it.
 3. Restart Integrity and go to a project settings screen where you can
    enable and configure the notifier.
 

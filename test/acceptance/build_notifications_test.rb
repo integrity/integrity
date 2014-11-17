@@ -1,6 +1,5 @@
 require "helper/acceptance"
 require "helper/acceptance/notifier_helper"
-require "helper/acceptance/email_notifier"
 
 class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
   include NotifierHelper
@@ -22,8 +21,8 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     # it in a test case. Sigh.
     load "helper/acceptance/textfile_notifier.rb"
 
-    Notifier.register(Integrity::Notifier::Textfile)
-    Notifier.register(Integrity::Notifier::Email)
+    Notifier.register('Textfile')
+    Notifier.register('Email')
   end
 
   scenario "an admin sets up a notifier and issues a manual build" do

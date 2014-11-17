@@ -4,7 +4,7 @@ module NotifierHelper
     fill_in "notifiers[Email][from]",   :with => "ci@example.com"
     fill_in "notifiers[Email][user]",   :with => "inspector"
     fill_in "notifiers[Email][pass]",   :with => "gadget"
-    fill_in "notifiers[Email][auth]",   :with => "simple"
+    select  "plain",                    :from => "Auth type"
     fill_in "notifiers[Email][domain]", :with => "example.com"
   end
 
@@ -23,7 +23,7 @@ module NotifierHelper
     assert_have_tag "input#email_notifier_from[@value='ci@example.com']"
     assert_have_tag "input#email_notifier_user[@value='inspector']"
     assert_have_tag "input#email_notifier_pass[@value='gadget']"
-    assert_have_tag "input#email_notifier_auth[@value='simple']"
+    assert_have_tag "select#email_notifier_auth option[@value='plain']"
     assert_have_tag "input#email_notifier_domain[@value='example.com']"
   end
 

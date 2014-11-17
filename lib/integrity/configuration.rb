@@ -81,5 +81,13 @@ module Integrity
           raise ArgumentError, "Unknown builder #{name}"
         end
     end
+
+    def notifiers=(notifiers)
+      notifiers.each do |notifier|
+        Integrity::Notifier.register(notifier)
+      end
+    rescue NameError => e
+      raise ArgumentError, "Unknown notifier #{e.name}"
+    end
   end
 end

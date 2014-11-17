@@ -9,7 +9,7 @@ class TCPNotificationTest < Test::Unit::AcceptanceTestCase
   EOS
 
   setup do
-    load "integrity/notifier/tcp.rb"
+    Notifier.register('TCP')
     @server = mock_socket
   end
 

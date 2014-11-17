@@ -41,7 +41,5 @@ module Integrity
           build.failed? || config["announce_success"]
         end
     end
-
-    register Shell
   end
 end

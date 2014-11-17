@@ -9,7 +9,7 @@ class EmailNotificationTest < Test::Unit::AcceptanceTestCase
   EOS
 
   setup do
-    load "integrity/notifier/email.rb"
+    Notifier.register('Email')
   end
 
   teardown do
@@ -78,7 +78,7 @@ class EmailNotificationStatusChangedTest < Test::Unit::AcceptanceTestCase
   EOS
 
   setup do
-    load "integrity/notifier/email.rb"
+    Notifier.register('Email')
   end
 
   teardown do
