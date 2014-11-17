@@ -37,9 +37,17 @@ module Integrity
         halt 403
       end
 
-      Payload.build(
-        JSON.parse(params[:payload]),
-        Integrity.config.build_all?
+      Payload::GitHub.build(
+        JSON.parse(params[:payload])
+      ).to_s
+    end
+
+    post '/gitlab' do
+      request.body.rewind
+      payload = request.body.read
+
+      Payload::GitLab.build(
+        JSON.parse(payload)
       ).to_s
     end
 
