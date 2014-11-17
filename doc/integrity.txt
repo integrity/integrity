@@ -410,7 +410,7 @@ pull from.
 == Documentation
 
 To build HTML documentation, run `rake html`. This is what goes on the
-Integrity website (http://integrity.github.com).
+Integrity website (http://integrity.github.io).
 
 Dependencies for HTML documentation generation:
 
