@@ -228,7 +228,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     reload
 
     visit "/"
-    click_link "My Test Project (wip)"
+    click_link "=> wip"
     assert_have_tag("h1", :content => "Built #{repo.short_head} and failed")
   end
 
