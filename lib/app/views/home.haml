@@ -15,7 +15,7 @@
       - classes = [project.status.to_s, cycle('odd', 'even')]
       - classes << (info[:top_level] ? 'group' : 'group-item')
       %li{ :class =>  classes.join(' ') }
-        %a{ :href => project_path(project) }&= info[:top_level] ? info[:group] : '=> ' + info[:subtitle]
+        %a{ :href => project_path(project) }&= info[:top_level] ? info[:group] : info[:subtitle]
         .meta
           - case project.status
           - when :building
