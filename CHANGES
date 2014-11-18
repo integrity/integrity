@@ -4,7 +4,9 @@
 
  * Added option to email notifier to email only when build status changes.
 
- * Added GitLab as a build trigger
+ * Added GitLab as a build trigger.
+
+ * Resque UI is now automatically exposed for resque builder (see Resque section in doc).
 
 = 26 / 2013-08-27
 
