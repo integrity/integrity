@@ -11,8 +11,11 @@
 - else
   %ul#projects
     - @projects.each do |project|
-      %li{ :class => cycle("odd", "even") + ' ' + project.status.to_s }
-        %a{ :href => project_path(project) }&= project.name
+      - info = @projects_groups[project.name]
+      - classes = [project.status.to_s, cycle('odd', 'even')]
+      - classes << (info[:top_level] ? 'group' : 'group-item')
+      %li{ :class =>  classes.join(' ') }
+        %a{ :href => project_path(project) }&= info[:top_level] ? info[:group] : info[:subtitle]
         .meta
           - case project.status
           - when :building

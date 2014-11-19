@@ -224,6 +224,14 @@ a {
         font-size: 0.8em;
         color: #999999;
         text-align: right; }
+      #content #projects li.group-item a {
+        font-size: 1em;
+        padding: 0.5em 0.7em; }
+        #content #projects li.group-item a:before {
+          content: "\FFEB";
+          padding-right: 0.3em; }
+      #content #projects li.group-item .meta {
+        top: 0.75em; }
   #content #previous_builds li a {
     display: block;
     padding: 0.25em;

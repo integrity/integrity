@@ -53,6 +53,7 @@ module Integrity
 
     get "/?", :provides => 'html' do
       load_projects
+      group_projects
       show :home, :title => "projects"
     end
 
@@ -108,6 +109,17 @@ module Integrity
       end
     end
     private :load_projects
+
+    def group_projects
+      @projects_groups = {}
+      @projects.each do |project|
+        name, group, subtitle = /\A(.*?)(?: \((.*?)\))?\z/.match(project.name).to_a
+        @projects_groups[name] = { :group => group,
+                                   :top_level => !@projects_groups.key?(group),
+                                   :subtitle => subtitle}
+      end
+    end
+    private :group_projects
 
     get "/login" do
       login_required
