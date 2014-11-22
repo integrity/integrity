@@ -25,7 +25,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     end
     @thread.run
   end
-  
+
   def finish_build
     @thread.join
   end
@@ -41,11 +41,11 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     login_as "admin", "test"
     visit "/long-building"
     click_button "manual build"
-    
+
     # starts the build.
     # the build sleeps for 1 second after the repository is cloned, etc.
     start_build
-    
+
     count = 0
     # wait at most 1 second, should be enough given build's sleep time
     while count < 10
@@ -56,7 +56,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
       end
       count += 1
     end
-    
+
     # here commit message may have been retrieved but no output
     # was collected yet, check and wait agian
     count = 0
@@ -79,11 +79,11 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("span.when",    :content => "today")
     # partial output
     assert_have_tag("pre.output",   :content => "before sleep")
-    
+
     # wait for the build to finish
     finish_build
     visit "/long-building"
-    
+
     assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
     assert_have_tag("blockquote p", :content => "This commit will work")
     assert_have_tag("span.who",     :content => "by: John Doe")

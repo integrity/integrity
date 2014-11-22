@@ -212,7 +212,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     assert_equal "1", last_response.body
 
     Integrity.config.builder.wait!
-    
+
     visit "/"
     click_link "My Test Project"
     assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")

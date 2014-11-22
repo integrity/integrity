@@ -48,7 +48,7 @@ class IntegrityBranchTest < Test::Unit::AcceptanceTestCase
     assert_have_tag("span.when",    :content => "today")
     assert_have_tag("pre.output",   :content => "branch=master")
   end
-  
+
   scenario "Checking INTEGRITY_BRANCH in chained build command" do
     repo = git_repo(:my_test_project)
     repo.add_successful_commit

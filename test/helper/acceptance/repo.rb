@@ -41,7 +41,7 @@ module TestHelper
         run!("git add test")
       }
     end
-    
+
     def add_commit_with_very_long_commit_message_lines
       # 2000 chars
       subject = '123456789 ' * 200
@@ -52,7 +52,7 @@ module TestHelper
         run!("git add test")
       }
     end
-    
+
     def add_commit_with_utf8_subject_and_body
       subject = 'Коммит'
       message = "#{subject} end-subject\n\nAnd again in body:\n\n#{subject} end-body"
@@ -145,10 +145,10 @@ SH
   exit #{status}
 SH
     end
-    
+
     class CommandFailed < StandardError
     end
-    
+
     def run!(command)
       output = `#{command}`
       if $? != 0
