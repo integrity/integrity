@@ -108,7 +108,7 @@ module Integrity
         "status" => status
       }
     end
-    
+
     def to_json
       {
         "project" => attributes_for_json
@@ -126,7 +126,7 @@ module Integrity
           gsub(/-*$/, "")
         )
       end
-      
+
       def fix_line_endings
         command = self.command
         unless command.empty?

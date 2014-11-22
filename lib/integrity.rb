@@ -57,7 +57,7 @@ Addressable::URI.class_eval { def gsub(*a); to_s.gsub(*a); end }
 module Integrity
   class CannotFindEncoding < StandardError
   end
-  
+
   autoload :ThreadedBuilder, "integrity/builders/threaded_builder"
   autoload :DelayedBuilder,  "integrity/builders/delayed_builder"
   autoload :ResqueBuilder,   "integrity/builders/resque_builder"
@@ -95,12 +95,12 @@ module Integrity
       # borrowed from activesupport DateTime#to_utc
       datetime = datetime.new_offset(0)
     end
-    
+
     # This is what DateTime#to_time does some of the time.
     # Our offset is always 0 and therefore we always produce a Time
     ::Time.utc(datetime.year, datetime.month, datetime.day, datetime.hour, datetime.min, datetime.sec)
   end
-  
+
   def self.human_duration(delta)
     if delta > 0
       ChronicDuration.output(delta, :format => :micro)
@@ -108,7 +108,7 @@ module Integrity
       '0s'
     end
   end
-  
+
   # Replace or delete invalid UTF-8 characters from text, which is assumed
   # to be in UTF-8.
   #
@@ -140,7 +140,7 @@ module Integrity
     end
     text
   end
-  
+
   def self.clean_utf8_iconv
     unless @iconv_loaded
       begin
@@ -157,7 +157,7 @@ module Integrity
     end
     [@iconv, @iconv_fallback]
   end
-  
+
   # Apparently utf-16 is not available everywhere, in particular not on travis.
   # Try to find a usable encoding.
   def self.intermediate_encoding

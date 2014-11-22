@@ -11,7 +11,7 @@ class LongCommitMessageLinesTest < Test::Unit::AcceptanceTestCase
     @repo = git_repo(:my_test_project)
     @repo.add_commit_with_very_long_commit_message_lines
     Project.gen(:my_test_project, :uri => @repo.uri)
-    
+
     @builder = Integrity.config.builder
     Integrity.configure { |c|
       c.builder = :explicit, 1

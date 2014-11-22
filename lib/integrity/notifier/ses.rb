@@ -26,8 +26,8 @@ module Integrity
 
       def deliver!
         ses.send_email(
-          :to => to, 
-          :from => from, 
+          :to => to,
+          :from => from,
           :subject => subject,
           :body => body
         )

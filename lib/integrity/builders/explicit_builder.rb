@@ -6,11 +6,11 @@ module Integrity
     def initialize
       @builds = []
     end
-    
+
     def enqueue(build)
       @builds << build
     end
-    
+
     def wait!
       until @builds.empty?
         @builds.shift.run!

@@ -4,7 +4,7 @@ require "helper/acceptance/email_notifier"
 
 class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
   include NotifierHelper
-  
+
   def textfile_notifications_path
     File.join(INTEGRITY_TEST_TMP, 'textfile_notifications.txt')
   end
@@ -62,9 +62,9 @@ class BuildNotificationsTest < Test::Unit::AcceptanceTestCase
     visit "/my-test-project"
 
     click_button "manual build"
-    
+
     assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
-    
+
     rm_f textfile_notifications_path
     click_link "Edit"
     check "enabled_notifiers_textfile"

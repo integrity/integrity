@@ -33,7 +33,7 @@ class BuildTest < IntegrityTest
     assert_equal "This commit hasn't been built yet",
       Build.gen(:pending, :commit => {:identifier => nil}).human_status
   end
-  
+
   it "has a human readable duration" do
     assert_match '2m',
       Build.gen(:successful,
@@ -41,7 +41,7 @@ class BuildTest < IntegrityTest
         :completed_at => Time.mktime(2008, 12, 15, 4, 2)
       ).human_duration
   end
-  
+
   it 'has a non-empty duration when elapsed time is zero' do
     assert_match '0s',
       Build.gen(:successful,
@@ -68,28 +68,28 @@ class BuildTest < IntegrityTest
     build = Build.gen
     assert_change(Commit, :count, -1) { build.destroy }
   end
-  
+
   test "build without a commit" do
     # Sometimes Integity ends up having a build without a corresponding commit.
     # Check that this does not render UI unusable.
     build = Build.gen
     build.commit.destroy
     build.reload
-    
+
     assert_equal '(commit is missing)', build.sha1
     assert_equal '(commit is missing)', build.sha1_short
     assert_equal '(commit is missing)', build.message
     assert_equal '(commit is missing)', build.author
     assert_equal Time.utc(1970), build.committed_at
   end
-  
+
   test "destroying build without a commit" do
     # If a build has no commit, it should still be possible to destroy
     # said build
     build = Build.gen
     build.commit.destroy
     build.reload
-    
+
     assert_nothing_raised do
       build.destroy
     end

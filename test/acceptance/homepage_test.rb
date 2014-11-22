@@ -59,7 +59,7 @@ class HomepageTest < Test::Unit::AcceptanceTestCase
 
       assert_have_tag("li[@class~=blank]",    :content => "Never built yet")
       assert_have_tag("li[@class~=building]", :content => "Building for")
-      
+
       # http://stackoverflow.com/questions/1474045/finding-a-label-with-webrat-that-contains-a-link
       # field is not defined here, thus convert css query to xpath
       field = field_by_xpath('//li[contains(@class,"building")]')

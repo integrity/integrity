@@ -23,7 +23,7 @@ class UnhandledExceptionDuringBuildTest < Test::Unit::AcceptanceTestCase
   def build
     Integrity.config.builder.wait!
   end
-  
+
   class AnUnhandledException < StandardError
   end
 
@@ -39,7 +39,7 @@ class UnhandledExceptionDuringBuildTest < Test::Unit::AcceptanceTestCase
     stub.instance_of(Integrity::Builder).run do
       raise AnUnhandledException
     end
-    
+
     build
     reload
 

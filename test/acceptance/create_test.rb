@@ -68,7 +68,7 @@ class CreateTest < Test::Unit::AcceptanceTestCase
     assert_equal 401, last_response.status
     assert_have_tag("h1", :content => "know the password?")
   end
-  
+
   scenario 'Build command with \r\n line endings' do
     visit "/new"
     fill_in "Name",            :with => "Line endings"
@@ -79,13 +79,13 @@ class CreateTest < Test::Unit::AcceptanceTestCase
     click_button "Create Project"
 
     assert_have_tag("h1", :content => "Line endings")
-    
+
     project = Project.first(:name => 'Line endings')
     assert project
-    
+
     assert_equal "true &&\nrake", project.command
   end
-  
+
   scenario 'Build command with \r line endings' do
     visit "/new"
     fill_in "Name",            :with => "Line endings"
@@ -96,13 +96,13 @@ class CreateTest < Test::Unit::AcceptanceTestCase
     click_button "Create Project"
 
     assert_have_tag("h1", :content => "Line endings")
-    
+
     project = Project.first(:name => 'Line endings')
     assert project
-    
+
     assert_equal "true &&\nrake", project.command
   end
-  
+
   scenario 'Build command with mixed line endings' do
     visit "/new"
     fill_in "Name",            :with => "Line endings"
@@ -113,10 +113,10 @@ class CreateTest < Test::Unit::AcceptanceTestCase
     click_button "Create Project"
 
     assert_have_tag("h1", :content => "Line endings")
-    
+
     project = Project.first(:name => 'Line endings')
     assert project
-    
+
     assert_equal "true && \n false && \n && ls && \n rake", project.command
   end
 end
