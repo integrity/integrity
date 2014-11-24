@@ -39,7 +39,10 @@ $ git fetch origin
 $ git merge v26
 
 == Configuration
-Integrity is configured via the `init.rb` file using Ruby.
+Integrity is configured via the `local.rb` file using Ruby.
+[source, shell]
+$ cp local.rb.example local.rb
+
 [source, ruby]
 ----
 Integrity.configure do |c|
