@@ -6,3 +6,4 @@ builds
 .rvmrc
 *.tmproj
 /tmp
+/local.rb
