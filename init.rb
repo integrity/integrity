@@ -11,6 +11,8 @@ require "integrity"
 # Uncomment as appropriate for the notifier you want to use
 # = Email
 # require "integrity/notifier/email"
+# = Postmark Email
+# require "integrity/notifier/postmark"
 # = SES Email
 # require "integrity/notifier/ses"
 # = Campfire
