@@ -5,6 +5,7 @@
     %meta{ :content => "en", :"http-equiv" => "Content-Language" }
     %title= "#{@title.last} | integrity"
     - stylesheets(:reset, :buttons, :integrity)
+    - javascripts(:integrity)
 
     - if @status && @status != :blank
       %link{ :rel => "shortcut icon", :href => "/icons/" + @status.to_s + ".ico" }
