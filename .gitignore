@@ -7,3 +7,4 @@ builds
 *.tmproj
 /tmp
 .env
+tmp
