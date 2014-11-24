@@ -90,3 +90,7 @@ group :test do
   gem 'turn'
   gem 'timecop'
 end
+
+group :development do
+  gem 'shotgun'
+end
