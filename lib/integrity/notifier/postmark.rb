@@ -60,7 +60,5 @@ module Integrity
 
       alias_method :body, :full_message
     end
-
-    register Postmark
   end
 end
