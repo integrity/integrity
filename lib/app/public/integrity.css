@@ -161,11 +161,9 @@ a {
   #content #build form, #content #last_build form {
     font-size: 0.75em; }
     #content #build form p.submit, #content #last_build form p.submit {
-      margin: 0;
       padding: 0;
       float: right;
-      margin-right: 0.5em;
-      margin-top: 1.25em; }
+      margin: 1.25em 0.5em 0 0; }
   #content .blank_slate p, #content .error p {
     position: relative;
     top: 0.3em; }
@@ -274,7 +272,7 @@ a {
     #content #build h1, #content #last_build h1 {
       border-top-width: 1px; }
     #content #build blockquote, #content #last_build blockquote {
-      bottom-bottom-width: 1px;
+      border-bottom-width: 1px;
       line-height: 1.4; }
     #content #build h2 a, #content #last_build h2 a {
       font-size: smaller; }
