@@ -58,7 +58,7 @@ Integrity.configure do |c|
   c.status_image_always_public  = false
 
   # Known notifiers:
-  # AMQP Campfire Coop Email Flowdock HTTP IRC SES Shell TCP
+  # AMQP Campfire Coop Email Flowdock HTTP IRC SES Shell TCP Postmark
   c.notifiers                   = %w()
 
   # Use https://github.com/grahamc/git-cachecow to cache repository locally
