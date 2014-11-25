@@ -10,7 +10,7 @@ class BuildDurationTest < Test::Unit::AcceptanceTestCase
 
   scenario "Build failing at git clone step" do
     Project.gen(:bogus_repo_project)
-    
+
     login_as "admin", "test"
     visit "/my-test-project"
     click_button "manual build"

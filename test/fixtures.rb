@@ -48,7 +48,7 @@ module Integrity
       :command => "true && echo branch=$INTEGRITY_BRANCH",
       :public  => true }
   end
-  
+
   Project.fixture(:unparseable_command) do
     { :name    => "My Test Project",
       :uri     => File.dirname(__FILE__) + "/../../",
@@ -58,7 +58,7 @@ module Integrity
   end
 
   Project.fixture(:misc_builds) do
-    builds = 
+    builds =
       2.of { Build.gen(:failed) }     +
       2.of { Build.gen(:pending) }    +
       1.of { Build.gen(:building) }   +
@@ -93,7 +93,7 @@ module Integrity
       1.of{Build.gen(:building)}
     Project.gen_attrs.update(:builds => builds, :last_build => builds.last)
   end
-  
+
   Project.fixture(:bogus_repo_project) do
     { :name    => "My Test Project",
       :uri     => 'nonexistent',

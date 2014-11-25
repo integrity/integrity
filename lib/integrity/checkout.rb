@@ -37,7 +37,7 @@ module Integrity
       #
       # Therefore currently there seems to be no way to obtain invalid
       # UTF-8 from Git.
-      
+
       format = "---%n" \
         "identifier: %H%n" \
         "author: %an <%ae>%n" \
@@ -49,7 +49,7 @@ module Integrity
 
       result = run_in_dir!("git show -s --pretty=format:\"%b\" #{sha1}")
       dump['full_message'] = message + "\n\n" + result.output
-      
+
       # message (subject in git parlance) may be over 255 characters
       # which is our limit for the column; if so, truncate it intelligently
       if message.length > 255

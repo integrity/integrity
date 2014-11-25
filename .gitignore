@@ -6,3 +6,5 @@ builds
 .rvmrc
 *.tmproj
 /tmp
+.env
+tmp

@@ -46,7 +46,7 @@ module Integrity
     def add_output(chunk)
       @build.update(:output => @build.output + chunk)
     end
-    
+
     def complete
       @logger.info "Build #{commit} exited with #{@result.success} got:\n #{@result.output}"
 
@@ -57,17 +57,17 @@ module Integrity
         :output       => @result.output
       )
     end
-    
+
     def fail(exception)
       failure_message = "#{exception.class}: #{exception.message}"
-      
+
       @logger.info "Build #{commit} failed with an exception: #{failure_message}"
-      
+
       failure_message << "\n\n"
       exception.backtrace.each do |line|
         failure_message << line << "\n"
       end
-      
+
       @build.raise_on_save_failure = true
       @build.update(
         :completed_at => Time.now,

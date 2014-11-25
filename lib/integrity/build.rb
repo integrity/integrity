@@ -8,7 +8,7 @@ module Integrity
       :pending  => "%s hasn't been built yet",
       :building => "%s is building"
     }
-    
+
     GLOB_CHARS = '*?[]'
 
     property :id,           Serial
@@ -140,13 +140,13 @@ module Integrity
     def human_status
       HUMAN_STATUS[status] % sha1_short
     end
-    
+
     def human_duration
       return if pending? || building?
       delta = Integrity.datetime_to_utc_time(completed_at).to_i - Integrity.datetime_to_utc_time(started_at).to_i
       Integrity.human_duration(delta)
     end
-    
+
     def human_time_since_start
       return if pending?
       # to_i returns utc timestamp
@@ -157,7 +157,7 @@ module Integrity
     def build_directory
       Pathname.new(Integrity.config.directory).join(self.id.to_s)
     end
-    
+
     def escape_glob(path)
       escaped = path
       each_char(GLOB_CHARS) do |char|
@@ -166,7 +166,7 @@ module Integrity
       escaped
     end
     private :escape_glob
-    
+
     def each_char(str)
       if str.respond_to?(:each_char)
         # ruby 1.9
@@ -181,7 +181,7 @@ module Integrity
       end
     end
     private :each_char
-    
+
     def artifact_files
       build_dir = build_directory
 =begin
@@ -233,7 +233,7 @@ module Integrity
         a[:name] <=> b[:name]
       end
     end
-    
+
     def to_json
       {
         'build' => {
