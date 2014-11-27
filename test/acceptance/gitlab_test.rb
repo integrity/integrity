@@ -14,11 +14,11 @@ class GitLabTest < Test::Unit::AcceptanceTestCase
   end
 
   setup do
-    Integrity.configure { |c|
-      c.auto_branch  = false
+    Integrity.configure do |c|
+      c.auto_branch = false
       c.trim_branches = false
       c.build_all = false
-    }
+    end
     Integrity.config.instance_variable_set(:@builder, NoneBuilder)
   end
 
