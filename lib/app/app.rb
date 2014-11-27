@@ -1,11 +1,10 @@
-require "app/helpers"
+require 'app/helpers'
 require 'cgi'
 
 module Integrity
   class App < Sinatra::Base
     set     :root, File.dirname(__FILE__)
     enable  :methodoverride, :static
-    disable :build_all
 
     helpers Integrity::Helpers
 
