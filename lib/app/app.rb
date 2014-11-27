@@ -148,13 +148,13 @@ module Integrity
       end
     end
 
-    get "/:project\.png" do
+    get "/:project.png" do
       login_required unless current_project.public? || Integrity.config.status_image_always_public?
 
       send_file File.join(File.dirname(__FILE__), 'public', 'status', current_project.status.to_s + '.png')
     end
 
-    get "/:project\.json" do
+    get "/:project.json" do
       @format = :json
       login_required unless current_project.public?
       
@@ -254,7 +254,7 @@ module Integrity
       send_file fs_path, :filename => file[:name]
     end
 
-    get "/:project/builds/:build\.json" do
+    get "/:project/builds/:build.json" do
       @format = :json
       login_required unless current_project.public?
       
