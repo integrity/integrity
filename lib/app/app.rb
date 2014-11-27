@@ -3,8 +3,10 @@ require 'cgi'
 
 module Integrity
   class App < Sinatra::Base
-    set     :root, File.dirname(__FILE__)
-    enable  :methodoverride, :static
+    configure do
+      set    :root, File.dirname(__FILE__)
+      enable :method_override, :static
+    end
 
     helpers Integrity::Helpers
 
