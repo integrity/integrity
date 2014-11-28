@@ -33,7 +33,7 @@
           - date = build_date
           %li.builds-group<
             %h6=date
-        %li{ :class => build.status }
+        %li{ :class => [build.status, 'build'] }
           %a{ :href => build_path(build) }
             %strong.build<
               &== Build #{build.sha1_short}

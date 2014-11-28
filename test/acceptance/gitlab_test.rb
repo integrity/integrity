@@ -94,12 +94,12 @@ class GitLabTest < Test::Unit::AcceptanceTestCase
     gen_project
 
     visit '/my-test-project'
-    assert_have_tag('#previous_builds li', :count => 0)
+    assert_have_tag('#previous_builds li.build', :count => 0)
 
     gitlab_post payload
 
     visit '/my-test-project'
-    assert_have_tag('#previous_builds li', :count => 1)
+    assert_have_tag('#previous_builds li.build', :count => 1)
   end
 
   scenario 'Normal push; build all' do
@@ -108,11 +108,11 @@ class GitLabTest < Test::Unit::AcceptanceTestCase
     gen_project
 
     visit '/my-test-project'
-    assert_have_tag('#previous_builds li', :count => 0)
+    assert_have_tag('#previous_builds li.build', :count => 0)
 
     gitlab_post payload
 
     visit '/my-test-project'
-    assert_have_tag('#previous_builds li', :count => 3)
+    assert_have_tag('#previous_builds li.build', :count => 3)
   end
 end

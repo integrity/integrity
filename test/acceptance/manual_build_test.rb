@@ -90,7 +90,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
 
     click_link "my-test-project"
     assert_have_tag "h1", :content => "success"
-    assert_have_tag "#previous_builds li", :count => 2
+    assert_have_tag "#previous_builds li.build", :count => 2
   end
 
   scenario "Fixing the build command and then rebuilding HEAD" do
@@ -153,7 +153,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
 
     click_link "my-test-project"
     assert_have_tag("#last_build h1", :content => "success")
-    assert_have_tag("#previous_builds li", :count => 2)
+    assert_have_tag("#previous_builds li.build", :count => 2)
   end
 
   scenario "Building with DelayedBuilder" do
