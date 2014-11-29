@@ -41,5 +41,6 @@ module Integrity
     autoload :SES, 'integrity/notifier/ses'
     autoload :Shell, 'integrity/notifier/shell'
     autoload :TCP, 'integrity/notifier/tcp'
+    autoload :Postmark, 'integrity/notifier/postmark'
   end
 end

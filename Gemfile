@@ -30,6 +30,9 @@ gem 'rake'
 # = Email
 # gem 'pony', '1.1'
 
+# - Postmark Email
+# gem 'postmark'
+
 # = SES Email
 # gem 'aws-ses', '0.4.3', :require => 'aws/ses'
 
