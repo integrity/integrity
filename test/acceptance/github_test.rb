@@ -116,10 +116,10 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     old_builder = Integrity.config.builder
 
     begin
-      Integrity.configure { |c|
+      Integrity.configure do |c|
         c.builder = :explicit, 1
         c.build_all = true
-      }
+      end
 
       stub(Time).now { unique(:time_for_building_two_projects) { |i| Time.mktime(2009, 12, 15, i / 60, i % 60) } }
 
@@ -166,10 +166,10 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
     old_builder = Integrity.config.builder
 
     begin
-      Integrity.configure { |c|
-        c.builder   = :explicit, 1
+      Integrity.configure do |c|
+        c.builder = :explicit, 1
         c.build_all = false
-      }
+      end
 
       repo = git_repo(:my_test_project)
       repo.checkout "foo/bar"
@@ -197,11 +197,11 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
   end
 
   scenario "Auto branching" do
-    Integrity.configure { |c|
+    Integrity.configure do |c|
       c.builder = :explicit, 1
       c.auto_branch = true
-      c.build_all   = false
-    }
+      c.build_all = false
+    end
 
     repo = git_repo(:my_test_project)
     repo.add_successful_commit

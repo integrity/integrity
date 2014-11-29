@@ -29,7 +29,7 @@ class IntegrityTest < Test::Unit::TestCase
       c.username  = "admin"
       c.password  = "test"
     }
-    Integrity::App.disable(:build_all)
+
     Thread.abort_on_exception = true
     DataMapper.auto_migrate!
   end
