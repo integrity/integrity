@@ -42,9 +42,9 @@
     %a{:href => build_path(build, :raw)} (raw)
 
   .output-container
-    %p.output-action
+    %p.output-action#js-scroll-output
       %button{ :type => :button }<
         Scroll to End of Log
-    %pre.output
+    %pre.output#js-output
       :preserve
         #{bash_color_codes h(build.output)}
