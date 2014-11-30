@@ -28,17 +28,17 @@
     %ul#previous_builds
       - date = nil
       - @builds.each do |build|
-        - build_date = pretty_date(build.committed_at)
+        - build_date = build.started_at ? build.started_at.strftime('%b %-d, %Y') : nil
         - unless date == build_date
           - date = build_date
           %li.builds-group<
-            %h6=date
+            %h6 Builds on #{date}
         %li{ :class => [build.status, 'build'] }
           %a{ :href => build_path(build) }
             %strong.build<
               &== Build #{build.sha1_short}
             %span.attribution<
-              &== by #{build.author}, #{build_date}
+              &== by #{build.author}, #{pretty_date(build.committed_at)}
 
   - unless @showing_all_builds
     %p
