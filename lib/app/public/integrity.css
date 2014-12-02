@@ -318,7 +318,15 @@ a {
         margin-top: 1em;
         display: block;
         font-size: 0.9em; }
-    #content #build pre.output, #content #last_build pre.output {
+    #content #build .output-container, #content #last_build .output-container {
+      position: relative; }
+    #content #build .output-action, #content #last_build .output-action {
+      font-size: 0.75em;
+      position: absolute;
+      top: 1.25em;
+      right: 1em;
+      visibility: hidden; }
+    #content #build .output, #content #last_build .output {
       background: #111111;
       color: white;
       padding: 0.5em;

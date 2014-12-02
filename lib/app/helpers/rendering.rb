@@ -2,10 +2,17 @@ module Integrity
   module Helpers
     module Rendering
       def stylesheets(*sheets)
-        sheets.each { |sheet|
+        sheets.each do |sheet|
           haml_tag(:link, :href => path("#{sheet}.css"),
-            :type => "text/css", :rel => "stylesheet")
-        }
+                   :type => 'text/css', :rel => 'stylesheet')
+        end
+      end
+
+      def javascripts(*scripts)
+        scripts.each do |script|
+          haml_tag(:script, :src => path("#{script}.js"),
+            :type => 'text/javascript')
+        end
       end
 
       def show(view, options={})
