@@ -240,6 +240,8 @@ a {
       font-size: 1.3em; }
     #content #previous_builds li a .attribution {
       font-size: 0.9em; }
+  #content #previous_builds li.builds-group {
+    padding: 0.5em 0; }
   #content #projects li.success a, #content #previous_builds li.success a {
     background-color: #bbf8aa;
     border-color: #99d688;

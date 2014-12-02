@@ -90,7 +90,7 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
 
     assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
     assert_have_tag(".attribution", :content => "by John Doe")
-    assert_have_tag("#previous_builds li", :count => 4)
+    assert_have_tag("#previous_builds li.build", :count => 4)
   end
 
   scenario "Receiving a payload with build_all option *disabled*" do
@@ -149,13 +149,13 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
 
       assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
       assert_have_tag(".attribution", :content => "by John Doe")
-      assert_have_tag("#previous_builds li", :count => 4)
+      assert_have_tag("#previous_builds li.build", :count => 4)
 
       visit "/failure"
 
       assert_have_tag("h1", :content => "Built #{repo.short_head} and failed")
       assert_have_tag(".attribution", :content => "by John Doe")
-      assert_have_tag("#previous_builds li", :count => 4)
+      assert_have_tag("#previous_builds li.build", :count => 4)
     ensure
       # TODO
       Integrity.config.instance_variable_set(:@builder, old_builder)
