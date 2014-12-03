@@ -13,6 +13,7 @@ module Integrity
 
     property :id,           Serial
     property :project_id,   Integer   # TODO :nullable => false
+    property :branch_id,    Integer,  required: true
     property :output,       Text,     default: '', length: 1048576
     property :successful,   Boolean,  default: false
     property :started_at,   DateTime
@@ -21,6 +22,7 @@ module Integrity
     timestamps :at
 
     belongs_to :project
+    belongs_to :branch
     has 1,     :commit
 
     after :create do

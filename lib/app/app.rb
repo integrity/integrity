@@ -1,13 +1,36 @@
+require 'rubygems'
+require 'sinatra'
+require 'omniauth'
+require 'omniauth-github'
+require 'hashie'
 require 'app/helpers'
+require 'sinatra/base'
+require 'rack/flash'
 require 'cgi'
 
 module Integrity
   class App < Sinatra::Base
-    set     :root, File.dirname(__FILE__)
-    enable  :logging, :methodoverride, :static
-    disable :build_all
+
+    configure do
+      enable  :sessions
+      enable  :partial_underscores, :logging, :methodoverride, :static
+      disable :build_all
+
+      set :root, File.dirname(__FILE__)
+      set :partial_template_engine, :erb
+      set :session_secret, 'secret'
+    end
+
 
     helpers Integrity::Helpers
+
+    def current_user
+      Hashie::Mash.new(session[:user])
+    end
+
+    def logged_in?
+      !!session[:user]
+    end
 
     not_found do
       status 404
@@ -28,9 +51,12 @@ module Integrity
       end
     end
 
-    get '/login' do
-      login_required
-      redirect root_url.to_s
+    before '/secure/*' do
+      unless logged_in?
+        session[:previous_url] = request.path
+        @error = 'Sorry guacamole, you need to be logged in to visit ' + request.path
+        halt erb(:login_form)
+      end
     end
 
     post '/status.json' do
@@ -38,6 +64,21 @@ module Integrity
       STDERR.puts "PROJECT: #{current_project.inspect}"
       current_project.update_status!(params[:success])
       halt 200
+    end
+
+    get '/login' do
+      login_required
+      redirect root_url.to_s
+    end
+
+    get '/logout' do
+      session.delete(:user)
+      erb "<div class='alert alert-message'>Logged out</div>"
+    end
+
+    get '/auth/github/callback' do
+      auth_profile
+      redirect to where_user_came_from
     end
 
     post '/:project/hook' do |token|

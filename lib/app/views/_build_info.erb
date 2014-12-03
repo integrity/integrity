@@ -1,0 +1,57 @@
+<form>
+  <p class='submit'>
+    <button title='Rebuild this commit' type='submit'>Rebuild</button>
+  </p>
+</form>
+<h1>
+  <%= build.human_status %>
+  <% if build.building? %>
+  <%   if build.human_time_since_start.present? %>
+  <%=    "for #{build.human_time_since_start}" %>
+  <%   end %>
+  <% elsif !build.pending? %>
+  <%=  "in #{build.human_duration}" %>
+  <% end %>
+</h1>
+<blockquote>
+  <p>
+    <%= h(build.full_message).gsub("\n", '<br />') %>
+  </p>
+  <p class='meta'>
+    <span class='who'><%= "by: #{build.author}" %></span>
+    |
+    <span class='when' title="<%= formatted_time(build.committed_at) %>">
+      <%= time_ago_in_words(build.committed_at) %>
+    </span>
+    <% if build.project.github? %>
+      |
+      <span class='github'>
+        <a href="<%= github_commit_url(build) %>">view on GitHub</a>
+      </span>
+  <% end %>
+  </p>
+</blockquote>
+<% if build.building? || build.completed? %>
+  <% if ! build.project.artifacts_empty? && !(files = artifact_files(build)).empty? %>
+    <h2>
+      Artifacts
+      <blockquote>
+        <ul id="artifacts">
+          <% files.each do |file| %>
+            <a title="<%= file[:relative_path] %>" href="<%= file[:url] %>"><%= file[:name] %></a>
+            <br>
+          <% end %>
+        </ul>
+      </blockquote>
+    </h2>
+  <% end %>
+<% end %>
+<% if build.completed? || build.building? && !build.output.empty? %>
+  <h2>
+    Build Output
+    <a href="<%= build_path(build, :raw) %>">(raw)</a>
+  </h2>
+  <pre id="output" class="output">
+    <%= bash_color_codes h(build.output) %>
+  </pre>
+<% end %>

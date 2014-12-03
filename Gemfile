@@ -18,11 +18,16 @@ gem 'sass'
 gem 'chronic_duration'
 gem 'sinatra'
 gem 'sinatra-authorization'
+gem 'omniauth'
+gem 'omniauth-github'
+gem 'hashie'
+
 
 gem 'bcat'
 gem 'rake'
 gem 'rconfig', '0.4.3.1', require: 'rconfig'
 gem 'i18n'
+gem 'rack-flash3'
 
 gem 'capistrano', '2.15.4'
 gem 'rvm-capistrano', '1.3.4'
@@ -38,15 +43,16 @@ gem 'daemons'
 gem 'pony'                                      # E-mail
 gem 'rest-client'
 
+gem 'crust', git: 'git@github.com:ConsultingMD/crust.git'
+
 # gem 'aws-ses', '~> 0.4.3', require: 'aws/ses' # SES E-mail
 # gem 'broach', '0.2.1'                         # Campfire
 # gem 'nap', '0.4'                              # HTTP
 # gem 'bunny', '0.6.0'                          # AMQP
 
 group :development do
-  gem 'debugger'
+  gem 'byebug'
   gem 'pry'
-  gem 'pry-debugger'
   gem 'awesome_print'
 end
 

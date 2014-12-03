@@ -1,0 +1,61 @@
+<form action="<%= root_path %>" method="post">
+  <% unless @project.new? %>
+    <div class="hidden">
+      <input name="_method" type="hidden" value="put"></input>
+    </div>
+  <% end %>
+  <p class="<%= error_class(@project, :name) %> required">
+    <label for="project_name">
+      <%= "Name #{errors_on(@project, :name)}" %>
+    </label>
+    <input class="text" id="project_name" name="project_data[name]" type="text" value="<%= @project.name %>"></input>
+  </p>
+  <p class="<%= error_class(@project, :uri) %> required">
+    <label for="project_repository">
+      <%= "Repository URI#{errors_on(@project, :uri)}" %>
+    </label>
+    <input class="text" id="project_repository" name="project_data[uri]" type="text" value="<%= @project.uri %>"></input>
+  </p>
+  <p class="<%= error_class(@project, :branch) %> normal">
+    <label for="project_branch">
+      <%= "Branch to track #{errors_on(@project, :branch)}" %>
+    </label>
+    <input class="text" id="project_branch" name="project_data[branch]" type="text" value="<%= @project.branch %>"></input>
+  </p>
+  <p class="<%= error_class(@project, :command) %> normal">
+    <label for="project_build_script">
+      <%= "Build script #{errors_on(@project, :command)}" %>
+    </label>
+    <textarea cols="40" id="project_build_script" name="project_data[command]" rows="2">~ @project.command.to_s</textarea>
+  </p>
+  <p class="<%= error_class(@project, :artifacts) %> normal">
+    <label for="project_artifacts">
+      <%= "Artifacts to provide" %>
+    </label>
+    <input class="text" id="project_artifacts" name="project_data[artifacts]" type="text" value="<%= @project.artifacts %>"></input>
+  <p class="explanation">Relative paths of files to expose per build. Separate multiple paths with semicolons. Wildcards are allowed (?, *, []) and must be escaped with a backslash if part of a filename.</p>
+  </p>
+  <p class="normal checkbox">
+    <label for="project_public">Public project</label>
+    <input class="hidden" name="project_data[public]" type="hidden" value="0"></input>
+    <input class="checkbox" id="project_public" <%= checkbox("project_data[public]", @project.public?) %>></input>
+  </p>
+  <%= notifier_form %>
+  <p class="submit">
+    <button class="positive" type="submit">
+      <%= @project.new? ? "Create Project" : "Update Project" %>
+    </button>
+  </p>
+</form>
+<% unless @project.new? %>
+  <form action="<%= project_path(@project) %>" method="post">
+    <div class="hidden">
+      <input name="_method" type="hidden" value="delete"></input>
+    </div>
+    <h2>Delete this project</h2>
+    <p class="submit destroy">
+      This will delete the project and all the builds in the system
+      <button class="negative" type="submit">Yes, I'm sure, nuke it</button>
+    </p>
+  </form>
+<% end %>

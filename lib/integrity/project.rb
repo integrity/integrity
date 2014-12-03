@@ -3,6 +3,7 @@ require 'integrity/project/notifiers'
 module Integrity
   class Project
     include DataMapper::Resource
+    include Integrity::WebUtils
     include Notifiers
 
     property :id,         Serial
@@ -20,6 +21,7 @@ module Integrity
     default_scope(:default).update(:order => [:name.asc])
 
     has n, :builds
+    has n, :branches
     has n, :notifiers
     belongs_to :last_build, 'Build'
 
@@ -28,6 +30,7 @@ module Integrity
 
     before :destroy do
       builds.destroy!
+      branches.destroy!
     end
 
     delegate :status, :human_status, :human_duration, :successful?, :failed?, :pending?, :building?, to: :last_build, allow_nil: true
@@ -113,17 +116,6 @@ module Integrity
     end
 
     private
-
-    def set_permalink
-      attribute_set(:permalink,
-        (name || '').
-        downcase.
-        gsub(/'s/, 's').
-        gsub(/&/, 'and').
-        gsub(/[^a-z0-9]+/, '-').
-        gsub(/-*$/, '')
-      )
-    end
 
     def fix_line_endings
       if (command = self.command).present?

@@ -10,12 +10,12 @@ module Integrity
 
       def show(view, options={})
         @title = breadcrumbs(*options[:title])
-        haml view
+        erb view, layout: true
       end
 
-      def partial(template, locals={})
-        haml("_#{template}".to_sym, locals: locals, layout: false)
-      end
+      # def partial(template, locals={})
+      #   haml("_#{template}".to_sym, locals: locals, layout: false)
+      # end
 
       def errors_on(object, field)
         return '' unless errors = object.errors.on(field)
@@ -30,6 +30,11 @@ module Integrity
         attrs = {name: name, type: 'checkbox', value: '1'}
         attrs[:checked] = !!condition
         attrs.update(extras)
+        html = []
+        attrs.each do |key, val|
+          html << "#{key}=\"#{val}\""
+        end
+        html.join.html_safe
       end
 
       def dropdown(name, id, options, selected='')
@@ -41,12 +46,14 @@ module Integrity
       end
 
       def notifier_form
-        Notifier.available.each_pair { |name, klass|
-          haml_concat haml(klass.to_haml, layout: :notifier, locals: {
+        notifiers = []
+        Notifier.available.each_pair do |name, klass|
+          notifiers << haml(klass.to_haml, layout: :notifier, locals: {
             notifier: name,
             enabled:  current_project.notifies?(name),
-            config:   current_project.config_for(name) })
-        }
+            config:   current_project.config_for(name) }).to_s
+        end
+        notifiers.join("\n").html_safe
       end
 
       def json(resource)
