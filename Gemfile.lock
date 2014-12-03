@@ -15,6 +15,12 @@ GIT
       dm-core (~> 1.2.0)
       randexp (~> 0.1.5)
 
+GIT
+  remote: git@github.com:ConsultingMD/crust.git
+  revision: 4a41de9be25640a17012fe5295662096c558b18b
+  specs:
+    crust (0.0.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -46,6 +52,10 @@ GEM
       nap (~> 0.3)
     builder (3.0.4)
     bunny (0.8.0)
+    byebug (3.5.1)
+      columnize (~> 0.8)
+      debugger-linecache (~> 1.2)
+      slop (~> 3.6)
     capistrano (2.15.4)
       highline
       net-scp (>= 1.0.0)
@@ -60,7 +70,7 @@ GEM
     chronic_duration (0.10.2)
       numerizer (~> 0.1.1)
     coderay (1.1.0)
-    columnize (0.3.6)
+    columnize (0.8.9)
     contest (0.1.3)
     crack (0.3.2)
     daemons (1.1.9)
@@ -76,12 +86,7 @@ GEM
       dm-validations (~> 1.2.0)
     data_objects (0.10.12)
       addressable (~> 2.1)
-    debugger (1.6.2)
-      columnize (>= 0.3.1)
-      debugger-linecache (~> 1.2.0)
-      debugger-ruby_core_source (~> 1.2.3)
     debugger-linecache (1.2.0)
-    debugger-ruby_core_source (1.2.4)
     delayed_job (3.0.5)
       activesupport (~> 3.0)
     delayed_job_active_record (0.4.4)
@@ -187,9 +192,6 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
-    pry-debugger (0.2.3)
-      debugger (~> 1.3)
-      pry (>= 0.9.10, < 0.11.0)
     rack (1.5.2)
     rack-contrib (1.1.0)
       rack (>= 0.9.1)
@@ -254,13 +256,14 @@ DEPENDENCIES
   bcat
   broach
   bunny
+  byebug
   capistrano (= 2.15.4)
   capistrano-deploytags
   chronic_duration
   contest
+  crust!
   daemons
   data_mapper (~> 1.2)
-  debugger
   delayed_job
   delayed_job_active_record
   delayed_job_web
@@ -280,7 +283,6 @@ DEPENDENCIES
   omniauth-github
   pony
   pry
-  pry-debugger
   rack-contrib
   rack-flash3
   rack-test
