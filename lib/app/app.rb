@@ -33,6 +33,13 @@ module Integrity
       redirect root_url.to_s
     end
 
+    post '/status.json' do
+      STDERR.puts "PARAMS: #{params.inspect}"
+      STDERR.puts "PROJECT: #{current_project.inspect}"
+      current_project.update_status!(params[:success])
+      halt 200
+    end
+
     post '/:project/hook' do |token|
       pass unless github_enabled?
       Payload.build(params[:payload], build_all?).to_s

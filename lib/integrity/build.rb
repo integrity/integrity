@@ -3,18 +3,18 @@ module Integrity
     include DataMapper::Resource
 
     HUMAN_STATUS = {
-      :success  => "Built %s successfully",
-      :failed   => "Built %s and failed",
-      :pending  => "%s hasn't been built yet",
-      :building => "%s is building"
+      success:  "Built %s successfully",
+      failed:   "Built %s and failed",
+      pending:  "%s hasn't been built yet",
+      building: "%s is building"
     }
     
     GLOB_CHARS = '*?[]'
 
     property :id,           Serial
     property :project_id,   Integer   # TODO :nullable => false
-    property :output,       Text,     :default => "", :length => 1048576
-    property :successful,   Boolean,  :default => false
+    property :output,       Text,     default: '', length: 1048576
+    property :successful,   Boolean,  default: false
     property :started_at,   DateTime
     property :completed_at, DateTime
 
@@ -25,13 +25,11 @@ module Integrity
 
     after :create do
       project.raise_on_save_failure = true
-      project.update(:last_build_id => id)
+      project.update(last_build_id: id)
     end
 
     before :destroy do
-      if commit
-        commit.destroy!
-      end
+      commit.destroy! if commit
     end
 
     delegate :repo, :command, to: :project
@@ -138,7 +136,6 @@ module Integrity
       self.raise_on_save_failure = true
       update(completed_at: Time.now, successful: success, output: message)
     end
-    private :set_as_complete
 
     def escape_glob(path)
       escaped = path

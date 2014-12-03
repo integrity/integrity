@@ -33,6 +33,13 @@ module Integrity
     delegate :status, :human_status, :human_duration, :successful?, :failed?, :pending?, :building?, to: :last_build, allow_nil: true
     delegate :owner, to: :repo
 
+    def update_status!(code=0)
+      if last_build.present?
+        success = code.present? && code.zero?
+        last_build.set_as_complete(nil, success)
+      end
+    end
+
     def get_artifacts
       artifacts.split(";")
     end
