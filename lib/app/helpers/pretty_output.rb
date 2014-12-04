@@ -41,6 +41,7 @@ module Integrity
             when :success then {color: :green,  icon: :check,   circle: true}
             when :failed  then {color: :red,    icon: :times,   circle: true}
             when :pending then {color: :yellow, icon: :refresh, circle: false}
+            else {color: :green,  icon: :check,   circle: true}
           end
           status[:icon] = "#{status[:icon]}-circle" if status[:circle]
           @project_status = OpenStruct.new(status)
