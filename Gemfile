@@ -6,7 +6,7 @@ gem 'rack-contrib'
 gem 'mysql2'
 gem 'activerecord', '~> 3.2'
 gem 'data_mapper', '~> 1.2'
-gem 'dm-mysql2-adapter'
+gem 'dm-mysql-adapter'
 
 # Workaround until https://github.com/datamapper/dm-core/issues/242
 # is fixed in a released version of datamapper.
