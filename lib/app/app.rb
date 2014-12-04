@@ -21,7 +21,6 @@ module Integrity
       set :session_secret, 'secret'
     end
 
-
     helpers Integrity::Helpers
 
     def current_user

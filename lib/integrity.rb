@@ -38,6 +38,7 @@ require 'bcat/ansi'
 require 'rconfig'
 require 'i18n'
 require 'rest_client'
+require 'crust'
 
 require 'opts/rconfig'
 
@@ -218,4 +219,23 @@ module Integrity
     STDOUT.puts message
     logger.info message
   end
+
+  def self.start_logs
+    logspout = "#{self.root}/services/logspout.service"
+    crust.start_service_file(logspout)
+  end
+
+  def self.start_service(project, sha)
+    crust.run_build(project, sha)
+  end
+
+  def self.crust
+    @@crust ||= Crust.new
+  end
+
+  def self.root
+    File.join(File.dirname(__FILE__), '..')
+  end
 end
+
+require 'opts/crust'

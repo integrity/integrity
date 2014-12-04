@@ -43,7 +43,11 @@ gem 'daemons'
 gem 'pony'                                      # E-mail
 gem 'rest-client'
 
-gem 'crust', git: 'git@github.com:ConsultingMD/crust.git'
+# gem 'crust', git: 'git@github.com:ConsultingMD/crust.git'
+
+gem 'fleetctl', git: 'https://github.com/ConsultingMD/ruby-fleetctl.git'
+gem 'fig2coreos', git: 'https://github.com/OAGr/fig2coreos'
+gem 'crust', path: '/Users/rconda/Projects/GrandRounds/crust', require: 'crust'
 
 # gem 'aws-ses', '~> 0.4.3', require: 'aws/ses' # SES E-mail
 # gem 'broach', '0.2.1'                         # Campfire
@@ -51,9 +55,9 @@ gem 'crust', git: 'git@github.com:ConsultingMD/crust.git'
 # gem 'bunny', '0.6.0'                          # AMQP
 
 group :development do
-  gem 'byebug'
-  gem 'pry'
-  gem 'awesome_print'
+  gem 'byebug', require: 'byebug'
+  gem 'pry', require: 'pry'
+  gem 'awesome_print', require: 'awesome_print'
 end
 
 group :test do
