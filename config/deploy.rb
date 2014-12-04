@@ -11,6 +11,7 @@ set :repository,  "git@github.com:ConsultingMD/#{application}.git"
 set :deploy_to, "/home/ubuntu/app/#{application}"
 set :deploy_via, :remote_cache
 set :ssh_options, {forward_agent: true}
+set :default_run_options, {:pty => true}
 
 set :rvm_type, :system
 
@@ -27,8 +28,6 @@ load 'config/workers'
 
 before 'deploy:setup', 'rvm:install_ruby'
 after  'deploy:setup', 'write_upstart_envs'
-
-before 'deploy:restart', 'workers:restart'
 
 set :rails_env, 'test'
 server 'integrity-2014-12-02-1b.test', :rvm, :worker, :webapp, :db
