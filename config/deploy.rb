@@ -1,10 +1,7 @@
 require 'bundler/capistrano'
-require 'capistrano/ext/multistage'
 require 'capistrano-deploytags'
 require 'erb'
 
-set :stages, %w(foo)
-set :default_stage, 'foo'
 set :branch, 'master'
 
 set :user, 'ubuntu'
@@ -34,3 +31,6 @@ after  'deploy:setup', 'write_upstart_envs'
 before 'deploy:setup', 'db:setup'
 
 before 'deploy:restart', 'workers:restart'
+
+set :rails_env, 'test'
+server 'integrity', :rvm, :worker, :webapp, :db
