@@ -1,3 +1,7 @@
+function aws-uat {
+  $(gpg -o - ${HOME}/.aws-creds/uat/environment.gpg)
+}
+
 require 'bundler/capistrano'
 require 'erb'
 
@@ -30,4 +34,4 @@ before 'deploy:setup', 'rvm:install_ruby'
 after  'deploy:setup', 'write_upstart_envs'
 
 set :rails_env, 'test'
-server 'integrity-2014-12-02-1b.test', :rvm, :worker, :webapp, :db
+server 'integrity-2014-12-02-1b.test.grandrounds.com', :rvm, :worker, :webapp, :db
