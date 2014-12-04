@@ -42,7 +42,8 @@ module Integrity
 
     def run!
       # Builder.build(self, Integrity.config.directory, Integrity.logger)
-      Builder.docker(self, Integrity.config.directory, Integrity.logger)
+      # Builder.docker(self, Integrity.config.directory, Integrity.logger)
+      Integrity.start_service(project.permalink, sha1_short)
     end
 
     def complete!(result)
