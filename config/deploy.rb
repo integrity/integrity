@@ -1,7 +1,3 @@
-function aws-uat {
-  $(gpg -o - ${HOME}/.aws-creds/uat/environment.gpg)
-}
-
 require 'bundler/capistrano'
 require 'erb'
 
