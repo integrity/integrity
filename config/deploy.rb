@@ -1,5 +1,4 @@
 require 'bundler/capistrano'
-require 'capistrano-deploytags'
 require 'erb'
 
 set :branch, 'master'
@@ -13,9 +12,10 @@ set :deploy_to, "/home/ubuntu/app/#{application}"
 set :deploy_via, :remote_cache
 set :ssh_options, {forward_agent: true}
 
+set :rvm_type, :system
+
 set :rvm_require_role, :rvm
 set :rvm_ruby_string, lambda {File.read('.ruby-version').strip + "@" + File.read('.ruby-gemset').strip}
-set :rvm_install_ruby_params, '--disable-binary'
 
 require 'rvm/capistrano'
 
@@ -25,12 +25,10 @@ load 'config/restart'
 load 'config/db_setup'
 load 'config/workers'
 
-before 'deploy:setup', 'rvm:install_rvm'
 before 'deploy:setup', 'rvm:install_ruby'
 after  'deploy:setup', 'write_upstart_envs'
-before 'deploy:setup', 'db:setup'
 
 before 'deploy:restart', 'workers:restart'
 
 set :rails_env, 'test'
-server 'integrity', :rvm, :worker, :webapp, :db
+server 'integrity-2014-12-02-1b.test', :rvm, :worker, :webapp, :db
