@@ -45,17 +45,19 @@ gem 'rest-client'
 
 # gem 'crust', git: 'git@github.com:ConsultingMD/crust.git'
 
-gem 'fleetctl', git: 'https://github.com/ConsultingMD/ruby-fleetctl.git'
-gem 'fig2coreos', git: 'https://github.com/OAGr/fig2coreos'
-gem 'crust', path: '/Users/rconda/Projects/GrandRounds/crust', require: 'crust'
+gem 'fleetctl', git: 'git://github.com/ConsultingMD/ruby-fleetctl.git'
+gem 'fig2coreos', git: 'git://github.com/OAGr/fig2coreos'
+gem 'crust', git: 'git://github.com/ConsultingMD/crust'
 
 # gem 'aws-ses', '~> 0.4.3', require: 'aws/ses' # SES E-mail
 # gem 'broach', '0.2.1'                         # Campfire
 # gem 'nap', '0.4'                              # HTTP
 # gem 'bunny', '0.6.0'                          # AMQP
 
+
+gem 'byebug', require: 'byebug'
+
 group :development do
-  gem 'byebug', require: 'byebug'
   gem 'pry', require: 'pry'
   gem 'awesome_print', require: 'awesome_print'
 end

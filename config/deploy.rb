@@ -3,16 +3,16 @@ require 'capistrano/ext/multistage'
 require 'capistrano-deploytags'
 require 'erb'
 
-set :stages, %w(development)
-set :default_stage, 'development'
+set :stages, %w(foo)
+set :default_stage, 'foo'
 set :branch, 'master'
 
 set :user, 'ubuntu'
 set :use_sudo, false
 
 set :application, 'integrity'
-set :repository,  'git@github.com:ConsultingMD/integrity.git'
-set :deploy_to, '/home/ubuntu/app/integrity'
+set :repository,  "git@github.com:ConsultingMD/#{application}.git"
+set :deploy_to, "/home/ubuntu/app/#{application}"
 set :deploy_via, :remote_cache
 set :ssh_options, {forward_agent: true}
 

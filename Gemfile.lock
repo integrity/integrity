@@ -1,4 +1,26 @@
 GIT
+  remote: git://github.com/ConsultingMD/crust
+  revision: 46a41150b4bd993721f6487857b7b72c09cddc17
+  specs:
+    crust (0.0.1)
+
+GIT
+  remote: git://github.com/ConsultingMD/ruby-fleetctl.git
+  revision: ca6a0f8e4a3e3a4a533a9830f3802f50dc8b7c2c
+  specs:
+    fleetctl (0.1.4)
+      activesupport
+      hashie (~> 2)
+      net-scp (= 1.2.1)
+      net-ssh (= 2.9.1)
+
+GIT
+  remote: git://github.com/OAGr/fig2coreos
+  revision: 426ff34979e315535302023a4c0a605cfe41594b
+  specs:
+    fig2coreos (0.1.6)
+
+GIT
   remote: git://github.com/datamapper/dm-core
   revision: 03a6425d1616027dd8371ca4f5714c333ba7e789
   branch: release-1.2
@@ -14,27 +36,6 @@ GIT
     dm-sweatshop (1.2.0)
       dm-core (~> 1.2.0)
       randexp (~> 0.1.5)
-
-GIT
-  remote: https://github.com/ConsultingMD/ruby-fleetctl.git
-  revision: ca6a0f8e4a3e3a4a533a9830f3802f50dc8b7c2c
-  specs:
-    fleetctl (0.1.4)
-      activesupport
-      hashie (~> 2)
-      net-scp (= 1.2.1)
-      net-ssh (= 2.9.1)
-
-GIT
-  remote: https://github.com/OAGr/fig2coreos
-  revision: 426ff34979e315535302023a4c0a605cfe41594b
-  specs:
-    fig2coreos (0.1.6)
-
-PATH
-  remote: /Users/rconda/Projects/GrandRounds/crust
-  specs:
-    crust (0.0.1)
 
 GEM
   remote: https://rubygems.org/
