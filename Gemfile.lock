@@ -16,9 +16,9 @@ GIT
 
 GIT
   remote: git://github.com/OAGr/fig2coreos
-  revision: 426ff34979e315535302023a4c0a605cfe41594b
+  revision: f56adc7bf2dd9f3a904a03d87ed59eb5a91945ab
   specs:
-    fig2coreos (0.1.6)
+    fig2coreos (0.1.7)
 
 GIT
   remote: git://github.com/datamapper/dm-core
@@ -291,7 +291,7 @@ DEPENDENCIES
   dm-mysql-adapter
   dm-sweatshop!
   extlib
-  fig2coreos!
+  fig2coreos (~> 0.1.7)!
   fleetctl!
   haml
   hashie

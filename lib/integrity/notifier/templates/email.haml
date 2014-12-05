@@ -12,7 +12,7 @@
   %p When checked, only send when the status has changed. When unchecked, sends after every build. Will always send on the first build.
 
 
-%h4 SMTP Server Configuration
+%p.strong{style: 'font-size:1.2em; font-weight:bold;'} SMTP Server Configuration
 
 %p.normal
   %label{ :for => "email_notifier_host" } Host : Port
@@ -41,7 +41,7 @@
   %input.text#email_notifier_domain{ :name => "notifiers[Email][domain]", :value => config["domain"], :type => "text" }
 
 
-%h3 Or, enter the path to sendmail:
+%p.strong{style: 'font-size:1.2em; font-weight:bold;'} Or, enter the path to sendmail:
 
 %p.normal
   %label{ :for => "email_notifier_sendmail" } Sendmail path (often /usr/sbin/sendmail)

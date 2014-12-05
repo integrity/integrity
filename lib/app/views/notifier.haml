@@ -1,7 +1,7 @@
-%h3.notifier
-  %label{style: 'width:100%;'}
-    %input.checkbox{ checkbox("enabled_notifiers[]", enabled, :value => notifier, :id => "enabled_notifiers_#{notifier.downcase}") }
-    == #{notifier} Notifications
+.checkbox.col-lg-12
+  %label{for: "enabled_notifiers_#{name}"}
+    %input.checkbox{id: "enabled_notifiers_#{name}", name: 'enabled_notifiers[]', type: 'checkbox', value: notifier, checked: enabled}
+    = "#{notifier} Notifications"
     -#%span.warning be aware that no validation will be made on these fields
-%fieldset{ :id => "#{notifier.downcase}_config" }
+%fieldset.col-lg-12{id: "#{name}_config"}
   = yield

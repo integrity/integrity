@@ -27,14 +27,8 @@ module Integrity
       end
 
       def checkbox(name, condition, extras={})
-        attrs = {name: name, type: 'checkbox', value: '1'}
-        attrs[:checked] = !!condition
-        attrs.update(extras)
-        html = []
-        attrs.each do |key, val|
-          html << "#{key}=\"#{val}\""
-        end
-        html.join.html_safe
+        attrs = {name: name, type: 'checkbox', value: '1', checked: !!condition}.update(extras)
+        attrs.map{|key, val| %Q{#{key}="#{val}"} }.join.html_safe
       end
 
       def dropdown(name, id, options, selected='')
@@ -47,11 +41,11 @@ module Integrity
 
       def notifier_form
         notifiers = []
-        Notifier.available.each_pair do |name, klass|
-          notifiers << haml(klass.to_haml, layout: :notifier, locals: {
-            notifier: name,
-            enabled:  current_project.notifies?(name),
-            config:   current_project.config_for(name) }).to_s
+        Notifier.available.each do |name, klass|
+          enabled = current_project.notifies?(name)
+          config  = current_project.config_for(name)
+          locals  = {notifier: name, name: name.downcase, enabled: enabled, config: config}
+          notifiers << render_haml(klass, :notifier, locals)
         end
         notifiers.join("\n").html_safe
       end
@@ -64,6 +58,10 @@ module Integrity
       def json_error(code, message)
         status code
         json({ 'error' => { 'code' => code, 'message' => message } })
+      end
+
+      def render_haml(klass, layout, locals={})
+        haml(klass.to_haml, layout: layout, locals: locals).to_s
       end
     end
   end
