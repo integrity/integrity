@@ -46,7 +46,7 @@ gem 'rest-client'
 # gem 'crust', git: 'git@github.com:ConsultingMD/crust.git'
 
 gem 'fleetctl', git: 'git://github.com/ConsultingMD/ruby-fleetctl.git'
-gem 'fig2coreos', '~> 0.1.7', git: 'git://github.com/OAGr/fig2coreos'
+gem 'fig2coreos', '~> 0.1.8', git: 'git://github.com/OAGr/fig2coreos'
 gem 'crust', git: 'git://github.com/ConsultingMD/crust'
 
 # gem 'aws-ses', '~> 0.4.3', require: 'aws/ses' # SES E-mail

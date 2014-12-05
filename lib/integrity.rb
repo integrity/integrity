@@ -227,6 +227,8 @@ module Integrity
 
   def self.start_service(project, sha)
     crust.run_build(project, sha)
+  rescue Net::SSH::AuthenticationFailed => e
+    say 'Not Authorized to start service'
   end
 
   def self.crust
