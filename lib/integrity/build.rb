@@ -37,7 +37,8 @@ module Integrity
     delegate :repo, :command, to: :project
 
     def run
-      Integrity.config.builder.enqueue(self)
+      # Integrity.config.builder.enqueue(self)
+      Integrity.start_service(project.permalink, sha1_short)
     end
 
     def run!

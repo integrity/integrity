@@ -125,6 +125,7 @@ module Integrity
               scheme == 'https' && request.port == 443)
             port = ""
           else
+            scheme = 'http'
             port = ":#{request.port}"
           end
           base = "#{scheme}://#{request.host}#{port}#{request.script_name}"
