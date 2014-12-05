@@ -18,8 +18,7 @@ module Integrity
       end
 
       def head
-        commits.detect { |c| c[:identifier] == @payload["after"] } ||
-            Commit.new(:identifier => 'HEAD')
+        commits.detect { |c| c[:identifier] == @payload["after"] }
       end
 
       def commits
