@@ -1,12 +1,14 @@
 <%= partial(:admin_links, locals: {project: @project, build: false}) %>
 
-<ul id="projects">
-  <% @branches.each do |branch|
-    status = branch_status(branch)
-    build = branch.last_build %>
-    <%= partial(:branch, locals: {project: @project, build: build, branch: branch, status: status}) %>
-  <% end %>
-</ul>
+<div>
+  <ul id="projects">
+    <% @branches.each do |branch|
+      status = branch_status(branch)
+      build = branch.last_build %>
+      <%= partial(:branch, locals: {project: @project, build: build, branch: branch, status: status}) %>
+    <% end %>
+  </ul>
+</div>
 
 <%= partial(:admin_links, locals: {project: @project, build: false}) %>
 
