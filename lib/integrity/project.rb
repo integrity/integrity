@@ -55,18 +55,26 @@ module Integrity
       @repo ||= Repository.new(uri, branch)
     end
 
+    def branch(commit=nil)
+      name = commit.try(:branch) || 'master'
+      branches.first(name: name) || branches.create(name: name)
+    end
+
     def build_head
-      build(Commit.new(identifier: 'HEAD'))
+      build(Commit.new(identifier: 'HEAD', branch: 'master'))
     end
 
     def build(commit)
+      branch = self.branch(commit)
       commit = {
         identifier:   (commit.try(:identifier)   || 'HEAD'),
         author:       (commit.try(:author)       || 'Last Committer'),
         message:      (commit.try(:message)      || 'REBUILD'),
-        committed_at: (commit.try(:committed_at) || Time.now)
+        committed_at: (commit.try(:committed_at) || Time.now),
+        branch:       (commit.try(:branch)       || branch.name)
       }
-      _build = builds.create(commit: commit)
+
+      _build = builds.create(commit: commit, branch: branch)
       _build.run
       _build
     end

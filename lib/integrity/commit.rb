@@ -5,6 +5,7 @@ module Integrity
     property :id,           Serial
     property :build_id,     Integer
     property :identifier,   String
+    property :branch,       String
     # message should properly be called subject, but with datamapper
     # lacking sensible documentation and having unfixed bugs in the version
     # used by integrity at the time (1.0) trying to get migrations working is

@@ -26,8 +26,7 @@ module Integrity
       end
 
       def github_commit_url(build)
-        github_project_url(build.project, false).to_s +
-          "/commit/#{build.sha1}"
+        github_project_url(build.project, false).to_s + "/commit/#{build.sha1}"
       end
 
       def project_status_image_url(project)

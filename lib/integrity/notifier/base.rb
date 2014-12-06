@@ -55,8 +55,7 @@ EOM
       end
 
       def build_url
-        base_url = Integrity.config.base_url || Addressable::URI.parse('http://example.org')
-        base_url.join("/#{@build.project.permalink}/builds/#{@build.id}")
+        Integrity.config.base_url.join("/#{@build.project.permalink}/builds/#{@build.id}").to_s
       end
 
       def build_output

@@ -205,7 +205,7 @@ module Integrity
       show :project, title: ['projects', current_project.name]
     end
 
-    # Ping Projject (Check if Project Exists)
+    # Ping Project (Check if Project Exists)
     get '/:project/ping' do
       login_required unless current_project.public?
 

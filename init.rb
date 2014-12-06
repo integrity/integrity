@@ -27,12 +27,16 @@ require 'integrity/notifier/email'      # = Email
 
 env = RConfig.application
 
+base_url = %x{ hostname }
+base_url << env.rack unless base_url['.local']
+
 Integrity.configure do |c|
   c.database                    = env.database.url        # DataMapper database connection URI
   c.username                    = env.auth.username       # Admin username
   c.password                    = env.auth.password       # Admin password
   c.directory                   = '/tmp/docker/builds'    # Parent directory for builds, relative to Integrity root
-  # c.base_url                    = 'http://0.0.0.0:9292/'  # URL to the root of Integrity installation, used in notification emails.
+  c.base_url                    = base_url
+  # # URL to the root of Integrity installation, used in notification emails.
   c.log                         = 'integrity.log'         # Where to write the log file.
   c.github_read_token           = env.github.tokens.read  # Enable GitHub post-receive hook
   c.github_write_token          = env.github.tokens.write # Auth for posting to GitHub (statuses)

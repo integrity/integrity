@@ -26,8 +26,8 @@ module Integrity
     has 1,     :commit
 
     after :create do
-      project.raise_on_save_failure = true
       project.update(last_build_id: id)
+      branch.update(last_build_id: id)
     end
 
     before :destroy do
