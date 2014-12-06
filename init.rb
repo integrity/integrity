@@ -28,7 +28,7 @@ require 'integrity/notifier/email'      # = Email
 env = RConfig.application
 
 base_url = %x{ hostname }
-base_url << env.rack unless base_url['.local']
+base_url << env.rack.to_s unless base_url['.local']
 
 Integrity.configure do |c|
   c.database                    = env.database.url        # DataMapper database connection URI
