@@ -1,0 +1,28 @@
+<div class="col-lg-4 col-md-6 col-sm-12">
+  <div class="panel panel-<%= status.color %>">
+    <div class="panel-heading">
+      <div class="row">
+        <div class="col-xs-3">
+          <i class="fa fa-<%= status.icon %> fa-5x"></i>
+        </div>
+        <div class="col-xs-9 text-right">
+          <div class="huge"><%= project.name %></div>
+          <% if build %>
+            <div>
+              <a class="git-link" href="<%= github_commit_url(build) %>"><%= build.try(:sha1_short) %></a>
+              <i class="fa fa-circle"></i>
+              <%= status_time(project) %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <a href="<%= project_path(project) %>">
+      <div class="panel-footer">
+        <span class="pull-left"><%= build.try(:full_message) %></span>
+        <span class="pull-right"><i class="fa fa-arrow-circle-right fa-2x"></i></span>
+        <div class="clearfix"></div>
+      </div>
+    </a>
+  </div>
+</div>
