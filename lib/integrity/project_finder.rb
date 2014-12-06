@@ -13,19 +13,22 @@ module Integrity
         return branches
       end
 
-      Array(branch || forked)
+      # Array(branch || forked)
+      project = all.first
+      project.get_branch(@repo.branch)
+      project
     end
 
     def branches
-      all.all(:branch => @repo.branch)
+      all.all(branch: @repo.branch)
     end
 
     def branch
-      all.first(:branch => @repo.branch)
+      all.first(branch: @repo.branch)
     end
 
     def forked
-      if master = all.first("master")
+      if master = all.first('master')
         master.fork(@repo.branch)
       end
     end
