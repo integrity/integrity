@@ -1,0 +1,16 @@
+[Unit]
+Description=Logspout
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill logspout
+ExecStartPre=-/usr/bin/docker rm logspout
+ExecStartPre=/usr/bin/docker pull progrium/logspout
+ExecStart=/usr/bin/docker run -v=/var/run/docker.sock:/tmp/docker.sock progrium/logspout syslog://logs2.papertrailapp.com:49166
+ExecStop=/usr/bin/docker kill logspout
+ExecStopPost=/usr/bin/docker ps -a -q | xargs docker rm
+
+[X-fleet]
+Global=true
