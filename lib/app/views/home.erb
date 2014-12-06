@@ -14,11 +14,11 @@
   </div>
 <% else %>
   <ul id="projects">
-
-    <% @projects.each do |project| %>
-      <%= partial(:project, locals: {project: project}) %>
+    <% @projects.each do |project|
+      status = project_status(project)
+      build = project.last_build %>
+      <%= partial(:project, locals: {project: project, build: build, status: status}) %>
     <% end %>
-
   </ul>
 
 

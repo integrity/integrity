@@ -36,17 +36,25 @@ module Integrity
       end
 
       def project_status(project)
-        # if @project_status.nil?
-          status = case project.status
-            when :success then {color: :green,  icon: :check,   circle: true}
-            when :failed  then {color: :red,    icon: :times,   circle: true}
-            when :pending then {color: :yellow, icon: :refresh, circle: false}
-            else {color: :green,  icon: :check,   circle: true}
-          end
-          status[:icon] = "#{status[:icon]}-circle" if status[:circle]
-          @project_status = OpenStruct.new(status)
-        # end
-        @project_status
+        status = case project.status
+          when :success then {color: :green,  icon: :check,   circle: true}
+          when :failed  then {color: :red,    icon: :times,   circle: true}
+          when :pending then {color: :yellow, icon: :refresh, circle: false}
+          else {color: :green,  icon: :check,   circle: true}
+        end
+        status[:icon] = "#{status[:icon]}-circle" if status[:circle]
+        OpenStruct.new(status)
+      end
+
+      def branch_status(branch)
+        status = case branch.status
+                   when :success then {color: :green,  icon: :check,   circle: true}
+                   when :failed  then {color: :red,    icon: :times,   circle: true}
+                   when :pending then {color: :yellow, icon: :refresh, circle: false}
+                   else {color: :green,  icon: :check,   circle: true}
+                 end
+        status[:icon] = "#{status[:icon]}-circle" if status[:circle]
+        OpenStruct.new(status)
       end
 
       def status_time(project)
