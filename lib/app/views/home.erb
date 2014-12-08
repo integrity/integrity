@@ -13,20 +13,12 @@
     </h1>
   </div>
 <% else %>
-  <ul id="projects">
+  <div class="row" id="projects">
     <% @projects.each do |project|
       status = project_status(project)
       build = project.last_build %>
       <%= partial(:project, locals: {project: project, build: build, status: status}) %>
     <% end %>
-  </ul>
-
-
-  <!--<p>-->
-    <!--<a href="<%= path('new') %>" id="new">Add a new project</a>-->
-    <!--<% if show_login? %>-->
-      <!--or-->
-      <!--<a href="<%= path('login') %>" id="login">Login</a>-->
-    <!--<% end %>-->
-  <!--</p>-->
+  </div>
+  <p><a href="<%= path('new') %>" id="new">Add a new project</a></p>
 <% end %>

@@ -31,6 +31,18 @@ module Integrity
       !!session[:user]
     end
 
+    def authorized_ip?
+      remote_ip.index('10.').zero?
+    end
+
+    def web_hook?
+      request.path_info.include?('hook')
+    end
+
+    def remote_ip
+      request.env['HTTP_X_FORWARDED_FOR'].to_s
+    end
+
     not_found do
       status 404
       show :not_found, title: 'lost, are we?'
@@ -42,10 +54,16 @@ module Integrity
       show :error, title: 'something has gone terribly wrong'
     end
 
+    forbidden do
+      status 403
+      show :error, title: 'You are not authorized to access this page'
+    end
+
     before do
+      halt 403 unless authorized_ip? || web_hook?
       halt 404 if request.path_info.include?('favico')
 
-      unless Integrity.config.base_url
+      if Integrity.config.base_url.present?
         Integrity.configure {|c| c.base_url = url_for('/', :full) }
       end
     end
@@ -58,11 +76,12 @@ module Integrity
       end
     end
 
-    post '/status.json' do
+    post '/status.json', provides: :json do
+      @format = :json
       STDERR.puts "PARAMS: #{params.inspect}"
       STDERR.puts "PROJECT: #{current_project.inspect}"
       current_project.update_status!(params[:success])
-      halt 200
+      json current_project
     end
 
     get '/login' do

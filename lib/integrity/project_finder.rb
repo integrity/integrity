@@ -16,7 +16,7 @@ module Integrity
       # Array(branch || forked)
       project = all.first
       project.get_branch(@repo.branch)
-      project
+      [project]
     end
 
     def branches

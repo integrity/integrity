@@ -1,15 +1,15 @@
 # This makes discovery files
 # https://github.com/coreos/fleet/blob/master/Documentation/examples/service-discovery.md
 
-tp_<%= ENV["SHA"] %>_app:
-  image: grnds/tp_ci
+<%= project_sha %>_app:
+  image: grnds/<%= project %>_ci
   environment:
-    SHA: <%= ENV["SHA"] %>
-    GITHUB_READ_TOKEN: <%= ENV["GITHUB_READ_TOKEN"] %>
+    SHA: <%= sha %>
+    GITHUB_READ_TOKEN: <%= read_token %>
   links:
-    - tp_<%= ENV["SHA"] %>_mysql
+    - <%= project_sha %>_mysql
 
-tp_<%= ENV["SHA"] %>_mysql:
+<%= project_sha %>_mysql:
   image: grnds/mysql
   ports:
     - :3306

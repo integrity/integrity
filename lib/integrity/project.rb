@@ -55,8 +55,9 @@ module Integrity
       @repo ||= Repository.new(uri, branch)
     end
 
-    def branch(commit=nil)
-      name = commit.try(:branch) || 'master'
+    def get_branch(commit=nil)
+      name = commit if commit.is_a?(String)
+      name ||= commit.try(:branch) || 'master'
       branches.first(name: name) || branches.create(name: name)
     end
 
@@ -65,7 +66,7 @@ module Integrity
     end
 
     def build(commit)
-      branch = self.branch(commit)
+      branch = get_branch(commit)
       commit = {
         identifier:   (commit.try(:identifier)   || 'HEAD'),
         author:       (commit.try(:author)       || 'Last Committer'),

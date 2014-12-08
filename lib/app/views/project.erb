@@ -1,16 +1,12 @@
 <%= partial(:admin_links, locals: {project: @project, build: false}) %>
 
-<div>
-  <ul id="projects">
-    <% @branches.each do |branch|
-      status = branch_status(branch)
-      build = branch.last_build %>
-      <%= partial(:branch, locals: {project: @project, build: build, branch: branch, status: status}) %>
-    <% end %>
-  </ul>
+<div class="row" id="projects">
+  <% @branches.each do |branch|
+    status = branch_status(branch)
+    build = branch.last_build %>
+    <%= partial(:branch, locals: {project: @project, build: build, branch: branch, status: status}) %>
+  <% end %>
 </div>
-
-<%= partial(:admin_links, locals: {project: @project, build: false}) %>
 
 
 <% if @project.blank? %>
@@ -22,7 +18,7 @@
     </h1>
   </form>
 <% else %>
-  <div class="<%= @project.status %>" id="last_build">
+  <div class="row <%= @project.status %>" id="last_build">
     <%= partial(:build_info, locals: {build: @project.last_build}) %>
   </div>
   <form action="<%= project_path(@project, :builds) %>" method="<%= :post %>">
