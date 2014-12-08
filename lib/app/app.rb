@@ -54,11 +54,6 @@ module Integrity
       show :error, title: 'something has gone terribly wrong'
     end
 
-    forbidden do
-      status 403
-      show :error, title: 'You are not authorized to access this page'
-    end
-
     before do
       halt 403 unless authorized_ip? || web_hook?
       halt 404 if request.path_info.include?('favico')
