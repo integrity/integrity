@@ -1,4 +1,10 @@
 GIT
+  remote: git://github.com/ConsultingMD/crust
+  revision: 41f034f7f929cb24ba16f66e5716f6c38cc07cc6
+  specs:
+    crust (0.0.2)
+
+GIT
   remote: git://github.com/ConsultingMD/ruby-fleetctl.git
   revision: ca6a0f8e4a3e3a4a533a9830f3802f50dc8b7c2c
   specs:
@@ -30,11 +36,6 @@ GIT
     dm-sweatshop (1.2.0)
       dm-core (~> 1.2.0)
       randexp (~> 0.1.5)
-
-PATH
-  remote: /Users/rconda/Projects/GrandRounds/crust
-  specs:
-    crust (0.0.1)
 
 GEM
   remote: https://rubygems.org/
