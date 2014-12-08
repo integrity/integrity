@@ -6,6 +6,8 @@ tp_<%= ENV["SHA"] %>_app:
   environment:
     SHA: <%= ENV["SHA"] %>
     GITHUB_READ_TOKEN: <%= ENV["GITHUB_READ_TOKEN"] %>
+    AWS_ACCESS_KEY_ID: <%= ENV["AWS_ACCESS_KEY_ID"] %>
+    AWS_SECRET_ACCESS_KEY: <%= ENV["AWS_SECRET_ACCESS_KEY"] %>
   links:
     - tp_<%= ENV["SHA"] %>_mysql
 
