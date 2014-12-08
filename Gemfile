@@ -45,8 +45,8 @@ gem 'rest-client'
 
 gem 'fleetctl', git: 'git://github.com/ConsultingMD/ruby-fleetctl.git'
 gem 'fig2coreos', '~> 0.1.8', git: 'git://github.com/OAGr/fig2coreos'
-# gem 'crust', git: 'git://github.com/ConsultingMD/crust'
-gem 'crust', path: '/Users/rconda/Projects/GrandRounds/crust'
+gem 'crust', git: 'git://github.com/ConsultingMD/crust'
+# gem 'crust', path: '/Users/rconda/Projects/GrandRounds/crust'
 
 # gem 'aws-ses', '~> 0.4.3', require: 'aws/ses' # SES E-mail
 # gem 'broach', '0.2.1'                         # Campfire
