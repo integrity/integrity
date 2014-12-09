@@ -47,7 +47,7 @@
   <% end %>
 <% end %>
 <h2>
-  Build Logs: <a href="<%= link_to_logs(build.sha1) %>">logs</a>
+  Build Logs: <a href="<%= link_to_logs(build.sha1_short) %>" target="_blank"><%= build.sha1_short %></a>
 </h2>
 
 <!--

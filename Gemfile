@@ -44,7 +44,6 @@ gem 'pony'                                      # E-mail
 gem 'rest-client'
 
 gem 'fleetctl', git: 'git://github.com/ConsultingMD/ruby-fleetctl.git'
-gem 'fig2coreos', '~> 0.1.8', git: 'git://github.com/OAGr/fig2coreos'
 gem 'crust', git: 'git://github.com/ConsultingMD/crust'
 # gem 'crust', path: '/Users/rconda/Projects/GrandRounds/crust'
 

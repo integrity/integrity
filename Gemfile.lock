@@ -15,12 +15,6 @@ GIT
       net-ssh (= 2.9.1)
 
 GIT
-  remote: git://github.com/OAGr/fig2coreos
-  revision: 4949401fbb0fa2aecb8e3582b22a9fbb7c069a50
-  specs:
-    fig2coreos (0.1.8)
-
-GIT
   remote: git://github.com/datamapper/dm-core
   revision: 03a6425d1616027dd8371ca4f5714c333ba7e789
   branch: release-1.2
@@ -291,7 +285,6 @@ DEPENDENCIES
   dm-mysql-adapter
   dm-sweatshop!
   extlib
-  fig2coreos (~> 0.1.8)!
   fleetctl!
   haml
   hashie
