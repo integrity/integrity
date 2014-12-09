@@ -77,7 +77,7 @@ module Integrity
         branch:       (commit.try(:branch)       || branch.name)
       }
 
-      _build = builds.create(commit: commit, branch: branch)
+      _build = builds.create(commit: commit, branch: branch, started_at: Time.now)
       STDOUT.puts "CREATED BUILD: #{_build.inspect}"
       _build.save
       STDOUT.puts "SAVED BUILD: #{_build.inspect}"
