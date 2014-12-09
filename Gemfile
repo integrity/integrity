@@ -44,7 +44,7 @@ gem 'pony'                                      # E-mail
 gem 'rest-client'
 
 gem 'fleetctl', '0.1.4.1', git: 'git://github.com/ConsultingMD/ruby-fleetctl.git'
-gem 'crust', git: 'git://github.com/ConsultingMD/crust'
+gem 'crust', '0.0.3', git: 'git://github.com/ConsultingMD/crust'
 # gem 'crust', path: '/Users/rconda/Projects/GrandRounds/crust'
 
 # gem 'aws-ses', '~> 0.4.3', require: 'aws/ses' # SES E-mail
