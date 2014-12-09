@@ -32,7 +32,7 @@ module Integrity
     end
 
     def authorized_ip?
-      remote_ip.index('10.').zero?
+      remote_ip.index('10.') == 0
     end
 
     def web_hook?
