@@ -35,7 +35,7 @@
         <li class="<%= build.status %>">
           <a href="<%= build_path(build) %>">
             <strong class="build">
-              <a href="<%= link_to_logs(build.sha1_short) %>" target="_blank"><%= "Build #{build.sha1_short}" %></a>
+              <%= "Build #{build.sha1_short}" %>
             </strong>
             <span class="attribution">
               <%= "by #{build.author}, #{time_ago_in_words(build.committed_at)}" %>
