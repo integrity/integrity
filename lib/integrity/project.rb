@@ -67,6 +67,7 @@ module Integrity
     end
 
     def build(commit)
+      commit = Hashie::Mash.new(commit) if commit.is_a?(Hash)
       branch = get_branch(commit)
       commit = {
         identifier:   (commit.try(:identifier)   || 'HEAD'),

@@ -29,7 +29,8 @@ module Integrity
           identifier:   commit[:id],
           author:       normalize_author(commit[:author]),
           message:      commit[:message],
-          committed_at: commit[:timestamp]
+          committed_at: commit[:timestamp],
+          branch:       branch
         }
       end
     end

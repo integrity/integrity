@@ -39,6 +39,10 @@ module Integrity
       request.path_info.include?('hook')
     end
 
+    def status_update?
+      request.path_info.include?('status.json')
+    end
+
     def remote_ip
       request.env['HTTP_X_FORWARDED_FOR'].to_s
     end
@@ -55,7 +59,7 @@ module Integrity
     end
 
     before do
-      halt 403 unless authorized_ip? || web_hook?
+      halt 403 unless authorized_ip? || web_hook? || status_update?
       halt 404 if request.path_info.include?('favico')
 
       if Integrity.config.base_url.present?
