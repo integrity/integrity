@@ -6,7 +6,7 @@
           <i class="fa fa-<%= status.icon %> fa-5x"></i>
         </div>
         <div class="col-xs-10 text-right">
-          <div class="huge"><%= project.name %> (<%= branch.name %>)</div>
+          <div class="huge"><%= branch.name %></div>
           <% if build %>
             <div>
               <a class="git-link" href="<%= github_commit_url(build) %>"><%= build.try(:sha1_short) %></a>

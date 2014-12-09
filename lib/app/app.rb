@@ -55,8 +55,6 @@ module Integrity
     end
 
     before do
-      logger.info "ENV: #{request.env}"
-      logger.info "IP: #{remote_ip}"
       halt 403 unless authorized_ip? || web_hook?
       halt 404 if request.path_info.include?('favico')
 

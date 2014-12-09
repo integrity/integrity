@@ -76,7 +76,10 @@ module Integrity
       }
 
       _build = builds.create(commit: commit, branch: branch)
+      STDOUT.puts "CREATED BUILD: #{_build.inspect}"
       _build.save
+      STDOUT.puts "SAVED BUILD: #{_build.inspect}"
+      STDOUT.puts "SAVE: #{_build.save}"
       _build.run
       _build
     end
