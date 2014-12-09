@@ -76,6 +76,7 @@ module Integrity
       }
 
       _build = builds.create(commit: commit, branch: branch)
+      _build.save
       _build.run
       _build
     end
