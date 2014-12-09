@@ -238,6 +238,10 @@ module Integrity
   def self.root
     File.join(File.dirname(__FILE__), '..')
   end
+
+  def self.logs_url
+    config.logs_url
+  end
 end
 
 require 'opts/crust'

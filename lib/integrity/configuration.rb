@@ -9,6 +9,7 @@ module Integrity
       :github_write_token,
       :github_secret,
       :log,
+      :logs_url,
       :username,
       :password,
       :project_default_build_count,

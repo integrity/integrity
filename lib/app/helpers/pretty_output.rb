@@ -67,7 +67,9 @@ module Integrity
         end
       end
 
-
+      def link_to_logs(sha)
+        "#{Integrity.logs_url}?q=#{sha}"
+      end
 
     end
   end

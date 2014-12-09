@@ -46,12 +46,18 @@
     </h2>
   <% end %>
 <% end %>
-<% if build.completed? || build.building? && !build.output.empty? %>
+<h3>
+  Build Logs: <a href="<%= link_to_logs(build.sha1) %>">logs</a>
+</h3>
+
+<!--
+<%# if build.completed? || build.building? && !build.output.empty? %>
   <h2>
     Build Output
-    <a href="<%= build_path(build, :raw) %>">(raw)</a>
+    <a href="<%#= build_path(build, :raw) %>">(raw)</a>
   </h2>
   <pre id="output" class="output">
-    <%= bash_color_codes h(build.output) %>
+    <%#= bash_color_codes h(build.output) %>
   </pre>
-<% end %>
+<%# end %>
+-->
