@@ -62,7 +62,8 @@ module Integrity
     end
 
     def build_head
-      build(Commit.new(identifier: 'HEAD', branch: 'master'))
+      commit = last_build.try(:commit) || Commit.new(identifier: 'HEAD', branch: 'master')
+      build(commit)
     end
 
     def build(commit)

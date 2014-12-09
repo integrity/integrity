@@ -20,9 +20,9 @@ module Integrity
 
     def builds
       @builds ||=
-        projects.inject([]) { |acc, project|
-          acc.concat commits.map { |c| project.builds.create(:commit => c) }
-        }
+        projects.inject([]) do |list, project|
+          list.concat commits.map{|c| project.build(c) }
+        end
     end
 
     def commits
