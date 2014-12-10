@@ -1,11 +1,14 @@
 <section class="container">
   <div class="container-page">
     <div class="col-md-12">
-      <h3 class="dark-grey">Create New Project:</h3>
+
+      <% if @project.new? %>
+        <h3 class="dark-grey">Create New Project:</h3>
         <form action="<%= root_path %>" method="post" role="form">
-          <% unless @project.new? %>
-            <input name="_method" type="hidden" value="put"/>
-          <% end %>
+      <% else %>
+        <h3 class="dark-grey">Update Project:</h3>
+        <form action="<%= project_path(@project) %>" method="put" role="form">
+      <% end %>
           <div class="form-group col-lg-12">
             <label for="project_name"><%= "Name #{errors_on(@project, :name)}" %></label>
             <input class="text" id="project_name" name="project_data[name]" type="text" value="<%= @project.name %>"/>
@@ -39,15 +42,13 @@
           <%= notifier_form %>
 
           <button class="btn btn-default" type="submit">
-            <%= @project.new? ? "Create Project" : "Update Project" %>
+            <%= @project.new? ? 'Create Project' : 'Update Project' %>
           </button>
         </form>
 
       <% unless @project.new? %>
         <form action="<%= project_path(@project) %>" method="post">
-          <div class="hidden">
-            <input name="_method" type="hidden" value="delete"/>
-          </div>
+          <input name="_method" type="hidden" value="delete"/>
           <h2>Delete this project</h2>
           <p class="submit destroy">
             This will delete the project and all the builds in the system
@@ -55,6 +56,7 @@
           </p>
         </form>
       <% end %>
+
     </div>
   </div>
 </section>

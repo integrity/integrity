@@ -40,18 +40,16 @@ module Integrity
     end
 
     def private?
-      @payload[:private]
+      @payload[:repository][:private] rescue true
     end
 
     def uri
       return uri if uri = @payload[:uri]
 
       repository = @payload[:repository].symbolize_keys
-      url = repository[:url]
-      uri = URI(url)
 
       if private?
-        "git@github.com:#{uri.path[1..-1]}"
+        "git@github.com/#{repository[:full_name]}"
       else
         uri.scheme = 'git'
         uri.to_s

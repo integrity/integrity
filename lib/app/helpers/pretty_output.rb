@@ -36,26 +36,11 @@ module Integrity
       end
 
       def project_status(project)
-        status = case project.status
-          when :success then {color: :green,  icon: :check,   circle: true}
-          when :failed  then {color: :red,    icon: :times,   circle: true}
-          when :pending then {color: :yellow, icon: :refresh, circle: false}
-          else {color: :green,  icon: :check,   circle: true}
-        end
-        status[:icon] = "#{status[:icon]}-circle" if status[:circle]
-        OpenStruct.new(status)
+        status = get_status(project.status)
+        status.icon = "#{status.icon}-circle" if status.circle
+        status
       end
-
-      def branch_status(branch)
-        status = case branch.status
-                   when :success then {color: :green,  icon: :check,   circle: true}
-                   when :failed  then {color: :red,    icon: :times,   circle: true}
-                   when :pending then {color: :yellow, icon: :refresh, circle: false}
-                   else {color: :green,  icon: :check,   circle: true}
-                 end
-        status[:icon] = "#{status[:icon]}-circle" if status[:circle]
-        OpenStruct.new(status)
-      end
+      alias_method :branch_status, :project_status
 
       def status_time(project)
         if build = project.last_build
@@ -67,8 +52,20 @@ module Integrity
         end
       end
 
-      def link_to_logs(sha)
-        "#{Integrity.logs_url}?q=#{sha}"
+      def get_status(status)
+        Hashie::Mash.new(
+          case status
+            when :success  then {color: :green,  icon: :check,   circle: true}
+            when :failed   then {color: :red,    icon: :times,   circle: true}
+            when :pending  then {color: :yellow, icon: :pause,   circle: true}
+            when :building then {color: :yellow, icon: :refresh, circle: false}
+            else                {color: :green,  icon: :check,   circle: true}
+          end
+        )
+      end
+
+      def link_to_logs(name, sha)
+        "#{Integrity.logs_url}?q=#{name}_#{sha}"
       end
 
     end
