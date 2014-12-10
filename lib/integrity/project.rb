@@ -58,7 +58,9 @@ module Integrity
     def get_branch(commit=nil)
       name = commit if commit.is_a?(String)
       name ||= commit.try(:branch) || 'master'
-      branches.first(name: name) || branches.create(name: name)
+      branch = (branches.first(name: name) || branches.create(name: name))
+      branch.save
+      branch
     end
 
     def build_head
@@ -69,6 +71,7 @@ module Integrity
     def build(commit)
       commit = Hashie::Mash.new(commit) if commit.is_a?(Hash)
       branch = get_branch(commit)
+
       commit = {
         identifier:   (commit.try(:identifier)   || 'HEAD'),
         author:       (commit.try(:author)       || 'Last Committer'),
@@ -78,10 +81,7 @@ module Integrity
       }
 
       _build = builds.create(commit: commit, branch: branch, started_at: Time.now)
-      STDOUT.puts "CREATED BUILD: #{_build.inspect}"
       _build.save
-      STDOUT.puts "SAVED BUILD: #{_build.inspect}"
-      STDOUT.puts "SAVE: #{_build.save}"
       _build.run
       _build
     end

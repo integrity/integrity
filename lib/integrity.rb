@@ -222,17 +222,15 @@ module Integrity
 
   def self.start_logs
     logspout = "#{self.root}/services/logspout.service"
-    crust.start_service_file(logspout)
+    Crust.start_service(logspout)
   end
 
-  def self.start_service(project, sha)
-    crust.run_build(project, sha)
-  rescue Net::SSH::AuthenticationFailed => e
-    say 'Not Authorized to start service'
+  def self.launch_build(project, sha)
+    Crust.start(project, sha)
   end
 
-  def self.crust
-    @@crust ||= Crust.new
+  def self.destroy_build(project, sha)
+    Crust.destroy(project, sha)
   end
 
   def self.root
@@ -244,4 +242,4 @@ module Integrity
   end
 end
 
-require 'opts/crust'
+require 'opts/crust' # Load integrity before loading crust options, because it uses Integrity root and logger.

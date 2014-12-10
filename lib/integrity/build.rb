@@ -37,14 +37,13 @@ module Integrity
     delegate :repo, :command, to: :project
 
     def run
-      # Integrity.config.builder.enqueue(self)
-      Integrity.start_service(project.permalink, sha1_short)
+      self.run!
+    rescue Net::SSH::AuthenticationFailed => e
+      Integrity.say 'Not Authorized to start service'
     end
 
     def run!
-      # Builder.build(self, Integrity.config.directory, Integrity.logger)
-      # Builder.docker(self, Integrity.config.directory, Integrity.logger)
-      Integrity.start_service(project.permalink, sha1_short)
+      Integrity.launch_build(project.permalink, sha1_short)
     end
 
     def complete!(result)
@@ -114,12 +113,16 @@ module Integrity
       end
     end
 
+    def in_progress?
+      pending? || building?
+    end
+
     def human_status
       HUMAN_STATUS[status] % sha1_short
     end
     
     def human_duration
-      return if pending? || building?
+      return if in_progress?
       delta = Integrity.delta(completed_at, started_at)
       Integrity.human_duration(delta)
     end

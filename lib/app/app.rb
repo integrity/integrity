@@ -77,10 +77,20 @@ module Integrity
 
     post '/status.json', provides: :json do
       @format = :json
-      STDERR.puts "PARAMS: #{params.inspect}"
+      STDERR.puts "PARAMS:  #{params.inspect}"
       STDERR.puts "PROJECT: #{current_project.inspect}"
+
       current_project.update_status!(params[:success])
       json current_project
+    end
+
+    post '/hook.json', provides: :json do
+      @format = :json
+      STDERR.puts "PARAMS:  #{params.inspect}"
+      STDERR.puts "PAYLOAD: #{params[:payload].inspect}"
+
+      build = Payload.build(params[:payload], build_all?)
+      json build
     end
 
     get '/login' do
@@ -277,6 +287,19 @@ module Integrity
       url = project_url(current_build.project).to_s
       current_build.destroy!
       redirect url
+    end
+
+    # Stop Running Build From Commit (Re-build)
+    post '/:project/builds/:build/stop' do
+      login_required
+
+      if current_build.in_progress?
+        project = current_project.permalink
+        sha = current_build.sha1_short
+        Integrity.destroy_build(project, sha)
+      end
+
+      redirect project_url(current_project).to_s
     end
 
     # Get Raw Build Output
