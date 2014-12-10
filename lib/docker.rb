@@ -76,16 +76,7 @@ class Docker
     repo.branch
   end
 
-  def aws_access_key
-    ENV["DOCKER_#{repo.name.upcase}_AWS_ACCESS_KEY_ID"]
-  end
-
-  def aws_secret_key
-    ENV["DOCKER_#{repo.name.upcase}_AWS_SECRET_KEY"]
-  end
-
   def ruote_database
-      
   end
 
   def create_docker_file!
