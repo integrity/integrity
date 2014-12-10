@@ -5,7 +5,7 @@ module Integrity
 
     property :id,         Serial
     property :project_id, Integer, required: true
-    property :name,       String,  required: true, length: 255, unique: true
+    property :name,       String,  required: true, length: 255
     property :permalink,  String,  length: 255
     property :last_build_id, Integer, required: false
 

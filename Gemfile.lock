@@ -1,14 +1,14 @@
 GIT
   remote: git://github.com/ConsultingMD/crust
-  revision: 74f5763fef1fd90eb36de3141feb6f97f35251b6
+  revision: 28e66fe6a68746be10afcfca915bbaea131e3b61
   specs:
-    crust (0.0.3)
+    crust (0.0.4)
 
 GIT
   remote: git://github.com/ConsultingMD/ruby-fleetctl.git
-  revision: 0d67cc2369340079b305146fe3c5eda6e92245d4
+  revision: 184d8c2882d82ed6ec8bfdc360aec40fc9ffa894
   specs:
-    fleetctl (0.1.4.1)
+    fleetctl (0.1.4.2)
       activesupport
       hashie (~> 2)
       net-scp (= 1.2.1)
@@ -275,7 +275,7 @@ DEPENDENCIES
   capistrano-deploytags
   chronic_duration
   contest
-  crust (= 0.0.3)!
+  crust (= 0.0.4)!
   daemons
   data_mapper (~> 1.2)
   delayed_job
@@ -285,7 +285,7 @@ DEPENDENCIES
   dm-mysql-adapter
   dm-sweatshop!
   extlib
-  fleetctl (= 0.1.4.1)!
+  fleetctl (= 0.1.4.2)!
   haml
   hashie
   hpricot
