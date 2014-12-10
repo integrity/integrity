@@ -38,7 +38,7 @@
               <%= "Build #{build.sha1_short}" %>
             </strong>
             <span class="attribution">
-              <%= "by #{build.author}, #{time_ago_in_words(build.committed_at)}" %>
+              <%= "by #{build.author}, #{time_ago_in_words(build.committed_at, true)}" %>
             </span>
 
           </a>

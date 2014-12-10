@@ -32,7 +32,7 @@
             %strong.build<
               &== Build #{build.sha1_short}
             %span.attribution<
-              &== by #{build.author}, #{time_ago_in_words(build.committed_at)}
+              &== by #{build.author}, #{time_ago_in_words(build.committed_at, true)}
 
   - unless @showing_all_builds
     %p

@@ -58,9 +58,9 @@ module Integrity
         end
       end
 
-      def time_ago_in_words(from_time, include_seconds = false)
+      def time_ago_in_words(from_time, fix_time_zone = false, include_seconds = false)
         return unless from_time
-        from_time = from_time + 8.hours
+        from_time = from_time + 8.hours if fix_time_zone
         right_now = in_pst(Time.now)
         from_time = in_pst(from_time)
         qualifier = (from_time < right_now) ? 'ago' : 'from now'

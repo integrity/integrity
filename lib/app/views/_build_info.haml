@@ -18,7 +18,7 @@
       = "by: #{build.author}"
     |
     %span.when{title: formatted_time(build.committed_at) }
-      = time_ago_in_words(build.committed_at)
+      = time_ago_in_words(build.committed_at, true)
     - if build.project.github?
       |
       %span.github<

@@ -21,7 +21,7 @@
     <span class='who'><%= "by: #{build.author}" %></span>
     |
     <span class='when' title="<%= formatted_time(build.committed_at) %>">
-      <%= time_ago_in_words(build.committed_at) %>
+      <%= time_ago_in_words(build.committed_at, true) %>
     </span>
     <% if build.project.github? %>
       |
