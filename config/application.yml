@@ -1,3 +1,4 @@
+rack: 'test'
 database:
   url:      <%= ENV['INTEGRITY_DATABASE_URL'] %>
   adapter:  mysql2
@@ -15,4 +16,3 @@ github:
     read:   <%= ENV['GITHUB_READ_TOKEN']  %>
     write:  <%= ENV['GITHUB_WRITE_TOKEN'] %>
     secret: <%= ENV['GITHUB_HOOK_SECRET'] %>
-rack: 'test'

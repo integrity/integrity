@@ -1,0 +1,20 @@
+<section class="container">
+  <div class="container-page">
+    <div class="col-md-12">
+      <h3 class="dark-grey">Update Project:</h3>
+      <form action="<%= project_path(@project) %>" method="put" role="form">
+        <%= partial(:project_form, locals: {project: @project}) %>
+        <button class="btn btn-default" type="submit">Update Project</button>
+      </form>
+
+      <form action="<%= project_path(@project) %>" method="post">
+        <input name="_method" type="hidden" value="delete"/>
+        <h2>Delete this project</h2>
+        <p class="submit destroy">
+          This will delete the project and all the builds in the system
+          <button class="negative" type="submit">Yes, I'm sure, nuke it</button>
+        </p>
+      </form>
+    </div>
+  </div>
+</section>

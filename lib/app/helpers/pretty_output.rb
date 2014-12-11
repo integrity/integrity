@@ -41,9 +41,11 @@ module Integrity
         status
       end
       alias_method :branch_status, :project_status
+      alias_method :build_status, :project_status
 
       def status_time(project)
-        if build = project.last_build
+        build = project.is_a?(Integrity::Build) ? project : project.last_build
+        if build.present?
           time = case project.status
             when :success, :failed then build.completed_at
             when :pending, :building then build.started_at

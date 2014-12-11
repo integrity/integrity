@@ -1,30 +1,12 @@
-<%= partial(:admin_links, locals: {project: @build.project, build: @build}) %>
-
 <div class="<%= @build.status %>" id="build">
   <%= partial(:build_info, locals: {build: @build}) %>
 </div>
 
 <form action="<%= build_path(@build) %>" method="<%= :post %>">
   <input name="_method" type="hidden" value="delete"></input>
-  <p>
-    <button title="Delete this build">
-      Delete this build
-    </button>
-  </p>
+  <button title="Delete this build">Delete this build</button>
 </form>
-<form action="<%= build_path(@build, :notify) %>" method="<%= :post %>">
-  <p>
-    <button title="Notify of this build">
-      Notify of this build
-    </button>
-  </p>
-</form>
-<% if @build.pending? || @build.building? %>
-  <script type="text/javascript">
-    setTimeout(function(){window.location.reload();},5000);
-  </script>
-  <script type="text/javascript">
-    var div = document.getElementById('output');
-    div.scrollTop = div.scrollHeight;
-  </script>
-<% end %>
+<!--<form action="<%#= build_path(@build, :notify) %>" method="post">-->
+  <!--<button title="Notify of this build">Notify of this build</button>-->
+<!--</form>-->
+<%= partial(:auto_reload, locals: {build: @build}) %>

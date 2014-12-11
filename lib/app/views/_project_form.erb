@@ -1,0 +1,12 @@
+<input type="hidden" id="project_branch" name="project_data[branch]"  value="master"/>
+<input type="hidden" id="project_script" name="project_data[command]" value="rspec"/>
+<input type="hidden" id="project_public" name="project_data[public]"  value="0"/>
+
+<div class="form-group col-lg-12">
+  <label for="project_name"><%= "Name #{errors_on(@project, :name)}" %></label>
+  <input class="text" id="project_name" name="project_data[name]" type="text" value="<%= @project.name %>"/>
+</div>
+<div class="form-group col-lg-12">
+  <label for="project_repository"><%= "Repository URI #{errors_on(@project, :uri)}" %></label>
+  <input class="text" id="project_repository" name="project_data[uri]" type="text" value="<%= @project.uri %>"/>
+</div>

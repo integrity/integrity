@@ -1,62 +1,11 @@
 <section class="container">
   <div class="container-page">
     <div class="col-md-12">
-
-      <% if @project.new? %>
-        <h3 class="dark-grey">Create New Project:</h3>
-        <form action="<%= root_path %>" method="post" role="form">
-      <% else %>
-        <h3 class="dark-grey">Update Project:</h3>
-        <form action="<%= project_path(@project) %>" method="put" role="form">
-      <% end %>
-          <div class="form-group col-lg-12">
-            <label for="project_name"><%= "Name #{errors_on(@project, :name)}" %></label>
-            <input class="text" id="project_name" name="project_data[name]" type="text" value="<%= @project.name %>"/>
-          </div>
-          <div class="form-group col-lg-12">
-            <label for="project_repository"><%= "Repository URI #{errors_on(@project, :uri)}" %></label>
-            <input class="text" id="project_repository" name="project_data[uri]" type="text" value="<%= @project.uri %>"/>
-          </div>
-          <div class="form-group col-lg-12">
-            <label for="project_branch"><%= "Branch to track #{errors_on(@project, :branch)}" %></label>
-            <input class="text" id="project_branch" name="project_data[branch]" type="text" value="<%= @project.branch %>"/>
-          </div>
-          <div class="form-group col-lg-12">
-            <label for="project_build_script"><%= "Build script #{errors_on(@project, :command)}" %></label>
-            <textarea cols="40" id="project_build_script" name="project_data[command]" rows="2"><%= @project.command.to_s %></textarea>
-          </div>
-          <div class="form-group col-lg-12">
-            <label for="project_artifacts"><%= "Artifacts to provide" %></label>
-            <input class="text" id="project_artifacts" name="project_data[artifacts]" type="text" value="<%= @project.artifacts %>"/>
-            <p class="explanation">Relative paths of files to expose per build. Separate multiple paths with semicolons. Wildcards are allowed (?, *, []) and must be escaped with a backslash if part of a filename.</p>
-          </div>
-
-          <div class="checkbox col-lg-12">
-            <label for="project_public">
-              <input class="hidden" name="project_data[public]" type="hidden" value="0"/>
-              <input class="checkbox" id="project_public" <%= checkbox("project_data[public]", @project.public?) %>/>
-              Public project
-            </label>
-          </div>
-
-          <%= notifier_form %>
-
-          <button class="btn btn-default" type="submit">
-            <%= @project.new? ? 'Create Project' : 'Update Project' %>
-          </button>
-        </form>
-
-      <% unless @project.new? %>
-        <form action="<%= project_path(@project) %>" method="post">
-          <input name="_method" type="hidden" value="delete"/>
-          <h2>Delete this project</h2>
-          <p class="submit destroy">
-            This will delete the project and all the builds in the system
-            <button class="negative" type="submit">Yes, I'm sure, nuke it</button>
-          </p>
-        </form>
-      <% end %>
-
+      <h3 class="dark-grey">Create New Project:</h3>
+      <form action="<%= root_path %>" method="post" role="form">
+        <%= partial(:project_form, locals: {project: @project}) %>
+        <button class="btn btn-default" type="submit">Create Project</button>
+      </form>
     </div>
   </div>
 </section>

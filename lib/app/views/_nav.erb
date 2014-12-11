@@ -16,18 +16,18 @@
   </div>
   <!-- Top Menu Items -->
   <ul class="nav navbar-left top-nav" style="padding-left: 250px">
-
-    <% if params[:project].present? %>
-    <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-th-large"></i> Project <b class="caret"></b></a>
-      <ul class="dropdown-menu">
-        <li><a href="#"><i class="fa fa-fw fa-user"></i> Profile</a></li>
-        <!--<li><a href="#"><i class="fa fa-fw fa-envelope"></i> Inbox</a></li>-->
-        <li><a href="#"><i class="fa fa-fw fa-gear"></i> Settings</a></li>
-        <li class="divider"></li>
-        <li><a href="/logout"><i class="fa fa-fw fa-power-off"></i> Log Out</a></li>
-      </ul>
-    </li>
+    <% if current_project.present? %>
+      <li><a href="<%= project_path(current_project) %>"><%= current_project.name %></a></li>
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-th-large"></i> Project <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          <li><a href="<%= project_path(current_project, :edit) %>"><i class="fa fa-fw fa-edit"></i> Edit</a></li>
+          <li><a href="#"><i class="fa fa-fw fa-github-square"></i> Github</a></li>
+          <!--<li><a href="#"><i class="fa fa-fw fa-gear"></i> Settings</a></li>-->
+          <li class="divider"></li>
+          <li><a href="/logout"><i class="fa fa-fw fa-power-off"></i> Log Out</a></li>
+        </ul>
+      </li>
     <% else %>
       <li><a href="<%= path('new') %>" id="new"><i class="fa fa-fw fa-plus-circle"></i> Add Project</a></li>
     <% end  %>
@@ -35,53 +35,27 @@
   </ul>
   <ul class="nav navbar-right top-nav">
     <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-envelope"></i> <b class="caret"></b></a>
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-history"></i> <b class="caret"></b></a>
       <ul class="dropdown-menu message-dropdown">
-        <li class="message-preview">
-          <a href="#">
-            <div class="media">
-              <span class="pull-left">
-                <img class="media-object" src="http://placehold.it/50x50" alt="">
-              </span>
-              <div class="media-body">
-                <h5 class="media-heading"><strong>John Smith</strong>
-                </h5>
-                <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
-                <p>Lorem ipsum dolor sit amet, consectetur...</p>
+        <% if current_project.present?
+             current_project.builds.each do |build| %>
+          <li class="message-preview">
+            <a href="<%= build_path(build) %>">
+              <div class="media">
+                <span class="pull-left"><%= build_status(build) %></span>
+                <div class="media-body">
+                  <h5 class="media-heading"><strong><%= build.author %></strong></h5>
+                  <%= build.author %>
+                  <p class="small text-muted"><i class="fa fa-user"></i> <%= build.author %></p>
+                  <p class="small text-muted"><i class="fa fa-clock-o"></i> <%= time_ago_in_words(build.committed_at, true) %></p>
+                  <p><%= h(build.full_message) %></p>
+                </div>
               </div>
-            </div>
-          </a>
-        </li>
-        <li class="message-preview">
-          <a href="#">
-            <div class="media">
-                                    <span class="pull-left">
-                                        <img class="media-object" src="http://placehold.it/50x50" alt="">
-                                    </span>
-              <div class="media-body">
-                <h5 class="media-heading"><strong>John Smith</strong>
-                </h5>
-                <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
-                <p>Lorem ipsum dolor sit amet, consectetur...</p>
-              </div>
-            </div>
-          </a>
-        </li>
-        <li class="message-preview">
-          <a href="#">
-            <div class="media">
-                                    <span class="pull-left">
-                                        <img class="media-object" src="http://placehold.it/50x50" alt="">
-                                    </span>
-              <div class="media-body">
-                <h5 class="media-heading"><strong>John Smith</strong>
-                </h5>
-                <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
-                <p>Lorem ipsum dolor sit amet, consectetur...</p>
-              </div>
-            </div>
-          </a>
-        </li>
+            </a>
+          </li>
+        <% end
+         end %>
+
         <li class="message-footer"><a href="#">Read All New Messages</a></li>
       </ul>
     </li>

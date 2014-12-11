@@ -12,7 +12,7 @@ module Integrity
       unless Integrity.config.auto_branch?
         return branches
       end
-      
+
       project = all.first
       STDERR.puts "PROJECT: #{project.inspect}"
       project.get_branch(@repo.branch)
