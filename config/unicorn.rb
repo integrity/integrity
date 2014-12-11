@@ -1,5 +1,5 @@
 # http://kavassalis.com/2013/04/unicorn-hot-restarts-my-definitive-guide/
-worker_processes 4
+worker_processes 2
 timeout 30
 pid 'tmp/pids/unicorn.pid'
 listen '/tmp/integrity.sock', backlog: 64
