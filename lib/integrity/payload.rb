@@ -49,7 +49,7 @@ module Integrity
       repository = @payload[:repository].symbolize_keys
 
       if private?
-        "git@github.com/#{repository[:full_name]}"
+        "git://github.com/#{repository[:full_name]}"
       else
         uri.scheme = 'git'
         uri.to_s
