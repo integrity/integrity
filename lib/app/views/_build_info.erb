@@ -50,14 +50,7 @@
   Build Logs: <a href="<%= link_to_logs(build.project.permalink, build.sha1_short) %>" target="_blank"><%= build.sha1_short %></a>
 </h2>
 
-<!--
-<%# if build.completed? || build.building? && !build.output.empty? %>
-  <h2>
-    Build Output
-    <a href="<%#= build_path(build, :raw) %>">(raw)</a>
-  </h2>
-  <pre id="output" class="output">
-    <%#= bash_color_codes h(build.output) %>
-  </pre>
-<%# end %>
--->
+<% if build.completed? || build.in_progress? %>
+  <h2>Build Output</h2>
+  <iframe style="margin:10px 30px 10px 10px" width="98%" height="600" seamless="seamless" src="<%= link_to_logs(build.project.permalink, build.sha1_short) %>"></iframe>
+<% end %>
