@@ -29,6 +29,10 @@ module Integrity
     before :save, :set_permalink
     before :save, :fix_line_endings
 
+    after :create do
+      notifiers.first_or_create(name: 'Github', enabled: true, config: {action: 'push'})
+    end
+
     before :destroy do
       builds.destroy!
       branches.destroy!
