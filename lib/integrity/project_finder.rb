@@ -14,7 +14,6 @@ module Integrity
       end
 
       project = all.first
-      STDERR.puts "PROJECT: #{project.inspect}"
       project.get_branch(@repo.branch)
       [project]
     end
@@ -34,8 +33,6 @@ module Integrity
     end
 
     def all
-      STDERR.puts "REPO:  #{@repo.inspect}"
-      STDERR.puts "URI:   #{@repo.uri}"
       @all ||= Project.all(:uri.like => "#{@repo.uri}%")
     end
   end

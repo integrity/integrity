@@ -1,5 +1,5 @@
-<form>
-  <p class='submit'>
+<form action="<%= project_path(@project, :builds) %>" method="post">
+  <p class='submit' style="margin-top: 10px;">
     <button title='Rebuild this commit' type='submit'>Rebuild</button>
   </p>
 </form>

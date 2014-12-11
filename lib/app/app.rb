@@ -78,9 +78,8 @@ module Integrity
     post '/status.json', provides: :json do
       @format = :json
       STDERR.puts "PARAMS:  #{params.inspect}"
-      STDERR.puts "PROJECT: #{current_project.inspect}"
 
-      current_project.update_status!(params[:success])
+      current_project.update_status!(params[:sha], params[:success])
       json current_project
     end
 

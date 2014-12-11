@@ -5,9 +5,8 @@ module Integrity
     end
 
     def initialize(payload)
-      payload = JSON.parse(payload) if payload.is_a?(String)
-      @payload = payload.symbolize_keys
-      Integrity.logger.info "payload:\n#{@payload.inspect}"
+      payload  = JSON.parse(payload) if payload.is_a?(String)
+      @payload = Hashie::Mash.new(payload)
     end
 
     def build(all)
@@ -19,19 +18,20 @@ module Integrity
     end
 
     def head
-      commits.detect {|c| c[:identifier] == @payload[:after] }
+      commits.detect {|c| c.identifier == @payload.after }
     end
 
     def commits
       @commits ||= @payload[:commits].map do |commit|
-        commit.symbolize_keys!
-        {
-          identifier:   commit[:id],
-          author:       normalize_author(commit[:author]),
-          message:      commit[:message],
-          committed_at: commit[:timestamp],
-          branch:       branch
-        }
+        commit = Hashie::Mash.new(commit)
+        Hashie::Mash.new(
+          identifier:   commit.id,
+          author:       normalize_author(commit.author),
+          message:      commit.message,
+          committed_at: commit.timestamp,
+          branch:       branch,
+
+        )
       end
     end
 
@@ -46,10 +46,10 @@ module Integrity
     def uri
       return uri if uri = @payload[:uri]
 
-      repository = @payload[:repository].symbolize_keys
+      repository = @payload.repository
 
       if private?
-        "git://github.com/#{repository[:full_name]}"
+        "git://github.com/#{repository.full_name}"
       else
         uri.scheme = 'git'
         uri.to_s
@@ -62,8 +62,8 @@ module Integrity
 
     def normalize_author(author)
       return 'unknown' unless author
-      author = author.symbolize_keys
-      "#{author[:name]} <#{author[:email]}>"
+      author = Hashie::Mash.new(author) unless author.is_a?(Hashie::Mash)
+      "#{author.name} <#{author.email}>"
     end
   end
 end

@@ -22,7 +22,6 @@ gem 'omniauth'
 gem 'omniauth-github'
 gem 'hashie'
 
-
 gem 'bcat'
 gem 'rake'
 gem 'rconfig', '0.4.3.1', require: 'rconfig'
@@ -52,13 +51,9 @@ gem 'crust', '0.0.5', git: 'git://github.com/ConsultingMD/crust.git'
 # gem 'nap', '0.4'                              # HTTP
 # gem 'bunny', '0.6.0'                          # AMQP
 
-
 gem 'byebug', require: 'byebug'
-
-group :development do
-  gem 'pry', require: 'pry'
-  gem 'awesome_print', require: 'awesome_print'
-end
+gem 'awesome_print', require: 'awesome_print'
+gem 'pry', require: 'pry', group: :development
 
 group :test do
   gem 'aws-ses', '~> 0.4.3', require: 'aws/ses'

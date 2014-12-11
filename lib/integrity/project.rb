@@ -22,6 +22,7 @@ module Integrity
 
     has n, :builds
     has n, :branches
+    has n, :commits
     has n, :notifiers
     belongs_to :last_build, 'Build'
 
@@ -36,10 +37,12 @@ module Integrity
     delegate :status, :human_status, :human_duration, :successful?, :failed?, :pending?, :building?, to: :last_build, allow_nil: true
     delegate :owner, to: :repo
 
-    def update_status!(code=0)
-      if last_build.present?
+    def update_status!(sha, code=0)
+      raise ArgumentError, 'invlaid sha' unless sha.present?
+      commit = Commit.all(project_id: id, :identifier.like => "#{sha}%").first
+      if build = commit.try(:build)
         success = code.present? && code.zero?
-        last_build.set_as_complete(nil, success)
+        build.set_as_complete(nil, success)
       end
     end
 
@@ -64,7 +67,7 @@ module Integrity
     end
 
     def build_head
-      commit = last_build.try(:commit) || Commit.new(identifier: 'HEAD', branch: 'master')
+      commit = last_build.try(:commit) || Commit.new(identifier: 'HEAD', branch: 'master', project_id: id)
       build(commit)
     end
 
@@ -77,7 +80,8 @@ module Integrity
         author:       (commit.try(:author)       || 'Last Committer'),
         message:      (commit.try(:message)      || 'REBUILD'),
         committed_at: (commit.try(:committed_at) || Time.now),
-        branch:       (commit.try(:branch)       || branch.name)
+        branch:       (commit.try(:branch)       || branch.name),
+        project_id:   (commit.try(:project_id)   || id)
       }
 
       _build = builds.create(commit: commit, branch: branch, started_at: Time.now)

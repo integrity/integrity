@@ -20,13 +20,6 @@
   <div class="row <%= @project.status %>" id="last_build">
     <%= partial(:build_info, locals: {build: @project.last_build}) %>
   </div>
-  <form action="<%= project_path(@project, :builds) %>" method="<%= :post %>">
-    <p class="submit manual-build">
-      <button title="Fetch the last commit from the remote repository and build it" type="<%= :submit %>">
-        Fetch and build
-      </button>
-    </p>
-  </form>
   <% unless @project.blank? %>
     <h2>Builds</h2>
     <ul id="previous_builds">
@@ -51,4 +44,3 @@
     </p>
   <% end %>
 <% end %>
-<%= partial(:auto_reload, locals: {build: @project.last_build}) unless @project.blank? %>

@@ -3,6 +3,7 @@ module Integrity
     include DataMapper::Resource
 
     property :id,           Serial
+    property :project_id,   Integer
     property :build_id,     Integer
     property :identifier,   String
     property :branch,       String
@@ -21,6 +22,7 @@ module Integrity
 
     timestamps :at
 
+    belongs_to :project
     belongs_to :build
   end
 end
