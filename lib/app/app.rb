@@ -87,9 +87,8 @@ module Integrity
     post '/hook.json', provides: :json do
       @format = :json
       STDERR.puts "PARAMS:  #{params.inspect}"
-      STDERR.puts "PAYLOAD: #{params[:payload].inspect}"
 
-      build = Payload.build(params[:payload], build_all?)
+      build = Payload.build(params, build_all?)
       json build
     end
 
