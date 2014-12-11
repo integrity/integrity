@@ -70,7 +70,7 @@ module Integrity
       name, args = builder
       @builder = case name
         when :threaded then Integrity::ThreadedBuilder.new(args || 2, logger)
-        when :dj       then Integrity::DelayedBuilder.new(args)
+        when :delayed  then Integrity::DelayedBuilder.new(args)
         when :resque   then Integrity::ResqueBuilder
         when :explicit then Integrity::ExplicitBuilder.new
         else raise ArgumentError, "Unknown builder #{name}"
