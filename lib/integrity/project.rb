@@ -41,13 +41,14 @@ module Integrity
     delegate :status, :human_status, :human_duration, :successful?, :failed?, :pending?, :building?, to: :last_build, allow_nil: true
     delegate :owner, to: :repo
 
-    def update_status!(sha, code=0)
+    def build_complete!(sha, code=0)
       raise ArgumentError, 'invlaid sha' unless sha.present?
-      commit = Commit.all(project_id: id, :identifier.like => "#{sha}%").first
+      commit = Commit.first(project_id: id, :identifier.like => "#{sha}%")
       if build = commit.try(:build)
         success = code.present? && code.zero?
-        build.set_as_complete(nil, success)
+        build.complete!(success)
       end
+      Builder.queue_next_build
     end
 
     def get_artifacts
@@ -71,7 +72,14 @@ module Integrity
     end
 
     def build_head
-      commit = last_build.try(:commit) || Commit.new(identifier: 'HEAD', branch: 'master', project_id: id)
+      commit = Commit.new(
+        identifier:   'HEAD',
+        author:       last_build.try(:author),
+        message:      'Rebuilding HEAD',
+        committed_at: last_build.try(:commit).try(:committed_at),
+        branch:       'master',
+        project_id:   id
+      )
       build(commit)
     end
 
@@ -88,7 +96,7 @@ module Integrity
         project_id:   (commit.try(:project_id)   || id)
       }
 
-      _build = builds.create(commit: commit, branch: branch, started_at: Time.now)
+      _build = builds.create(commit: commit, branch: branch)
       _build.save
       _build.run
       _build

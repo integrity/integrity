@@ -79,7 +79,7 @@ module Integrity
       @format = :json
       STDERR.puts "PARAMS:  #{params.inspect}"
 
-      current_project.update_status!(params[:sha], params[:success])
+      current_project.build_complete!(params[:sha], params[:success])
       json current_project
     end
 
@@ -132,6 +132,7 @@ module Integrity
     ['/?', '/projects'].each do |path|
       get path, provides: 'html' do
         load_projects
+        @builds = Integrity::Build.all(order: :created_at.desc)
         show :home, title: 'projects'
       end
     end
@@ -198,8 +199,7 @@ module Integrity
     # Edit Project (Form)
     get '/:project/edit' do
       login_required
-
-      show :new, title: ['projects', current_project.permalink, 'edit']
+      show :edit, title: ['projects', current_project.permalink, 'edit']
     end
 
     # Update Project
@@ -228,6 +228,7 @@ module Integrity
 
       @builds = current_project.sorted_builds
       @showing_all_builds = true
+      @branches = current_project.branches(order: [:name.asc, :created_at.desc])
 
       show :project, title: ['projects', current_project.name]
     end

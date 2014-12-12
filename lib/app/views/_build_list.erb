@@ -1,0 +1,6 @@
+<h2>Builds</h2>
+<ul id="previous_builds">
+  <% builds.each do |build| %>
+    <%= partial(:build_list_item, locals: {build: build}) %>
+  <% end %>
+</ul>

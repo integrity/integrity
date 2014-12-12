@@ -38,30 +38,45 @@ module Integrity
 
     delegate :repo, :command, to: :project
 
+    def self.scope(query = :all, *conditions)
+      send(query, *conditions)
+    end
+
+    def self.pending(query = :all)
+      scope(query, started_at: nil, completed_at: nil, order: :created_at.asc)
+    end
+
+    def self.running(query = :all)
+      scope(query, :started_at.not => nil, completed_at: nil, order: :started_at.asc)
+    end
+
+    def self.orphaned(query = :all)
+      scope(query, :started_at.lt => 1.hour.ago, completed_at: nil, order: :started_at.asc)
+    end
+
     def run
-      self.run!
-    rescue Net::SSH::AuthenticationFailed => e
-      Integrity.say 'Not Authorized to start service'
+      Integrity.config.builder.enqueue(self)
     end
 
     def run!
-      Integrity.launch_build(project.permalink, sha1_short)
+      Builder.start_build(self, Integrity.logger)
     end
 
     def complete!(result)
-      set_as_complete(result.output, result.success)
+      success = result.respond_to?(:success) ? result.success : result
+      set_as_complete(success)
     end
 
     def completed?
-      ! completed_at.nil?
+      !completed_at.nil?
     end
 
     def started?
-      ! started_at.nil?
+      !started_at.nil?
     end
 
-    def fail!(message)
-      set_as_complete(message)
+    def fail!(message=nil)
+      set_as_complete(false)
     end
 
     def notify
@@ -73,11 +88,11 @@ module Integrity
     end
 
     def failed?
-      ! successful?
+      !successful?
     end
 
     def building?
-      started?  && ! completed? && ! killed?
+      started?  && !completed? && !killed?
     end
 
     def pending?
@@ -85,12 +100,11 @@ module Integrity
     end
 
     def sha1
-      commit.try(:identifier).presence || '(commit is missing)'
+      commit.try(:identifier).presence || "build_#{id}"
     end
 
     def sha1_short
-      return '(commit is missing)' unless commit
-      return 'This commit' unless sha1
+      return id.to_s unless commit.try(:identifier)
       sha1[0..6]
     end
 
@@ -150,9 +164,10 @@ module Integrity
       Pathname.new(Integrity.config.directory).join(self.id.to_s)
     end
 
-    def set_as_complete(message, success = false)
+    def set_as_complete(success = false)
       self.raise_on_save_failure = true
-      update(completed_at: Time.now, successful: success, output: message)
+      update(completed_at: Time.now, successful: success)
+      notify
     end
 
     def escape_glob(path)

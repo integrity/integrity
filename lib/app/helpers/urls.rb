@@ -83,7 +83,7 @@ module Integrity
       end
 
       def project_path(project, *path)
-        path(project.permalink, *path)
+        path(project.try(:permalink), *path)
       end
 
       def build_url(build, *path)

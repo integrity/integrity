@@ -20,4 +20,7 @@
       <%= partial(:project, locals: {project: project, build: build, status: status}) %>
     <% end %>
   </div>
+  <div class="row" id="builds">
+    <%= partial(:build_list, locals: {builds: @builds}) %>
+  </div>
 <% end %>
