@@ -132,7 +132,8 @@ module Integrity
     ['/?', '/projects'].each do |path|
       get path, provides: 'html' do
         load_projects
-        @builds = Integrity::Build.all(order: :created_at.desc)
+        @masters = Integrity::Branch.all(name: 'master').map(&:project)
+        @builds  = Integrity::Build.all(order: :created_at.desc)
         show :home, title: 'projects'
       end
     end

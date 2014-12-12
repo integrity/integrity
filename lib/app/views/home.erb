@@ -14,7 +14,7 @@
   </div>
 <% else %>
   <div class="row" id="projects">
-    <% @projects.each do |project|
+    <% @masters.each do |project|
       status = project_status(project)
       build = project.last_build %>
       <%= partial(:project, locals: {project: project, build: build, status: status}) %>
