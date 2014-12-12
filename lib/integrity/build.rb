@@ -59,7 +59,7 @@ module Integrity
     end
 
     def run!
-      Builder.start_build(self, Integrity.logger)
+      Builder.start_build(self)
     end
 
     def complete!(result)
