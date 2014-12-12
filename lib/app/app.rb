@@ -294,9 +294,7 @@ module Integrity
       login_required
 
       if current_build.in_progress?
-        project = current_project.permalink
-        sha = current_build.sha1_short
-        Integrity.destroy_build(project, sha)
+        Integrity::Builder.destroy_build(current_build)
         current_build.update(state: 'killed', completed_at: Time.now)
       end
 

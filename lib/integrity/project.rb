@@ -47,8 +47,8 @@ module Integrity
       if build = commit.try(:build)
         success = code.present? && code.zero?
         build.complete!(success)
+        Builder.queue_next_build
       end
-      Builder.queue_next_build
     end
 
     def get_artifacts

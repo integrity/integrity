@@ -27,6 +27,8 @@ module Integrity
     belongs_to :branch
     has 1,     :commit
 
+    delegate :name, :permalink, to: :project
+
     after :create do
       project.update(last_build_id: id)
       branch.update(last_build_id: id)
@@ -62,9 +64,13 @@ module Integrity
       Builder.start_build(self)
     end
 
+    def cleanup!
+      Builder.destroy_build(self)
+    end
+
     def complete!(result)
       success = result.respond_to?(:success) ? result.success : result
-      set_as_complete(success)
+      set_as_complete(success) and cleanup!
     end
 
     def completed?

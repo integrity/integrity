@@ -225,15 +225,6 @@ module Integrity
     Crust.start_service(logspout)
   end
 
-  def self.launch_build(project, sha)
-    self.destroy_build(project, sha)
-    Crust.start(project, sha)
-  end
-
-  def self.destroy_build(project, sha)
-    Crust.destroy(project, sha)
-  end
-
   def self.max_running_builds
     config.max_running_builds
   end
