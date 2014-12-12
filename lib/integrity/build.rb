@@ -52,6 +52,14 @@ module Integrity
       set_as_complete(result.output, result.success)
     end
 
+    def completed?
+      ! completed_at.nil?
+    end
+
+    def started?
+      ! started_at.nil?
+    end
+
     def fail!(message)
       set_as_complete(message)
     end
@@ -69,15 +77,11 @@ module Integrity
     end
 
     def building?
-      ! started_at.nil? && completed_at.nil? && ! killed?
+      started?  && ! completed? && ! killed?
     end
 
     def pending?
       started_at.nil?
-    end
-
-    def completed?
-      ! pending? && ! building?
     end
 
     def sha1
