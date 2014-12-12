@@ -1,7 +1,0 @@
-.checkbox.col-lg-12
-  %label{for: "enabled_notifiers_#{name}"}
-    %input.checkbox{id: "enabled_notifiers_#{name}", name: 'enabled_notifiers[]', type: 'checkbox', value: notifier, checked: enabled}
-    = "#{notifier} Notifications"
-    -#%span.warning be aware that no validation will be made on these fields
-%fieldset.col-lg-12{id: "#{name}_config"}
-  = yield

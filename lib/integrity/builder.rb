@@ -3,6 +3,28 @@ module Integrity
 
     attr_reader :build, :logger
 
+    def self.start_build(build)
+      # Get number of running builds.
+      running = Build.running(:count)
+
+      # Only launch build if the number of running builds hasn't reached the limit.
+      if running < Integrity.max_running_builds
+        name = build.project.permalink
+        sha  = build.sha1_short
+
+        Integrity.launch_build(name, sha)
+        build.update(started_at: Time.now)
+      end
+    end
+
+    def self.queue_next_build
+      # Get first pending build (fifo).
+      pending = Build.pending(:first)
+
+      # If there are any pending builds, start the first one.
+      start_build(pending) if pending.present?
+    end
+
     def self.build(_build, directory, logger)
       new(_build, directory, logger).build
     end
