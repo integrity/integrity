@@ -9,6 +9,8 @@
           <div class="huge"><%= branch.name %></div>
           <% if build %>
             <div>
+              <%= build.author %>
+              <i class="fa fa-circle"></i>
               <a class="git-link" href="<%= github_commit_url(build) %>"><%= build.try(:sha1_short) %></a>
               <i class="fa fa-circle"></i>
               <%= status_time(branch) %>
