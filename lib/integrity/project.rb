@@ -72,7 +72,14 @@ module Integrity
     end
 
     def build_head
-      commit = last_build.try(:commit) || Commit.new(identifier: 'HEAD', branch: 'master', project_id: id)
+      commit = Commit.new(
+        identifier:   'HEAD',
+        author:       last_build.try(:author),
+        message:      'Rebuilding HEAD',
+        committed_at: last_build.try(:commit).try(:committed_at),
+        branch:       'master',
+        project_id:   id
+      )
       build(commit)
     end
 

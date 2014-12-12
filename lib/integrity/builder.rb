@@ -8,7 +8,7 @@ module Integrity
       running = Build.running(:count)
 
       # Only launch build if the number of running builds hasn't reached the limit.
-      unless running >= Integrity.max_running_builds
+      if running < Integrity.max_running_builds
         name = build.project.permalink
         sha  = build.sha1_short
 

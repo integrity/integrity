@@ -61,7 +61,8 @@ module Integrity
     end
 
     def complete!(result)
-      set_as_complete(result.success)
+      success = result.respond_to?(:success) ? result.success : result
+      set_as_complete(success)
     end
 
     def fail!(message=nil)

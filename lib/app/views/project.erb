@@ -20,27 +20,8 @@
   <div class="row <%= @project.status %>" id="last_build">
     <%= partial(:build_info, locals: {build: @project.last_build}) %>
   </div>
-  <% unless @project.blank? %>
-    <h2>Builds</h2>
-    <ul id="previous_builds">
-      <% @builds.each do |build| %>
-        <li class="<%= build.status %>">
-          <a href="<%= build_path(build) %>">
-            <strong class="build">
-              <%= "Build #{build.sha1_short}" %>
-            </strong>
-            <span class="attribution">
-              <%= "by #{build.author}, #{time_ago_in_words(build.committed_at, true)}" %>
-            </span>
-
-          </a>
-        </li>
-      <% end %>
-    </ul>
-  <% end %>
+  <%= partial(:build_list, locals: {builds: @builds}) unless @project.blank? %>
   <% unless @showing_all_builds %>
-    <p>
-      <a href="<%= project_path(@project, :all) %>">See all builds</a>
-    </p>
+    <p><a href="<%= project_path(@project, :all) %>">See all builds</a></p>
   <% end %>
 <% end %>
