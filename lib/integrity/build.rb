@@ -36,6 +36,10 @@ module Integrity
 
     before :destroy do
       commit.destroy! if commit
+      if project.last_build_id == id
+        last_id = project.builds(:id.not => id).last.try(:id)
+        project.update(last_build_id: last_id)
+      end
     end
 
     delegate :repo, :command, to: :project
