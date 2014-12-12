@@ -1,10 +1,9 @@
 <% status = get_status(build.status) %>
 <li class="<%= build.status %>">
   <a href="<%= build_path(build) %>">
-    <strong><%= build.project.try(:name) %></strong>
-    <span><i class="fa fa-<%= status.icon %> fa-5x"></i></span>
+    <span style="font-size: 5px;"><i class="fa fa-<%= status.icon %> fa-5x"></i></span>
     <strong class="build">
-      <%= "Build #{build.sha1_short}" %>
+      <%= "#{build.project.name}:#{build.branch.name} (#{build.sha1_short})" %>
     </strong>
     <span class="attribution">
       <%= "by #{build.author}, #{time_ago_in_words(build.committed_at, true)}" %>
