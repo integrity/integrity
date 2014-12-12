@@ -226,6 +226,7 @@ module Integrity
   end
 
   def self.launch_build(project, sha)
+    self.destroy_build(project, sha)
     Crust.start(project, sha)
   end
 

@@ -6,7 +6,8 @@ module Integrity
       success:  "Built %s successfully",
       failed:   "Built %s and failed",
       pending:  "%s hasn't been built yet",
-      building: "%s is building"
+      building: "%s is building",
+      killed: "%s was killed"
     }
     
     GLOB_CHARS = '*?[]'
@@ -18,6 +19,7 @@ module Integrity
     property :successful,   Boolean,  default: false
     property :started_at,   DateTime
     property :completed_at, DateTime
+    property :state, String
 
     timestamps :at
 
@@ -82,7 +84,7 @@ module Integrity
     end
 
     def building?
-      !started_at.nil? && completed_at.nil?
+      !started_at.nil? && completed_at.nil? && !killed?
     end
 
     def pending?
@@ -119,6 +121,7 @@ module Integrity
     end
 
     def status
+      return state.to_sym if state
       case
       when building?   then :building
       when pending?    then :pending
@@ -133,6 +136,10 @@ module Integrity
 
     def human_status
       HUMAN_STATUS[status] % sha1_short
+    end
+
+    def killed?
+      state == 'killed'
     end
     
     def human_duration
