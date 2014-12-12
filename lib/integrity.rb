@@ -234,6 +234,10 @@ module Integrity
     Crust.destroy(project, sha)
   end
 
+  def self.max_running_builds
+    config.max_running_builds
+  end
+
   def self.root
     File.join(File.dirname(__FILE__), '..')
   end
