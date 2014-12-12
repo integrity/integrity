@@ -32,7 +32,7 @@ module Integrity
     end
 
     def authorized_ip?
-      remote_ip.index('10.') == 0
+      remote_ip.index('10.') == 0 || settings.development?
     end
 
     def web_hook?
@@ -288,13 +288,14 @@ module Integrity
     end
 
     # Stop Running Build From Commit (Re-build)
-    post '/:project/builds/:build/stop' do
+    post '/:project/builds/:build/destroy' do
       login_required
 
       if current_build.in_progress?
         project = current_project.permalink
         sha = current_build.sha1_short
         Integrity.destroy_build(project, sha)
+        current_build.update(state: 'killed', completed_at: Time.now)
       end
 
       redirect project_url(current_project).to_s

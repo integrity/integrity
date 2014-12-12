@@ -302,6 +302,23 @@ ul.alert-dropdown {
     color: #df8a13;
 }
 
+.panel-orange {
+    border-color: #f97d0e;
+}
+
+.panel-orange .panel-heading {
+    border-color: #f97d0e;
+    color: #fff;
+    background-color: #f97d0e;
+}
+
+.panel-orange a {
+    color: #f97d0e;
+}
+
+.panel-orange a:hover {
+    color: #f92d0e;
+}
 .fa-refresh {
   -webkit-animation: spin 3.0s infinite linear;
   -moz-animation: spin 3.0s infinite linear;
@@ -337,11 +354,13 @@ li {
   margin-right: 0.5em;
   margin-top: 1.25em; }
 
+#build, .head{
+  background: #ddd;
+}
 #build, #last_build {
   position: relative; }
 #build h1, #build blockquote, #last_build h1, #last_build blockquote {
-  border-width: 0 1px;
-  border-style: solid;
+  border:none;
 }
 #build h1, #last_build h1 {
   border-top-width: 1px;
@@ -371,9 +390,6 @@ li {
 #build.failed .meta a:hover, #build.failed .github a a:hover, #last_build.failed .meta a:hover, #last_build.failed .github a a:hover {
   color: #ffbbaa;
   background-color: #ff1100; }
-#build.building h1, #build.building blockquote, #last_build.building h1, #last_build.building blockquote {
-  background-color: #cccccc;
-  border-color: #aaaaaa #dddddd #dddddd #aaaaaa; }
 #build.building h1, #last_build.building h1 {
   color: #777777; }
 #build.building .meta, #build.building .github a, #last_build.building .meta, #last_build.building .github a {
@@ -384,7 +400,6 @@ li {
 #build h1, #last_build h1 {
   margin-top: 0.5em;
   margin-bottom: 0;
-  padding: 0.25em;
   color: #337022; }
 #build blockquote, #last_build blockquote {
   padding: 0.75em;
@@ -441,3 +456,14 @@ li {
 #projects li.building a:hover, #previous_builds li.building a:hover {
   background-color: #eeeeee; }
 /* Previous Builds - END */
+
+#projects li.killed a, #previous_builds li.killed a {
+  background-color: #F59A5C;
+  border-color: #D04400;
+  color: #9A3909; }
+#projects li.killed a .attribution, #previous_builds li.killed a .attribution {
+  color: #724E44; }
+#projects li.killed a:hover, #previous_builds li.killed a:hover {
+  background-color: #ffddcc; }
+/* Previous Builds - END */
+#build 
