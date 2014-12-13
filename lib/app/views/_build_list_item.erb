@@ -1,4 +1,4 @@
-<% status = get_status(build.status) %>
+<% status = build_status(build) %>
 <li class="<%= build.status %>">
   <a href="<%= build_path(build) %>">
     <span style="font-size: 5px;"><i class="fa fa-<%= status.icon %> fa-5x"></i></span>

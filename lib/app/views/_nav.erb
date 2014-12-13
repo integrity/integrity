@@ -37,26 +37,25 @@
     <li class="dropdown">
       <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-history"></i> <b class="caret"></b></a>
       <ul class="dropdown-menu message-dropdown">
-        <% if @project.present?
-             @project.builds.each do |build| %>
+        <% all_builds.each do |build| %>
           <li class="message-preview">
             <a href="<%= build_path(build) %>">
               <div class="media">
-                <span class="pull-left"><%= build_status(build) %></span>
+                <span class="pull-left"><i class="fa fa-<%= build_status(build).icon %> fa-3x"></i></span>
                 <div class="media-body">
-                  <h5 class="media-heading"><strong><%= build.author %></strong></h5>
-                  <%= build.author %>
-                  <p class="small text-muted"><i class="fa fa-user"></i> <%= build.author %></p>
-                  <p class="small text-muted"><i class="fa fa-clock-o"></i> <%= time_ago_in_words(build.committed_at, true) %></p>
-                  <p><%= h(build.full_message) %></p>
+                  <h4 class="media-heading"><strong><%= build.name %></strong></h4>
+                  <span class="small text-muted"><i class="fa fa-code-fork"></i> <%= build.branch.name %></span><br>
+                  <span class="small text-muted"><i class="fa fa-user"></i> <%= build.author %></span><br>
+                  <span class="small text-muted"><i class="fa fa-clock-o"></i> <%= time_ago_in_words(build.committed_at) %></span>
+                  <p class="small text-muted">
+                    <em><i class="fa fa-quote-left" style="margin-right:5px;"></i><%= h(build.full_message) %></em>
+                  </p>
                 </div>
               </div>
             </a>
           </li>
-        <% end
-         end %>
-
-        <li class="message-footer"><a href="#">Read All New Messages</a></li>
+        <% end %>
+        <li class="message-footer"><a href="/">Read All New Messages</a></li>
       </ul>
     </li>
     <!--

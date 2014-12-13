@@ -14,9 +14,10 @@
   </div>
 <% else %>
   <div class="row" id="projects">
-    <% @masters.each do |project|
-      status = project_status(project)
-      build = project.last_build %>
+    <% @masters.each do |branch|
+      project = branch.project
+      status  = branch_status(branch)
+      build   = branch.last_build %>
       <%= partial(:project, locals: {project: project, build: build, status: status}) %>
     <% end %>
   </div>
