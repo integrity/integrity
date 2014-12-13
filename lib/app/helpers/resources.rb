@@ -11,6 +11,10 @@ module Integrity
           raise Sinatra::NotFound
       end
 
+      def all_builds(limit=5)
+        Integrity::Build.all(order: :created_at.desc, limit: limit)
+      end
+
       def update_notifiers_of(project)
         if notifiers = params[:notifiers]
           enabled = params[:enabled_notifiers] || []
