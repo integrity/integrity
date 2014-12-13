@@ -1,10 +1,4 @@
 GIT
-  remote: git://github.com/ConsultingMD/crust.git
-  revision: bf9d43814958f58074541d425fb645d7b62fad9c
-  specs:
-    crust (0.0.5)
-
-GIT
   remote: git://github.com/ConsultingMD/ruby-fleetctl.git
   revision: 184d8c2882d82ed6ec8bfdc360aec40fc9ffa894
   specs:
@@ -30,6 +24,11 @@ GIT
     dm-sweatshop (1.2.0)
       dm-core (~> 1.2.0)
       randexp (~> 0.1.5)
+
+PATH
+  remote: /home/ozzie/crust
+  specs:
+    crust (0.0.6)
 
 GEM
   remote: https://rubygems.org/
@@ -275,7 +274,7 @@ DEPENDENCIES
   capistrano-deploytags
   chronic_duration
   contest
-  crust (= 0.0.5)!
+  crust!
   daemons
   data_mapper (~> 1.2)
   delayed_job
