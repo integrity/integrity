@@ -72,8 +72,8 @@ module Integrity
         msg.length > 100 ? "#{msg[0..96]}..." : msg
       end
 
-      def link_to_logs(name, sha)
-        "#{Integrity.logs_url}?q=#{name}_#{sha}"
+      def link_to_logs(build)
+        "#{Integrity.logs_url}?q=#{build.service_name}"
       end
 
     end

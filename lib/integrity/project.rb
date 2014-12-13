@@ -41,13 +41,26 @@ module Integrity
     delegate :status, :human_status, :human_duration, :successful?, :failed?, :pending?, :building?, to: :last_build, allow_nil: true
     delegate :owner, to: :repo
 
-    def build_complete!(sha, code=0)
-      raise ArgumentError, 'invlaid sha' unless sha.present?
-      commit = Commit.first(project_id: id, :identifier.like => "#{sha}%")
-      if build = commit.try(:build)
+    def build_complete!( params )
+      code = params[:success]
+      sha = params[:sha]
+      build_id = params[:build_id]
+
+      if build_id
+        build = Build.first(id: build_id)
+      elsif sha
+        commit = Commit.first(project_id: id, :identifier.like => "#{sha}%")
+        build = commit.try(:build)
+      else
+        raise ArgumentError, 'Requires sha or build id'
+      end
+
+      if build
         success = code.present? && code.zero?
         build.complete!(success)
         Builder.queue_next_build
+      else
+        raise ArgumentError, 'Could not find a corresponding build'
       end
     end
 

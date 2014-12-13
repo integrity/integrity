@@ -242,5 +242,9 @@ module Integrity
     def to_json
       {build: {id: id, project: {name: project.name}, status: status}}.to_json
     end
+
+    def service_name
+      "#{name}_#{sha1_short}_#{id}"
+    end
   end
 end
