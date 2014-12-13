@@ -67,6 +67,11 @@ module Integrity
         )
       end
 
+      def message(build)
+        msg = build.try(:full_message).to_s
+        msg.length > 100 ? "#{msg[0..96]}..." : msg
+      end
+
       def link_to_logs(name, sha)
         "#{Integrity.logs_url}?q=#{name}_#{sha}"
       end

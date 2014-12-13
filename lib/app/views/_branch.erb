@@ -19,9 +19,9 @@
         </div>
       </div>
     </div>
-    <a href="<%= project_path(project) %>">
-      <div class="panel-footer">
-        <span class="pull-left"><%= build.try(:full_message) %></span>
+    <a href="<%= build ? build_path(build) : project_path(project) %>">
+      <div class="panel-footer" style="min-height: 80px;">
+        <span class="pull-left" style="width: 89%"><%= message(build) %></span>
         <span class="pull-right"><i class="fa fa-arrow-circle-right fa-2x"></i></span>
         <div class="clearfix"></div>
       </div>
