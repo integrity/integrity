@@ -1,5 +1,6 @@
 module Integrity
   class PayloadBuilder
+
     def self.build(payload, build_all)
       new(payload, build_all).build
     end
@@ -10,15 +11,6 @@ module Integrity
     end
 
     def build
-      if Integrity.config.trim_branches? && @payload.deleted?
-        projects.each {|project| project.destroy }
-        return 0
-      else
-        current_build
-      end
-    end
-
-    def current_build
       builds.first
     end
 
@@ -33,12 +25,13 @@ module Integrity
         end
     end
 
+    def projects
+      @projects ||= ProjectFinder.find(@payload.repo)
+    end
+
     def commits
       @commits ||= @build_all ? @payload.commits : [@payload.head]
     end
 
-    def projects
-      @projects ||= ProjectFinder.find(@payload.repo)
-    end
   end
 end

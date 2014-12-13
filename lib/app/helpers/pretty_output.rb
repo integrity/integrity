@@ -59,7 +59,7 @@ module Integrity
           case status
             when :success  then {color: :green,  icon: :check,   circle: true}
             when :failed   then {color: :red,    icon: :times,   circle: true}
-            when :pending  then {color: :yellow, icon: :time,   circle: false}
+            when :pending  then {color: :yellow, icon: :'clock-o',   circle: false}
             when :building then {color: :yellow, icon: :refresh, circle: false}
             when :killed then {color: :orange, icon: :'power-off', circle: false}
             else                {color: :green,  icon: :check,   circle: true}
