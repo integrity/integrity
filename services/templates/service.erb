@@ -10,6 +10,8 @@
     AWS_SECRET_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
   links:
     - <%= project_sha %>_mysql
+  xfleet:
+    machineof: <%= project_sha %>_mysql.1.service
 
 <%= project_sha %>_mysql:
   image: grnds/mysql
