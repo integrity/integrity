@@ -76,6 +76,7 @@ module Integrity
     end
 
     post '/status.json', provides: :json do
+      params.symbolize_keys!
       @format = :json
       STDERR.puts "PARAMS:  #{params.inspect}"
 
