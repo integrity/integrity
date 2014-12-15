@@ -49,7 +49,7 @@ module Integrity
       if build_id
         build = Build.first(id: build_id)
       elsif sha
-        commit = Commit.first(project_id: id, :identifier.like => "#{sha}%")
+        commit = Commit.last(project_id: id, :identifier.like => "#{sha}%")
         build = commit.try(:build)
       else
         raise ArgumentError, 'Requires sha or build id'
