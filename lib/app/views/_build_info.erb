@@ -41,7 +41,10 @@
       <% if build.completed? %>
         <form action="<%= build_path(build) %>" method="post">
           <p class='submit' style="margin-top: 10px;">
-          <button class="btn btn-success btn-lg" title='Rebuild this commit' type='submit'>Restart Build</button>
+          <button class="btn btn-success btn-lg" title='Rebuild this commit' type='submit'>
+            <img src="/images/cat.gif" height="35em">
+            Restart Build
+          </button>
           </p>
         </form>
       <% end %>
