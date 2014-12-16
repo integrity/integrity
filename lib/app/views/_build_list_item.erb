@@ -1,4 +1,5 @@
 
+<% if build %>
 <% status = build_status(build) %>
   <tr class="<%= build.bootstrap_class %>">
     <td class="status"><i class="fa fa-<%= status.icon %>"></td>
@@ -19,3 +20,4 @@
     <td><%= "#{link_to '<i class="fa fa-github-alt"></i>', github_commit_url(build)} #{link_to '<i class="fa fa-list"></i>', link_to_logs(build)}" %>
     </td>
   </tr>
+  <% end %>
