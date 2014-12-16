@@ -159,7 +159,7 @@ module Integrity
       end
 
       @status = current_project.status
-      @branches = current_project.branches(order: [:name.asc, :created_at.desc])
+      @branches = current_project.branches(order: [:name.asc, :created_at.desc]).first(8)
 
       show :project, title: ['projects', current_project.name]
     end

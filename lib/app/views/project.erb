@@ -7,7 +7,6 @@
   <% end %>
 </div>
 
-
 <% if @project.blank? %>
   <form action="<%= project_path(@project, :builds) %>" class="blank_slate" method="<%= :post %>">
     <p>No builds for this project, buddy</p>
@@ -17,9 +16,6 @@
     </h1>
   </form>
 <% else %>
-  <div class="row <%= @project.status %>" id="last_build">
-    <%= partial(:build_info, locals: {build: @project.last_build}) %>
-  </div>
   <%= partial(:build_list, locals: {builds: @builds}) unless @project.blank? %>
   <% unless @showing_all_builds %>
     <p><a href="<%= project_path(@project, :all) %>">See all builds</a></p>
