@@ -1,12 +1,21 @@
+
 <% status = build_status(build) %>
-<li class="<%= build.status %>">
-  <a href="<%= build_path(build) %>">
-    <span style="font-size: 5px;"><i class="fa fa-<%= status.icon %> fa-5x"></i></span>
-    <strong class="build">
-      <%= "#{build.project.try(:permalink)}:#{build.branch.try(:name) || 'master'} (#{build.sha1_short})" %>
-    </strong>
-    <span class="attribution">
-      <%= "by #{build.author}, #{time_ago_in_words(build.committed_at, true)}" %>
-    </span>
-  </a>
-</li>
+  <tr class="<%= build.bootstrap_class %>">
+    <td class="status"><i class="fa fa-<%= status.icon %>"></td>
+    <td><a href="<%= build_path(build)%>"><%= build.sha1_short %></td>
+    <td class="build"><%= "#{build.branch.try(:name)}"%></td>
+    <td><%= link_to "#{build.project.try(:name)}", project_path(build.project)%></td>
+    <td class="attribution"><%= build.author %></td>
+    <td><%= link_to build.id, build_path(build) %></td>
+    <td><%= time_ago_in_words(build.committed_at) %></td>
+    <td>
+      <% if build.building? %>
+        <%= Time.at(build.time_since_start).gmtime.strftime('%R:%S') %>
+      <% elsif !build.pending? %>
+        <%= Time.at(build.duration).gmtime.strftime('%R:%S') %>
+      <% end %>
+    </td>
+
+    <td><%= "#{link_to '<i class="fa fa-github-alt"></i>', github_commit_url(build)} #{link_to '<i class="fa fa-list"></i>', link_to_logs(build)}" %>
+    </td>
+  </tr>

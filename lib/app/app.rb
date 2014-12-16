@@ -7,9 +7,11 @@ require 'app/helpers'
 require 'sinatra/base'
 require 'rack/flash'
 require 'cgi'
+require 'sinatra/static_assets'
 
 module Integrity
   class App < Sinatra::Base
+    register Sinatra::StaticAssets
 
     configure do
       enable  :sessions
