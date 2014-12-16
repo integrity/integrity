@@ -157,17 +157,34 @@ module Integrity
     end
     
     def human_duration
+      Integrity.human_duration(duration)
+    end
+
+    def bootstrap_class
+      case status
+      when :building then 'info'
+      when :success then 'success'
+      when :failed then 'danger'
+      when :pending then 'warning'
+      when :killed then 'killed'
+      end
+    end
+
+    def duration
       return if in_progress?
-      delta = Integrity.delta(completed_at, started_at)
-      Integrity.human_duration(delta)
+      Integrity.delta(completed_at, started_at)
     end
     
     def human_time_since_start
+      Integrity.human_duration(time_since_start)
+    end
+
+    def time_since_start
       return if pending?
       # to_i returns utc timestamp
-      delta = Integrity.delta(Time.now, started_at)
-      Integrity.human_duration(delta)
+      Integrity.delta(Time.now, started_at)
     end
+
     alias_method :time_elapsed, :human_time_since_start
 
     def build_directory

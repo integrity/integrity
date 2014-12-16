@@ -1,0 +1,33 @@
+.table#previous_builds {
+  font-size: 1.5em;
+}
+.table#previous_builds a .fa{
+  font-size: 1em;
+  color: #666
+}
+
+.table#previous_builds .status .fa{
+  font-size: 1.5em;
+}
+.table#previous_builds .danger .status .fa{
+  color: #CD1205;
+}
+
+.table#previous_builds .success .status .fa{
+  color: #449110;
+}
+
+.table#previous_builds .killed .status .fa{
+  color: #999;
+}
+
+.table#previous_builds .warning .status .fa{
+  color: #999;
+}
+#projects li.success a .attribution, #previous_builds li.success a .attribution {
+  color: #77b466; }
+
+.table#previous_builds > th{
+  color: #666;
+  font-weight: normal;
+}
