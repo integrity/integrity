@@ -77,6 +77,15 @@ module Integrity
       set_as_complete(success) and cleanup!
     end
 
+    def kill!
+      Integrity::Builder.destroy_build(current_build)
+      update(state: 'killed', completed_at: Time.now)
+    end
+
+    def cancel!
+      update(state: 'cencelled', completed_at: Time.now)
+    end
+
     def completed?
       !completed_at.nil?
     end

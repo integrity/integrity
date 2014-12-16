@@ -23,7 +23,7 @@ module Integrity
       set :partial_template_engine, :erb
       set :session_secret, 'secret'
 
-      I18n.load_path = Dir[File.join(settings.root, 'config', 'locale', '*.yml')]
+      I18n.load_path += Dir[File.join(settings.root, 'config', 'locale', '*.yml')]
       I18n.backend.load_translations
     end
 
@@ -262,14 +262,6 @@ module Integrity
     ## Build RESTful Endpoints
     ##########################
 
-    # Create Build From Head
-    post '/:project/builds' do
-      login_required
-
-      @build = current_project.build_head
-      redirect build_url(@build).to_s
-    end
-
     # Create Build From Commit (Re-build)
     post '/:project/builds/:build' do
       login_required
@@ -296,17 +288,24 @@ module Integrity
       redirect url
     end
 
-    # Stop Running Build From Commit (Re-build)
+    # Stop Running Build (Destroy the running service, and remove the build).
     post '/:project/builds/:build/destroy' do
       login_required
 
-      if current_build.in_progress?
-        Integrity::Builder.destroy_build(current_build)
-        current_build.update(state: 'killed', completed_at: Time.now)
-      end
+      current_build.kill! if current_build.building?
 
       redirect project_url(current_project).to_s
     end
+
+    # Cancel the Pending Build (take it out of the build queue).
+    post '/:project/builds/:build/cancel' do
+      login_required
+
+      current_build.cancel! if current_build.pending?
+
+      redirect project_url(current_project).to_s
+    end
+
 
     # Get Raw Build Output
     get '/:project/builds/:build/raw' do

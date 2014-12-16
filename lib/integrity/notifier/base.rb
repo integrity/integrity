@@ -69,7 +69,7 @@ module Integrity
           short_message: short_message,
           message: @build.message,
           commit_date: commit_date,
-          author: @build.author.name,
+          author: @build.author,
           build_url: build_url,
           build_output: build_output
         }

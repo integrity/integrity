@@ -1,26 +1,22 @@
-en:
-  errors:
- 
-  notifier:
-    base:
-      message: |
-        == %{short_message}
-        
-        Commit Message: %{message}
-        Commit Date: %{commit_date}
-        Commit Author: %{author}
-        
-        Link: %{build_url}
-        
-        == Build Output:
-        
-        %{build_output}    
-    
-    campfire:
-      message: |
-        Commit Message: %{message}
-        Commit Date: %{commit_date}
-        Commit Author: %{author}
-        
-        %{build_output}
-      
+notifier:
+  base:
+    message: |
+      == %{short_message}
+
+      Commit Message: %{message}
+      Commit Date: %{commit_date}
+      Commit Author: %{author}
+
+      Link: %{build_url}
+
+      == Build Output:
+
+      %{build_output}
+
+  campfire:
+    message: |
+      Commit Message: %{message}
+      Commit Date: %{commit_date}
+      Commit Author: %{author}
+
+      %{build_output}
