@@ -7,14 +7,14 @@ module Integrity
     include Notifiers
 
     property :id,         Serial
-    property :name,       String,   :required => true, :length => 255, :unique => true
-    property :permalink,  String,   :length => 255
-    property :uri,        URI,      :required => true, :length => 255
-    property :branch,     String,   :required => true, :length => 255, :default => "master"
-    property :command,    String,   :required => true, :length => 2000, :default => "rake"
-    property :artifacts,  String,   :required => false, :length => 1000
-    property :public,     Boolean,  :default  => true
-    property :last_build_id, Integer, :required => false
+    property :name,       String,  required: true,  length: 255,  unique: true
+    property :permalink,  String,  length: 255
+    property :uri,        URI,     required: true,  length: 255
+    property :branch,     String,  required: true,  length: 255,  default: 'master'
+    property :command,    String,  required: true,  length: 2000, default: 'rake'
+    property :artifacts,  String,  required: false, length: 1000
+    property :public,     Boolean, default: true
+    property :last_build_id, Integer, required: false
 
     timestamps :at
 

@@ -20,15 +20,10 @@ module Integrity
         Broach.speak(config["room"], full_message, :type => :paste) if build.failed?
       end
 
-    private
-      def full_message
-        <<-EOM
-Commit Message: #{build.commit.message}
-Commit Date: #{build.commit.committed_at.in_time_zone('Pacific Time (US & Canada)')}
-Commit Author: #{build.commit.author.name}
+      private
 
-#{build_output}
-EOM
+      def message_namespace
+        :'notifier.campfire.message'
       end
 
       def announce_build?

@@ -64,6 +64,15 @@ module Integrity
         "https://api.github.com/repos/#{repo.owner}/#{repo.name}/statuses/#{sha1}"
       end
 
+
+      def self.list_commits(repo)
+        github_api = "https://api.github.com/repos/#{repo.owner}/#{repo.name}/commits"
+        token = Integrity.config.github_read_token
+        credentials = {content_type: :json, accept: :json, params: {access_token: token}}
+        RestClient.get github_api, credentials
+      end
+
+
     end
 
     register Github

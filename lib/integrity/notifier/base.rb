@@ -43,16 +43,10 @@ module Integrity
       end
 
       def full_message
-        locals = {
-          short_message: short_message,
-          message: @build.message,
-          commited_at: commit_date,
-          author: @build.author,
-          build_url: build_url,
-          build_output: build_output
-        }
-        I18n.translate(:'notifier.message', locals)
+        I18n.translate(message_namespace, message_locals)
       end
+
+      private
 
       def build_url
         Integrity.config.base_url.join("/#{@build.project.permalink}/builds/#{@build.id}").to_s
@@ -66,7 +60,20 @@ module Integrity
         @build.committed_at.in_time_zone('Pacific Time (US & Canada)')
       end
 
-      private
+      def message_namespace
+        :'notifier.base.message'
+      end
+
+      def message_locals
+        {
+          short_message: short_message,
+          message: @build.message,
+          commit_date: commit_date,
+          author: @build.author.name,
+          build_url: build_url,
+          build_output: build_output
+        }
+      end
 
       def escape(s)
         s.gsub("\e[0m", '').gsub(/\e\[3[1-7]m/, '')

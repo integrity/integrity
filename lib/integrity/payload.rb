@@ -1,5 +1,6 @@
 module Integrity
   class Payload
+
     def self.build(payload, all)
       new(payload).build(all)
     end
@@ -23,7 +24,6 @@ module Integrity
 
     def commits
       @commits ||= @payload[:commits].map do |commit|
-        commit = Hashie::Mash.new(commit)
         Hashie::Mash.new(
           identifier:   commit.id,
           author:       normalize_author(commit.author),
@@ -51,8 +51,7 @@ module Integrity
       if private?
         "git://github.com/#{repository.full_name}"
       else
-        uri.scheme = 'git'
-        uri.to_s
+        "https://github.com#{repository.full_name}.git"
       end
     end
 
