@@ -33,7 +33,13 @@ module Integrity
     end
 
     def all
-      @all ||= Project.all(:uri.like => "#{@repo.uri}%")
+      @all ||= find_by_uri
+    end
+
+    def find_by_uri
+      p = Project.all(:uri.like => "#{@repo.uri}%")
+      raise ArgumentError, 'Project URI does not exist' if p.empty?
+      p
     end
   end
 end

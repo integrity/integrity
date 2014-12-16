@@ -88,8 +88,12 @@ module Integrity
       @format = :json
       STDERR.puts "PARAMS:  #{params.inspect}"
 
-      build = Payload.build(params, build_all?)
-      json build
+      begin
+        build = Payload.build(params, build_all?)
+        json build
+      rescue ArgumentError, 'Project URI does not exist'
+        halt 404
+      end
     end
 
     get '/login' do
