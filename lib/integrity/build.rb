@@ -141,6 +141,7 @@ module Integrity
       when pending?    then :pending
       when successful? then :success
       when failed?     then :failed
+      else :nothing
       end
     end
 
