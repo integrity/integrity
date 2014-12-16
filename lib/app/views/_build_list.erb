@@ -1,6 +1,21 @@
 <h2>Builds</h2>
-<ul id="previous_builds">
-  <% builds.each do |build| %>
-    <%= partial(:build_list_item, locals: {build: build}) %>
-  <% end %>
-</ul>
+<table class="table table-bordered" id="previous_builds">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Stutus</th>
+      <th>ID</th>
+      <th>Branch</th>
+      <th>Sha</th>
+      <th>User</th>
+      <th>Time in Queue</th>
+      <th>Time Running</th>
+      <th>Total Run Time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% builds.each do |build| %>
+      <%= partial(:build_list_item, locals: {build: build}) %>
+    <% end %>
+  </tbody>
+</table>

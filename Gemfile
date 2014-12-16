@@ -55,6 +55,7 @@ gem 'crust', '0.0.7', git: 'git://github.com/ConsultingMD/crust.git'
 gem 'byebug', require: 'byebug'
 gem 'awesome_print', require: 'awesome_print'
 gem 'pry', require: 'pry', group: :development
+gem 'sinatra-static-assets'
 
 group :test do
   gem 'aws-ses', '~> 0.4.3', require: 'aws/ses'

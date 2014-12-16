@@ -1,12 +1,13 @@
+
 <% status = build_status(build) %>
-<li class="<%= build.status %>">
-  <a href="<%= build_path(build) %>">
-    <span style="font-size: 5px;"><i class="fa fa-<%= status.icon %> fa-5x"></i></span>
-    <strong class="build">
-      <%= "#{build.project.try(:permalink)}:#{build.branch.try(:name) || 'master'} (#{build.sha1_short})" %>
-    </strong>
-    <span class="attribution">
-      <%= "by #{build.author}, #{time_ago_in_words(build.committed_at, true)}" %>
-    </span>
-  </a>
-</li>
+  <tr class="<%= build.status %>">
+    <td><i class="fa fa-<%= status.icon %>"></td>
+    <td><%= build.status %></td>
+    <td><%= build.id %></td>
+    <td class="build"><%= "#{build.project.try(:permalink)}:#{build.branch.try(:name) || 'no name'}"%></td>
+    <td><a href="<%= build_path(build)%>"><%= build.sha1_short %></td>
+    <td class="attribution"><%= link_to build.author, build_path(build) %></td>
+    <td><%= time_ago_in_words(build.committed_at, true)%></td>
+    <td>Time Running</td>
+    <td>Total Run Time</td>
+  </tr>
