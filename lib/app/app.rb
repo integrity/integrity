@@ -80,10 +80,11 @@ module Integrity
     end
 
     post '/status.json', provides: :json do
+      params.symbolize_keys!
       @format = :json
       STDERR.puts "PARAMS:  #{params.inspect}"
 
-      current_project.build_complete!(params[:sha], params[:success])
+      current_project.build_complete!(params.slice(:success, :sha, :build_id))
       json current_project
     end
 

@@ -19,14 +19,16 @@ module Integrity
       project = build.permalink
       sha = build.sha1_short
       destroy_build(build)
-      Crust.start(project, sha)
+      id = build.id
+      Crust.start(project, sha, id)
       build.update(started_at: Time.now)
     end
 
     def self.destroy_build(build)
       project = build.permalink
       sha = build.sha1_short
-      Crust.destroy(project, sha)
+      id = build.id
+      Crust.destroy(project, sha, id)
     end
 
     def self.build(_build, directory, logger)

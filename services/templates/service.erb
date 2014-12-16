@@ -1,19 +1,20 @@
 # SERVICE_TEMPLATE
 
-<%= project_sha %>_app:
+<%= build_name %>_app:
   image: grnds/<%= project %>_ci
   environment:
     SHA: <%= sha %>
+    BUILD_ID: <%= id %>
     GITHUB_READ_TOKEN: <%= read_token %>
     AWS_ACCESS_KEY_ID: <%= ENV['AWS_ACCESS_KEY_ID'] %>
     AWS_SECRET_ACCESS_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
     AWS_SECRET_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
   links:
-    - <%= project_sha %>_mysql
+    - <%= build_name %>_mysql
   xfleet:
-    machineof: <%= project_sha %>_mysql.1.service
+    machineof: <%= build_name %>_mysql.service
 
-<%= project_sha %>_mysql:
+<%= build_name %>_mysql:
   image: grnds/mysql
   ports:
     - :3306

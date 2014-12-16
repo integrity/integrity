@@ -31,6 +31,15 @@
       </blockquote>
 
     </div>
+    <% if build.pending? %>
+      <div class="col-sm-4">
+      <form action="<%= build_path(build) %>" method="<%= :post %>">
+        <p class='submit' style="margin-top: 10px;">
+        <input name="_method" type="hidden" value="delete"></input>
+        <button class="btn btn-danger btn-lg" title="Delete Build">Delete Build</button>
+        </p>
+      </div>
+    <% end %>
     <% if build.building? %>
       <div class="col-sm-4">
         <form action="<%= build_path(build, :destroy) %>" method="post">
@@ -68,12 +77,12 @@
         <% end %>
       <% end %>
       <h2>
-        Build Logs: <a href="<%= link_to_logs(build.project.permalink, build.sha1_short) %>" target="_blank"><%= build.sha1_short %></a>
+        Build Logs: <a href="<%= link_to_logs(build) %>" target="_blank"><%= build.sha1_short %></a>
       </h2>
 
       <% if build.completed? || build.in_progress? %>
         <h2>Build Output</h2>
-        <iframe style="margin:10px 30px 10px 10px" width="98%" height="600" seamless="seamless" src="<%= link_to_logs(build.project.permalink, build.sha1_short) %>"></iframe>
+        <iframe style="margin:10px 30px 10px 10px" width="98%" height="600" seamless="seamless" src="<%= link_to_logs(build) %>"></iframe>
       <% end %>
     </div>
   </div>
