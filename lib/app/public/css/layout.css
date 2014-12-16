@@ -370,34 +370,34 @@ li {
   line-height: 1.4; }
 #build h2 a, #last_build h2 a {
   font-size: smaller; }
-#build.success h1, #build.success blockquote, #last_build.success h1, #last_build.success blockquote {
+#build.success .head, #build.success blockquote, #last_build.success h1, #last_build.success blockquote {
   background-color: #bbf8aa;
   border-color: #99d688 #ccffbb #ccffbb #99d688; }
-#build.success h1, #last_build.success h1 {
+#build.success .head, #last_build.success h1 {
   color: #337022; }
 #build.success .meta, #build.success .github a, #last_build.success .meta, #last_build.success .github a {
   color: #77b466; }
 #build.success .meta a:hover, #build.success .github a a:hover, #last_build.success .meta a:hover, #last_build.success .github a a:hover {
   color: #bbf8aa;
   background-color: #337022; }
-#build.failed h1, #build.failed blockquote, #last_build.failed h1, #last_build.failed blockquote {
+#build.failed .head, #build.failed blockquote, #last_build.failed h1, #last_build.failed blockquote {
   background-color: #ffbbaa;
   border-color: #dd9988 #ffccbb #ffccbb #dd9988; }
-#build.failed h1, #last_build.failed h1 {
+#build.failed .head, #last_build.failed h1 {
   color: #ff1100; }
 #build.failed .meta, #build.failed .github a, #last_build.failed .meta, #last_build.failed .github a {
   color: #bb7766; }
 #build.failed .meta a:hover, #build.failed .github a a:hover, #last_build.failed .meta a:hover, #last_build.failed .github a a:hover {
   color: #ffbbaa;
   background-color: #ff1100; }
-#build.building h1, #last_build.building h1 {
+#build.building .head, #last_build.building h1 {
   color: #777777; }
 #build.building .meta, #build.building .github a, #last_build.building .meta, #last_build.building .github a {
   color: #333333; }
 #build.building .meta a:hover, #build.building .github a a:hover, #last_build.building .meta a:hover, #last_build.building .github a a:hover {
   color: #cccccc;
   background-color: #777777; }
-#build h1, #last_build h1 {
+#build .head, #last_build .head {
   margin-top: 0.5em;
   margin-bottom: 0;
   color: #337022; }

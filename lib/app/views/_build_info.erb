@@ -1,89 +1,92 @@
 <div class="col-sm-12">
-  <div class="row head">
-    <div class="col-sm-8">
-      <h1>
-        <%= build.human_status %>
-        <% if build.building? %>
-          <% if build.human_time_since_start.present? %>
-            <%= "for #{build.human_time_since_start}" %>
-          <% end %>
-        <% elsif !build.pending? %>
-          <%= "in #{build.human_duration}" %>
-        <% end %>
-      </h1>
-      <blockquote>
-        <p>
-        <%= h(build.full_message).gsub("\n", '<br />') %>
-        </p>
-        <p class='meta'>
-        <span class='who'><%= "by: #{build.author}" %></span>
-        |
-        <span class='when' title="<%= formatted_time(build.committed_at) %>">
-          <%= time_ago_in_words(build.committed_at, true) %>
-        </span>
-        <% if build.project.github? %>
-          |
-          <span class='github'>
-            <a href="<%= github_commit_url(build) %>">view on GitHub</a>
-          </span>
-        <% end %>
-        </p>
-      </blockquote>
 
-    </div>
+<div class="row">
+  <div class="col-sm-8">
+    <h1>
+      <%= build.human_status %>
+      <% if build.building? %>
+        <% if build.human_time_since_start.present? %>
+          <%= "for #{build.human_time_since_start}" %>
+        <% end %>
+      <% elsif !build.pending? %>
+        <%= "in #{build.human_duration}" %>
+      <% end %>
+    </h1>
+    <h3>
+    <%= h(build.full_message).gsub("\n", '<br />') %>
+    </h3>
+
+  </div>
+  <div class="col-sm-4">
     <% if build.pending? %>
-      <div class="col-sm-4">
       <form action="<%= build_path(build) %>" method="<%= :post %>">
         <p class='submit' style="margin-top: 10px;">
         <input name="_method" type="hidden" value="delete"></input>
         <button class="btn btn-danger btn-lg" title="Delete Build">Delete Build</button>
         </p>
-      </div>
-    <% end %>
-    <% if build.building? %>
-      <div class="col-sm-4">
+      <% end %>
+      <% if build.building? %>
         <form action="<%= build_path(build, :destroy) %>" method="post">
           <p class='submit' style="margin-top: 10px;">
           <button class="btn btn-danger btn-lg" title='Rebuild this commit' type='submit'>Kill Build</button>
           </p>
         </form>
-      </div>
-    <% end %>
-    <% if build.completed? %>
-      <div class="col-sm-4">
+      <% end %>
+      <% if build.completed? %>
         <form action="<%= build_path(build) %>" method="post">
           <p class='submit' style="margin-top: 10px;">
           <button class="btn btn-success btn-lg" title='Rebuild this commit' type='submit'>Restart Build</button>
           </p>
         </form>
-      </div>
+      <% end %>
+  </div>
+</div>
+
+<br>
+<div class="row">
+  <div class="col-md-12">
+    <table class="table" id="previous_builds">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Sha</th>
+      <th>Branch</th>
+      <th>Project</th>
+      <th>User</th>
+      <th>ID</th>
+      <th>Commited</th>
+      <th>Runtime</th>
+      <th>Links</th>
+    </tr>
+  </thead>
+      <tbody>
+        <%= partial(:build_list_item, locals: {build: @build}) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    <% if build.building? || build.completed? %>
+      <% if ! build.project.artifacts_empty? && !(files = artifact_files(build)).empty? %>
+        <h2>
+          Artifacts
+          <blockquote>
+            <ul id="artifacts">
+              <% files.each do |file| %>
+                <a title="<%= file[:relative_path] %>" href="<%= file[:url] %>"><%= file[:name] %></a>
+                <br>
+              <% end %>
+            </ul>
+          </blockquote>
+        </h2>
+      <% end %>
+    <% end %>
+
+    <% if build.completed? || build.in_progress? %>
+      <iframe style="margin:10px 30px 10px 10px" width="98%" height="600" seamless="seamless" src="<%= link_to_logs(build) %>"></iframe>
     <% end %>
   </div>
-  <div class="row">
-    <div class="col-sm-12">
-      <% if build.building? || build.completed? %>
-        <% if ! build.project.artifacts_empty? && !(files = artifact_files(build)).empty? %>
-          <h2>
-            Artifacts
-            <blockquote>
-              <ul id="artifacts">
-                <% files.each do |file| %>
-                  <a title="<%= file[:relative_path] %>" href="<%= file[:url] %>"><%= file[:name] %></a>
-                  <br>
-                <% end %>
-              </ul>
-            </blockquote>
-          </h2>
-        <% end %>
-      <% end %>
-      <h2>
-        Build Logs: <a href="<%= link_to_logs(build) %>" target="_blank"><%= build.sha1_short %></a>
-      </h2>
+</div>
 
-      <% if build.completed? || build.in_progress? %>
-        <h2>Build Output</h2>
-        <iframe style="margin:10px 30px 10px 10px" width="98%" height="600" seamless="seamless" src="<%= link_to_logs(build) %>"></iframe>
-      <% end %>
-    </div>
-  </div>
 </div>
