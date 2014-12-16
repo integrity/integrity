@@ -1,6 +1,18 @@
 module Integrity
   class Notifier
     class Base
+
+      attr_reader :build
+
+      delegate :repo, :sha1, to: :build, alow_nil: true
+
+      def initialize(build, config)
+        @build  = build
+        @config = config.symbolize_keys
+      end
+
+      ## Class Methods ==============
+
       def self.notify(build, config)
         msg = "Notifying of build #{build.sha1_short} with #{to_s}"
         log_and_notify_with_timeout(msg) { new(build, config).deliver! }
@@ -20,15 +32,7 @@ module Integrity
         @haml ||= File.read(File.dirname(__FILE__) + "/templates/#{name}.haml")
       end
 
-      attr_reader :build
-
-      delegate :repo, :sha1, to: :build, alow_nil: true
-
-
-      def initialize(build, config)
-        @build  = build
-        @config = config.symbolize_keys
-      end
+      ## Instance Methods ==============
 
       def deliver!
         raise NotImplementedError, 'you need to implement this method in your notifier'
@@ -39,19 +43,15 @@ module Integrity
       end
 
       def full_message
-        <<-EOM
-== #{short_message}
-
-Commit Message: #{@build.message}
-Commit Date: #{@build.committed_at.in_time_zone('Pacific Time (US & Canada)')}
-Commit Author: #{@build.author}
-
-Link: #{build_url}
-
-== Build Output:
-
-#{build_output}
-EOM
+        locals = {
+          short_message: short_message,
+          message: @build.message,
+          commited_at: commit_date,
+          author: @build.author,
+          build_url: build_url,
+          build_output: build_output
+        }
+        I18n.translate(:'notifier.message', locals)
       end
 
       def build_url
@@ -60,6 +60,10 @@ EOM
 
       def build_output
         escape(@build.output)
+      end
+
+      def commit_date
+        @build.committed_at.in_time_zone('Pacific Time (US & Canada)')
       end
 
       private

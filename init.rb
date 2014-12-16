@@ -17,6 +17,10 @@ require 'integrity'
 
 DataMapper::Logger.new(STDOUT, :debug)
 
+# I18n Translations
+translations = YAML.load_file(File.join(File.dirname(__FILE__), 'config', 'locale', 'en.yml'))
+I18n.backend.store_translations(:en, translations)
+
 # Notifiers - Uncomment as appropriate for the notifier you want to use
 require 'integrity/notifier/github'     # = Github commit status
 require 'integrity/notifier/email'      # = Email

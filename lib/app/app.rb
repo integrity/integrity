@@ -7,6 +7,7 @@ require 'app/helpers'
 require 'sinatra/base'
 require 'rack/flash'
 require 'cgi'
+require 'i18n'
 
 module Integrity
   class App < Sinatra::Base
@@ -19,6 +20,9 @@ module Integrity
       set :root, File.dirname(__FILE__)
       set :partial_template_engine, :erb
       set :session_secret, 'secret'
+
+      I18n.load_path = Dir[File.join(settings.root, 'config', 'locale', '*.yml')]
+      I18n.backend.load_translations
     end
 
     helpers Integrity::Helpers

@@ -1,0 +1,16 @@
+en:
+  errors:
+ 
+  notifier:
+    message: |
+      == %{short_message}
+      
+      Commit Message: %{message}
+      Commit Date: %{committed_at}
+      Commit Author: %{author}
+      
+      Link: %{build_url}
+      
+      == Build Output:
+      
+      %{build_output}    

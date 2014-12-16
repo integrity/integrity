@@ -2,6 +2,14 @@ module Integrity
   module Helpers
     module PrettyOutput
 
+      def t(*args)
+        I18n.t(*args)
+      end
+
+      def l(object, options=nil)
+        I18n.l(object, options)
+      end
+
       def cycle(*values)
         @cycles ||= {}
         @cycles[values] ||= -1 # first value returned is 0
