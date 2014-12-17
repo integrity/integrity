@@ -12,13 +12,9 @@ module Integrity
       end
 
       def deliver!
-        Integrity.say 'Posting Github Status'
-        Integrity.say '====================='
-        Integrity.say "API:     #{github_api}"
-        Integrity.say "PAYLOAD: #{payload}"
-        Integrity.say "CREDS:   #{credentials.inspect}"
-        Integrity.say '====================='
         client.post github_api, payload, credentials
+      rescue RestClient::Exception => e
+        deliver_error e
       end
 
       # FIXME: Great choice for config and i18n.
@@ -64,6 +60,14 @@ module Integrity
         "https://api.github.com/repos/#{repo.owner}/#{repo.name}/statuses/#{sha1}"
       end
 
+      def deliver_error(e)
+        msg = "Could Not send notification! - ("
+        msg << "endpoint: #{github_api}"
+        msg << ", payload: #{payload.inspect}"
+        msg << ", credentials: #{credentials.inspect}"
+        msg << ")\n#{e.inspect}\n#{e.backtrace}"
+        Integrity.logger msg
+      end
 
       def self.list_commits(repo)
         github_api = "https://api.github.com/repos/#{repo.owner}/#{repo.name}/commits"
@@ -71,7 +75,6 @@ module Integrity
         credentials = {content_type: :json, accept: :json, params: {access_token: token}}
         RestClient.get github_api, credentials
       end
-
 
     end
 
