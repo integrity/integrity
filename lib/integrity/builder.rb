@@ -12,7 +12,7 @@ module Integrity
 
     # If there are any pending builds, start the first one.
     def self.queue_next_build
-      Build.pending(:first).try(:run)
+      Build.pending.first.try(:run)
     end
 
     def self.launch_build(build)

@@ -1,9 +1,3 @@
 <div class="<%= @build.status %>" id="build">
   <%= partial(:build_info, locals: {build: @build}) %>
 </div>
-
-<form action="<%= build_path(@build) %>" method="<%= :post %>">
-  <input name="_method" type="hidden" value="delete"></input>
-  <button title="Delete this build">Delete this build</button>
-</form>
-

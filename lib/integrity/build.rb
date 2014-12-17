@@ -78,7 +78,7 @@ module Integrity
     end
 
     def kill!
-      Integrity::Builder.destroy_build(current_build)
+      cleanup!
       update(state: 'killed', completed_at: Time.now)
     end
 
