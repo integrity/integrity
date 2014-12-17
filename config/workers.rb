@@ -18,7 +18,8 @@ namespace :workers do
   desc 'Re-start delayed job workers'
   task :restart, roles: :worker, except: {no_release: true} do
     with_servers do
-      run "cd '#{current_path}' && RAILS_ENV=#{rails_env} #{rake} jobs:daemons:restart"
+      run "cd '#{current_path}' && RAILS_ENV=#{rails_env} #{rake} jobs:daemons:stop"
+      run "cd '#{current_path}' && RAILS_ENV=#{rails_env} #{rake} jobs:daemons:start"
     end
   end
 end
