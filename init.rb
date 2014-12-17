@@ -54,7 +54,7 @@ Integrity.configure do |c|
   c.auto_branch                 = true                    # Automatically create projects for newly pushed branches
   c.trim_branches               = true                    # Automatically delete projects when their corresponding branches are deleted
   c.builder                     = :dj, env.database       # Which builder to use [:threaded, :delayed, :resque, :explicit]
-  c.max_running_builds          = 2
+  c.max_running_builds          = 6
   c.project_default_build_count = 10                      # How many builds to show by default on project pages
   c.build_output_interval       = 5                       # How often to collect build output from running builds (in secs)
   c.status_image_always_public  = false                   # Make status public for all projects? If false, login required to see status for private projects.

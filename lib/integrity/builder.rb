@@ -10,6 +10,12 @@ module Integrity
       launch_build(build) if running < run_limit
     end
 
+    # Keep Queuing Builds until we have reached the threashhold.
+    # Try to queue all pending builds.
+    def self.queue_builds!
+      Build.pending.count.times{ Builder.queue_next_build }
+    end
+
     # If there are any pending builds, start the first one.
     def self.queue_next_build
       Build.pending.first.try(:run)

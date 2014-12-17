@@ -58,7 +58,7 @@ module Integrity
       if build
         success = code.present? && code.zero?
         build.complete!(success)
-        Builder.queue_next_build
+        Builder.queue_builds!
       else
         raise ArgumentError, 'Could not find a corresponding build'
       end
