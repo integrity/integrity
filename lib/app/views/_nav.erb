@@ -1,6 +1,5 @@
 <!-- Navigation -->
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-  <!-- Brand and toggle get grouped for better mobile display -->
   <div class="navbar-header">
     <a class="navbar-brand" href="/">
       <img alt="Grand Rounds CI" src="/gr_mini_white.png" style="margin: -5px 10px 0 0; height: 30px; /* opacity: .5; */;">
@@ -23,7 +22,6 @@
         <ul class="dropdown-menu">
           <li><a href="<%= project_path(@project, :edit) %>"><i class="fa fa-fw fa-edit"></i> Edit</a></li>
           <li><a href="#"><i class="fa fa-fw fa-github-square"></i> Github</a></li>
-          <!--<li><a href="#"><i class="fa fa-fw fa-gear"></i> Settings</a></li>-->
           <li class="divider"></li>
           <li><a href="/logout"><i class="fa fa-fw fa-power-off"></i> Log Out</a></li>
         </ul>
@@ -97,16 +95,16 @@
       <li class="active">
         <a href="/">
           <i class="fa fa-fw fa-dashboard"></i>
-          <span class="hidden-sm text"> Dashboard</span>
+          <span class="hidden-sm text"> All Builds </span>
         </a>
       </li>
 
-      <!--<li>-->
-        <!--<a href="/">-->
-          <!--<i class="fa fa-fw fa-th-large"></i>-->
-          <!--<span class="hidden-sm text"> Projects</span>-->
-        <!--</a>-->
-      <!--</li>-->
+      <li>
+        <a href="/running">
+          <i class="fa fa-fw fa-users"></i>
+          <span class="hidden-sm text"> Running Builds </span>
+        </a>
+      </li>
 
       <li>
         <a href="/jobs">
@@ -114,48 +112,6 @@
           <span class="hidden-sm text"> Jobs</span>
         </a>
       </li>
-
-      <!--<li>-->
-        <!--<a href="/">-->
-          <!--<i class="fa fa-fw fa-users"></i>-->
-          <!--<span class="hidden-sm text"> Team</span>-->
-        <!--</a>-->
-      <!--</li>-->
-
-      <!--
-      <li>
-        <a href="bootstrap-elements.html">
-          <i class="fa fa-fw fa-desktop"></i>
-          <span class="hidden-sm text"> Bootstrap Elements</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="bootstrap-grid.html">
-          <i class="fa fa-fw fa-wrench"></i>
-          <span class="hidden-sm text"> Bootstrap Grid</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="javascript:;" data-toggle="collapse" data-target="#demo">
-          <i class="fa fa-fw fa-arrows-v"></i>
-          <span class="hidden-sm text"> Dropdown</span>
-          <i class="fa fa-fw fa-caret-down"></i>
-        </a>
-        <ul id="demo" class="collapse">
-          <li><a href="#">Dropdown Item</a></li>
-          <li><a href="#">Dropdown Item</a></li>
-        </ul>
-      </li>
-
-      <li>
-        <a href="blank-page.html">
-          <i class="fa fa-fw fa-file"></i>
-          <span class="hidden-sm text"> Blank Page</span>
-        </a>
-      </li>
-      -->
     </ul>
   </div>
   <!-- /.navbar-collapse -->

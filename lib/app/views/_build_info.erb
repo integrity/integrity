@@ -8,7 +8,7 @@
         <% if build.human_time_since_start.present? %>
           <%= "for #{build.human_time_since_start}" %>
         <% end %>
-      <% elsif !build.pending? %>
+      <% elsif build.finished? %>
         <%= "in #{build.human_duration}" %>
       <% end %>
     </h1>
@@ -24,24 +24,24 @@
           <button class="btn btn-danger btn-lg" title="Delete Build">Cancel Build</button>
         </p>
       </form>
-      <!--<form action="<%#= build_path(build) %>" method="post">-->
-        <!--<p class='submit' style="margin-top: 10px;">-->
-        <!--<input name="_method" type="hidden" value="delete"></input>-->
-        <!--<button class="btn btn-danger btn-lg" title="Delete Build">Delete Build</button>-->
-        <!--</p>-->
-      <!--</form>-->
       <% end %>
       <% if build.building? %>
         <form action="<%= build_path(build, :destroy) %>" method="post">
           <p class='submit' style="margin-top: 10px;">
-          <button class="btn btn-danger btn-lg" title='Rebuild this commit' type='submit'>Kill Build</button>
+          <button class="btn btn-danger btn-lg" title='Rebuild this commit' type='submit'>
+            <img src="/images/sword1.png" height="35em">
+            Kill Build
+          </button>
           </p>
         </form>
       <% end %>
       <% if build.completed? %>
         <form action="<%= build_path(build) %>" method="post">
           <p class='submit' style="margin-top: 10px;">
-          <button class="btn btn-success btn-lg" title='Rebuild this commit' type='submit'>Restart Build</button>
+          <button class="btn btn-success btn-lg" title='Rebuild this commit' type='submit'>
+            <img src="/images/cat.gif" height="35em">
+            Restart Build
+          </button>
           </p>
         </form>
       <% end %>
@@ -66,7 +66,7 @@
     </tr>
   </thead>
       <tbody>
-        <%= partial(:build_list_item, locals: {build: @build}) %>
+        <%= partial(:build_list_item, locals: {build: build}) %>
       </tbody>
     </table>
   </div>

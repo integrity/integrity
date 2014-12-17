@@ -7,7 +7,8 @@ module Integrity
       failed:   "Built %s and failed",
       pending:  "%s hasn't been built yet",
       building: "%s is building",
-      killed: "%s was killed"
+      killed: "%s was killed",
+      cancelled: "%s was cancelled"
     }
     
     GLOB_CHARS = '*?[]'
@@ -83,11 +84,19 @@ module Integrity
     end
 
     def cancel!
-      update(state: 'cencelled', completed_at: Time.now)
+      update(state: 'cancelled', completed_at: Time.now)
+    end
+
+    def interrupted?
+      status == :killed || status == :cancelled
     end
 
     def completed?
       !completed_at.nil?
+    end
+
+    def finished?
+      completed? && !interrupted?
     end
 
     def started?
@@ -115,7 +124,7 @@ module Integrity
     end
 
     def pending?
-      started_at.nil?
+      started_at.nil? && completed_at.nil?
     end
 
     def sha1
@@ -150,7 +159,7 @@ module Integrity
       when pending?    then :pending
       when successful? then :success
       when failed?     then :failed
-      else :nothing
+      else :unknown
       end
     end
 
@@ -159,7 +168,7 @@ module Integrity
     end
 
     def human_status
-      HUMAN_STATUS[status] % sha1_short
+      HUMAN_STATUS[status].try(:%, sha1_short)
     end
 
     def killed?
@@ -181,10 +190,10 @@ module Integrity
     end
 
     def duration
-      return if in_progress?
+      return false if !completed? or !started_at
       Integrity.delta(completed_at, started_at)
     end
-    
+
     def human_time_since_start
       Integrity.human_duration(time_since_start)
     end

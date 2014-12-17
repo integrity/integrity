@@ -69,8 +69,9 @@ module Integrity
             when :failed   then {color: :red,    icon: :times,   circle: true}
             when :pending  then {color: :yellow, icon: :'clock-o',   circle: false}
             when :building then {color: :yellow, icon: :refresh, circle: false}
-            when :killed then {color: :orange, icon: :bomb, circle: false}
-            else                {color: :green,  icon: :check,   circle: true}
+            when :killed then {color: :grey, icon: :bomb, circle: false}
+            when :cancelled then {color: :grey, icon: :bomb, circle: false}
+            else                {color: :grey,  icon: :question,   circle: true}
           end
         )
       end
