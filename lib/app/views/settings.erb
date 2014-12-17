@@ -1,0 +1,14 @@
+<section class="container">
+  <div class="container-page">
+    <div class="col-md-12">
+      <h3 class="dark-grey">Update Project:</h3>
+      <form action="/settings" method="post">
+        <div class="form-group col-lg-12">
+          <label for="max_running_builds"> Max Running Builds </label>
+          <input class="text" name="max_running_builds" type="text" value="<%= config.max_running_builds %>"/>
+          <button class="btn btn-default" type="submit">Update Project</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
