@@ -8,7 +8,7 @@
         <% if build.human_time_since_start.present? %>
           <%= "for #{build.human_time_since_start}" %>
         <% end %>
-      <% elsif !build.pending? %>
+      <% elsif build.finished? %>
         <%= "in #{build.human_duration}" %>
       <% end %>
     </h1>
@@ -24,12 +24,6 @@
           <button class="btn btn-danger btn-lg" title="Delete Build">Cancel Build</button>
         </p>
       </form>
-      <!--<form action="<%#= build_path(build) %>" method="post">-->
-        <!--<p class='submit' style="margin-top: 10px;">-->
-        <!--<input name="_method" type="hidden" value="delete"></input>-->
-        <!--<button class="btn btn-danger btn-lg" title="Delete Build">Delete Build</button>-->
-        <!--</p>-->
-      <!--</form>-->
       <% end %>
       <% if build.building? %>
         <form action="<%= build_path(build, :destroy) %>" method="post">

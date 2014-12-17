@@ -12,7 +12,7 @@
     <td>
       <% if build.building? %>
         <%= Time.at(build.time_since_start).gmtime.strftime('%R:%S') %>
-      <% elsif !build.pending? %>
+      <% elsif build.completed? and build.duration  %>
         <%= Time.at(build.duration).gmtime.strftime('%R:%S') %>
       <% end %>
     </td>
