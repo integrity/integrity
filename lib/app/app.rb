@@ -145,6 +145,14 @@ module Integrity
       end
     end
 
+
+    get '/running' do
+      login_required
+
+      @builds = Integrity::Build.running
+      show :running, title: 'running builds'
+    end
+
     # Get Project (Show)
     get '/:project' do
       login_required unless current_project.public?

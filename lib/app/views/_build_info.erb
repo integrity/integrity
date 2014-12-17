@@ -34,7 +34,10 @@
       <% if build.building? %>
         <form action="<%= build_path(build, :destroy) %>" method="post">
           <p class='submit' style="margin-top: 10px;">
-          <button class="btn btn-danger btn-lg" title='Rebuild this commit' type='submit'>Kill Build</button>
+          <button class="btn btn-danger btn-lg" title='Rebuild this commit' type='submit'>
+            <img src="/images/sword1.png" height="35em">
+            Kill Build
+          </button>
           </p>
         </form>
       <% end %>
@@ -69,7 +72,7 @@
     </tr>
   </thead>
       <tbody>
-        <%= partial(:build_list_item, locals: {build: @build}) %>
+        <%= partial(:build_list_item, locals: {build: build}) %>
       </tbody>
     </table>
   </div>

@@ -1,0 +1,6 @@
+<% @builds.each do |build| %>
+  <div class="<%= build.status %>" id="build">
+    <%= partial(:build_info, locals: {build: build}) %>
+  </div>
+<% end %>
+
