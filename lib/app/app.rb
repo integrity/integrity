@@ -124,6 +124,19 @@ module Integrity
       Payload.build(params, build_all?).to_s
     end
 
+    # Settings
+    get '/settings' do
+      login_required
+      show :settings, title: 'settings'
+    end
+
+    # Change Settings
+    post '/settings' do
+      login_required
+      config.max_running_builds = params["max_running_builds"]
+      redirect '/settings'
+    end
+
     ## Project RESTful Endpoints
     ##########################
 
@@ -145,7 +158,7 @@ module Integrity
       end
     end
 
-
+    # List Running Builds (Index)
     get '/running' do
       login_required
 
@@ -313,7 +326,6 @@ module Integrity
 
       redirect project_url(current_project).to_s
     end
-
 
     # Get Raw Build Output
     get '/:project/builds/:build/raw' do
