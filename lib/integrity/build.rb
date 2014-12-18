@@ -50,11 +50,11 @@ module Integrity
     end
 
     def self.pending(query = :all)
-      scope(query, started_at: nil, completed_at: nil, order: :created_at.asc)
+      scope(query, started_at: nil, completed_at: nil, state: nil, order: :created_at.asc)
     end
 
     def self.running(query = :all)
-      scope(query, :started_at.not => nil, completed_at: nil, order: :started_at.asc)
+      scope(query, :started_at.not => nil, completed_at: nil, state: nil, order: :started_at.asc)
     end
 
     def self.orphaned(query = :all)

@@ -24,6 +24,8 @@
     <% end %>
   </div>
   <div class="row" id="builds">
-    <%= partial(:build_list, locals: {builds: @builds}) %>
+    <%= partial(:build_list, locals: {builds: @running}) if @running.any? %>
+    <%= partial(:build_list, locals: {builds: @pending}) if @pending.any? %>
+    <%= partial(:build_list, locals: {builds: @rest}) if @rest.any? %>
   </div>
 <% end %>

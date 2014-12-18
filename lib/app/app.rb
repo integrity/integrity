@@ -154,6 +154,9 @@ module Integrity
         load_projects
         @masters = Integrity::Branch.all(name: 'master')
         @builds  = Integrity::Build.all(limit: 30, order: :created_at.desc)
+        @pending = @builds.pending
+        @running = @builds.running
+        @rest = @builds - @pending - @running
         show :home, title: 'projects'
       end
     end
