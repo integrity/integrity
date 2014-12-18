@@ -2,10 +2,9 @@
 
 root_dir="/home/ubuntu/app/integrity/current"
 cd $root_dir
+mkdir -p ${root_dir}/tmp
 pid_file="${root_dir}/tmp/jobs.pid"
-if [ -f $pid_file ]; then
-  rm $pid_file
-fi
+touch $pid_file
 ps aux | grep jobs | grep -v grep | awk '{print $2}' > $pid_file
 pid=`cat $pid_file`
 if [ -n "$pid" ]; then
