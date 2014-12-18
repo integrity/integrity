@@ -1,31 +1,15 @@
-#!/usr/bin/env ruby
+#!/bin/bash
 
-ENV['RAILS_ENV'] = 'development'
-
-require './init'
-require 'integrity/builders/delayed_builder'
-require 'delayed/command'
-
-class Delayed::Command
-  class Rails
-    def self.root
-      ROOT_DIR
-    end
-    def self.logger
-      Integrity.logger
-    end
-  end
-end
-
-action  = "#{ARGV.first}ing"
-message = "#{action} workers..."
-Integrity.say message
-
-begin
-  Delayed::Command.new(ARGV).daemonize
-rescue => e
-  message = "ERROR: [#{action}]:\n#{e.inspect}"
-  Integrity.say message
-end
-
-Delayed::Command.new(ARGV).daemonize
+root_dir="/home/ubuntu/app/integrity/current"
+cd $root_dir
+mkdir -p ${root_dir}/tmp
+pid_file="${root_dir}/tmp/jobs.pid"
+touch $pid_file
+ps aux | grep jobs | grep -v grep | awk '{print $2}' > $pid_file
+pid=`cat $pid_file`
+if [ -n "$pid" ]; then
+  cat $pid_file | xargs kill
+fi
+cd
+cd $root_dir
+rake jobs:work > ${root_dir}/log/jobs.log 2>&1 &
