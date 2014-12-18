@@ -2,6 +2,10 @@
 
 root_dir="/home/ubuntu/app/integrity/current"
 cd $root_dir
-ps aux | grep jobs | grep -v grep | awk '{print $2}' > ${root_dir}/tmp/jobs.pid
-cat jobs.pid | xargs kill
+pid_file="${root_dir}/tmp/jobs.pid"
+ps aux | grep jobs | grep -v grep | awk '{print $2}' > $pid_file
+pid=`cat $pid_file`
+if [ -n "$pid" ]; then
+  cat $pid | xargs kill
+fi
 rake jobs:work > ${root_dir}/log/jobs.log 2>&1 &
