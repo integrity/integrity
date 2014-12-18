@@ -8,8 +8,8 @@
     <td><%= link_to "#{build.project.try(:name)}", project_path(build.project)%></td>
     <td class="attribution"><%= build.author %></td>
     <td><%= link_to build.id, build_path(build) %></td>
-    <td><%= time_ago_in_words(build.created_at, true) %></td>
-    <td><%= time_ago_in_words(build.committed_at, true) %></td>
+    <td><%= time_ago_in_words(build.created_at) %></td>
+    <td><%= time_ago_in_words(build.committed_at) %></td>
     <td>
       <% if build.building? %>
         <%= Time.at(build.time_since_start).gmtime.strftime('%R:%S') %>
