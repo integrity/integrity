@@ -153,7 +153,7 @@ module Integrity
       get path, provides: 'html' do
         load_projects
         @masters = Integrity::Branch.all(name: 'master')
-        @builds  = Integrity::Build.all(order: :created_at.desc)
+        @builds  = Integrity::Build.all(order: :commited_at.desc)
         show :home, title: 'projects'
       end
     end
