@@ -65,13 +65,13 @@ module Integrity
       def get_status(status)
         Hashie::Mash.new(
           case status
-            when :success  then {color: :green,  icon: :check,   circle: true}
-            when :failed   then {color: :red,    icon: :times,   circle: true}
-            when :pending  then {color: :yellow, icon: :'clock-o',   circle: false}
-            when :building then {color: :yellow, icon: :refresh, circle: false}
-            when :killed then {color: :grey, icon: :bomb, circle: false}
-            when :cancelled then {color: :grey, icon: :bomb, circle: false}
-            else                {color: :grey,  icon: :question,   circle: true}
+            when :success   then {color: :green,  icon: :check,     circle: true}
+            when :failed    then {color: :red,    icon: :times,     circle: true}
+            when :pending   then {color: :yellow, icon: :'clock-o', circle: false}
+            when :building  then {color: :yellow, icon: :refresh,   circle: false}
+            when :killed    then {color: :grey,   icon: :ban,       circle: false}
+            when :cancelled then {color: :grey,   icon: :ban,       circle: false}
+            else                 {color: :grey,   icon: :question,  circle: true}
           end
         )
       end
