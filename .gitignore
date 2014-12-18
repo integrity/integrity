@@ -19,6 +19,9 @@
 *.rdb
 *.swp
 *.*~
+*~
+.\#*
+\#*\#
 
 # Directories
 builds

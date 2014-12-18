@@ -11,7 +11,7 @@ set :repository,  "git@github.com:ConsultingMD/#{application}.git"
 set :deploy_to, "/home/ubuntu/app/#{application}"
 set :deploy_via, :remote_cache
 set :ssh_options, {forward_agent: true}
-set :default_run_options, {:pty => true}
+set :default_run_options, {shell: '/bin/bash', pty: true}
 
 set :rvm_type, :system
 
