@@ -3,11 +3,16 @@
 <% status = build_status(build) %>
   <tr class="<%= build.bootstrap_class %>">
     <td class="status"><i class="fa fa-<%= status.icon %>"></td>
-    <td><a href="<%= build_path(build)%>"><%= build.sha1_short %></td>
-    <td class="build"><%= "#{build.branch.try(:name)}"%></td>
     <td><%= link_to "#{build.project.try(:name)}", project_path(build.project)%></td>
-    <td class="attribution"><%= build.author %></td>
     <td><%= link_to build.id, build_path(build) %></td>
+    <td><a href="<%= build_path(build)%>"><%= build.sha1_short %></td>
+    <td class="attribution"><%= build.author %></td>
+    <td class="branch-name">
+      <%= "#{build.branch.try(:name)}"%>
+    </td>
+    <td class="commit-message">
+      <%= "#{build.try(:commit).try(:message)}"%>
+    </td>
     <td><%= time_ago_in_words(build.created_at) %></td>
     <td><%= time_ago_in_words(build.committed_at) %></td>
     <td>

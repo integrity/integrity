@@ -25,11 +25,11 @@
   </div>
   <div class="row" id="builds">
     <% if @running.any? %>
-      <h2 class="text-center"><%= "#{@running.count} Running Build#{@running.count == 1 ? '' : 's'}" %></h2>
+      <h3 class="text-center short"><%= "#{@running.count} Running Build#{@running.count == 1 ? '' : 's'}" %></h3>
       <%= partial(:build_list, locals: {builds: @running}) if @running.any? %>
     <% end %>
     <% if @pending.any? %>
-      <h2 class="text-center"><%= "#{@pending.count} Running Build#{@running.count == 1 ? '' : 's'}" %></h2>
+      <h3 class="text-center short"><%= "#{@pending.count} Running Build#{@running.count == 1 ? '' : 's'}" %></h3>
       <%= partial(:build_list, locals: {builds: @pending}) if @pending.any? %>
     <% end %>
     <%= partial(:build_list, locals: {builds: @rest}) if @rest.any? %>
