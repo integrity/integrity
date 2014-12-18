@@ -1,5 +1,8 @@
+#builds h3.short{
+  margin: 0;
+}
 .table#previous_builds {
-  font-size: 1.5em;
+  font-size: 1.2em;
 }
 .table#previous_builds a .fa{
   font-size: 1em;
@@ -23,6 +26,11 @@
 
 .table#previous_builds .warning .status .fa{
   color: #999;
+}
+
+.table#previous_builds .commit-message {
+  font-size: 0.8em;
+  color: #666;
 }
 #projects li.success a .attribution, #previous_builds li.success a .attribution {
   color: #77b466; }
