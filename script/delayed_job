@@ -12,5 +12,4 @@ if [ -n "$pid" ]; then
 fi
 cd
 cd $root_dir
-rake jobs:work
-#rake jobs:work > ${root_dir}/log/jobs.log 2>&1 &
+rake jobs:work > ${root_dir}/log/jobs.log 2>&1 &
