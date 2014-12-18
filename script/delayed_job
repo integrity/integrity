@@ -9,4 +9,6 @@ pid=`cat $pid_file`
 if [ -n "$pid" ]; then
   cat $pid_file | xargs kill
 fi
+cd
+cd $root_dir
 rake jobs:work > ${root_dir}/log/jobs.log 2>&1 &
