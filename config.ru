@@ -26,7 +26,7 @@ end
 
 run Rack::URLMap.new(
   '/'     => Integrity.app,
-  '/jobs' => DelayedJobWeb
+  '/delayed_jobs' => DelayedJobWeb
 )
 
 # run Delayed::Web::Engine, at: '/jobs'

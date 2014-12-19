@@ -76,6 +76,7 @@ module Integrity
     end
 
     def run!
+      return false if invalid_sha?
       Builder.start_build(self)
     end
 
@@ -144,6 +145,10 @@ module Integrity
 
     def pending?
       started_at.nil? && completed_at.nil?
+    end
+
+    def invalid_sha?
+      sha1.blank? || sha1 == 'HEAD'
     end
 
     def sha1

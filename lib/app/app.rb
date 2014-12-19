@@ -156,6 +156,10 @@ module Integrity
       redirect '/settings'
     end
 
+    get '/jobs' do
+      show :jobs, title: 'jobs'
+    end
+
     ## Project RESTful Endpoints
     ##########################
 
