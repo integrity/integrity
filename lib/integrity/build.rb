@@ -86,7 +86,7 @@ module Integrity
     def update_fleetctl_status(status)
       app_status = status.select{|s| s[:type] == "app"}.first
       update(fleetctl_status: app_status[:active], machine_ip: app_status[:ip])
-      if (fleetctl_status == 'failed') and running?
+      if (fleetctl_status == 'failed') and building?
         kill!({ cleanup: false })
       end
     end
