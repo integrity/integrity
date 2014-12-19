@@ -1,128 +1,141 @@
 <div class="col-sm-12">
 
-<div class="row">
-  <div class="col-sm-8">
-    <h1>
-      <%= build.human_status %>
-      <% if build.building? %>
-        <% if build.human_time_since_start.present? %>
-          <%= "for #{build.human_time_since_start}" %>
+  <div class="row">
+    <div class="col-sm-8">
+      <h1>
+        <%= build.human_status %>
+        <% if build.building? %>
+          <% if build.human_time_since_start.present? %>
+            <%= "for #{build.human_time_since_start}" %>
+          <% end %>
+        <% elsif build.finished? %>
+          <%= "in #{build.human_duration}" %>
         <% end %>
-      <% elsif build.finished? %>
-        <%= "in #{build.human_duration}" %>
-      <% end %>
-    </h1>
-    <h3>
-    <%= h(build.full_message).gsub("\n", '<br />') %>
-    </h3>
+      </h1>
+      <h3>
+      <%= h(build.full_message).gsub("\n", '<br />') %>
+      </h3>
 
-  </div>
-  <div class="col-sm-4">
-    <% if build.pending? %>
-      <form action="<%= build_path(build, :cancel) %>" method="post">
-        <p class='submit' style="margin-top: 10px;">
-          <button class="btn btn-danger btn-lg" title="Delete Build">Cancel Build</button>
-        </p>
-      </form>
-      <% end %>
-      <% if build.building? %>
-        <form action="<%= build_path(build, :destroy) %>" method="post">
+    </div>
+    <div class="col-sm-4">
+      <% if build.pending? %>
+        <form action="<%= build_path(build, :cancel) %>" method="post">
           <p class='submit' style="margin-top: 10px;">
-          <button class="btn btn-danger btn-lg" title='Rebuild this commit' type='submit'>
-            <img src="/images/swords.png" height="35em">
-            Kill Build
-          </button>
+            <button class="btn btn-danger btn-lg" title="Delete Build">Cancel Build</button>
           </p>
         </form>
+        <% end %>
+        <% if build.building? %>
+          <form action="<%= build_path(build, :destroy) %>" method="post">
+            <p class='submit' style="margin-top: 10px;">
+            <button class="btn btn-danger btn-lg" title='Rebuild this commit' type='submit'>
+              <img src="/images/swords.png" height="35em">
+              Kill Build
+            </button>
+            </p>
+          </form>
+        <% end %>
+        <% if build.completed? %>
+          <form action="<%= build_path(build) %>" method="post">
+            <p class='submit' style="margin-top: 10px;">
+            <button class="btn btn-success btn-lg" title='Rebuild this commit' type='submit'>
+              <img src="/images/cats.png" height="35em">
+              Restart Build
+            </button>
+            </p>
+          </form>
+        <% end %>
+    </div>
+  </div>
+
+  <br>
+  <div class="row">
+    <div class="col-md-12">
+      <table class="table" id="previous_builds">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Sha</th>
+        <th>Branch</th>
+        <th>Project</th>
+        <th>User</th>
+        <th>ID</th>
+        <th>Commited</th>
+        <th>Runtime</th>
+        <th>Links</th>
+      </tr>
+    </thead>
+        <tbody>
+          <%= partial(:build_list_item, locals: {build: build}) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <% if build.building? || build.completed? %>
+        <% if ! build.project.artifacts_empty? && !(files = artifact_files(build)).empty? %>
+          <h2>
+            Artifacts
+            <blockquote>
+              <ul id="artifacts">
+                <% files.each do |file| %>
+                  <a title="<%= file[:relative_path] %>" href="<%= file[:url] %>"><%= file[:name] %></a>
+                  <br>
+                <% end %>
+              </ul>
+            </blockquote>
+          </h2>
+        <% end %>
       <% end %>
-      <% if build.completed? %>
-        <form action="<%= build_path(build) %>" method="post">
-          <p class='submit' style="margin-top: 10px;">
-          <button class="btn btn-success btn-lg" title='Rebuild this commit' type='submit'>
-            <img src="/images/cats.png" height="35em">
-            Restart Build
-          </button>
-          </p>
-        </form>
+
+      <% if build.completed? || build.in_progress? %>
+        <iframe style="margin:10px 30px 10px 10px" width="98%" height="600" seamless="seamless" src="<%= link_to_logs(build) %>"></iframe>
       <% end %>
+    </div>
   </div>
-</div>
 
-<br>
-<div class="row">
-  <div class="col-md-12">
-    <table class="table" id="previous_builds">
-  <thead>
-    <tr>
-      <th></th>
-      <th>Sha</th>
-      <th>Branch</th>
-      <th>Project</th>
-      <th>User</th>
-      <th>ID</th>
-      <th>Commited</th>
-      <th>Runtime</th>
-      <th>Links</th>
-    </tr>
-  </thead>
-      <tbody>
-        <%= partial(:build_list_item, locals: {build: build}) %>
-      </tbody>
-    </table>
+  <div class="row">
+    <div class="col-md-12">
+      <h2> Build Details </h2>
+      <table class="table" id="previous_builds">
+        <thead>
+          <tr>
+            <th>successful?</th>
+            <th>started_at</th>
+            <th>completed_at</th>
+            <th>updated_at</th>
+            <th>state</th>
+            <th>status</th>
+            <th>fleetctl_status</th>
+            <th>machine_ip</th>
+          </tr>
+        </thead>
+        <tbody>
+          <td><%= build.successful %></td>
+          <td><%= build.started_at %></td>
+          <td><%= build.completed_at %></td>
+          <td><%= build.updated_at %></td>
+          <td><%= build.state %></td>
+          <td><%= build.status %></td>
+          <td><%= build.fleetctl_status %></td>
+          <td><%= build.machine_ip %></td>
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
 
-<div class="row">
-  <div class="col-sm-12">
-    <% if build.building? || build.completed? %>
-      <% if ! build.project.artifacts_empty? && !(files = artifact_files(build)).empty? %>
-        <h2>
-          Artifacts
-          <blockquote>
-            <ul id="artifacts">
-              <% files.each do |file| %>
-                <a title="<%= file[:relative_path] %>" href="<%= file[:url] %>"><%= file[:name] %></a>
-                <br>
-              <% end %>
-            </ul>
-          </blockquote>
-        </h2>
-      <% end %>
-    <% end %>
-
-    <% if build.completed? || build.in_progress? %>
-      <iframe style="margin:10px 30px 10px 10px" width="98%" height="600" seamless="seamless" src="<%= link_to_logs(build) %>"></iframe>
-    <% end %>
-  </div>
-</div>
-
-<div class="row">
-  <div class="col-md-12">
-    <h2> Build Details </h2>
-    <table class="table" id="previous_builds">
-  <thead>
-    <tr>
-      <th>successful?</th>
-      <th>started_at</th>
-      <th>completed_at</th>
-      <th>updated_at</th>
-      <th>state</th>
-      <th>status</th>
-      <th>fleetctl_status</th>
-      <th>machine_ip</th>
-    </tr>
-  </thead>
-      <tbody>
-        <td><%= build.successful %></td>
-        <td><%= build.started_at %></td>
-        <td><%= build.completed_at %></td>
-        <td><%= build.updated_at %></td>
-        <td><%= build.state %></td>
-        <td><%= build.status %></td>
-        <td><%= build.fleetctl_status %></td>
-        <td><%= build.machine_ip %></td>
-      </tbody>
-    </table>
-  </div>
-</div>
+  <% if build.building? %>
+    <div class="row">
+      <div class="col-md-12">
+        <h2> Enter Into this container </h2>
+        <ul>
+          <% build.enter_instructions.each do |step| %>
+            <li><%= step %></li>
+            <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
 </div>

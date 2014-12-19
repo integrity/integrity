@@ -301,6 +301,10 @@ module Integrity
       "#{name}_#{sha1_short}_#{id}"
     end
 
+    def app_service_name
+      "#{service_name}_app"
+    end
+
     def update_fleetctl_status(status)
       app_status = status.select{|s| s[:type] == "app"}.first
       update(fleetctl_status: app_status[:active], machine_ip: app_status[:ip])
@@ -313,6 +317,15 @@ module Integrity
       end
     end
 
+    def enter_instructions
+      [
+      "ssh core@#{machine_ip || 'machine ip not found'}",
+      "docker exec -it #{app_service_name} bash",
+      "cd #{project.name}",
+      "Load correct environment variables (from honesty/build.sh)"
+      ]
+    end
+
     private
 
     def make_zombie
@@ -323,8 +336,8 @@ module Integrity
     def permitted_zombie?
       made_zombie = (fleetctl_status == 'failed') #This means it must have become a zombie
       kill_zombie_at = completed_at + ZOMBIE_LIFESPAN
-      kill_zombie = Time.now > kill_zombie_at
-      made_zombie && kill_zombie
+      permitted = Time.now < kill_zombie_at
+      made_zombie && permitted
     end
 
     def kill_zombie
