@@ -12,6 +12,7 @@ module Integrity
     }
     
     GLOB_CHARS = '*?[]'
+    ZOMBIE_LIFESPAN = 1.hour
 
     property :id,           Serial
     property :project_id,   Integer   # TODO :nullable => false
@@ -84,23 +85,16 @@ module Integrity
       Builder.destroy_build(self)
     end
 
-    def update_fleetctl_status(status)
-      app_status = status.select{|s| s[:type] == "app"}.first
-      update(fleetctl_status: app_status[:active], machine_ip: app_status[:ip])
-      if (fleetctl_status == 'failed') and building?
-        kill!({ cleanup: false })
-      end
-    end
-
     def complete!(result)
       success = result.respond_to?(:success) ? result.success : result
       set_as_complete(success) and cleanup!
     end
 
     def kill!(params = {})
-      cleanup = params[:cleanup] || true
-      cleanup! if cleanup
-      update(state: 'killed', completed_at: Time.now)
+      params = {cleanup:true}.merge(params)
+      cleanup! if params[:cleanup]
+      update(state: 'killed')
+      update(completed_at: Time.now) unless completed_at
     end
 
     def cancel!
@@ -305,6 +299,36 @@ module Integrity
 
     def service_name
       "#{name}_#{sha1_short}_#{id}"
+    end
+
+    def update_fleetctl_status(status)
+      app_status = status.select{|s| s[:type] == "app"}.first
+      update(fleetctl_status: app_status[:active], machine_ip: app_status[:ip])
+
+      #If the build service file fails, we change its status to 'killed' from 'building'
+      #Then we wait an hour to kill the service_files so we have time to debug them
+      if (fleetctl_status == 'failed')
+        make_zombie #idempotent
+        kill_zombie unless permitted_zombie?
+      end
+    end
+
+    private
+
+    def make_zombie
+      #The zombie 'exists' so long as the cleanup is not done. This helps for debugging
+      kill!({ cleanup: false }) if building?
+    end
+
+    def permitted_zombie?
+      made_zombie = (fleetctl_status == 'failed') #This means it must have become a zombie
+      kill_zombie_at = completed_at + ZOMBIE_LIFESPAN
+      kill_zombie = Time.now > kill_zombie_at
+      made_zombie && kill_zombie
+    end
+
+    def kill_zombie
+      cleanup!
     end
   end
 end
