@@ -301,6 +301,10 @@ module Integrity
       "#{name}_#{sha1_short}_#{id}"
     end
 
+    def app_service_name
+      "#{service_name}_app"
+    end
+
     def update_fleetctl_status(status)
       app_status = status.select{|s| s[:type] == "app"}.first
       update(fleetctl_status: app_status[:active], machine_ip: app_status[:ip])
@@ -311,6 +315,15 @@ module Integrity
         make_zombie #idempotent
         kill_zombie unless permitted_zombie?
       end
+    end
+
+    def enter_instructions
+      [
+      "ssh core@#{machine_ip || 'machine ip not found'}",
+      "docker exec -it #{app_service_name} bash",
+      "cd #{project.name}",
+      "Load correct environment variables (from honesty/build.sh)"
+      ]
     end
 
     private
