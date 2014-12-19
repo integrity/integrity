@@ -50,11 +50,9 @@ Integrity.configure do |c|
   c.github_write_token          = env.github.tokens.write # Auth for posting to GitHub (statuses)
   c.github_secret               = env.github.tokens.secret # Auth for GitHub post-receive hook
   c.github_account              = env.github.account      # Name of primary github account, usually owner of token.
-  c.build_all                   = false                   # If true, build all commits. If false, only build HEAD after each push
-  c.auto_branch                 = true                    # Automatically create projects for newly pushed branches
   c.trim_branches               = true                    # Automatically delete projects when their corresponding branches are deleted
   c.builder                     = :dj, env.database       # Which builder to use [:threaded, :delayed, :resque, :explicit]
-  c.max_running_builds          = 6
+  c.max_running_builds          = 3
   c.project_default_build_count = 10                      # How many builds to show by default on project pages
   c.build_output_interval       = 5                       # How often to collect build output from running builds (in secs)
   c.status_image_always_public  = false                   # Make status public for all projects? If false, login required to see status for private projects.

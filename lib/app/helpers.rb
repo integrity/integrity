@@ -42,10 +42,6 @@ module Integrity
 
     private
 
-    def build_all?
-      config.build_all?
-    end
-
     def github_token
       config.github_read_token
     end

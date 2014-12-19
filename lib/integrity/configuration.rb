@@ -2,9 +2,7 @@ module Integrity
   class Configuration
     attr_reader :directory, :base_url, :builder
 
-    attr_accessor :build_all,
-      :auto_branch,
-      :github_account,
+    attr_accessor :github_account,
       :github_read_token,
       :github_write_token,
       :github_secret,
@@ -19,24 +17,16 @@ module Integrity
       :checkout_proc,
       :status_image_always_public
 
-    def build_all?
-      !! @build_all
-    end
-
     def status_image_always_public?
-      !! @status_image_always_public
-    end
-
-    def auto_branch?
-      !! @auto_branch
+      !!@status_image_always_public
     end
 
     def github_enabled?
-      !! @github_read_token
+      !!@github_read_token
     end
 
     def trim_branches?
-      !! @trim_branches
+      !!@trim_branches
     end
 
     def protected?

@@ -22,6 +22,7 @@ module Integrity
       set :root, File.dirname(__FILE__)
       set :partial_template_engine, :erb
       set :session_secret, 'secret'
+      set :environment, ENV['RACK_ENV'].presence || :production
 
       I18n.load_path += Dir[File.join(settings.root, 'config', 'locale', '*.yml')]
       I18n.backend.load_translations
@@ -65,9 +66,18 @@ module Integrity
     end
 
     before do
+      STDERR.puts "## DEBUG =============================="
+      STDERR.puts "PATH:        #{request.path_info}"
+      STDERR.puts "IP:          #{request.ip}"
+      STDERR.puts "REMOTE IP:   #{remote_ip}"
+      STDERR.puts "AUTHORIZED?: #{authorized_ip?}"
+      STDERR.puts "WEBHOOK?:    #{web_hook?}"
+      STDERR.puts "DEV?:        #{settings.development?}"
+      STDERR.puts "PROD?:       #{settings.production?}"
+      STDERR.puts "## DEBUG =============================="
       halt 403 unless authorized_ip? || web_hook? || status_update?
       halt 404 if request.path_info.include?('favico')
-
+      build_all?
       if Integrity.config.base_url.present?
         Integrity.configure {|c| c.base_url = url_for('/', :full) }
       end
@@ -92,14 +102,19 @@ module Integrity
 
     post '/hook.json', provides: :json do
       @format = :json
-      STDERR.puts "PARAMS:  #{params.inspect}"
+      STDERR.puts "PARAMS: #{params.inspect}"
 
       begin
-        build = Payload.build(params, build_all?)
-        json build
+        payload = Payload.new(params)
+        halt 404 unless payload.project
+        build = payload.build!
       rescue ArgumentError, 'Project URI does not exist'
         halt 404
       end
+
+      STDERR.puts "BUILD: #{build.inspect}"
+
+      json build
     end
 
     get '/login' do
@@ -119,13 +134,13 @@ module Integrity
 
     post '/:project/hook' do |token|
       pass unless github_enabled?
-      Payload.build(params[:payload], build_all?).to_s
+      Payload.build(params[:payload]).to_s
     end
 
     post '/github/:token' do |token|
       pass unless github_enabled?
       halt 403 unless token == github_token
-      Payload.build(params, build_all?).to_s
+      Payload.build(params).to_s
     end
 
     # Settings

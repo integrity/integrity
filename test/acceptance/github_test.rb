@@ -12,7 +12,6 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
   setup do
     Integrity.configure { |c|
       c.github_token = "SECRET"
-      c.auto_branch  = false
     }
   end
 
@@ -199,7 +198,6 @@ class GitHubTest < Test::Unit::AcceptanceTestCase
   scenario "Auto branching" do
     Integrity.configure { |c|
       c.builder = :explicit, 1
-      c.auto_branch = true
       c.build_all   = false
     }
 

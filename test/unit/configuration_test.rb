@@ -51,15 +51,6 @@ class ConfiguratorTest < IntegrityTest
     assert Integrity.config.status_image_always_public?
   end
 
-  test "auto_branch" do
-    begin
-      Integrity.configure { |c| c.auto_branch = true }
-      assert Integrity.config.auto_branch?
-    ensure
-      Integrity.configure { |c| c.auto_branch = false }
-    end
-  end
-
   test "auth" do
     assert ! Integrity.config.protected?
 

@@ -29,7 +29,7 @@
       <%= partial(:build_list, locals: {builds: @running}) if @running.any? %>
     <% end %>
     <% if @pending.any? %>
-      <h3 class="text-center short"><%= "#{@pending.count} Running Build#{@running.count == 1 ? '' : 's'}" %></h3>
+      <h3 class="text-center short"><%= "#{@pending.count} Pending Build#{@running.count == 1 ? '' : 's'}" %></h3>
       <%= partial(:build_list, locals: {builds: @pending}) if @pending.any? %>
     <% end %>
     <%= partial(:build_list, locals: {builds: @rest}) if @rest.any? %>

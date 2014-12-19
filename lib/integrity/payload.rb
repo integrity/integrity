@@ -1,26 +1,38 @@
 module Integrity
   class Payload
 
-    def self.build(payload, all)
-      new(payload).build(all)
+    attr_reader :builder
+
+    def self.build(payload)
+      new(payload).build
     end
 
     def initialize(payload)
       payload  = JSON.parse(payload) if payload.is_a?(String)
       @payload = Hashie::Mash.new(payload)
+      @builder = PayloadBuilder.new(self)
     end
 
-    def build(all)
-      PayloadBuilder.build(self, all)
+    def build!
+      builder.build(self)
+    end
+
+    def project
+      builder.project
+    end
+
+    def branch
+      @payload[:ref].split('refs/heads/').last
     end
 
     def repo
       Integrity::Repository.new(uri, branch)
     end
 
-    def head
+    def commit
       commits.detect {|c| c.identifier == @payload.after }
     end
+    alias_method :head, :commit
 
     def commits
       @commits ||= @payload[:commits].map do |commit|
@@ -29,8 +41,7 @@ module Integrity
           author:       normalize_author(commit.author),
           message:      commit.message,
           committed_at: commit.timestamp,
-          branch:       branch,
-
+          branch:       branch
         )
       end
     end
@@ -55,9 +66,7 @@ module Integrity
       end
     end
 
-    def branch
-      @payload[:ref].split('refs/heads/').last
-    end
+    private
 
     def normalize_author(author)
       return 'unknown' unless author

@@ -1,45 +1,26 @@
 module Integrity
   class ProjectFinder
+
     def self.find(repo)
-      new(repo).find
+      new(repo).project
     end
 
     def initialize(repo)
       @repo = repo
     end
 
-    def find
-      unless Integrity.config.auto_branch?
-        return branches
-      end
-
-      project = all.first
+    def project
+      project = find_by_uri
       project.get_branch(@repo.branch)
-      [project]
+      project
     end
 
-    def branches
-      all.all(branch: @repo.branch)
-    end
-
-    def branch
-      all.first(branch: @repo.branch)
-    end
-
-    def forked
-      if master = all.first('master')
-        master.fork(@repo.branch)
-      end
-    end
-
-    def all
-      @all ||= find_by_uri
-    end
+    private
 
     def find_by_uri
-      p = Project.all(:uri.like => "#{@repo.uri}%")
-      raise ArgumentError, 'Project URI does not exist' if p.empty?
-      p
+      project = Project.first(:uri.like => "#{@repo.uri}%")
+      raise DataMapper::NotFound, 'Project URI does not exist' unless project
+      project
     end
   end
 end
