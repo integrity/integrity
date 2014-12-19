@@ -97,8 +97,8 @@ module Integrity
     end
 
     def kill!(params = {})
-      cleanup = params[:cleanup] || true
-      cleanup! if cleanup
+      params = {cleanup:true}.merge(params)
+      cleanup! if params[:cleanup]
       update(state: 'killed', completed_at: Time.now)
     end
 
