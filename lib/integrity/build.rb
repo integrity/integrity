@@ -336,8 +336,8 @@ module Integrity
     def permitted_zombie?
       made_zombie = (fleetctl_status == 'failed') #This means it must have become a zombie
       kill_zombie_at = completed_at + ZOMBIE_LIFESPAN
-      kill_zombie = Time.now > kill_zombie_at
-      made_zombie && kill_zombie
+      permitted = Time.now < kill_zombie_at
+      made_zombie && permitted
     end
 
     def kill_zombie
