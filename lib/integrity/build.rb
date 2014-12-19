@@ -21,6 +21,8 @@ module Integrity
     property :started_at,   DateTime
     property :completed_at, DateTime
     property :state, String
+    property :fleetctl_status, String
+    property :machine_ip, String
 
     timestamps :at
 
@@ -61,6 +63,14 @@ module Integrity
       scope(query, :started_at.lt => 1.hour.ago, completed_at: nil, order: :started_at.asc)
     end
 
+    def self.update_fleetctl_status
+      status = Crust.get_service_status
+      status.each do |id, service_status|
+        build = Build.first(id: id.to_i)
+        build.update_fleetctl_status(service_status) if build
+      end
+    end
+
     def run
       Integrity.config.builder.enqueue(self)
     end
@@ -73,13 +83,22 @@ module Integrity
       Builder.destroy_build(self)
     end
 
+    def update_fleetctl_status(status)
+      app_status = status.select{|s| s[:type] == "app"}.first
+      update(fleetctl_status: app_status[:active], machine_ip: app_status[:ip])
+      if (fleetctl_status == 'failed') and running?
+        kill!({ cleanup: false })
+      end
+    end
+
     def complete!(result)
       success = result.respond_to?(:success) ? result.success : result
       set_as_complete(success) and cleanup!
     end
 
-    def kill!
-      cleanup!
+    def kill!(params = {})
+      cleanup = params[:cleanup] || true
+      cleanup! if cleanup
       update(state: 'killed', completed_at: Time.now)
     end
 

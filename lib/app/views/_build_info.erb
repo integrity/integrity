@@ -71,6 +71,7 @@
     </table>
   </div>
 </div>
+
 <div class="row">
   <div class="col-sm-12">
     <% if build.building? || build.completed? %>
@@ -95,4 +96,33 @@
   </div>
 </div>
 
+<div class="row">
+  <div class="col-md-12">
+    <h2> Build Details </h2>
+    <table class="table" id="previous_builds">
+  <thead>
+    <tr>
+      <th>successful?</th>
+      <th>started_at</th>
+      <th>completed_at</th>
+      <th>updated_at</th>
+      <th>state</th>
+      <th>status</th>
+      <th>fleetctl_status</th>
+      <th>machine_ip</th>
+    </tr>
+  </thead>
+      <tbody>
+        <td><%= build.successful %></td>
+        <td><%= build.started_at %></td>
+        <td><%= build.completed_at %></td>
+        <td><%= build.updated_at %></td>
+        <td><%= build.state %></td>
+        <td><%= build.status %></td>
+        <td><%= build.fleetctl_status %></td>
+        <td><%= build.machine_ip %></td>
+      </tbody>
+    </table>
+  </div>
+</div>
 </div>

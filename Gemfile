@@ -42,10 +42,11 @@ gem 'daemons'
 gem 'pony'                                      # E-mail
 gem 'rest-client'
 
-gem 'fleetctl', '0.1.4.2', git: 'git://github.com/ConsultingMD/ruby-fleetctl.git'
-gem 'crust', '0.0.8', git: 'git://github.com/ConsultingMD/crust.git'
+gem 'fleetctl', '0.1.4.3', git: 'git://github.com/ConsultingMD/ruby-fleetctl.git'
+#gem 'fleetctl', path: '/home/ozzie/ruby-fleetctl'
+gem 'crust', '0.0.10', git: 'git://github.com/ConsultingMD/crust.git'
 # gem 'crust', path: '/Users/rconda/Projects/GrandRounds/crust'
-# gem 'crust', path: '/home/ozzie/crust'
+#gem 'crust', path: '/home/ozzie/crust'
 
 # gem 'aws-ses', '~> 0.4.3', require: 'aws/ses' # SES E-mail
 # gem 'broach', '0.2.1'                         # Campfire
