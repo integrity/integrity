@@ -18,9 +18,7 @@ module Integrity
     private
 
     def find_by_uri
-      project = Project.first(:uri.like => "#{@repo.uri}%")
-      raise DataMapper::NotFound, 'Project URI does not exist' unless project
-      project
+      Project.first(:uri.like => "#{@repo.uri}%")
     end
   end
 end

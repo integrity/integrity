@@ -14,7 +14,7 @@ module Integrity
     end
 
     def build!
-      builder.build(self)
+      builder.build
     end
 
     def project

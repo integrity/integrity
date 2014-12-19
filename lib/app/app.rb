@@ -102,13 +102,11 @@ module Integrity
       @format = :json
       STDERR.puts "PARAMS: #{params.inspect}"
 
-      begin
-        payload = Payload.new(params)
-        halt 404 unless payload.project
-        build = payload.build!
-      rescue ArgumentError, 'Project URI does not exist'
-        halt 404
-      end
+      payload = Payload.new(params)
+
+      halt 404 unless payload.project
+
+      build = payload.build!
 
       STDERR.puts "BUILD: #{build.inspect}"
 
