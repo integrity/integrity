@@ -22,7 +22,7 @@ module Integrity
       set :root, File.dirname(__FILE__)
       set :partial_template_engine, :erb
       set :session_secret, 'secret'
-      set :environment, ENV['RACK_ENV'].presence || :production
+      set :environment, ENV['RACK_ENV'].try(:to_sym) || :production
 
       I18n.load_path += Dir[File.join(settings.root, 'config', 'locale', '*.yml')]
       I18n.backend.load_translations
@@ -72,12 +72,10 @@ module Integrity
       STDERR.puts "REMOTE IP:   #{remote_ip}"
       STDERR.puts "AUTHORIZED?: #{authorized_ip?}"
       STDERR.puts "WEBHOOK?:    #{web_hook?}"
-      STDERR.puts "DEV?:        #{settings.development?}"
-      STDERR.puts "PROD?:       #{settings.production?}"
+      STDERR.puts "ENV:        #{settings.environment}"
       STDERR.puts "## DEBUG =============================="
       halt 403 unless authorized_ip? || web_hook? || status_update?
       halt 404 if request.path_info.include?('favico')
-      build_all?
       if Integrity.config.base_url.present?
         Integrity.configure {|c| c.base_url = url_for('/', :full) }
       end
