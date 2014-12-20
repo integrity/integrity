@@ -30,7 +30,7 @@ load 'config/delayed_job'
 before 'deploy:setup', 'rvm:install_ruby'
 after  'deploy:setup', 'write_upstart_envs'
 
-before 'deploy:restart', 'workers:restart'
+before 'deploy:restart', 'dj_restart'
 
 set :rails_env, 'test'
-server 'integrity-2014-12-02-1b.test.grandrounds.com', :rvm, :worker, :webapp, :db
+server 'integrity-2014-12-02-1b.test.grandrounds.com', :rvm, :dj_worker, :webapp, :db
