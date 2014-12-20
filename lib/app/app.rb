@@ -104,7 +104,12 @@ module Integrity
 
       payload = Payload.new(params)
 
-      halt 404 unless payload.project
+      if not payload.project
+        halt 404
+      elsif not payload.commit
+        halt 404
+        STDERR.puts "hook.json called without commit, likely from branch deletion"
+      end
 
       build = payload.build!
 

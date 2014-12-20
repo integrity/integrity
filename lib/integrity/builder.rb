@@ -28,6 +28,7 @@ module Integrity
       id = build.id
       Crust.start(project, sha, id)
       build.update(started_at: Time.now)
+      Build.update_fleetctl_status
     end
 
     def self.destroy_build(build)
