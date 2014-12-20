@@ -1,19 +1,32 @@
-Integrity — Continuous Integration server
+Integrity — Continuous Integration Server
 =========================================
 
-Code: http://github.com/integrity/integrity
+### Intro
+Integrity is the custom-built, CI server for Grand Rounds. It is backed by CoreOS and Docker.
 
-Docs: http://integrity.github.com/
+#### Installation
 
-Bugs: http://github.com/integrity/integrity/issues
+**Environment Vars Needed:**
+```
+export RACK_ENV="development"
+export INTEGRITY_DATABASE_URL="mysql://root@localhost:3306/integrity"
+export DATABASE_URL="mysql2://root@localhost:3306/integrity"
+export QUEUE="integrity"
+export GITHUB_ACCOUNT="ConsultingMD"
+export GITHUB_READ_TOKEN="..."   # Get tokens from Engineering Repo
+export GITHUB_WRITE_TOKEN="..."
+```
 
-IRC: [irc://irc.freenode.net/integrity](irc://irc.freenode.net/integrity)
+**Console:**
+```
+$> bundle install
+$> rake db:
+$> rake jobs:work
+```
 
-Mailing List: integrity@librelist.com
 
-Archives: http://librelist.com/browser/integrity/
+#### Links:
+Live: https://integrity.test.grandrounds.com
+Code: http://github.com/ConsultingMD/honesty
 
-<a href="https://travis-ci.org/integrity/integrity"><img src="https://api.travis-ci.org/integrity/integrity.png" alt="Travis build status" /></a>
 
-NOTE: The website, integrityapp.com has been abandoned by the original owners,
-and I am unable to resolve that.

@@ -5,7 +5,7 @@
   <dl>
     <dt>This is what happened:</dt>
     <dd>
-      <strong>&= @error.message</strong>
+      <strong><%= @error.message %></strong>
       <pre class="backtrace">
         <%= @error.backtrace.join("\n") %>
       </pre>

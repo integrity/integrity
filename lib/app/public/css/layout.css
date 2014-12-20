@@ -248,6 +248,43 @@ ul.alert-dropdown {
     font-size: 20px;
 }
 
+.panel-grey {
+  border-color: grey;
+}
+
+.panel-grey .panel-heading {
+  border-color: grey;
+  color: #fff;
+  background-color: grey;
+}
+
+.panel-grey a {
+  color: grey;
+}
+
+.panel-grey a:hover {
+  color: #555555;
+}
+
+
+.panel-blue {
+  border-color: rgba(66, 139, 202, .6);
+}
+
+.panel-blue .panel-heading {
+  border-color: rgba(66, 139, 202, .6);
+  color: #fff;
+  background-color: rgba(66, 139, 202, .6);
+}
+
+.panel-blue a {
+  color: rgba(66, 139, 202, .6);
+}
+
+.panel-blue a:hover {
+  color: rgba(66, 139, 202, .4);
+}
+
 .panel-green {
     border-color: #5cb85c;
 }
