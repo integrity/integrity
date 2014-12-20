@@ -11,7 +11,6 @@ rescue LoadError
 end
 
 require 'i18n'
-I18n.load_path << "#{ROOT_DIR}/config/locale/dates.en.yml"
 
 require 'integrity'
 
