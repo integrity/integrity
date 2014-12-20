@@ -64,6 +64,10 @@ module Integrity
       scope(query, :started_at.lt => 1.hour.ago, completed_at: nil, order: :started_at.asc)
     end
 
+    def self.completed(query = :all)
+      scope(query, :completed_at.not => nil, order: :started_at.asc)
+    end
+
     def self.update_fleetctl_status
       status = Crust.get_service_status
       status.each do |id, service_status|
