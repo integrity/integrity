@@ -1,4 +1,5 @@
 require './init.rb'
+require 'daemons'
 
 class Rails
   def self.root
