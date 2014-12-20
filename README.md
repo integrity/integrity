@@ -10,7 +10,6 @@ Integrity is the custom-built, CI server for Grand Rounds. It is backed by CoreO
 ```Bash
 export RACK_ENV="development"
 export INTEGRITY_DATABASE_URL="mysql://root@localhost:3306/integrity"
-export DATABASE_URL="mysql2://root@localhost:3306/integrity"
 export QUEUE="integrity"
 export GITHUB_ACCOUNT="ConsultingMD"
 export GITHUB_READ_TOKEN="..."   # Get tokens from Engineering Repo
