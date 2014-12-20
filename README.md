@@ -41,13 +41,14 @@ Add an *honesty* directory along with the following files to the top-level of yo
 
 ```
 - honesty
-  - Dockerfile
-  - build.sh
-  - git-checkout.sh
   - base
     - Dockerfile
     - upstart-envs
     - chris-lea-node_js-trusty.list
+  - Dockerfile
+  - build.sh
+  - git-checkout.sh
+
 ```
 
 Given your project, you may need more files, if your build process requires it.
