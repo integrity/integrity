@@ -1,9 +1,9 @@
 class Rails
-  def root
+  def self.root
     Integrity.root
   end
 
-  def logger
+  def self.logger
     Integrity.logger
   end
 end
