@@ -86,6 +86,11 @@ module Integrity
         "#{Integrity.logs_url}?q=#{build.service_name} failure"
       end
 
+      def pacific_time(time)
+        return if !time
+        time.in_time_zone("Pacific Time (US & Canada)")
+      end
+
     end
   end
 end

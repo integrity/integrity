@@ -3,8 +3,6 @@ worker_processes 2
 timeout 30
 pid 'tmp/pids/unicorn.pid'
 listen '/tmp/integrity.sock', backlog: 64
-stderr_path 'log/unicorn.stderr.log'
-stdout_path 'log/unicorn.stdout.log'
 preload_app true
 GC.respond_to?(:copy_on_write_friendly=) and
 GC.copy_on_write_friendly = true

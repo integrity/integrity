@@ -126,4 +126,21 @@ file 'lib/app/public/integrity.css' => 'lib/app/views/integrity.sass' do |f|
   sh "sass lib/app/views/integrity.sass > #{f.name}"
 end
 
+
+namespace :delayed_job do
+  desc 'start delayed_job worker'
+  task :start do
+    system "./script/delayed_job start"
+  end
+  desc 'stop delayed_job worker'
+  task :stop do
+    system "./script/delayed_job stop"
+  end
+  desc 'restart delayed_job worker'
+  task :restart do
+    system "./script/delayed_job restart"
+  end
+end
+
+
 CLOBBER.include('doc/build')

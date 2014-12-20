@@ -18,8 +18,7 @@ namespace :workers do
   desc 'Re-start delayed job workers'
   task :restart, roles: :worker, except: {no_release: true} do
     with_servers do
-      run "cd '#{current_path}' && bash -c ./script/delayed_job"
+      run "cd '#{current_path}' && bash ./script/delayed_job"
     end
   end
 end
-
