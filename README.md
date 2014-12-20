@@ -20,7 +20,7 @@ export GITHUB_WRITE_TOKEN="..."
 **Console:**
 ```
 $> bundle install
-$> rake db:
+$> rake db
 $> rake jobs:work
 ```
 
