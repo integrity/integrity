@@ -17,13 +17,12 @@
     <td><%= pacific_time(build.started_at).try(:strftime, '%R') %></td>
     <td><%= pacific_time(build.completed_at).try(:strftime, '%R') %></td>
 
-    <td><strong>
+    <td>
       <% if build.building? %>
         <%= Time.at(build.time_since_start).gmtime.strftime('%R:%S') %>
       <% elsif build.completed? and build.duration  %>
         <%= Time.at(build.duration).gmtime.strftime('%R:%S') %>
       <% end %>
-      </strong>
     </td>
 
     <td><%= pacific_time(build.created_at).try(:strftime, '%m/%d') %></td>

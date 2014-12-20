@@ -178,10 +178,10 @@ module Integrity
         load_projects
         @masters = Integrity::Branch.all(name: 'master')
         @builds  = Integrity::Build.all(limit: 30, order: :created_at.desc)
-        @pending = @builds.pending
-        @running = @builds.running
-        @rest = @builds - @pending - @running
-        show :home, title: 'projects'
+        @pending = @builds.pending.all(order: :created_at.desc)
+        @running = @builds.running.all(order: :started_at.desc)
+        @completed = @builds.completed.all(order: :completed_at.desc)
+        show :home, title: 'project'
       end
     end
 
