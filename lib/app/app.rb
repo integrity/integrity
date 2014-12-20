@@ -106,7 +106,7 @@ module Integrity
 
       if not payload.project
         halt 404
-      else if not payload.commit
+      elsif not payload.commit
         halt 404
         STDERR.puts "hook.json called without commit, likely from branch deletion"
       end
