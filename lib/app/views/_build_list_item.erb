@@ -13,16 +13,20 @@
     <td class="commit-message">
       <%= "#{build.try(:commit).try(:message)}"%>
     </td>
-    <td><%= time_ago_in_words(build.created_at) %></td>
-    <td><%= time_ago_in_words(build.committed_at) %></td>
-    <td>
+    <td><%= pacific_time(build.created_at).try(:strftime, '%R') %></td>
+    <td><%= pacific_time(build.started_at).try(:strftime, '%R') %></td>
+    <td><%= pacific_time(build.completed_at).try(:strftime, '%R') %></td>
+
+    <td><strong>
       <% if build.building? %>
         <%= Time.at(build.time_since_start).gmtime.strftime('%R:%S') %>
       <% elsif build.completed? and build.duration  %>
         <%= Time.at(build.duration).gmtime.strftime('%R:%S') %>
       <% end %>
+      </strong>
     </td>
 
+    <td><%= pacific_time(build.created_at).try(:strftime, '%m/%d') %></td>
     <td><%= "#{link_to '<i class="fa fa-github-alt"></i>', github_commit_url(build)} #{link_to '<i class="fa fa-list"></i>', link_to_logs(build)}" %>
     </td>
   </tr>

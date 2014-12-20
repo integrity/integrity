@@ -50,26 +50,7 @@
 
   <br>
   <div class="row">
-    <div class="col-md-12">
-      <table class="table" id="previous_builds">
-    <thead>
-      <tr>
-        <th></th>
-        <th>Sha</th>
-        <th>Branch</th>
-        <th>Project</th>
-        <th>User</th>
-        <th>ID</th>
-        <th>Commited</th>
-        <th>Runtime</th>
-        <th>Links</th>
-      </tr>
-    </thead>
-        <tbody>
-          <%= partial(:build_list_item, locals: {build: build}) %>
-        </tbody>
-      </table>
-    </div>
+      <%= partial(:build_list, locals: {builds: [build]}) %>
   </div>
 
   <div class="row">
