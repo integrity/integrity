@@ -29,10 +29,10 @@ In order to have a project build on Integrity you need two things. Register the 
 
 **Register your project on integrity:**
 
-1. Click *New Project*
+1. Click *Nav > Add Project*
 2. Add a name for your project.
 3. Add your projects git repo uri. (i.e. git://github.com/ConsultingMD/...)
-4. Click Save
+4. Click *Create Project*
 
 **Add these files to target Repo:**
 
