@@ -1,20 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env ruby
 
-root_dir="/home/ubuntu/app/integrity/current"
-cd $root_dir
-mkdir -p ${root_dir}/tmp
-pid_file="${root_dir}/tmp/jobs.pid"
-touch $pid_file
-ps aux | grep jobs | grep -v grep | awk '{print $2}' > $pid_file
-pid=`cat $pid_file`
-if [ -n "$pid" ]; then
-  cat $pid_file | xargs kill
-fi
-cd
-cd $root_dir
-
-mkfifo /tmp/integrity-delayed-job.log.fifo
-( logger -t integrity-delayed-job </tmp/integrity-delayed-job.log.fifo & )
-exec >/tmp/integrity-delayed-job.log.fifo 2>&1
-rm /tmp/integrity-delayed-job.log.fifo
-rake jobs:work 2>/dev/null &
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'config', 'environment'))
+require 'delayed/command'
+Delayed::Command.new(ARGV).daemonize
