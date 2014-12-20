@@ -18,7 +18,7 @@ export GITHUB_WRITE_TOKEN="..."
 ```
 
 **Console:**
-```Console
+```Bash
 $> bundle install
 $> rake db
 $> rake jobs:work
@@ -39,7 +39,7 @@ In order to have a project build on Integrity you need two things. Register the 
 
 Add an *honesty* directory along with the following files to the top-level of your project.
 
-```
+```Bash
 - honesty
   - base
     - Dockerfile
