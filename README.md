@@ -50,7 +50,7 @@ Add an *honesty* directory along with the following files to the top-level of yo
 
 ```
 
-Given your project, you may need more files, if your build process requires it.
+Given your project, you may need more files, if your build process requires it. See other projects (i.e. jarvis or frick) to see examples of the build files.
 
 #### Links:
 Live: https://integrity.test.grandrounds.com
