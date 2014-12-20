@@ -1,3 +1,5 @@
+require './init.rb'
+
 class Rails
   def self.root
     ::Integrity.root
