@@ -12,4 +12,9 @@ if [ -n "$pid" ]; then
 fi
 cd
 cd $root_dir
-rake jobs:work > ${root_dir}/log/jobs.log 2>&1 &
+
+mkfifo /tmp/integrity-delayed-job.log.fifo
+( logger -t integrity-delayed-job </tmp/integrity-delayed-job.log.fifo & )
+exec >/tmp/integrity-delayed-job.log.fifo 2>&1
+rm /tmp/integrity-delayed-job.log.fifo
+rake jobs:work 2>/dev/null &
