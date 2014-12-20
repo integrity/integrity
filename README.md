@@ -7,7 +7,7 @@ Integrity is the custom-built, CI server for Grand Rounds. It is backed by CoreO
 #### Installation
 
 **Environment Vars Needed:**
-```
+```Bash
 export RACK_ENV="development"
 export INTEGRITY_DATABASE_URL="mysql://root@localhost:3306/integrity"
 export DATABASE_URL="mysql2://root@localhost:3306/integrity"
@@ -18,7 +18,7 @@ export GITHUB_WRITE_TOKEN="..."
 ```
 
 **Console:**
-```
+```Console
 $> bundle install
 $> rake db
 $> rake jobs:work
