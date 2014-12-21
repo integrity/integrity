@@ -1,7 +1,7 @@
 module Integrity
   module Helpers
     module PrettyOutput
-       PIVOTAL_URL = 'https://www.pivotaltracker.com/n/projects/422567/stories/'
+       TRACKER_URL = 'https://www.pivotaltracker.com/n/projects/422567/stories/'
 
       def t(*args)
         I18n.t(*args)
@@ -87,9 +87,9 @@ module Integrity
         "#{Integrity.logs_url}?q=#{build.service_name} failure"
       end
 
-      def link_to_pivotal(build)
-        pivotal_id = build.branch.try(:name).try(:match, /\d{6,}/).try(:[],0)
-        PIVOTAL_URL + pivotal_id if pivotal_id
+      def link_to_tracker(build)
+        tracker_id = build.branch.try(:name).try(:match, /\d{6,}/).try(:[],0)
+        TRACKER_URL + tracker_id if tracker_id
       end
 
       def pacific_time(time)
