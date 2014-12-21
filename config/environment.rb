@@ -10,3 +10,19 @@ class Rails
     ::Integrity.logger
   end
 end
+
+# https://gist.github.com/robhurring/732327
+RAILS_ROOT = File.expand_path('..', __FILE__)
+puts 'loaded environment'
+
+class SuccessfulJob
+  def perform
+    true
+  end
+end
+ 
+class FailureJob
+  def perform
+    raise "Failed!"
+  end
+end
