@@ -1,9 +1,9 @@
-<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+<div class="col-lg-3 col-sm-6 col-xs-12">
   <div class="panel panel-<%= status.color %>">
     <div class="panel-heading">
       <div class="row">
         <div class="col-xs-2">
-          <i class="fa fa-<%= status.icon %> fa-5x"></i>
+          <i class="fa fa-<%= status.icon %> fa-3x"></i>
         </div>
         <div class="col-xs-10 text-right">
           <div class="huge"><%= project.name %></div>
@@ -20,7 +20,7 @@
       </div>
     </div>
     <a href="<%= project_path(project) %>">
-      <div class="panel-footer" style="min-height: 80px;">
+      <div class="panel-footer" style="min-height: 30px;">
         <span class="pull-left" style="width: 89%"><%= message(build) %></span>
         <span class="pull-right"><i class="fa fa-arrow-circle-right fa-2x"></i></span>
         <div class="clearfix"></div>

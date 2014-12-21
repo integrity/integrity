@@ -39,3 +39,8 @@
   color: #666;
   font-weight: normal;
 }
+
+.panel.branch {
+  min-height: 12em;
+  background: #f5f5f5;
+}
