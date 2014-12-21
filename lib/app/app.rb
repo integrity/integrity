@@ -118,6 +118,11 @@ module Integrity
       json build
     end
 
+    get '/utilization.json' do
+      metrics = Integrity.instance_manager.utilization_metrics
+      json metrics
+    end
+
     get '/login' do
       login_required
       redirect root_url.to_s
@@ -142,6 +147,11 @@ module Integrity
       pass unless github_enabled?
       halt 403 unless token == github_token
       Payload.build(params).to_s
+    end
+
+    post '/machines/update' do
+      Integrity.instance_manager.refresh_machines
+      redirect to '/settings'
     end
 
     # Settings

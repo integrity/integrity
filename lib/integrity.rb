@@ -65,6 +65,7 @@ require 'integrity/payload_builder'
 require 'integrity/checkout'
 require 'integrity/command_runner'
 require 'integrity/builder'
+require 'integrity/instance_manager'
 
 DataMapper.finalize
 
@@ -235,6 +236,10 @@ module Integrity
 
   def self.logs_url
     config.logs_url
+  end
+
+  def self.instance_manager
+    @instance_manager ||= InstanceManager.new
   end
 end
 

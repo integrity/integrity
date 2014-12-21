@@ -1,14 +1,31 @@
 <section class="container">
   <div class="container-page">
-    <div class="col-md-12">
-      <h3 class="dark-grey">Update Project:</h3>
-      <form action="/settings" method="post">
-        <div class="form-group col-lg-12">
-          <label for="max_running_builds"> Max Running Builds </label>
-          <input class="text" name="max_running_builds" type="text" value="<%= config.max_running_builds %>"/>
-          <button class="btn btn-default" type="submit">Update Project</button>
-        </div>
-      </form>
+    <div class="row">
+      <div class="col-md-12">
+        <h3 class="dark-grey">Update Project:</h3>
+        <form action="/settings" method="post">
+          <div class="form-group col-lg-12">
+            <label for="max_running_builds"> Max Running Builds </label>
+            <input class="text" name="max_running_builds" type="text" value="<%= config.max_running_builds %>"/>
+            <button class="btn btn-default" type="submit">Update Manually</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <h3> Machines </h3>
+        <lo>
+          <% Integrity.instance_manager.machines.each do |machine| %>
+            <li> <%= machine %> </li>
+            <% end %>
+        </lo>
+        <form action="/machines/update" method="post">
+          <div class="form-group col-lg-12">
+            <button class="btn btn-default btn-small" type="submit">Update Machines From Fleet</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </section>
