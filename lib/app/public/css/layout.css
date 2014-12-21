@@ -8,7 +8,6 @@
 
 body {
     margin-top: 100px;
-    background-color: #222;
 }
 
 @media(min-width:768px) {
@@ -24,7 +23,7 @@ body {
   color: white;
  /* height: 60px; */
   height: auto!important;
-  line-height: 53px;
+  line-height: 51px;
   padding: 0;
 }
 
@@ -108,10 +107,6 @@ body {
 }
 
 @media(min-width:768px) {
-    #wrapper {
-        padding-left: 225px;
-    }
-
     #page-wrapper {
         padding: 10px;
     }

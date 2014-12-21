@@ -1,24 +1,26 @@
-<table class="table table-hover table-condensed" id="previous_builds">
-  <thead>
-    <tr>
-      <th></th>
-      <th>Project</th>
-      <th>ID</th>
-      <th>Sha</th>
-      <th>User</th>
-      <th>Branch</th>
-      <th>Message</th>
-      <th>Created</th>
-      <th>Started</th>
-      <th>Ended</th>
-      <th>Runtime</th>
-      <th>Day</th>
-      <th>Links</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% builds.each do |build| %>
-      <%= partial(:build_list_item, locals: {build: build}) %>
-    <% end %>
-  </tbody>
-</table>
+<div class="table-responsive">
+  <table class="table table-hover table-condensed" id="previous_builds">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Project</th>
+        <th>ID</th>
+        <th>Sha</th>
+        <th>User</th>
+        <th>Branch</th>
+        <th>Message</th>
+        <th>Created</th>
+        <th>Started</th>
+        <th>Ended</th>
+        <th>Runtime</th>
+        <th>Day</th>
+        <th>Links</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% builds.each do |build| %>
+        <%= partial(:build_list_item, locals: {build: build}) %>
+      <% end %>
+    </tbody>
+  </table>
+</div>
