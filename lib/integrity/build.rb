@@ -330,6 +330,10 @@ module Integrity
       ]
     end
 
+    def load_score
+      try(:project).try(:weight)
+    end
+
     private
 
     def make_zombie

@@ -15,6 +15,7 @@ module Integrity
     property :artifacts,  String,  required: false, length: 1000
     property :public,     Boolean, default: true
     property :last_build_id, Integer, required: false
+    property :weight, Integer, required: true, default: 1
 
     timestamps :at
 
