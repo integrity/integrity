@@ -26,7 +26,10 @@
     </td>
 
     <td><%= pacific_time(build.created_at).try(:strftime, '%m/%d') %></td>
-    <td><%= "#{link_to '<i class="fa fa-github-alt"></i>', github_commit_url(build)} #{link_to '<i class="fa fa-list"></i>', link_to_logs(build)}" %>
+    <td>
+    <%= "#{link_to '<i class="fa fa-github-alt"></i>', github_commit_url(build)}" %>
+    <%= "#{link_to '<i class="fa fa-list"></i>', link_to_logs(build)}" %>
+    <%= "#{link_to '<i class="fa fa-columns"></i>', link_to_pivotal(build)}" if link_to_pivotal(build) %>
     </td>
   </tr>
   <% end %>
