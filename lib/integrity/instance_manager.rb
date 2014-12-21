@@ -2,6 +2,7 @@ module Integrity
   class InstanceManager
 
     def utilization_metrics
+      refresh_machines
       {
       pending: Build.pending.count,
       running: Build.running.count,
