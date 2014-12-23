@@ -95,10 +95,19 @@ module Integrity
     end
 
     def kill!(params = {})
-      params = {cleanup:true}.merge(params)
+      params = {cleanup: true}.merge(params)
       cleanup! if params[:cleanup]
       update(state: 'killed')
       update(completed_at: Time.now) unless completed_at
+    end
+
+    def kill_previous_builds!
+      (previous_builds << self).map(&:kill!)
+    end
+
+    def previous_builds(on = :branch)
+      parent = self.send(on)
+      (parent.builds & self.class.running) & self.class.all(:id.not => id, order: :created_at.desc)
     end
 
     def cancel!
@@ -143,6 +152,10 @@ module Integrity
 
     def pending?
       started_at.nil? && completed_at.nil?
+    end
+
+    def service_vars
+      [permalink, sha1_short, id]
     end
 
     def invalid_sha?

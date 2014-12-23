@@ -5,7 +5,7 @@ module Integrity
 
     # Only launch build if the number of running builds hasn't reached the limit.
     def self.start_build(build)
-      running = Build.running(:count)
+      running   = Build.running(:count)
       run_limit = Integrity.max_running_builds
       launch_build(build) if running < run_limit
     end
@@ -21,22 +21,23 @@ module Integrity
       Build.pending.first.try(:run)
     end
 
+    # Launches the passed build on fleet. Before starting, it kills
+    # older builds from same branch (and itself if it was a re-run)
     def self.launch_build(build)
-      project = build.permalink
-      sha = build.sha1_short
-      destroy_build(build)
-      id = build.id
-      Crust.start(project, sha, id)
+      build.kill_previous_builds!
+      Crust.start(*build.service_vars)
       build.update(started_at: Time.now)
       Build.update_fleetctl_status
     end
 
+    # Kill fleet unit and destroy service matching build that was passed.
     def self.destroy_build(build)
-      project = build.permalink
-      sha = build.sha1_short
-      id = build.id
-      Crust.destroy(project, sha, id)
+      Crust.destroy(*build.service_vars)
     end
+
+
+    #### OLD INTEGRITY METHODS - NOT USED ANYMORE
+    #############################################
 
     def self.build(_build, directory, logger)
       new(_build, directory, logger).build
