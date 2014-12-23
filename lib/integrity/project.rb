@@ -90,18 +90,20 @@ module Integrity
       branch = get_branch(commit)
 
       commit = {
-        identifier:   (commit.try(:identifier)   || 'HEAD'),
-        author:       (commit.try(:author)       || 'Last Committer'),
-        message:      (commit.try(:message)      || 'REBUILD'),
-        committed_at: (commit.try(:committed_at) || Time.now),
-        branch:       (commit.try(:branch)       || branch.name),
-        project_id:   (commit.try(:project_id)   || id)
+        identifier:   commit.try(:identifier),
+        author:       commit.try(:author),
+        message:      commit.try(:message),
+        committed_at: commit.try(:committed_at),
+        branch:       (commit.try(:branch) || branch.name),
+        project_id:   (commit.try(:project_id) || id)
       }
 
-      build = builds.create(commit: commit, branch: branch, rebuild: rebuild)
-      build.save
-      build.run
-      build
+      if commit.identifier.present?
+        build = builds.create(commit: commit, branch: branch, rebuild: rebuild)
+        build.save
+        build.run
+        build
+      end
     end
 
     def fork(new_branch)

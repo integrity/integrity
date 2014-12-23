@@ -258,7 +258,7 @@ module Integrity
     get "/:project\.json" do
       @format = :json
       login_required unless current_project.public?
-      
+
       json current_project
     end
 

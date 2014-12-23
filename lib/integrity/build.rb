@@ -168,12 +168,11 @@ module Integrity
     end
 
     def sha1
-      commit.try(:identifier).presence || "build_#{id}"
+      commit.try(:identifier).presence
     end
 
     def sha1_short
-      return id.to_s unless commit.try(:identifier)
-      sha1[0..6]
+      sha1.to_s[0..6]
     end
 
     def message
@@ -181,7 +180,7 @@ module Integrity
     end
 
     def full_message
-      commit.try(:full_message).presence || commit.try(:message).presence || 'message not loaded'
+      commit.try(:full_message).presence || message
     end
 
     def author
@@ -195,11 +194,11 @@ module Integrity
     def status
       return state.to_sym if state
       case
-      when building?   then :building
-      when pending?    then :pending
-      when successful? then :success
-      when failed?     then :failed
-      else :unknown
+        when building?   then :building
+        when pending?    then :pending
+        when successful? then :success
+        when failed?     then :failed
+        else :unknown
       end
     end
 
@@ -221,11 +220,11 @@ module Integrity
 
     def bootstrap_class
       case status
-      when :building then 'info'
-      when :success then 'success'
-      when :failed then 'danger'
-      when :pending then 'warning'
-      when :killed then 'killed'
+        when :building then 'info'
+        when :success then 'success'
+        when :failed then 'danger'
+        when :pending then 'warning'
+        when :killed then 'killed'
       end
     end
 
