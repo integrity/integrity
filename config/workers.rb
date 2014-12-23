@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), 'utils')
 
-namespace :workers do
+namespace :jobs do
   desc 'Start delayed job workers'
   task :start, roles: :worker, except: {no_release: true} do
     with_servers{ jobs :start }
