@@ -3,7 +3,7 @@ rack: 'test'
 builds:
   builder: :dj
   dir: '/tmp/docker/builds'
-  max: 3
+  max_running: 3
   output_interval: 5
   trim_branches: true
   display_count: 20
