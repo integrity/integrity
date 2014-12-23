@@ -1,11 +1,13 @@
 rack: 'test'
-build:
+
+builds:
   builder: :dj
   dir: '/tmp/docker/builds'
   max: 3
   output_interval: 5
   trim_branches: true
   display_count: 20
+
 logs:
   file: 'integrity.log'
   url: 'https://papertrailapp.com/events'
