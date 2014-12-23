@@ -85,19 +85,7 @@ module Integrity
       branch
     end
 
-    def build_head
-      commit = Commit.new(
-        identifier:   'HEAD',
-        author:       last_build.try(:author),
-        message:      'Rebuilding HEAD',
-        committed_at: last_build.try(:commit).try(:committed_at),
-        branch:       'master',
-        project_id:   id
-      )
-      build(commit)
-    end
-
-    def build(commit)
+    def build(commit, rebuild=false)
       commit = Hashie::Mash.new(commit) if commit.is_a?(Hash)
       branch = get_branch(commit)
 
@@ -110,10 +98,10 @@ module Integrity
         project_id:   (commit.try(:project_id)   || id)
       }
 
-      _build = builds.create(commit: commit, branch: branch)
-      _build.save
-      _build.run
-      _build
+      build = builds.create(commit: commit, branch: branch, rebuild: rebuild)
+      build.save
+      build.run
+      build
     end
 
     def fork(new_branch)
