@@ -20,3 +20,6 @@ def integrity_db_url
   ENV['INTEGRITY_DATABASE_URL']
 end
 
+def jobs(action = :start)
+  run "cd '#{current_path}' && RACK_ENV=#{rails_env} #{rake} jobs:daemons:#{action}"
+end

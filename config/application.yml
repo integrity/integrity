@@ -1,4 +1,15 @@
 rack: 'test'
+build:
+  builder: :dj
+  dir: '/tmp/docker/builds'
+  max: 3
+  output_interval: 5
+  trim_branches: true
+  display_count: 20
+logs:
+  file: 'integrity.log'
+  url: 'https://papertrailapp.com/events'
+
 database:
   url:      <%= ENV['INTEGRITY_DATABASE_URL'] %>
   adapter:  mysql2
