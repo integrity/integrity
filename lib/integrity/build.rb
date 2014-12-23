@@ -10,20 +10,21 @@ module Integrity
       killed: "%s was killed",
       cancelled: "%s was cancelled"
     }
-    
+
     GLOB_CHARS = '*?[]'
     ZOMBIE_LIFESPAN = 1.hour
 
     property :id,           Serial
-    property :project_id,   Integer   # TODO :nullable => false
-    property :branch_id,    Integer,  required: true
-    property :output,       Text,     default: '', length: 1048576
-    property :successful,   Boolean,  default: false
+    property :project_id,   Integer, required: true
+    property :branch_id,    Integer, required: true
+    property :output,       Text,    default: '', length: 1048576
+    property :successful,   Boolean, default: false
+    property :rebuild,      Boolean, default: false
     property :started_at,   DateTime
     property :completed_at, DateTime
-    property :state, String
+    property :state,           String
     property :fleetctl_status, String
-    property :machine_ip, String
+    property :machine_ip,      String
 
     timestamps :at
 
@@ -69,10 +70,9 @@ module Integrity
     end
 
     def self.update_fleetctl_status
-      status = Crust.get_service_status
-      status.each do |id, service_status|
-        build = Build.first(id: id.to_i)
-        build.update_fleetctl_status(service_status) if build
+      statuses = Crust.get_service_status
+      statuses.each do |id, status|
+        get(id).try(:update_fleetctl_status, status)
       end
     end
 
@@ -86,7 +86,7 @@ module Integrity
     end
 
     def cleanup!
-      Builder.destroy_build(self)
+      rebuild ? Builder.destroy_build(self) : kill_previous_builds!
     end
 
     def complete!(result)
@@ -95,10 +95,19 @@ module Integrity
     end
 
     def kill!(params = {})
-      params = {cleanup:true}.merge(params)
+      params = {cleanup: true}.merge(params)
       cleanup! if params[:cleanup]
       update(state: 'killed')
       update(completed_at: Time.now) unless completed_at
+    end
+
+    def kill_previous_builds!
+      (previous_builds << self).map(&:kill!)
+    end
+
+    def previous_builds(on = :branch)
+      parent = self.send(on)
+      (parent.builds & self.class.running) & self.class.all(:id.not => id, order: :created_at.desc)
     end
 
     def cancel!
@@ -115,6 +124,11 @@ module Integrity
 
     def finished?
       completed? && !interrupted?
+    end
+
+    def started!
+      update(started_at: Time.now)
+      self.class.update_fleetctl_status
     end
 
     def started?
@@ -143,6 +157,10 @@ module Integrity
 
     def pending?
       started_at.nil? && completed_at.nil?
+    end
+
+    def service_vars
+      [permalink, sha1_short, id]
     end
 
     def invalid_sha?
