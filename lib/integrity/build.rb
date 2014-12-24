@@ -97,8 +97,8 @@ module Integrity
     def kill!(params = {})
       params = {cleanup: true}.merge(params)
       cleanup! if params[:cleanup]
-      update(state: 'killed')
-      update(completed_at: Time.now) unless completed_at
+      time = completed_at || Time.now
+      update(state: 'killed', completed_at: time)
     end
 
     def kill_previous_builds!
