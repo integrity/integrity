@@ -327,9 +327,9 @@ module Integrity
     end
 
     def update_fleetctl_status(status)
-      app_status = status.select{|s| s[:type] == "app"}.first
-      update(fleetctl_status: app_status[:active], machine_ip: app_status[:ip])
-
+      if app_status = status.detect{|s| s[:type] == 'app' }
+        update(fleetctl_status: app_status[:active], machine_ip: app_status[:ip])
+      end
       #If the build service file fails, we change its status to 'killed' from 'building'
       #Then we wait an hour to kill the service_files so we have time to debug them
       if (fleetctl_status == 'failed')

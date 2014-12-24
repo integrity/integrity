@@ -84,7 +84,7 @@ module Integrity
       end
 
       def link_to_logs(build)
-        "#{Integrity.logs_url}?q=#{build.service_name} failure"
+        "#{Integrity.logs_url}?q=#{build.service_name}"
       end
 
       def link_to_tracker(build)
