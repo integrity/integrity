@@ -1,0 +1,22 @@
+
+<div class="row" id="projects">
+  <% @latest_builds.each do |build|
+    status = branch_status(build) %>
+    <%= partial(:build, locals: {branch: @branch, build: build, project: @project, status: status}) %>
+  <% end %>
+</div>
+
+<% if @branch.blank? %>
+  <form action="<%= project_path(@project, :builds) %>" class="blank_slate" method="<%= :post %>">
+    <p>No builds for this branch, buddy</p>
+    <h1>
+      You can request a
+      <button type="<%= :submit %>">manual build</button>
+    </h1>
+  </form>
+<% else %>
+  <%= partial(:build_list, locals: {builds: @builds}) unless @branch.blank? %>
+  <% unless @showing_all_builds %>
+    <p><a href="<%= project_path(@branch, :all) %>">See all builds</a></p>
+  <% end %>
+<% end %>

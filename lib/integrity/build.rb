@@ -86,7 +86,7 @@ module Integrity
     end
 
     def cleanup!
-      rebuild ? Builder.destroy_build(self) : kill_previous_builds!
+      Builder.destroy_build(self)
     end
 
     def complete!(result)

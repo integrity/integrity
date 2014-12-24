@@ -24,7 +24,7 @@ module Integrity
     # Launches the passed build on fleet. Before starting, it kills
     # older builds from same branch (and itself if it was a re-run)
     def self.launch_build(build)
-      build.cleanup!
+      build.rebuild ? build.cleanup! : build.kill_previous_builds!
       Crust.start(*build.service_vars)
       build.started!
     end

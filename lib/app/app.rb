@@ -299,6 +299,16 @@ module Integrity
       show :project, title: ['projects', current_project.name]
     end
 
+    get '/:project/:branch' do
+      login_required unless current_project.public?
+
+      @builds = current_branch.sorted_builds
+      @latest_builds = @builds.all(limit: 4)
+      @showing_all_builds = true
+
+      show :branch, title: ['branches', current_branch.name]
+    end
+
     # Ping Project (Check if Project Exists)
     get '/:project/ping' do
       login_required unless current_project.public?

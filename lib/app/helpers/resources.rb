@@ -2,13 +2,15 @@ module Integrity
   module Helpers
     module Resources
       def current_project
-        @project ||= Project.first(permalink: params[:project]) or
-          raise Sinatra::NotFound
+        @project ||= Project.first(permalink: params[:project]) or raise Sinatra::NotFound
+      end
+
+      def current_branch
+        @branch ||= current_project.branches.first(permalink: params[:branch]) or raise Sinatra::NotFound
       end
 
       def current_build
-        @build ||= current_project.builds.get(params[:build]) or
-          raise Sinatra::NotFound
+        @build ||= current_project.builds.get!(params[:build])
       end
 
       def all_builds(limit=5)

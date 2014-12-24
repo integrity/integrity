@@ -24,5 +24,9 @@ module Integrity
     delegate :repo, to: :project
     delegate :status, :human_status, :human_duration, :successful?, :failed?, :pending?, :building?, to: :last_build, allow_nil: true
 
+    def blank?
+      last_build.nil?
+    end
+
   end
 end
