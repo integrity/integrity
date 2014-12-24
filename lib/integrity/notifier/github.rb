@@ -66,7 +66,7 @@ module Integrity
         msg << ", payload: #{payload.inspect}"
         msg << ", credentials: #{credentials.inspect}"
         msg << ")\n#{e.inspect}\n#{e.backtrace}"
-        Integrity.logger msg
+        Integrity.say msg
       end
 
       def self.list_commits(repo)
