@@ -334,6 +334,8 @@ module Integrity
     post '/:project/builds/:build' do
       login_required
 
+      STDERR.puts "BUILD:  #{current_build.inspect}"
+      STDERR.puts "COMMIT: #{current_build.commit.inspect}"
       @build = current_project.build(current_build.commit, true)
       redirect build_url(@build).to_s
     end

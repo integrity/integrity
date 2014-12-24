@@ -98,7 +98,7 @@ module Integrity
         project_id:   (commit.try(:project_id) || id)
       }
 
-      if commit.identifier.present?
+      if commit[:identifier].present?
         build = builds.create(commit: commit, branch: branch, rebuild: rebuild)
         build.save
         build.run
