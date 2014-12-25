@@ -302,6 +302,27 @@ module Integrity
     get '/:project/:branch' do
       login_required unless current_project.public?
 
+      if limit = Integrity.config.project_default_build_count
+        @builds = current_branch.sorted_builds.all(limit: limit + 1)
+        if @builds.length <= limit
+          @showing_all_builds = true
+        else
+          # we fetched one build more than needed
+          @builds.pop
+        end
+      else
+        @builds = current_branch.sorted_builds
+        @showing_all_builds = true
+      end
+
+      @latest_builds = @builds.all(limit: 4)
+      @status = current_project.status
+    end
+
+    # Get Project (List ALL Builds)
+    get '/:project/:branch/all' do
+      login_required unless current_project.public?
+
       @builds = current_branch.sorted_builds
       @latest_builds = @builds.all(limit: 4)
       @showing_all_builds = true

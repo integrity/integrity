@@ -17,6 +17,6 @@
 <% else %>
   <%= partial(:build_list, locals: {builds: @builds}) unless @branch.blank? %>
   <% unless @showing_all_builds %>
-    <p><a href="<%= project_path(@branch, :all) %>">See all builds</a></p>
+    <p><a href="<%= branch_path(@branch, :all) %>">See all builds</a></p>
   <% end %>
 <% end %>

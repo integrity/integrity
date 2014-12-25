@@ -28,5 +28,9 @@ module Integrity
       last_build.nil?
     end
 
+    def sorted_builds
+      builds(order: [:created_at.desc, :id.desc])
+    end
+
   end
 end
