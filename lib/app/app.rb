@@ -315,9 +315,12 @@ module Integrity
         @showing_all_builds = true
       end
 
-      @latest_builds = @builds.all(limit: 4)
-      @status = current_project.status
+      @latest_builds = @showing_all_builds ? @builds.all(limit: 12) : @builds.all(limit: 4)
+
+      show :branch, title: ['branches', current_branch.name]
     end
+
+
 
     # Get Project (List ALL Builds)
     get '/:project/:branch/all' do
