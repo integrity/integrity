@@ -115,7 +115,7 @@ module Integrity
     end
 
     def idle?
-      build.pending? || build.completed? || build.interrupted?
+      pending? || completed? || interrupted?
     end
     alias_method :not_running?, :idle?
 
@@ -350,7 +350,7 @@ module Integrity
 
     def enter_instructions
       [
-      "ssh core@#{machine_ip || 'machine ip not found'}",
+      "ssh core@#{machine_ip || '127.0.0.1'}",
       "docker exec -it #{app_service_name} bash",
       "cd #{project.name}",
       "Load correct environment variables (from honesty/build.sh)"
