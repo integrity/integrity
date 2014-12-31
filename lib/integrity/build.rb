@@ -114,8 +114,13 @@ module Integrity
       update(state: 'cancelled', completed_at: Time.now)
     end
 
+    def idle?
+      build.pending? || build.completed? || build.interrupted?
+    end
+    alias_method :not_running?, :idle?
+
     def interrupted?
-      status == :killed || status == :cancelled
+      killed? || cancelled?
     end
 
     def completed?
@@ -152,11 +157,20 @@ module Integrity
     end
 
     def building?
-      started?  && !completed? && !killed?
+      started?  && !completed? && !interrupted?
     end
+    alias_method :running?, :building?
 
     def pending?
       started_at.nil? && completed_at.nil?
+    end
+
+    def killed?
+      status == :killed
+    end
+
+    def cancelled?
+      status == :cancelled
     end
 
     def service_vars
@@ -210,10 +224,6 @@ module Integrity
       HUMAN_STATUS[status].try(:%, sha1_short)
     end
 
-    def killed?
-      state == 'killed'
-    end
-    
     def human_duration
       Integrity.human_duration(duration)
     end

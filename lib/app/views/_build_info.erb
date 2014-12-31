@@ -21,30 +21,44 @@
       <% if build.pending? %>
         <form action="<%= build_path(build, :cancel) %>" method="post">
           <p class='submit' style="margin-top: 10px;">
-            <button class="btn btn-danger btn-lg" title="Delete Build">Cancel Build</button>
+            <button class="btn btn-danger btn-lg" title="Delete Build">
+              Cancel Build
+              <i class="fa fa-ban fa-2x"></i>
+            </button>
           </p>
         </form>
-        <% end %>
-        <% if build.building? %>
-          <form action="<%= build_path(build, :destroy) %>" method="post">
-            <p class='submit' style="margin-top: 10px;">
+      <% end %>
+      <% if build.building? %>
+        <form action="<%= build_path(build, :destroy) %>" method="post">
+          <p class='submit' style="margin-top: 10px;">
             <button class="btn btn-danger btn-lg" title='Rebuild this commit' type='submit'>
               <img src="/images/swords.png" height="35em">
               Kill Build
             </button>
-            </p>
-          </form>
-        <% end %>
-        <% if build.completed? %>
-          <form action="<%= build_path(build) %>" method="post">
-            <p class='submit' style="margin-top: 10px;">
+          </p>
+        </form>
+      <% end %>
+      <% if build.completed? %>
+        <form action="<%= build_path(build) %>" method="post">
+          <p class='submit' style="margin-top: 10px;">
             <button class="btn btn-success btn-lg" title='Rebuild this commit' type='submit'>
               <img src="/images/cats.png" height="35em">
               Restart Build
             </button>
-            </p>
-          </form>
-        <% end %>
+          </p>
+        </form>
+      <% end %>
+      <% if build.idle? %>
+        <form action="<%= build_path(build) %>" method="post">
+          <input name="_method" type="hidden" value="delete"/>
+          <p class='submit' style="margin-top: 10px;">
+            <button class="btn btn-danger btn-lg" title="Delete Build">
+              <i class="fa fa-remove fa-2x"></i>
+              Delete Build
+            </button>
+          </p>
+        </form>
+      <% end %>
     </div>
   </div>
 
