@@ -377,9 +377,10 @@ module Integrity
     delete '/:project/builds/:build' do
       login_required
 
-      url = project_url(current_build.project).to_s
+      # Changing to redirect to home. Do we want it to go to project?
+      # url = project_url(current_build.project).to_s
       current_build.destroy!
-      redirect url
+      redirect '/'
     end
 
     # Stop Running Build (Destroy the running service, and remove the build).
