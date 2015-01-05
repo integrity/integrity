@@ -166,11 +166,11 @@ module Integrity
     end
 
     def killed?
-      status == :killed
+      state && state.to_sym == :killed
     end
 
     def cancelled?
-      status == :cancelled
+      state && state.to_sym == :cancelled
     end
 
     def service_vars
