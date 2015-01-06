@@ -7,6 +7,7 @@ module Integrity
     def self.start_build(build)
       running   = Build.running(:count)
       run_limit = Integrity.max_running_builds
+      log "Checking build queue: #{running} out of #{run_limit} builds running."
       launch_build(build) if running < run_limit
     end
 
@@ -18,23 +19,30 @@ module Integrity
 
     # If there are any pending builds, start the first one.
     def self.queue_next_build
+      log "#{Build.pending.count} builds pending. Queueing next build..."
       Build.pending.first.try(:run)
     end
 
     # Launches the passed build on fleet. Before starting, it kills
     # older builds from same branch (and itself if it was a re-run)
     def self.launch_build(build)
+      log "Launching Build: #{build.service_vars.inspect}"
       build.cleanup!
       # build.rebuild ? build.cleanup! : build.kill_previous_builds!
       Crust.start(*build.service_vars)
       build.started!
+      log "#{Build.running.count} builds running."
     end
 
     # Kill fleet unit and destroy service matching build that was passed.
     def self.destroy_build(build)
+      log "Destroying Build: #{build.service_vars.inspect}"
       Crust.destroy(*build.service_vars)
     end
 
+    def self.log(msg)
+      Integrity.logger.info msg
+    end
 
     #### OLD INTEGRITY METHODS - NOT USED ANYMORE
     #############################################
