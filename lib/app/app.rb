@@ -22,7 +22,7 @@ module Integrity
       set :root, File.dirname(__FILE__)
       set :partial_template_engine, :erb
       set :session_secret, 'secret'
-      set :environment, Integrity.environment || :production
+      set :environment, ENV['RACK_ENV'] || :production
 
       I18n.load_path += Dir[File.join(settings.root, 'config', 'locale', '*.yml')]
       I18n.backend.load_translations
@@ -76,7 +76,7 @@ module Integrity
       STDERR.puts "## DEBUG =============================="
       halt 403 unless authorized_ip? || web_hook? || status_update?
       halt 404 if request.path_info.include?('favico')
-      if Integrity.config.base_url.present?
+      if Integrity.base_url.present?
         Integrity.configure {|c| c.base_url = url_for('/', :full) }
       end
     end

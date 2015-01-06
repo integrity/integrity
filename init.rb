@@ -34,6 +34,8 @@ require 'integrity/notifier/email'      # = Email
 
 app = RConfig.application
 
+ENV['RACK_ENV'] = (app.environment || :production).to_s
+
 if app.environment == :production
   base_url = 'https://integrity.test.grandrounds.com/'
 else
