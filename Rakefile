@@ -63,17 +63,17 @@ namespace :jobs do
   namespace :daemons do
     desc 'start daemonized worker(s)'
     task :start do
-      system './script/delayed_job start > logger -t jobs 2>&1'
+      system './script/delayed_job start 2>&1 | logger -t jobs &'
     end
 
     desc 'stop daemonized worker(s)'
     task :stop do
-      system './script/delayed_job stop > logger -t jobs 2>&1'
+      system './script/delayed_job stop 2>&1 | logger -t jobs &'
     end
 
     desc 'restart daemonized worker(s)'
     task :restart do
-      system './script/delayed_job restart > logger -t jobs 2>&1'
+      system './script/delayed_job restart 2>&1 | logger -t jobs &'
     end
   end
 end
@@ -130,15 +130,15 @@ end
 namespace :delayed_job do
   desc 'start delayed_job worker'
   task :start do
-    system "./script/delayed_job start > logger -t jobs 2>&1"
+    system "./script/delayed_job start 2>&1 | logger -t jobs &"
   end
   desc 'stop delayed_job worker'
   task :stop do
-    system "./script/delayed_job stop > logger -t jobs 2>&1"
+    system "./script/delayed_job stop 2>&1 | logger -t jobs &"
   end
   desc 'restart delayed_job worker'
   task :restart do
-    system "./script/delayed_job restart > logger -t jobs 2>&1"
+    system "./script/delayed_job restart 2>&1 | logger -t jobs &"
   end
 end
 
