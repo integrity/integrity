@@ -21,5 +21,5 @@ def integrity_db_url
 end
 
 def jobs(action = :start)
-  run "cd '#{current_path}' && RACK_ENV=#{rails_env} #{rake} jobs:daemons:#{action} > #{current_path}/log/jobs.log 2>&1"
+  run "cd '#{current_path}' && RACK_ENV=#{rails_env} #{rake} jobs:daemons:#{action}"
 end
