@@ -2,7 +2,7 @@ module Integrity
   class Configuration
     attr_reader :directory, :base_url, :builder
 
-    attr_accessor :env,
+    attr_accessor :environment,
       :github_account,
       :github_read_token,
       :github_write_token,
@@ -56,6 +56,10 @@ module Integrity
 
     def base_url=(url)
       @base_url = Addressable::URI.parse(url)
+    end
+
+    def environment=(env)
+      @environment = env.try(:to_sym) || :development
     end
 
     def builder=(builder)

@@ -242,6 +242,10 @@ module Integrity
     config.logs_url
   end
 
+  def self.environment
+    config.environment
+  end
+
   def self.instance_manager
     @instance_manager ||= InstanceManager.new
   end

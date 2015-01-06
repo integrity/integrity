@@ -1,7 +1,7 @@
 require 'logging'
 require 'delayed_job'
 
-if ENV['RACK_ENV'] == 'production'
+if Integrity.environment == :production
   logger = Logging.logger['delayed_jobs']
   logger.add_appenders Logging.appenders.syslog('delayed_jobs')
   logger.log_level = Logger::DEBUG

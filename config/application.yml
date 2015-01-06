@@ -1,4 +1,4 @@
-env: :production
+environment: <%= ENV['RACK_ENV'] || :production %>
 rack: 'test'
 
 builds:

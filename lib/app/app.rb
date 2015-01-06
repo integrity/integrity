@@ -22,7 +22,7 @@ module Integrity
       set :root, File.dirname(__FILE__)
       set :partial_template_engine, :erb
       set :session_secret, 'secret'
-      set :environment, ENV['RACK_ENV'].try(:to_sym) || :production
+      set :environment, Integrity.environment || :production
 
       I18n.load_path += Dir[File.join(settings.root, 'config', 'locale', '*.yml')]
       I18n.backend.load_translations

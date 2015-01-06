@@ -34,7 +34,7 @@ require 'integrity/notifier/email'      # = Email
 
 app = RConfig.application
 
-if app.env == :production
+if app.environment == :production
   base_url = 'https://integrity.test.grandrounds.com/'
 else
   base_url = 'http://' << %x{ hostname }
@@ -42,7 +42,7 @@ else
 end
 
 Integrity.configure do |c|
-  c.app                         = app.env                   # Environment to run in (i.e. development, production, etc).
+  c.environment                 = app.environment           # Environment to run in (i.e. development, production, etc).
   c.database                    = app.database.url          # DataMapper database connection URI
   c.username                    = app.auth.username         # Admin username
   c.password                    = app.auth.password         # Admin password
