@@ -173,10 +173,6 @@ module Integrity
       state && state.to_sym == :cancelled
     end
 
-    def service_vars
-      [permalink, sha1_short, id]
-    end
-
     def invalid_sha?
       sha1.blank? || sha1 == 'HEAD'
     end
@@ -328,8 +324,16 @@ module Integrity
       {build: {id: id, project: {name: project.name}, status: status}}.to_json
     end
 
+    def url
+      "/#{permalink}/builds/#{id}"
+    end
+
+    def service_vars
+      [permalink, sha1_short, id]
+    end
+
     def service_name
-      "#{name}_#{sha1_short}_#{id}"
+      service_vars.join('_')
     end
 
     def app_service_name

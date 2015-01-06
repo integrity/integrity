@@ -234,6 +234,10 @@ module Integrity
     File.join(File.dirname(__FILE__), '..')
   end
 
+  def self.base_url
+    config.base_url
+  end
+  
   def self.logs_url
     config.logs_url
   end

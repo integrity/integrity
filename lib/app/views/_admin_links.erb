@@ -12,7 +12,7 @@
     <% if build %>
       <a href="<%= github_commit_url(build) %>">View on GitHub</a>
     <% else %>
-      <a href="<%= github_project_url(project) %>"><%= github_project_link(project) %></a>
+      <%= github_project_link(project) %>
     <% end %>
   <% end %>
 </div>

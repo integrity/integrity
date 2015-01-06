@@ -26,8 +26,8 @@ module Integrity
       end
 
       def initialize(build, config={})
-        @success_cmd = config["success_script"]
-        @failed_cmd = config["failed_script"]
+        @success_cmd = config['success_script']
+        @failed_cmd = config['failed_script']
         super
       end
 
@@ -37,9 +37,10 @@ module Integrity
       end
 
       private
-        def announce_build?
-          build.failed? || config["announce_success"]
-        end
+
+      def announce_build?
+        build.failed? || config['announce_success']
+      end
     end
 
     register Shell

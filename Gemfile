@@ -27,6 +27,7 @@ gem 'rake'
 gem 'rconfig', '0.4.3.1', require: 'rconfig'
 gem 'i18n'
 gem 'rack-flash3'
+gem 'logging'
 
 gem 'capistrano', '2.15.4'
 gem 'rvm-capistrano', '1.3.4'

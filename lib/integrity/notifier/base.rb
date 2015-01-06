@@ -49,7 +49,7 @@ module Integrity
       private
 
       def build_url
-        Integrity.config.base_url.join("/#{@build.project.permalink}/builds/#{@build.id}").to_s
+        Integrity.base_url.join(@build.url).to_s
       end
 
       def build_output

@@ -125,7 +125,7 @@ module Integrity
 
     get '/login' do
       login_required
-      redirect root_url.to_s
+      redirect root_url
     end
 
     get '/logout' do
@@ -235,7 +235,7 @@ module Integrity
 
       if @project.save
         update_notifiers_of(@project)
-        redirect project_url(@project).to_s
+        redirect project_url(@project)
       else
         show :new, title: ['projects', 'new project']
       end
@@ -274,7 +274,7 @@ module Integrity
 
       if current_project.update(params[:project_data])
         update_notifiers_of(current_project)
-        redirect project_url(current_project).to_s
+        redirect project_url(current_project)
       else
         show :new, title: ['projects', current_project.permalink, 'edit']
       end
@@ -285,7 +285,7 @@ module Integrity
       login_required
 
       current_project.destroy
-      redirect root_url.to_s
+      redirect root_url
     end
 
     # Get Project (List ALL Builds)
@@ -361,7 +361,7 @@ module Integrity
       STDERR.puts "BUILD:  #{current_build.inspect}"
       STDERR.puts "COMMIT: #{current_build.commit.inspect}"
       @build = current_project.build(current_build.commit, true)
-      redirect build_url(@build).to_s
+      redirect build_url(@build)
     end
 
     # Show Build (Read)
@@ -369,18 +369,15 @@ module Integrity
       login_required unless current_project.public?
 
       @status = current_build.status
-      show :build, title: ['projects', current_project.permalink,
-        current_build.sha1_short]
+      show :build, title: ['projects', current_project.permalink, current_build.sha1_short]
     end
 
     # Delete Build
     delete '/:project/builds/:build' do
       login_required
 
-      # Changing to redirect to home. Do we want it to go to project?
-      # url = project_url(current_build.project).to_s
       current_build.destroy!
-      redirect '/'
+      redirect root_url
     end
 
     # Stop Running Build (Destroy the running service, and remove the build).
@@ -389,7 +386,7 @@ module Integrity
 
       current_build.kill! if current_build.building?
 
-      redirect project_url(current_project).to_s
+      redirect project_url(current_project)
     end
 
     # Cancel the Pending Build (take it out of the build queue).
@@ -398,7 +395,7 @@ module Integrity
 
       current_build.cancel! if current_build.pending?
 
-      redirect project_url(current_project).to_s
+      redirect project_url(current_project)
     end
 
     # Get Raw Build Output
@@ -413,7 +410,7 @@ module Integrity
     get '/:project/builds/:build/notify' do
       login_required unless current_project.public?
       current_build.notify
-      redirect build_url(current_build).to_s
+      redirect build_url(current_build)
     end
 
     # Get Build Artifact

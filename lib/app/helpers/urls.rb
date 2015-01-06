@@ -3,7 +3,7 @@ require 'cgi'
 module Integrity
   module Helpers
     module Urls
-      def github_project_url(project, branch=true)
+      def github_project_url(project, branch = nil)
         parts = project.uri.path.split('/').reject { |x| x.empty? }
         user  = parts.first
         repo  = parts.last.chomp('.git')
@@ -16,17 +16,13 @@ module Integrity
       end
 
       def github_project_link(project)
-        url = github_project_url(project)
-
-        if url.include?("/compare/master")
-          'Compare on GitHub'
-        else
-          'Browse on GitHub'
-        end
+        url   = github_project_url(project)
+        label = url['/compare/master'] ? 'Compare on GitHub' : 'Browse on GitHub'
+        %Q{<a href="#{url}">#{label}</a>}
       end
 
       def github_commit_url(build)
-        github_project_url(build.project, false).to_s + "/commit/#{build.sha1}"
+         "#{github_project_url(build.project)}/commit/#{build.sha1}"
       end
 
       def project_status_image_url(project)

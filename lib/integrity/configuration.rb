@@ -2,7 +2,8 @@ module Integrity
   class Configuration
     attr_reader :directory, :base_url, :builder
 
-    attr_accessor :github_account,
+    attr_accessor :env,
+      :github_account,
       :github_read_token,
       :github_write_token,
       :github_secret,
