@@ -2,8 +2,8 @@ require 'logging'
 require 'delayed_job'
 
 if Integrity.environment == :production
-  logger = Logging.logger['delayed_jobs']
-  logger.add_appenders Logging.appenders.syslog('delayed_jobs')
+  logger = Logging.logger['delayed_job']
+  logger.add_appenders Logging.appenders.syslog('delayed_job')
   logger.level = :debug
 else
   logger = Integrity.logger
