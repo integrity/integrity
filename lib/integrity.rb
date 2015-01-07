@@ -246,6 +246,31 @@ module Integrity
     config.environment
   end
 
+  def self.environment?(name)
+    environment == name
+  end
+
+  def self.production?
+    environment? :production
+  end
+
+  def self.development?
+    environment? :development
+  end
+
+  def self.sys_logger(name, level = :debug)
+    return logger unless production?
+    @sys_loggers ||= {}
+    unless @sys_loggers[name]
+      syslog = Logging.logger[name]
+      syslog.add_appenders Logging.appenders.syslog(name)
+      syslog.level = level
+      @sys_loggers[name] = syslog
+    end
+    @sys_loggers[name].level = level
+    @sys_loggers[name]
+  end
+
   def self.instance_manager
     @instance_manager ||= InstanceManager.new
   end
