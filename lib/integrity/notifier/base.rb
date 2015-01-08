@@ -49,7 +49,7 @@ module Integrity
       private
 
       def build_url
-        Integrity.base_url.join(@build.url).to_s
+        "https://integrity.test.grandrounds.com/#{@build.url}"
       end
 
       def build_output
