@@ -24,13 +24,13 @@ module Integrity
         @status, @desc =
           case @status.to_sym
             when :started, :pending, :building
-              [:pending, 'The build has is running on Honesty CI']
+              [:pending, 'This build has is running on Honesty CI']
             when :success
-              [:success, 'The build succeeded on Honesty CI']
+              [:success, 'This build succeeded on Honesty CI']
             when :failed, :failure
-              [:failure, 'The build failed on Honesty CI']
+              [:failure, 'This build failed on Honesty CI']
             when :error
-              [:error,   'The build raised an error on Honesty CI']
+              [:error,   'This build raised an error on Honesty CI']
           end
         true
       end
