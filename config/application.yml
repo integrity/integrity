@@ -1,4 +1,4 @@
-environment: <%= ENV['RACK_ENV'] || :production %>
+environment: <%= ENV['RACK_ENV'].try(:to_sym) || :production %>
 rack: 'test'
 
 builds:

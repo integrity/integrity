@@ -36,7 +36,7 @@ app = RConfig.application
 
 ENV['RACK_ENV'] = (app.environment || :production).to_s
 
-if app.environment == :production
+if app.environment.to_sym == :production
   base_url = 'https://integrity.test.grandrounds.com/'
 else
   base_url = 'http://' << %x{ hostname }
