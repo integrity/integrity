@@ -187,6 +187,12 @@ module Integrity
       end
     end
 
+    get '/branches' do
+      load_projects
+      @branches = Integrity::Branch.all(limit:30, order: :updated_at.desc)
+      show :branches, title: 'project'
+    end
+
     # List Running Builds (Index)
     get '/running' do
       login_required

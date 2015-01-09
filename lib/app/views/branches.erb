@@ -1,0 +1,50 @@
+<%= partial(:auto_reload) %>
+
+<% if @branches.empty? %>
+<% else %>
+  <div class="row" id="branches">
+    <h3 class="text-center short"><%= "#{@branches.count} Recent Branch#{@branches.count == 1 ? '' : 'es'}" %></h3>
+
+
+
+    <div class="table-responsive">
+      <table class="table table-hover table-condensed" id="previous_builds">
+        <thead>
+          <tr>
+            <th>Active</th>
+            <th>Project</th>
+            <th>Branch</th>
+            <th>Endpoint</th>
+            <th>Sha</th>
+            <th>Last Build ID</th>
+            <th>User</th>
+            <th>Message</th>
+            <th>Committed</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @branches.each do |branch| %>
+            <tr>
+              <td> </td>
+              <td> <%= branch.project.name %></td>
+              <td> <%= branch.name %> </td>
+              <td></td>
+              <td> <%= branch.last_build ? branch.last_build.sha1 : nil %> </td>
+              <td> <%= branch.last_build_id %> </td>
+              <td> <%= branch.last_build ? branch.last_build.author : nil %></td>
+              <td> <%= branch.last_build ? branch.last_build.message : nil %></td>
+              <td> <%= branch.last_build ? branch.last_build.committed_at : nil %></td>
+              <td> <button type="button" href="" class="btn"> Lock </button> </td>
+              <td> <button type="button" href="" class="btn"> Resume </button> </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% end %>
+
+
+
