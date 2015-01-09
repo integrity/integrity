@@ -1,7 +1,7 @@
 module Integrity
   class InstanceManager
 
-    LARGE_BUILDS_PER_MACHINE = 3
+    LARGE_BUILDS_PER_MACHINE = 2
     SMALL_BUILDS_PER_MACHINE = LARGE_BUILDS_PER_MACHINE * 8
 
     def utilization_metrics
