@@ -1,4 +1,4 @@
-<%= build_name %>_app:
+app:
   image: grnds/<%= project %>_ci
   command: git clone https://<%= read_token %>@github.com/consultingmd/consultingmd && ./consultingmd/honesty/git-checkout.sh server from_github
   environment:
@@ -8,16 +8,16 @@
     AWS_SECRET_ACCESS_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
     AWS_SECRET_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
   links:
-    - <%= build_name %>_mysql
-    - <%= build_name %>_mailcatcher
-    - <%= build_name %>_delayedjob
+    - mysql
+    - mailcatcher
+    - delayedjob
   xfleet:
-    machineof: <%= build_name %>_mysql.service
+    machineof: mysql
   ports:
    - :3000
    - :8000
 
-<%= build_name %>_delayedjob:
+delayedjob:
   image: grnds/<%= project %>_ci
   command: git clone https://<%= read_token %>@github.com/consultingmd/consultingmd && ./consultingmd/honesty/git-checkout.sh delayed_job from_github
   environment:
@@ -27,20 +27,20 @@
     AWS_SECRET_ACCESS_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
     AWS_SECRET_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
   links:
-    - <%= build_name %>_mysql
-    - <%= build_name %>_mailcatcher
+    - mysql
+    - mailcatcher
   xfleet:
-    machineof: <%= build_name %>_mysql.service
+    machineof: mysql
 
-<%= build_name %>_mailcatcher:
+mailcatcher:
   image: simpledrupalcloud/mailcatcher
   ports:
     - :25
     - :80
   xfleet:
-    machineof: <%= build_name %>_mysql.service
+    machineof: mysql
 
-<%= build_name %>_mysql:
+mysql:
   image: grnds/mysql
   ports:
     - :3306

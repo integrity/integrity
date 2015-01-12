@@ -1,6 +1,6 @@
 # SERVICE_TEMPLATE
 
-<%= build_name %>_app:
+app:
   image: grnds/<%= project %>_ci
   environment:
     SHA: <%= sha %>
@@ -12,11 +12,11 @@
     SAUCE_USERNAME: <%= ENV['SAUCE_USERNAME'] %>
     SAUCE_ACCESS_KEY: <%= ENV['SAUCE_ACCESS_KEY'] %>
   links:
-    - <%= build_name %>_mysql
+    - mysql
   xfleet:
-    machineof: <%= build_name %>_mysql.service
+    machineof: mysql
 
-<%= build_name %>_mysql:
+mysql:
   image: grnds/mysql
   ports:
     - :3306
