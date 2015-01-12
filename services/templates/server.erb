@@ -1,0 +1,47 @@
+<%= build_name %>_app:
+  image: grnds/<%= project %>_ci
+  command: git clone https://<%= read_token %>@github.com/consultingmd/consultingmd && ./consultingmd/honesty/git-checkout.sh server from_github
+  environment:
+    SHA: <%= sha %>
+    GITHUB_READ_TOKEN: <%= read_token %>
+    AWS_ACCESS_KEY_ID: <%= ENV['AWS_ACCESS_KEY_ID'] %>
+    AWS_SECRET_ACCESS_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
+    AWS_SECRET_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
+  links:
+    - <%= build_name %>_mysql
+    - <%= build_name %>_mailcatcher
+    - <%= build_name %>_delayedjob
+  xfleet:
+    machineof: <%= build_name %>_mysql.service
+  ports:
+   - :3000
+   - :8000
+
+<%= build_name %>_delayedjob:
+  image: grnds/<%= project %>_ci
+  command: git clone https://<%= read_token %>@github.com/consultingmd/consultingmd && ./consultingmd/honesty/git-checkout.sh delayed_job from_github
+  environment:
+    SHA: <%= sha %>
+    GITHUB_READ_TOKEN: <%= read_token %>
+    AWS_ACCESS_KEY_ID: <%= ENV['AWS_ACCESS_KEY_ID'] %>
+    AWS_SECRET_ACCESS_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
+    AWS_SECRET_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
+  links:
+    - <%= build_name %>_mysql
+    - <%= build_name %>_mailcatcher
+  xfleet:
+    machineof: <%= build_name %>_mysql.service
+
+<%= build_name %>_mailcatcher:
+  image: simpledrupalcloud/mailcatcher
+  ports:
+    - :25
+    - :80
+  xfleet:
+    machineof: <%= build_name %>_mysql.service
+
+<%= build_name %>_mysql:
+  image: grnds/mysql
+  ports:
+    - :3306
+
