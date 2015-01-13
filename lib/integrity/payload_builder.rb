@@ -25,7 +25,7 @@ module Integrity
     end
 
     def commits
-      @commits ||= Integrity.config.build_all? ? @payload.commits : [@payload.head]
+      @commits ||= Integrity.config.build_all? ? @payload.commits : [@payload.head].compact
     end
 
     def projects

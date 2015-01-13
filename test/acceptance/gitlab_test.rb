@@ -85,7 +85,12 @@ class GitLabTest < Test::Unit::AcceptanceTestCase
     gitlab_post payload('new_branch')
     visit '/my-test-project-experimental'
 
+    # project exist
     assert_contain('My Test Project (experimental)')
+
+    # builds not exist because payload haven't commits
+    assert_not_contain('(commit is missing)')
+    assert_not_contain('Previous builds')
   end
 
   scenario 'Normal push; build head' do
