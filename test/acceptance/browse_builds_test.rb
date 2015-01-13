@@ -17,7 +17,7 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
     assert_contain("No builds for this project, buddy")
 
     click_link "GitHub"
-    assert last_request.url.include?("http://github.com")
+    assert last_request.url.include?("https://github.com")
   end
 
   scenario "Browsing to a project with all kind of builds" do
@@ -39,7 +39,7 @@ class BrowseBuildsTest < Test::Unit::AcceptanceTestCase
 
     click_link Build.first.sha1_short
     click_link "on GitHub"
-    assert last_request.url.include?("http://github.com")
+    assert last_request.url.include?("https://github.com")
 
     visit "/integrity"
     click_link "raw"

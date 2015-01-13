@@ -39,7 +39,7 @@ module AcceptanceHelper
     response.headers["Content-Type"]
   end
 
-  # thanks http://github.com/ichverstehe
+  # thanks https://github.com/ichverstehe
   def mock_socket
     socket, server = MockSocket.new, MockSocket.new
     socket.in, server.out = IO.pipe

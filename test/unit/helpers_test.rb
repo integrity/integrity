@@ -21,7 +21,7 @@ class HelpersTest < IntegrityTest
   test "github urls" do
     project = Project.gen(:integrity)
 
-    assert_equal "http://github.com/foca/integrity",
+    assert_equal "https://github.com/foca/integrity",
       @h.github_project_url(project).to_s
 
     build = Build.gen
@@ -32,19 +32,19 @@ class HelpersTest < IntegrityTest
     project.builds << build
     project.save
 
-    assert_equal "http://github.com/foca/integrity/commit/#{commit_id}",
+    assert_equal "https://github.com/foca/integrity/commit/#{commit_id}",
       @h.github_commit_url(build)
 
     project.update(:uri => "git@github.com:sr/integrity.git")
 
-    assert_equal "http://github.com/sr/integrity",
+    assert_equal "https://github.com/sr/integrity",
       @h.github_project_url(project)
 
     project.update(:branch => "baz")
-    assert_equal "http://github.com/sr/integrity/compare/master...baz",
+    assert_equal "https://github.com/sr/integrity/compare/master...baz",
       @h.github_project_url(project).to_s
 
-    assert_equal "http://github.com/sr/integrity/commit/#{commit_id}",
+    assert_equal "https://github.com/sr/integrity/commit/#{commit_id}",
       @h.github_commit_url(build)
   end
 end
