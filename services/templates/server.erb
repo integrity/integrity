@@ -1,0 +1,47 @@
+app:
+  image: grnds/<%= project %>_ci
+  command: git clone https://<%= read_token %>@github.com/consultingmd/consultingmd && ./consultingmd/honesty/git-checkout.sh server from_github
+  environment:
+    SHA: <%= sha %>
+    GITHUB_READ_TOKEN: <%= read_token %>
+    AWS_ACCESS_KEY_ID: <%= ENV['AWS_ACCESS_KEY_ID'] %>
+    AWS_SECRET_ACCESS_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
+    AWS_SECRET_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
+  links:
+    - mysql
+    - mailcatcher
+    - delayedjob
+  xfleet:
+    machineof: mysql
+  ports:
+   - :3000
+   - :8000
+
+delayedjob:
+  image: grnds/<%= project %>_ci
+  command: git clone https://<%= read_token %>@github.com/consultingmd/consultingmd && ./consultingmd/honesty/git-checkout.sh delayed_job from_github
+  environment:
+    SHA: <%= sha %>
+    GITHUB_READ_TOKEN: <%= read_token %>
+    AWS_ACCESS_KEY_ID: <%= ENV['AWS_ACCESS_KEY_ID'] %>
+    AWS_SECRET_ACCESS_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
+    AWS_SECRET_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
+  links:
+    - mysql
+    - mailcatcher
+  xfleet:
+    machineof: mysql
+
+mailcatcher:
+  image: simpledrupalcloud/mailcatcher
+  ports:
+    - :25
+    - :80
+  xfleet:
+    machineof: mysql
+
+mysql:
+  image: grnds/mysql
+  ports:
+    - :3306
+

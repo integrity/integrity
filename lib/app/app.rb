@@ -39,7 +39,7 @@ module Integrity
     end
 
     def authorized_ip?
-      remote_ip.index('10.') == 0 || settings.development?
+      remote_ip.index('10.') == 0 || Integrity.development?
     end
 
     def web_hook?
@@ -360,7 +360,7 @@ module Integrity
 
       STDERR.puts "BUILD:  #{current_build.inspect}"
       STDERR.puts "COMMIT: #{current_build.commit.inspect}"
-      @build = current_project.build(current_build.commit, true)
+      @build = current_project.build(current_build.commit, true, params["template"])
       redirect build_url(@build)
     end
 
