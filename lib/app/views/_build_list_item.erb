@@ -3,7 +3,15 @@
 <% status = build_status(build) %>
   <tr class="<%= build.bootstrap_class %>">
     <td class="status"><i class="fa fa-<%= status.icon %>"></td>
-    <td class="service"><i class="fa fa-<%= build_service(build)[:icon] %>"></td>
+
+    <td class="service">
+      <% if build.public_link %>
+        <%= "#{link_to %Q{<i class="fa fa-#{build_service(build)[:icon]}"></i>}, build.public_link}" %>
+      <% else %>
+        <i class="fa fa-<%= build_service(build)[:icon] %>">
+      <% end %>
+    </td>
+
     <td><%= link_to "#{build.project.try(:name)}", project_path(build.project)%></td>
     <td><%= link_to build.id, build_path(build) %></td>
     <td><a href="<%= build_path(build)%>"><%= build.sha1_short %></td>

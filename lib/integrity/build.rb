@@ -382,7 +382,7 @@ module Integrity
     end
 
     def public_link
-      machine_ip && public_port ? "#{machine_ip}:#{public_port}" : nil
+      machine_ip && public_port ? "http://#{machine_ip}:#{public_port}" : false
     end
 
     private
