@@ -1,12 +1,23 @@
 = master
 
+ * Builds are now grouped by date in UI. [Alexandr Prudnikov]
+
+ * Integrity configuration can now be specified in a non-versioned file.
+   [Alexandr Prudnikov]
+
+ * Added Postmark notifier. [Forrest Ye]
+
+ * Resque UI is now automatically exposed for resque builder
+   (see Resque section in doc). [Alexandr Prudnikov]
+
+ * More compact view for related projects (auto_branch=true). [Alexandr Prudnikov]
+
+ * Added GitLab as a build trigger. [Alexandr Prudnikov]
+
  * Added IRC notifier. [David Somers]
 
- * Added option to email notifier to email only when build status changes.
-
- * Added GitLab as a build trigger.
-
- * Resque UI is now automatically exposed for resque builder (see Resque section in doc).
+ * Added option to only email on broken builds or changed build statuses
+   to email notifier. [Ben Arnold]
 
 = 26 / 2013-08-27
 
