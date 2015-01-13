@@ -26,6 +26,7 @@ module Integrity
     property :fleetctl_status,       String
     property :machine_ip,            String
     property :service_template,      String, default: 'spec'
+    property :public_port,           String
 
     timestamps :at
 
@@ -132,9 +133,18 @@ module Integrity
       completed? && !interrupted?
     end
 
+    def spec?
+      service_template == 'spec'
+    end
+
+    def server?
+      service_template == 'server'
+    end
+
     def started!
       update(started_at: Time.now)
       self.class.update_fleetctl_status
+      update_ports if server?
     end
 
     def started?
@@ -367,7 +377,29 @@ module Integrity
       try(:project).try(:weight)
     end
 
+    def update_ports
+      update(public_port: get_public_port)
+    end
+
+    def public_link
+      machine_ip && public_port ? "#{machine_ip}:#{public_port}" : nil
+    end
+
     private
+
+    def get_public_port
+      ports = get_ports(app_service_name)
+      port = ports.select{|p| p[:internal_port] == "3000"}.first
+      port[:external_port] if port
+    end
+
+    def get_ports(service)
+      docker_info = `ssh core@#{machine_ip} 'docker ps | grep #{service}'`
+      ports = docker_info.split(" ").select{|e| e.include?("->")}
+      ports.map!{|e| e.split("->")}.map!{|n, m| {external_port:n, internal_port:m}}
+      ports.each{|p| p[:external_port] = /0.0.0.0:(\d*)/.match(p[:external_port])[1]}
+      ports.each{|p| p[:internal_port] = /(\d*)\//.match(p[:internal_port])[1]}
+    end
 
     def make_zombie
       #The zombie 'exists' so long as the cleanup is not done. This helps for debugging
