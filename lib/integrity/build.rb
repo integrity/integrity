@@ -14,17 +14,18 @@ module Integrity
     GLOB_CHARS = '*?[]'
     ZOMBIE_LIFESPAN = 1.hour
 
-    property :id,           Serial
-    property :project_id,   Integer, required: true
-    property :branch_id,    Integer, required: true
-    property :output,       Text,    default: '', length: 1048576
-    property :successful,   Boolean, default: false
-    property :rebuild,      Boolean, default: false
-    property :started_at,   DateTime
-    property :completed_at, DateTime
-    property :state,           String
-    property :fleetctl_status, String
-    property :machine_ip,      String
+    property :id,                    Serial
+    property :project_id,            Integer, required: true
+    property :branch_id,             Integer, required: true
+    property :output,                Text,    default: '', length: 1048576
+    property :successful,            Boolean, default: false
+    property :rebuild,               Boolean, default: false
+    property :started_at,            DateTime
+    property :completed_at,          DateTime
+    property :state,                 String
+    property :fleetctl_status,       String
+    property :machine_ip,            String
+    property :service_template,      String, default: 'spec'
 
     timestamps :at
 
@@ -328,6 +329,7 @@ module Integrity
       "/#{permalink}/builds/#{id}"
     end
 
+    #'jarvis', '98j98j89j', 389, 'spec'
     def service_vars
       [permalink, sha1_short, id]
     end
