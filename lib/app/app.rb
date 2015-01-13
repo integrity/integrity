@@ -66,14 +66,6 @@ module Integrity
     end
 
     before do
-      STDERR.puts "## DEBUG =============================="
-      STDERR.puts "PATH:        #{request.path_info}"
-      STDERR.puts "IP:          #{request.ip}"
-      STDERR.puts "REMOTE IP:   #{remote_ip}"
-      STDERR.puts "AUTHORIZED?: #{authorized_ip?}"
-      STDERR.puts "WEBHOOK?:    #{web_hook?}"
-      STDERR.puts "ENV:        #{settings.environment}"
-      STDERR.puts "## DEBUG =============================="
       halt 403 unless authorized_ip? || web_hook? || status_update?
       halt 404 if request.path_info.include?('favico')
       if Integrity.base_url.present?
