@@ -1,11 +1,11 @@
 Integrity — Continuous Integration server
 =========================================
 
-Code: http://github.com/integrity/integrity
+Code: https://github.com/integrity/integrity
 
 Docs: http://integrity.github.io/
 
-Bugs: http://github.com/integrity/integrity/issues
+Bugs: https://github.com/integrity/integrity/issues
 
 IRC: [irc://irc.freenode.net/integrity](irc://irc.freenode.net/integrity)
 

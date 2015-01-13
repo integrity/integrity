@@ -148,7 +148,7 @@
  * Remove the /push endpoint in favor of GitHub-ish payloads
 
  * Improved build output colorization thanks to Ryan Tomayko's bcat.
-   http://github.com/rtomayko/bcat
+   https://github.com/rtomayko/bcat
 
  * Improved GitHub links to compare view and commit page
    [Łukasz Strzałkowski, Simon Rozet]
@@ -192,7 +192,7 @@
 
  * Add a rake task to clean-up old build checkouts
 
- * Add a TCP notifier. Works great with http://github.com/atmos/ircat.js
+ * Add a TCP notifier. Works great with https://github.com/atmos/ircat.js
 
  * Fix URLs, allowing to mount Integrity to a sub direcory [Iain Hecker]
 
@@ -285,7 +285,7 @@
  * Integrity won't be available as a gem anymore. Use git or grab a tarball
    from GitHub.
 
- * Dependencies are managed with Bundler. See <http://github.com/wycats/bundler>
+ * Dependencies are managed with Bundler. See <https://github.com/wycats/bundler>
 
  * The installer has been removed.
 
@@ -297,7 +297,7 @@
   a deprecation layer might be added in a future release.
 
  * Support for Subversion is mostly there, it just needs testing. Please see
-   <http://github.com/integrity/integrity/commit/f1dc4bf6dbbf85d333fd4e006f040588102b5538>
+   <https://github.com/integrity/integrity/commit/f1dc4bf6dbbf85d333fd4e006f040588102b5538>
 
 = 0.1.11 / 2009-07-26
 
@@ -385,7 +385,7 @@
  * Depend on sinatra-authorization (which has no dependency) instead
    of sinatra-ditties.
 
- * Use [mg](http://github.com/sr/mg) to manage release
+ * Use [mg](https://github.com/sr/mg) to manage release
 
  * Various tweaks to the bootstraping Rake tasks. I am not happy
    with them, though.

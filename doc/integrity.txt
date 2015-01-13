@@ -198,7 +198,7 @@ NOTE: The threaded builder
 
 ==== Delayed::Job
 The +dj+ builder queues up the builds into an SQL database using
-http://github.com/tobi/delayed_job[Delayed::Job]. To use it, install its
+https://github.com/tobi/delayed_job[Delayed::Job]. To use it, install its
 dependencies by uncommenting the relevant lines in the `Gemfile` and run
 `bundle lock && bundle install`.
 
@@ -210,7 +210,7 @@ http://api.rubyonrails.org/classes/ActiveRecord/Base.html#method-c-establish_con
 connection hash].
 
 Run a worker with `rake jobs:work`. See
-http://github.com/tobi/delayed_job#readme[Delayed::Job's documentation]
+https://github.com/tobi/delayed_job#readme[Delayed::Job's documentation]
 for more details.
 
 ==== Resque
@@ -401,7 +401,7 @@ freenode]. If no one happens to be around, you can ask our mailing list at
 integrity@librelist.com. (http://librelist.com/browser/integrity/[Archives])
 
 If you find a bug, or want to give us a feature request, log it into our
-http://github.com/integrity/integrity/issues[bug tracker].
+https://github.com/integrity/integrity/issues[bug tracker].
 
 To start hacking, grab the code from our git repository at
 `git://github.com/integrity/integrity.git` and setup the dependencies with

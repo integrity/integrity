@@ -9,9 +9,9 @@ module Integrity
         repo  = parts.last.chomp(".git")
 
         if ! branch || project.branch == "master"
-          "http://github.com/#{user}/#{repo}"
+          "https://github.com/#{user}/#{repo}"
         else
-          "http://github.com/#{user}/#{repo}/compare/" \
+          "https://github.com/#{user}/#{repo}/compare/" \
             "master...#{project.branch}"
         end
       end
@@ -79,7 +79,7 @@ module Integrity
         build_path(build, 'artifacts', CGI.escape(CGI.escape(artifact)))
       end
 
-      # Copyright (MIT) Eric Kidd -- http://github.com/emk/sinatra-url-for
+      # Copyright (MIT) Eric Kidd -- https://github.com/emk/sinatra-url-for
       #
       # Construct a link to +url_fragment+, which should be given relative to
       # the base of this Sinatra app.  The mode should be either

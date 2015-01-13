@@ -5,7 +5,7 @@ class TCPNotificationTest < Test::Unit::AcceptanceTestCase
     As an administrator,
     I want to setup the TCP notifiers on my projects
     So that I get alerts with every build
-    Using Corey's awesome  http://github.com/atmos/irccat-nodejs
+    Using Corey's awesome  https://github.com/atmos/irccat-nodejs
   EOS
 
   setup do

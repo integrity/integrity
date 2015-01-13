@@ -8,7 +8,7 @@ cat <<EOF
 <link href=integrity.css rel=stylesheet type="text/css">
 </head>
 <body>
-<p><a href="http://github.com/integrity/integrity">
+<p><a href="https://github.com/integrity/integrity">
 <img style="position: absolute; top: 0; right: 0; border: 0;"
 src="http://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"
 alt="Fork me on GitHub" /></a></p>
@@ -30,9 +30,9 @@ cat <<EOF
     <a href="http://bsdpower.com">Oleg Pudeyev</a>
   </div>
   <div class=links>
-    <a href="http://github.com/integrity/integrity/issues">Bugs / Support</a>
+    <a href="https://github.com/integrity/integrity/issues">Bugs / Support</a>
         |
-    <a href="http://github.com/integrity/integrity">Source Code</a>
+    <a href="https://github.com/integrity/integrity">Source Code</a>
   </div>
 </div>
   </body>
