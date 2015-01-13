@@ -28,6 +28,10 @@
   color: #999;
 }
 
+.table#previous_builds .service .fa{
+  color: #999;
+}
+
 .table#previous_builds .commit-message {
   font-size: 0.8em;
   color: #666;

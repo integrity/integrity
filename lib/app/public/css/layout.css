@@ -386,6 +386,14 @@ li {
   margin-right: 0.5em;
   margin-top: 1.25em; }
 
+#build form.submit {
+  margin: 0;
+  padding: 0;
+  float: right;
+  margin-right: 0.5em;
+  margin-top: 1.25em; }
+}
+
 #build, .head{
   background: #ddd;
 }
