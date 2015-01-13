@@ -44,9 +44,9 @@ gem 'daemons'
 gem 'pony'                                      # E-mail
 gem 'rest-client'
 
-gem 'fleetctl', '0.1.4.3', git: 'git://github.com/ConsultingMD/ruby-fleetctl.git'
-#gem 'fleetctl', path: '/home/ozzie/ruby-fleetctl'
-gem 'crust', '0.0.11', git: 'git://github.com/ConsultingMD/crust.git'
+#gem 'fleetctl', '0.1.4.3', git: 'git://github.com/ConsultingMD/ruby-fleetctl.git'
+gem 'fleetctl', path: '/home/ozzie/ruby-fleetctl'
+gem 'crust', '0.0.14', git: 'git://github.com/ConsultingMD/crust.git'
 # gem 'crust', path: '/Users/rconda/Projects/GrandRounds/crust'
 #gem 'crust', path: '/home/ozzie/crust'
 
