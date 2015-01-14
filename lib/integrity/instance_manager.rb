@@ -27,8 +27,8 @@ module Integrity
     def reset_max_running_builds
       old_max = Integrity.max_running_builds
       new_max = capable_running_builds
-      Integrity.config.max_running_builds = capable_running_builds
-      if old_max <  capable_running_builds
+      Integrity.config.max_running_builds = new_max
+      if old_max <  new_max
         Integrity::Event.instance.dispatch_event('queue_builds')
       end
     end
