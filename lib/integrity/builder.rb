@@ -30,8 +30,7 @@ module Integrity
       build.cleanup!
       Crust.start(*(build.service_vars + [build.service_template]))
       Build.update_fleetctl_status
-      build = build.reload
-      build.started!
+      build = build.reload.started!
       log "#{Build.running.count} builds running."
     end
 

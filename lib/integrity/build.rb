@@ -147,7 +147,6 @@ module Integrity
 
     def started!
       update(started_at: Time.now)
-      self.class.update_fleetctl_status
       update_ports if server?
     end
 
@@ -164,7 +163,7 @@ module Integrity
     end
 
     def reload
-      Build.get(id)
+      self.class.get(id)
     end
 
     def successful?

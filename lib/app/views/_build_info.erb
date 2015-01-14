@@ -43,16 +43,16 @@
 
       <form action="<%= build_path(build) %>" method="post" class="submit">
         <input name="template" type="hidden" value="server"/>
-        <button class="btn btn-default" title='Launch Server' type='submit'>
-          Launch Server
+        <button class="btn btn-default" title='Run Server' type='submit'>
+          Run Server
         </button>
       </form>
 
       <% if build.completed? or build.service_template != 'spec' %>
         <form action="<%= build_path(build) %>" method="post" class="submit">
-          <button class="btn btn-default" title='Launch Specs' type='submit'>
+          <button class="btn btn-default" title='Run Specs' type='submit'>
             <img src="/images/cats.png" height="20em">
-            Launch Specs
+            Run Specs
           </button>
         </form>
       <% end %>
