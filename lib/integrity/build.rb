@@ -141,8 +141,11 @@ module Integrity
       service_template == 'server'
     end
 
-    def started!
+    def initializing!
       update(started_at: Time.now)
+    end
+
+    def started!
       self.class.update_fleetctl_status
       update_ports if server?
     end
@@ -157,6 +160,10 @@ module Integrity
 
     def notify
       project.enabled_notifiers.each { |n| n.notify(self) }
+    end
+
+    def reload
+      Build.get(id)
     end
 
     def successful?
@@ -382,7 +389,7 @@ module Integrity
     end
 
     def public_link
-      machine_ip && public_port ? "http://#{machine_ip}:#{public_port}" : false
+      @machine_ip && public_port ? "http://#{machine_ip}:#{public_port}" : false
     end
 
     private
