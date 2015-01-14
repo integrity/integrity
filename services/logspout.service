@@ -12,5 +12,5 @@ ExecStart=/usr/bin/docker run -v=/var/run/docker.sock:/tmp/docker.sock grnds/log
 ExecStop=/usr/bin/docker kill logspout
 ExecStopPost=/usr/bin/docker ps -a -q | xargs docker rm
 
-[X-fleet]
+[X-Fleet]
 Global=true

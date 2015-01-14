@@ -28,9 +28,9 @@ module Integrity
     def self.launch_build(build)
       log "Launching Build: #{build.service_vars.inspect}"
       build.cleanup!
-      # build.rebuild ? build.cleanup! : build.kill_previous_builds!
       Crust.start(*(build.service_vars + [build.service_template]))
-      build.started!
+      Build.update_fleetctl_status
+      build = build.reload.started!
       log "#{Build.running.count} builds running."
     end
 
