@@ -119,8 +119,7 @@ module Integrity
     end
 
     get '/utilization.json' do
-      metrics = Integrity.instance_manager.utilization_metrics
-      json metrics
+      json Integrity.instance_manager.utilization_metrics
     end
 
     get '/login' do
@@ -149,21 +148,16 @@ module Integrity
       Payload.build(params).to_s
     end
 
-    post '/machines/update' do
-      Integrity.instance_manager.refresh_machines
-      redirect to '/settings'
-    end
-
     # Settings
     get '/settings' do
       login_required
+      @instance_manager = Integrity.instance_manager
       show :settings, title: 'settings'
     end
 
     # Change Settings
     post '/settings' do
       login_required
-      config.max_running_builds = params["max_running_builds"]
       redirect '/settings'
     end
 

@@ -14,7 +14,8 @@ module Integrity
     # Keep Queuing Builds until we have reached the threashhold.
     # Try to queue all pending builds.
     def self.queue_builds!
-      Build.pending.count.times{ Builder.queue_next_build }
+      log "#{Build.pending.count} builds pending. Attempting to queue remaining builds..."
+      Build.pending.map{|b| b.run }
     end
 
     # If there are any pending builds, start the first one.

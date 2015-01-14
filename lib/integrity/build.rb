@@ -86,7 +86,7 @@ module Integrity
     end
 
     def cleanup!
-      Builder.destroy_build(self)
+      Integrity::Event.instance.dispatch_event('destroy_build', self.id)
     end
 
     def complete!(result)

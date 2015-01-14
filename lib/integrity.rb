@@ -47,6 +47,7 @@ require 'runnable'
 require 'docker'
 
 require 'app/app'
+require 'app/event'
 
 require 'integrity/web_utils'
 require 'integrity/configuration'
@@ -272,7 +273,7 @@ module Integrity
   end
 
   def self.instance_manager
-    @instance_manager ||= InstanceManager.new
+    InstanceManager.new
   end
 end
 
