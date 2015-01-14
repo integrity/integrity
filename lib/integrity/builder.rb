@@ -27,7 +27,6 @@ module Integrity
     # older builds from same branch (and itself if it was a re-run)
     def self.launch_build(build)
       log "Launching Build: #{build.service_vars.inspect}"
-      build.initializing!
       build.cleanup!
       Crust.start(*(build.service_vars + [build.service_template]))
       Build.update_fleetctl_status

@@ -372,21 +372,10 @@ module Integrity
       redirect root_url
     end
 
-    # Stop Running Build (Destroy the running service, and remove the build).
-    post '/:project/builds/:build/destroy' do
-      login_required
-
-      current_build.kill! if current_build.building?
-
-      redirect project_url(current_project)
-    end
-
-    # Cancel the Pending Build (take it out of the build queue).
+    # Cancel the Pending or Running Build
     post '/:project/builds/:build/cancel' do
       login_required
-
-      current_build.cancel! if current_build.pending?
-
+      current_build.cancel!
       redirect project_url(current_project)
     end
 

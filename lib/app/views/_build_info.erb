@@ -24,37 +24,39 @@
 
     </div>
     <div class="col-sm-4">
-      <% if build.building? %>
-        <form action="<%= build_path(build, :destroy) %>" method="post" class="submit">
-          <button class="btn btn-danger " title='Rebuild this commit' type='submit'>
-            <img src="/images/swords.png" height="20em">
-            Kill Build
-          </button>
-        </form>
-      <% end %>
-      <% if build.idle? %>
+      <% unless build.building? %>
         <form action="<%= build_path(build) %>" method="post" class="submit">
           <input name="_method" type="hidden" value="delete"/>
           <button class="btn btn-danger" title="Delete Build">
-            <img src="/images/swords.png" height="20em">
-            Kill Build
+            Delete
           </button>
         </form>
       <% end %>
-        <form action="<%= build_path(build) %>" method="post" class="submit">
-          <input name="template" type="hidden" value="server"/>
-          <button class="btn btn-default" title='Rebuild this commit' type='submit'>
-            Launch Server
+
+      <% if build.pending? or build.building? %>
+        <form action="<%= build_path(build, :cancel) %>" method="post" class="submit">
+          <button class="btn btn-danger" title="Cancel Build">
+            Cancel
           </button>
         </form>
+      <% end %>
+
+      <form action="<%= build_path(build) %>" method="post" class="submit">
+        <input name="template" type="hidden" value="server"/>
+        <button class="btn btn-default" title='Launch Server' type='submit'>
+          Launch Server
+        </button>
+      </form>
+
       <% if build.completed? or build.service_template != 'spec' %>
         <form action="<%= build_path(build) %>" method="post" class="submit">
-          <button class="btn btn-default" title='Rebuild this commit' type='submit'>
+          <button class="btn btn-default" title='Launch Specs' type='submit'>
             <img src="/images/cats.png" height="20em">
             Launch Specs
           </button>
         </form>
       <% end %>
+
     </div>
   </div>
 

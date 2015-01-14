@@ -113,7 +113,11 @@ module Integrity
     end
 
     def cancel!
-      update(state: 'cancelled', completed_at: Time.now)
+      if pending?
+        update(state: 'cancelled', completed_at: Time.now)
+      elsif building?
+        kill!
+      end
     end
 
     def idle?
@@ -141,11 +145,8 @@ module Integrity
       service_template == 'server'
     end
 
-    def initializing!
-      update(started_at: Time.now)
-    end
-
     def started!
+      update(started_at: Time.now)
       self.class.update_fleetctl_status
       update_ports if server?
     end
