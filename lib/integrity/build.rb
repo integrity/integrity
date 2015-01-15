@@ -101,6 +101,7 @@ module Integrity
       cleanup! if params[:cleanup]
       time = completed_at || Time.now
       update(state: 'killed', completed_at: time)
+      Integrity::Event.instance.dispatch_event('queue_builds')
     end
 
     def kill_previous_builds!
@@ -287,7 +288,7 @@ module Integrity
       escaped
     end
     private :escape_glob
-    
+
     def each_char(str)
       if str.respond_to?(:each_char)
         # ruby 1.9
@@ -302,7 +303,7 @@ module Integrity
       end
     end
     private :each_char
-    
+
     def artifact_files
       build_dir = build_directory
       escaped_build_dir = nil
@@ -337,7 +338,7 @@ module Integrity
         a[:name] <=> b[:name]
       end
     end
-    
+
     def to_json
       {build: {id: id, project: {name: project.name}, status: status}}.to_json
     end
