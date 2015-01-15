@@ -39,7 +39,7 @@ module Integrity
     end
 
     def authorized_ip?
-      remote_ip.index('10.') == 0 || settings.development?
+      remote_ip.index('10.') == 0 || Integrity.development?
     end
 
     def web_hook?
@@ -66,14 +66,6 @@ module Integrity
     end
 
     before do
-      STDERR.puts "## DEBUG =============================="
-      STDERR.puts "PATH:        #{request.path_info}"
-      STDERR.puts "IP:          #{request.ip}"
-      STDERR.puts "REMOTE IP:   #{remote_ip}"
-      STDERR.puts "AUTHORIZED?: #{authorized_ip?}"
-      STDERR.puts "WEBHOOK?:    #{web_hook?}"
-      STDERR.puts "ENV:        #{settings.environment}"
-      STDERR.puts "## DEBUG =============================="
       halt 403 unless authorized_ip? || web_hook? || status_update?
       halt 404 if request.path_info.include?('favico')
       if Integrity.base_url.present?
@@ -354,7 +346,7 @@ module Integrity
 
       STDERR.puts "BUILD:  #{current_build.inspect}"
       STDERR.puts "COMMIT: #{current_build.commit.inspect}"
-      @build = current_project.build(current_build.commit, true)
+      @build = current_project.build(current_build.commit, true, params["template"])
       redirect build_url(@build)
     end
 
@@ -374,21 +366,10 @@ module Integrity
       redirect root_url
     end
 
-    # Stop Running Build (Destroy the running service, and remove the build).
-    post '/:project/builds/:build/destroy' do
-      login_required
-
-      current_build.kill! if current_build.building?
-
-      redirect project_url(current_project)
-    end
-
-    # Cancel the Pending Build (take it out of the build queue).
+    # Cancel the Pending or Running Build
     post '/:project/builds/:build/cancel' do
       login_required
-
-      current_build.cancel! if current_build.pending?
-
+      current_build.cancel!
       redirect project_url(current_project)
     end
 

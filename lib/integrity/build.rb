@@ -14,17 +14,19 @@ module Integrity
     GLOB_CHARS = '*?[]'
     ZOMBIE_LIFESPAN = 1.hour
 
-    property :id,           Serial
-    property :project_id,   Integer, required: true
-    property :branch_id,    Integer, required: true
-    property :output,       Text,    default: '', length: 1048576
-    property :successful,   Boolean, default: false
-    property :rebuild,      Boolean, default: false
-    property :started_at,   DateTime
-    property :completed_at, DateTime
-    property :state,           String
-    property :fleetctl_status, String
-    property :machine_ip,      String
+    property :id,                    Serial
+    property :project_id,            Integer, required: true
+    property :branch_id,             Integer, required: true
+    property :output,                Text,    default: '', length: 1048576
+    property :successful,            Boolean, default: false
+    property :rebuild,               Boolean, default: false
+    property :started_at,            DateTime
+    property :completed_at,          DateTime
+    property :state,                 String
+    property :fleetctl_status,       String
+    property :machine_ip,            String
+    property :service_template,      String, default: 'spec'
+    property :public_port,           String
 
     timestamps :at
 
@@ -111,7 +113,11 @@ module Integrity
     end
 
     def cancel!
-      update(state: 'cancelled', completed_at: Time.now)
+      if pending?
+        update(state: 'cancelled', completed_at: Time.now)
+      elsif building?
+        kill!
+      end
     end
 
     def idle?
@@ -131,9 +137,17 @@ module Integrity
       completed? && !interrupted?
     end
 
+    def spec?
+      service_template == 'spec'
+    end
+
+    def server?
+      service_template == 'server'
+    end
+
     def started!
       update(started_at: Time.now)
-      self.class.update_fleetctl_status
+      update_ports if server?
     end
 
     def started?
@@ -146,6 +160,10 @@ module Integrity
 
     def notify
       project.enabled_notifiers.each { |n| n.notify(self) }
+    end
+
+    def reload
+      self.class.get(id)
     end
 
     def successful?
@@ -328,6 +346,7 @@ module Integrity
       "/#{permalink}/builds/#{id}"
     end
 
+    #'jarvis', '98j98j89j', 389, 'spec'
     def service_vars
       [permalink, sha1_short, id]
     end
@@ -365,7 +384,29 @@ module Integrity
       try(:project).try(:weight)
     end
 
+    def update_ports
+      update(public_port: get_public_port)
+    end
+
+    def public_link
+      @machine_ip && public_port ? "http://#{machine_ip}:#{public_port}" : false
+    end
+
     private
+
+    def get_public_port
+      ports = get_ports(app_service_name)
+      port = ports.select{|p| p[:internal_port] == "3000"}.first
+      port[:external_port] if port
+    end
+
+    def get_ports(service)
+      docker_info = `ssh core@#{machine_ip} 'docker ps | grep #{service}'`
+      ports = docker_info.split(" ").select{|e| e.include?("->")}
+      ports.map!{|e| e.split("->")}.map!{|n, m| {external_port:n, internal_port:m}}
+      ports.each{|p| p[:external_port] = /0.0.0.0:(\d*)/.match(p[:external_port])[1]}
+      ports.each{|p| p[:internal_port] = /(\d*)\//.match(p[:internal_port])[1]}
+    end
 
     def make_zombie
       #The zombie 'exists' so long as the cleanup is not done. This helps for debugging

@@ -85,7 +85,7 @@ module Integrity
       branch
     end
 
-    def build(commit, rebuild=false)
+    def build(commit, rebuild=false, service_template=nil)
       commit = Hashie::Mash.new(commit) if commit.is_a?(Hash)
       branch = get_branch(commit)
 
@@ -100,6 +100,7 @@ module Integrity
 
       if commit[:identifier].present?
         build = builds.create(commit: commit, branch: branch, rebuild: rebuild)
+        build.service_template = service_template if service_template
         build.save
         build.run
         build
