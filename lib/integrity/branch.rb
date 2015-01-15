@@ -12,6 +12,7 @@ module Integrity
     timestamps :at
 
     has n, :builds
+    has 1, :branch_builder
     belongs_to :project
     belongs_to :last_build, 'Build'
 

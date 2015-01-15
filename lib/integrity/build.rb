@@ -33,6 +33,7 @@ module Integrity
     belongs_to :project
     belongs_to :branch
     has 1,     :commit
+    has 1,     :branch_builder
 
     delegate :name, :permalink, to: :project
 
