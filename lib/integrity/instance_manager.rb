@@ -29,7 +29,7 @@ module Integrity
       new_max = capable_running_builds
       Integrity.config.max_running_builds = new_max
       if old_max <  new_max
-        Integrity::Event.instance.dispatch_event('queue_builds')
+        Integrity::Event.trigger('machine:added')
       end
     end
 

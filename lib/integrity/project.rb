@@ -59,7 +59,7 @@ module Integrity
       if build
         success = code.present? && code.zero?
         build.complete!(success)
-        Integrity::Event.instance.dispatch_event('queue_builds')
+        Integrity::Event.trigger('build:complete')
       else
         raise ArgumentError, 'Could not find a corresponding build'
       end
