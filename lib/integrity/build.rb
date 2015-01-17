@@ -3,8 +3,9 @@ require 'integrity/build/status'
 module Integrity
   class Build
     include DataMapper::Resource
+    extend DataMapper::Resource::ClassMethods
     include Status
-
+    
     GLOB_CHARS = '*?[]' unless defined?(GLOB_CHARS)
     ZOMBIE_LIFESPAN = 1.hour unless defined?(ZOMBIE_LIFESPAN)
 
