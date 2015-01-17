@@ -32,6 +32,8 @@ require 'dm-timestamps'
 require 'dm-aggregates'
 require 'dm-migrations'
 
+require 'coreext/data_mapper/resource'
+
 require 'addressable/uri'
 require 'chronic_duration'
 require 'bcat/ansi'
@@ -48,6 +50,7 @@ require 'docker'
 
 require 'app/app'
 
+require 'integrity/event'
 require 'integrity/web_utils'
 require 'integrity/configuration'
 require 'integrity/bootstrapper'
@@ -273,7 +276,7 @@ module Integrity
   end
 
   def self.instance_manager
-    @instance_manager ||= InstanceManager.new
+    InstanceManager.new
   end
 end
 

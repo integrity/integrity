@@ -4,28 +4,33 @@ module Integrity
     LARGE_BUILDS_PER_MACHINE = 2
     SMALL_BUILDS_PER_MACHINE = LARGE_BUILDS_PER_MACHINE * 8
 
+    attr_accessor :machines
+
+    def initialize
+      refresh
+    end
+
     def utilization_metrics
-      refresh_machines
       {
-      pending_builds: Build.pending.count,
-      running_builds: Build.running.count,
-      machines: machines.count,
-      new_machines_requested: new_machines_required
+        pending_builds: Build.pending.count,
+        running_builds: Build.running.count,
+        machines: machines.count,
+        new_machines_requested: new_machines_required
       }
     end
 
-    def machines
-      refresh_machines unless @machines
-      @machines
-    end
-
-    def refresh_machines
+    def refresh
       @machines = Crust.get_machines
       reset_max_running_builds
     end
 
     def reset_max_running_builds
-      Integrity.config.max_running_builds = capable_running_builds
+      old_max = Integrity.max_running_builds
+      new_max = capable_running_builds
+      Integrity.config.max_running_builds = new_max
+      if old_max <  new_max
+        Integrity::Event.trigger('machine:added')
+      end
     end
 
     def capable_running_builds

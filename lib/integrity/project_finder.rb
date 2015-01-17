@@ -10,8 +10,9 @@ module Integrity
     end
 
     def project
-      project = find_by_uri
-      project.get_branch(@repo.branch)
+      if project = find_by_uri
+        project.get_branch(@repo.branch)
+      end
       project
     end
 

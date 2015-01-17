@@ -14,7 +14,8 @@ module Integrity
     # Keep Queuing Builds until we have reached the threashhold.
     # Try to queue all pending builds.
     def self.queue_builds!
-      Build.pending.count.times{ Builder.queue_next_build }
+      log "#{Build.pending.count} builds pending. Attempting to queue remaining builds..."
+      Build.pending.map{|b| b.run }
     end
 
     # If there are any pending builds, start the first one.
@@ -28,16 +29,16 @@ module Integrity
     def self.launch_build(build)
       log "Launching Build: #{build.service_vars.inspect}"
       build.cleanup!
-      Crust.start(*(build.service_vars + [build.service_template]))
+      Crust.start(build.service_options)
       Build.update_fleetctl_status
-      build = build.reload.started!
+      build.reload.started!
       log "#{Build.running.count} builds running."
     end
 
     # Kill fleet unit and destroy service matching build that was passed.
     def self.destroy_build(build)
       log "Destroying Build: #{build.service_vars.inspect}"
-      Crust.destroy(*build.service_vars)
+      Crust.destroy(build.service_options)
     end
 
     def self.log(msg)
