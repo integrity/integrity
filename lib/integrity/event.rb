@@ -6,7 +6,7 @@ module Integrity
 
     class << self
       def on(*events, &block)
-        instance.on(event, &block)
+        instance.on(*events, &block)
       end
 
       def trigger(event, *args)
