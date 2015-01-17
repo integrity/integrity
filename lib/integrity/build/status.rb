@@ -2,6 +2,12 @@ module Integrity
   class Build
     module Status
 
+      def self.included(base)
+        base.class_eval do
+          extend ClassMethods
+        end
+      end
+      
       HUMAN_STATUS = {
         success:  "Built %s successfully",
         failed:   "Built %s and failed",
