@@ -3,8 +3,8 @@ module Integrity
     include DataMapper::Resource
     include Status
 
-    GLOB_CHARS = '*?[]'
-    ZOMBIE_LIFESPAN = 1.hour
+    GLOB_CHARS = '*?[]' unless defined?(GLOB_CHARS)
+    ZOMBIE_LIFESPAN = 1.hour unless defined?(ZOMBIE_LIFESPAN)
 
     property :id,                    Serial
     property :project_id,            Integer, required: true
@@ -26,7 +26,7 @@ module Integrity
     belongs_to :branch
     has 1,     :commit
 
-    delegate :name, :permalink, to: :project
+    delegate :name, :permalink, :repo, :command, to: :project
 
     after :create do
       project.update(last_build_id: id)
@@ -41,7 +41,9 @@ module Integrity
       end
     end
 
-    delegate :repo, :command, to: :project
+    def branch_name
+      branch.try(:name)
+    end
 
     def run
       Integrity.config.builder.enqueue(self)
@@ -245,6 +247,16 @@ module Integrity
       service_vars.join('_')
     end
 
+    def service_options
+      {
+        id: id,
+        project: permalink,
+        branch: branch_name,
+        sha: sha,
+        template_name: template_name
+      }
+    end
+
     def app_service_name
       "#{service_name}_app"
     end
@@ -274,7 +286,7 @@ module Integrity
 
     def get_public_port
       ports = get_ports(app_service_name)
-      port = ports.select{|p| p[:internal_port] == "3000"}.first
+      port = ports.select{|p| p[:internal_port] == '3000'}.first
       port[:external_port] if port
     end
 

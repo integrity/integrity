@@ -2,6 +2,7 @@ app:
   image: grnds/<%= project %>_ci
   command: git clone https://<%= read_token %>@github.com/consultingmd/consultingmd && ./consultingmd/honesty/git-checkout.sh server from_github
   environment:
+    BRANCH: <%= branch %>
     SHA: <%= sha %>
     GITHUB_READ_TOKEN: <%= read_token %>
     AWS_ACCESS_KEY_ID: <%= ENV['AWS_ACCESS_KEY_ID'] %>

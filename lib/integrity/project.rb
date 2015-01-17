@@ -19,7 +19,7 @@ module Integrity
 
     timestamps :at
 
-    default_scope(:default).update(:order => [:name.asc])
+    default_scope(:default).update(order: [:name.asc])
 
     has n, :builds
     has n, :branches
@@ -100,6 +100,13 @@ module Integrity
 
       if commit[:identifier].present?
         build = builds.create(commit: commit, branch: branch, rebuild: rebuild)
+
+        # Don't create build
+        if build.author == Author.unknown
+          build.destroy if build.saved?
+          return
+        end
+
         build.service_template = service_template if service_template
         build.save
         build.run

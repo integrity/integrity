@@ -29,7 +29,7 @@ module Integrity
     def self.launch_build(build)
       log "Launching Build: #{build.service_vars.inspect}"
       build.cleanup!
-      Crust.start(*(build.service_vars + [build.service_template]))
+      Crust.start(build.service_options)
       Build.update_fleetctl_status
       build.reload.started!
       log "#{Build.running.count} builds running."
@@ -38,7 +38,7 @@ module Integrity
     # Kill fleet unit and destroy service matching build that was passed.
     def self.destroy_build(build)
       log "Destroying Build: #{build.service_vars.inspect}"
-      Crust.destroy(*build.service_vars)
+      Crust.destroy(build.service_options)
     end
 
     def self.log(msg)
