@@ -2,29 +2,12 @@
 <div class="container-page">
   <div class="row">
     <div class="col-md-12">
-      <h3 class="dark-grey">Update Project:</h3>
-      <form action="/settings" method="post">
-        <div class="form-group col-lg-12">
-          <label for="max_running_builds"> Max Running Builds </label>
-          <input class="text" name="max_running_builds" type="text" value="<%= config.max_running_builds %>"/>
-          <button class="btn btn-default" type="submit">Update Manually</button>
-        </div>
-      </form>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
       <h3> Machines </h3>
-      <lo>
-      <% Integrity.instance_manager.machines.each do |machine| %>
+      <ul>
+      <% @instance_manager.machines.each do |machine| %>
         <li> <%= machine %> </li>
       <% end %>
-      </lo>
-      <form action="/machines/update" method="post">
-        <div class="form-group col-lg-12">
-          <button class="btn btn-default btn-small" type="submit">Update Machines From Fleet</button>
-        </div>
-      </form>
+      </ul>
     </div>
   </div>
     <div class="row">
@@ -42,19 +25,21 @@
                 <th>Load Capacity</th>
                 <th>Load Deficit</th>
                 <th>New Machines Required</th>
+                <th>Max Running Builds</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td><%= Integrity::Build.pending.count %></td>
-                <td><%= Integrity.instance_manager.pending_load_need %></td>
+                <td><%= @instance_manager.pending_load_need %></td>
                 <td><%= Integrity::Build.running.count %></td>
-                <td><%= Integrity.instance_manager.running_load_need %></td>
-                <td><%= Integrity.instance_manager.load_need %></td>
-                <td><%= Integrity.instance_manager.machines.count %></td>
-                <td><%= Integrity.instance_manager.load_capacity %></td>
-                <td><%= Integrity.instance_manager.load_deficit %></td>
-                <td><%= Integrity.instance_manager.new_machines_required %></td>
+                <td><%= @instance_manager.running_load_need %></td>
+                <td><%= @instance_manager.load_need %></td>
+                <td><%= @instance_manager.machines.count %></td>
+                <td><%= @instance_manager.load_capacity %></td>
+                <td><%= @instance_manager.load_deficit %></td>
+                <td><%= @instance_manager.new_machines_required %></td>
+                <td><%= config.max_running_builds %></td>
               </tr>
             </tbody>
           </table>

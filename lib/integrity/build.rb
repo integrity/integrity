@@ -1,18 +1,10 @@
 module Integrity
   class Build
     include DataMapper::Resource
+    include Status
 
-    HUMAN_STATUS = {
-      success:  "Built %s successfully",
-      failed:   "Built %s and failed",
-      pending:  "%s hasn't been built yet",
-      building: "%s is building",
-      killed: "%s was killed",
-      cancelled: "%s was cancelled"
-    }
-
-    GLOB_CHARS = '*?[]'
-    ZOMBIE_LIFESPAN = 1.hour
+    GLOB_CHARS = '*?[]' unless defined?(GLOB_CHARS)
+    ZOMBIE_LIFESPAN = 1.hour unless defined?(ZOMBIE_LIFESPAN)
 
     property :id,                    Serial
     property :project_id,            Integer, required: true
@@ -34,7 +26,7 @@ module Integrity
     belongs_to :branch
     has 1,     :commit
 
-    delegate :name, :permalink, to: :project
+    delegate :name, :permalink, :repo, :command, to: :project
 
     after :create do
       project.update(last_build_id: id)
@@ -49,33 +41,8 @@ module Integrity
       end
     end
 
-    delegate :repo, :command, to: :project
-
-    def self.scope(query = :all, *conditions)
-      send(query, *conditions)
-    end
-
-    def self.pending(query = :all)
-      scope(query, started_at: nil, completed_at: nil, state: nil, order: :created_at.asc)
-    end
-
-    def self.running(query = :all)
-      scope(query, :started_at.not => nil, completed_at: nil, state: nil, order: :started_at.asc)
-    end
-
-    def self.orphaned(query = :all)
-      scope(query, :started_at.lt => 1.hour.ago, completed_at: nil, order: :started_at.asc)
-    end
-
-    def self.completed(query = :all)
-      scope(query, :completed_at.not => nil, order: :started_at.asc)
-    end
-
-    def self.update_fleetctl_status
-      statuses = Crust.get_service_status
-      statuses.each do |id, status|
-        get(id).try(:update_fleetctl_status, status)
-      end
+    def branch_name
+      branch.try(:name)
     end
 
     def run
@@ -88,7 +55,7 @@ module Integrity
     end
 
     def cleanup!
-      Builder.destroy_build(self)
+      Integrity::Event.trigger('build:cleanup', self.id)
     end
 
     def complete!(result)
@@ -103,8 +70,8 @@ module Integrity
       update(state: 'killed', completed_at: time)
     end
 
-    def kill_previous_builds!
-      (previous_builds << self).map(&:kill!)
+    def cancel_previous_builds!
+      (previous_builds << self).map(&:cancel!)
     end
 
     def previous_builds(on = :branch)
@@ -118,23 +85,7 @@ module Integrity
       elsif building?
         kill!
       end
-    end
-
-    def idle?
-      pending? || completed? || interrupted?
-    end
-    alias_method :not_running?, :idle?
-
-    def interrupted?
-      killed? || cancelled?
-    end
-
-    def completed?
-      !completed_at.nil?
-    end
-
-    def finished?
-      completed? && !interrupted?
+      Integrity::Event.trigger('build:canceled')
     end
 
     def spec?
@@ -150,10 +101,6 @@ module Integrity
       update_ports if server?
     end
 
-    def started?
-      !started_at.nil?
-    end
-
     def fail!(message=nil)
       set_as_complete(false)
     end
@@ -164,31 +111,6 @@ module Integrity
 
     def reload
       self.class.get(id)
-    end
-
-    def successful?
-      successful == true
-    end
-
-    def failed?
-      !successful?
-    end
-
-    def building?
-      started?  && !completed? && !interrupted?
-    end
-    alias_method :running?, :building?
-
-    def pending?
-      started_at.nil? && completed_at.nil?
-    end
-
-    def killed?
-      state && state.to_sym == :killed
-    end
-
-    def cancelled?
-      state && state.to_sym == :cancelled
     end
 
     def invalid_sha?
@@ -219,37 +141,8 @@ module Integrity
       commit.try(:committed_at) || Time.now.utc
     end
 
-    def status
-      return state.to_sym if state
-      case
-        when building?   then :building
-        when pending?    then :pending
-        when successful? then :success
-        when failed?     then :failed
-        else :unknown
-      end
-    end
-
-    def in_progress?
-      pending? || building?
-    end
-
-    def human_status
-      HUMAN_STATUS[status].try(:%, sha1_short)
-    end
-
     def human_duration
       Integrity.human_duration(duration)
-    end
-
-    def bootstrap_class
-      case status
-        when :building then 'info'
-        when :success then 'success'
-        when :failed then 'danger'
-        when :pending then 'warning'
-        when :killed then 'killed'
-      end
     end
 
     def duration
@@ -260,14 +153,13 @@ module Integrity
     def human_time_since_start
       Integrity.human_duration(time_since_start)
     end
+    alias_method :time_elapsed, :human_time_since_start
 
     def time_since_start
       return if pending?
       # to_i returns utc timestamp
       Integrity.delta(Time.now, started_at)
     end
-
-    alias_method :time_elapsed, :human_time_since_start
 
     def build_directory
       Pathname.new(Integrity.config.directory).join(self.id.to_s)
@@ -287,7 +179,7 @@ module Integrity
       escaped
     end
     private :escape_glob
-    
+
     def each_char(str)
       if str.respond_to?(:each_char)
         # ruby 1.9
@@ -302,7 +194,7 @@ module Integrity
       end
     end
     private :each_char
-    
+
     def artifact_files
       build_dir = build_directory
       escaped_build_dir = nil
@@ -337,7 +229,7 @@ module Integrity
         a[:name] <=> b[:name]
       end
     end
-    
+
     def to_json
       {build: {id: id, project: {name: project.name}, status: status}}.to_json
     end
@@ -355,28 +247,26 @@ module Integrity
       service_vars.join('_')
     end
 
+    def service_options
+      {
+        id: id,
+        project: permalink,
+        branch: branch_name,
+        sha: sha,
+        template_name: template_name
+      }
+    end
+
     def app_service_name
       "#{service_name}_app"
     end
 
-    def update_fleetctl_status(status)
-      if app_status = status.detect{|s| s[:type] == 'app' }
-        update(fleetctl_status: app_status[:active], machine_ip: app_status[:ip])
-      end
-      #If the build service file fails, we change its status to 'killed' from 'building'
-      #Then we wait an hour to kill the service_files so we have time to debug them
-      if (fleetctl_status == 'failed')
-        make_zombie #idempotent
-        kill_zombie unless permitted_zombie?
-      end
-    end
-
     def enter_instructions
       [
-      "ssh core@#{machine_ip || '127.0.0.1'}",
-      "docker exec -it #{app_service_name} bash",
-      "cd #{project.name}",
-      "Load correct environment variables (from honesty/build.sh)"
+        "ssh core@#{machine_ip || '127.0.0.1'}",
+        "docker exec -it #{app_service_name} bash",
+        "cd #{project.name}",
+        "Load correct environment variables (from honesty/build.sh)"
       ]
     end
 
@@ -396,7 +286,7 @@ module Integrity
 
     def get_public_port
       ports = get_ports(app_service_name)
-      port = ports.select{|p| p[:internal_port] == "3000"}.first
+      port = ports.select{|p| p[:internal_port] == '3000'}.first
       port[:external_port] if port
     end
 
