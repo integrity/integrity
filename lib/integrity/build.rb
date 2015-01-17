@@ -1,3 +1,5 @@
+require 'integrity/build/status'
+
 module Integrity
   class Build
     include DataMapper::Resource
