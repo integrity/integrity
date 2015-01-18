@@ -3,12 +3,7 @@ source 'https://rubygems.org'
 gem 'data_mapper',       '~> 1.2'
 gem 'dm-sqlite-adapter'
 gem 'do_sqlite3'
-
-# Workaround until https://github.com/datamapper/dm-core/issues/242
-# is fixed in a released version of datamapper.
-gem 'dm-core',
-  :git => 'git://github.com/datamapper/dm-core',
-  :branch => 'release-1.2'
+gem 'dm-core', '~> 1.2.1'
 
 gem 'haml'
 gem 'sass'
