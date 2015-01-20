@@ -256,7 +256,7 @@ module Integrity
         project: permalink,
         branch: branch_name,
         sha: sha,
-        template_name: template_name
+        template_name: service_template
       }
     end
 

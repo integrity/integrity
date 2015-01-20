@@ -17,7 +17,7 @@ module Integrity
     def initialize
       @registered_events = {}
 
-      on(%w(
+      on(*%w(
         build:completed
         build:canceled
         machine:added
