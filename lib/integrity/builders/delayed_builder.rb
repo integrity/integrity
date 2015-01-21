@@ -47,6 +47,7 @@ module Integrity
 
       def perform
         Build.get!(@build).run!
+        Integrity.instance_manager.refresh
       end
     end
   end

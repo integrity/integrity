@@ -128,6 +128,7 @@ module Integrity
     def sha1_short
       sha1.to_s[0..6]
     end
+    alias_method :sha, :sha1_short
 
     def message
       commit.try(:message).presence || 'message not loaded'
@@ -257,7 +258,7 @@ module Integrity
         project: permalink,
         branch: branch_name,
         sha: sha,
-        template_name: template_name
+        template_name: service_template
       }
     end
 

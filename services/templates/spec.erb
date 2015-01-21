@@ -3,6 +3,7 @@
 app:
   image: grnds/<%= project %>_ci
   environment:
+    BRANCH: <%= branch %>
     SHA: <%= sha %>
     BUILD_ID: <%= id %>
     GITHUB_READ_TOKEN: <%= read_token %>
