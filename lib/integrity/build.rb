@@ -127,6 +127,7 @@ module Integrity
     def sha1_short
       sha1.to_s[0..6]
     end
+    alias_method :sha, :sha1_short
 
     def message
       commit.try(:message).presence || 'message not loaded'
