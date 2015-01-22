@@ -153,7 +153,7 @@ module Integrity
         status: status
       }
     end
-    
+
     def to_json
       {project: attributes_for_json}.to_json
     end
