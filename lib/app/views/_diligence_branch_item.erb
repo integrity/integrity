@@ -18,14 +18,8 @@
   </thead>
   <tbody>
     <% diligence_branches.each do |diligence_branch| %>
-      <tr>
-        <td>
-          <% if diligence_branch.build %>
-            <i class="fa fa-<%= build_status(diligence_branch.build).icon %>" </i>
-          <% else %>
-            <i class="fa fa-ban" </i>
-          <% end %>
-        </td>
+      <tr class="<%= diligence_branch.build.try(:bootstrap_class) %>">
+        <td class="status">  <i class="fa fa-<%= build_status(diligence_branch.build).icon %>" </i>  </td>
         <td> <%= diligence_branch.id %></td>
         <td> <%= link_to diligence_branch.build.id, build_path(diligence_branch.build) %> </a></td>
         <td> <%= diligence_branch.branch.project.name %></td>
@@ -34,14 +28,20 @@
         <td> <%= diligence_branch.commit.author %> </td>
         <td> <%= link_to diligence_branch.build.sha1_short, github_commit_url(diligence_branch.build) %> </td>
         <td> <%= diligence_branch.commit.message %> </td>
-        <td> </td>
+        <td>
+          <% if diligence_branch.build.try(:public_link) %>
+            <a class="btn btn-default" href="<%= diligence_branch.build.public_link %>" target="_blank">
+              <i class="fa fa-laptop"></i>
+            </a>
+          <% end %>
+        </td>
         <td> <%= pacific_time(diligence_branch.locked_at).try(:strftime, '%m/%d %R ') %> </td>
 
-        <% if diligence_branch.locked %>
-          <td> <a class="btn btn-default" href="/diligence_branches/<%= diligence_branch.id %>/flip_lock"> <i class="fa fa-lock"></i> </a></td>
-        <% else %>
-          <td> <a class="btn btn-default" href="/diligence_branches/<%= diligence_branch.id %>/flip_lock"> <i class="fa fa-unlock-alt"></i> </a></td>
-        <% end %>
+        <td>
+          <a class="btn btn-default" href="/diligence_branches/<%= diligence_branch.id %>/flip_lock">
+            <i class="fa <%= diligence_branch.locked ? 'fa-lock' : 'fa-unlock-alt' %>"></i>
+          </a>
+        </td>
 
         <% if diligence_branch.active %>
           <td> <a class="btn btn-default" href="/diligence_branches/<%= diligence_branch.id %>/stop"> Halt </a></td>

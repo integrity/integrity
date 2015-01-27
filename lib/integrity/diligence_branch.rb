@@ -21,11 +21,10 @@ module Integrity
     end
 
     def rebuild_environment
-      if locked
-        return false
+      if !locked && active && !latest_commit?
+        stop
+        start
       end
-      stop if active
-      start
     end
 
     def start
@@ -33,12 +32,12 @@ module Integrity
         return false
       end
 
-      if not locked
+      if !locked
         self.commit = Commit.last(branch: branch.name)
         self.locked_at = Time.now
       end
 
-      self.build = branch.project.build(commit, true, 'server') #build might not return valid value
+      self.build = branch.project.build(commit, true, 'server')
       self.active = true
       self.save
     end
@@ -47,20 +46,13 @@ module Integrity
       build.cancel!
     end
 
-    # def latest_commit?
-    #   true
-    # end
-
-    # def set_latest_commit
-    #   self.commit = Commit.last(branch: branch.name)
-    # end
+    def latest_commit?
+      self.commit.identifier == Commit.last(branch: branch.name).identifier
+    end
 
     def flip_lock
       update(locked: !locked)
-      # debugger;1
-      # if not locked and not latest_commit?
-      #   rebuild_environment
-      # end
+      rebuild_environment
     end
   end
 end

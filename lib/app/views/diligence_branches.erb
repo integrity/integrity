@@ -3,12 +3,12 @@
 <% if @inactive_diligence_branches.empty? && @active_diligence_branches.empty? %>
 <% else %>
   <div class="row" id="active_diligence_branches">
-    <h3 class="text-center short"><%= "#{@active_diligence_branches.count} Active Diligence Build#{@active_diligence_branches.count == 1 ? '' : 's'}" %></h3>
+    <h3 class="text-center short"><%= "#{@active_diligence_branches.size} Active Diligence Build#{@active_diligence_branches.size == 1 ? '' : 's'}" %></h3>
     <%= partial(:diligence_branch_item, locals: {diligence_branches: @active_diligence_branches}) %>
   </div>
 
   <div class="row" id="inactive_diligence_branches">
-    <h3 class="text-center short"><%= "#{@inactive_diligence_branches.count} Inactive Diligence Build#{@inactive_diligence_branches.count == 1 ? '' : 's'}" %></h3>
+    <h3 class="text-center short"><%= "#{@inactive_diligence_branches.size} Inactive Diligence Build#{@inactive_diligence_branches.size == 1 ? '' : 's'}" %></h3>
     <%= partial(:diligence_branch_item, locals: {diligence_branches: @inactive_diligence_branches}) %>
   </div>
 <% end %>
@@ -16,7 +16,7 @@
 <% if @branches.empty? %>
 <% else %>
   <div class="row" id="branches">
-    <h3 class="text-center short"><%= "#{@branches.count} Recent Branch#{@branches.count == 1 ? '' : 'es'}" %></h3>
+    <h3 class="text-center short"><%= "#{@branches.size} Recent Branch#{@branches.size == 1 ? '' : 'es'}" %></h3>
     <div class="table-responsive">
       <table class="table table-hover table-condensed" id="previous_builds">
         <thead>
@@ -34,15 +34,15 @@
         </thead>
         <tbody>
           <% @branches.each do |branch| %>
-            <tr>
-              <td> <i class="fa fa-<%= branch_status(branch).icon %>" </i> </td>
+            <tr class="<%= branch.last_build.try(:bootstrap_class) %>">
+              <td class="status"> <i class="fa fa-<%= branch_status(branch).icon %>" </i> </td>
               <td> <%= branch.project.name %></td>
               <td> <%= branch.name %> </td>
               <td> <%= branch.last_build ? link_to(branch.last_build_id, build_path(branch.last_build)) : nil  %> </td>
               <td> <%= branch.last_build ? pacific_time(branch.last_build.committed_at).try(:strftime, '%m/%d %R ') : nil %> </td>
-              <td> <%= branch.last_build ? branch.last_build.author : nil %> </td>
+              <td> <%= branch.last_build.try(:author)%> </td>
               <td> <%= branch.last_build ? link_to(branch.last_build.sha1_short, github_commit_url(branch.last_build)) : nil %> </td>
-              <td> <%= branch.last_build ? branch.last_build.message : nil %> </td>
+              <td> <%= branch.last_build.try(:message)%> </td>
               <td>
                 <% if branch.diligence_branch.nil? %>
                   <a class="btn btn-default" href="/diligence_branches/<%= branch.id %>/start"> Start </a>

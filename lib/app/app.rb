@@ -188,9 +188,9 @@ module Integrity
 
     get '/diligence_branches' do
       load_projects
-      @active_diligence_branches = Integrity::DiligenceBranch.all(order: :updated_at.desc, active: true)
-      @inactive_diligence_branches = Integrity::DiligenceBranch.all(order: :updated_at.desc, active: false)
-      @branches = Integrity::Branch.all(limit:30, order: :updated_at.desc)
+      @active_diligence_branches = Integrity::DiligenceBranch.all(order: :id.desc, active: true)
+      @inactive_diligence_branches = Integrity::DiligenceBranch.all(order: :id.desc, active: false)
+      @branches = Integrity::Branch.all(limit:30, order: :last_build_id.desc)
       show :diligence_branches
     end
 
