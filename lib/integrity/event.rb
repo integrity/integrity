@@ -24,6 +24,7 @@ module Integrity
       )){ Builder.queue_builds! }
 
       on('build:cleanup'){|build_id| Builder.destroy_build(Build.get(build_id)) }
+      on('diligence_branch:deactivate'){|build_id| DiligenceBranch.deactivate(build_id)}
     end
 
     def on(*events, &block)

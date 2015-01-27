@@ -19,6 +19,7 @@ export GITHUB_WRITE_TOKEN="..."
 **Console:**
 ```Bash
 $> bundle install
+mysql> CREATE DATABASE integrity;
 $> rake db
 $> rake jobs:work
 ```

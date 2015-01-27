@@ -5,7 +5,7 @@ module Integrity
     include DataMapper::Resource
     extend DataMapper::Resource::ClassMethods
     include Status
-    
+
     GLOB_CHARS = '*?[]' unless defined?(GLOB_CHARS)
     ZOMBIE_LIFESPAN = 1.hour unless defined?(ZOMBIE_LIFESPAN)
 
@@ -28,6 +28,7 @@ module Integrity
     belongs_to :project
     belongs_to :branch
     has 1,     :commit
+    has 1,     :diligence_branch
 
     delegate :name, :permalink, :repo, :command, to: :project
 
@@ -88,6 +89,7 @@ module Integrity
       elsif building?
         kill!
       end
+      Integrity::Event.trigger('diligence_branch:deactivate', self.id)
       Integrity::Event.trigger('build:canceled')
     end
 

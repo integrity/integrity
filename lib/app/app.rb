@@ -107,6 +107,11 @@ module Integrity
 
       STDERR.puts "BUILD: #{build.inspect}"
 
+      diligence_branch = Integrity::DiligenceBranch.first(:branch => build.branch)
+      if diligence_branch
+        diligence_branch.rebuild_environment
+      end
+
       json build
     end
 
@@ -179,6 +184,45 @@ module Integrity
         @completed = @builds.completed.all(order: :completed_at.desc)
         show :home, title: 'project'
       end
+    end
+
+    get '/diligence_branches' do
+      load_projects
+      @active_diligence_branches = Integrity::DiligenceBranch.all(order: :id.desc, active: true)
+      @inactive_diligence_branches = Integrity::DiligenceBranch.all(order: :id.desc, active: false)
+      @branches = Integrity::Branch.all(limit:30, order: :last_build_id.desc)
+      show :diligence_branches
+    end
+
+    get '/diligence_branches/:branch_id/start' do |branch_id|
+      login_required
+
+      diligence_branch = Integrity::DiligenceBranch.first(:branch_id => branch_id)
+      unless diligence_branch
+        branch = Integrity::Branch.get(branch_id)
+        diligence_branch = Integrity::DiligenceBranch.create(branch: branch)
+      end
+
+      diligence_branch.start
+      redirect back
+    end
+
+    get '/diligence_branches/:id/stop' do |id|
+      login_required
+
+      diligence_branch = Integrity::DiligenceBranch.get(id)
+
+      diligence_branch.stop
+      redirect back
+    end
+
+    get '/diligence_branches/:id/flip_lock' do |id|
+      login_required
+
+      diligence_branch = Integrity::DiligenceBranch.get(id)
+
+      diligence_branch.flip_lock
+      redirect back
     end
 
     # List Running Builds (Index)
