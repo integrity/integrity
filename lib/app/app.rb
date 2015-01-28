@@ -107,8 +107,7 @@ module Integrity
 
       STDERR.puts "BUILD: #{build.inspect}"
 
-      diligence_branch = Integrity::DiligenceBranch.first(:branch => build.branch)
-      if diligence_branch
+      if diligence_branch = Integrity::DiligenceBranch.first(:branch => build.branch)
         diligence_branch.rebuild_environment
       end
 
