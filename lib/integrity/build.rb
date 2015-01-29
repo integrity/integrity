@@ -80,6 +80,7 @@ module Integrity
     end
 
     def cancel_previous_builds!
+      log 'cancelling previous builds'
       (previous_builds << self).map(&:cancel!)
     end
 
@@ -297,7 +298,7 @@ module Integrity
 
     def log(msg)
       puts msg
-      Integrity.logger.info "build_mutation: build_#{id}: #{msg}"
+      Integrity.logger.info "[Integrity::Build]:[Build:#{id}] event:#{msg}, params:#{self.inspect}"
     end
     private
 
