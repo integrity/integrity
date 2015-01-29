@@ -91,7 +91,15 @@ module Integrity
       end
 
       def link_to_logs(build)
-        "#{Integrity.logs_url}?q=#{build.service_name}"
+        "#{Integrity.logs_url}?q=#{logs_query(build)}"
+      end
+
+      def logs_query(build)
+        if build.status == :failed
+          "#{build.service_name} ,examples"
+        else
+          "#{build.service_name}"
+        end
       end
 
       def link_to_tracker(build)
