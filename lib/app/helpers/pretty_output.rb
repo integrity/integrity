@@ -96,7 +96,7 @@ module Integrity
 
       def logs_query(build)
         if build.status == :failed
-          "#{build.service_name} ,examples"
+          "#{build.service_name} examples,"
         else
           "#{build.service_name}"
         end
