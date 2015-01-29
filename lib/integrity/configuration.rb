@@ -16,7 +16,8 @@ module Integrity
       :trim_branches,
       :build_output_interval,
       :checkout_proc,
-      :status_image_always_public
+      :status_image_always_public,
+      :logger
 
     def status_image_always_public?
       !!@status_image_always_public
