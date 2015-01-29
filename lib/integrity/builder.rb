@@ -27,12 +27,14 @@ module Integrity
     # Launches the passed build on fleet. Before starting, it kills
     # older builds from same branch (and itself if it was a re-run)
     def self.launch_build(build)
-      log "Launching Build: #{build.service_vars.inspect}"
+      log "Builder_launch starting: #{build.service_vars.inspect}"
       build.cleanup!
       Crust.start(build.service_options)
+      log "Builder_launch updating fleet: #{build.service_vars.inspect}"
       Build.update_fleetctl_status
       build.reload.started!
       log "#{Build.running.count} builds running."
+      log "Builder_launch completed: #{build.service_vars.inspect}"
     end
 
     # Kill fleet unit and destroy service matching build that was passed.
@@ -79,7 +81,7 @@ module Integrity
     end
 
     def start
-      logger.info "Started building #{repo.uri} at #{commit}"
+      logger.info "Builder_start starting #{repo.uri} at #{commit}"
       @build.raise_on_save_failure = true
       @build.update(:started_at => Time.now)
       @build.project.enabled_notifiers.each { |n| n.notify_of_build_start(@build) }
@@ -87,6 +89,7 @@ module Integrity
       # checkout.metadata invokes git and may fail
       @build.commit.raise_on_save_failure = true
       @build.commit.update(checkout.metadata)
+      logger.info "Builder_start completed #{repo.uri} at #{commit}"
     end
 
     def run
