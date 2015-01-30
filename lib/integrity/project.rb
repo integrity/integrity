@@ -59,10 +59,14 @@ module Integrity
       if build
         success = code.present? && code.zero?
         build.complete!(success)
-        Integrity::Event.trigger('build:complete')
       else
-        raise ArgumentError, 'Could not find a corresponding build'
+        Integrity.say "Could not find a build corresponding to payload: #{params.inspect}"
       end
+
+    rescue => e
+      Integrity.say e.message
+    ensure
+      Integrity::Event.trigger('build:completed')
     end
 
     def get_artifacts

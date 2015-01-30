@@ -130,15 +130,15 @@ end
 namespace :delayed_job do
   desc 'start delayed_job worker'
   task :start do
-    system "./script/delayed_job start 2>&1 | logger -t delayed_job &"
+    system './script/delayed_job start 2>&1 | logger -t delayed_job &'
   end
   desc 'stop delayed_job worker'
   task :stop do
-    system "./script/delayed_job stop 2>&1 | logger -t delayed_job &"
+    system './script/delayed_job stop 2>&1 | logger -t delayed_job &'
   end
   desc 'restart delayed_job worker'
   task :restart do
-    system "./script/delayed_job restart 2>&1 | logger -t delayed_job &"
+    system './script/delayed_job restart 2>&1 | logger -t delayed_job &'
   end
 end
 

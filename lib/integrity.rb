@@ -223,6 +223,7 @@ module Integrity
   def self.say(message)
     STDOUT.puts message
     logger.info message
+    sys_logger.info message
   end
 
   def self.start_logs
