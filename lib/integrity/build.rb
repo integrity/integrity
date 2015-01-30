@@ -79,7 +79,7 @@ module Integrity
 
     def previous_builds(on = :branch)
       parent = self.send(on)
-      (parent.builds & self.class.running) & self.class.all(:id.not => id, order: :created_at.desc)
+      (parent.builds & (self.class.running | self.class.pending)) & self.class.all(:id.not => id, order: :created_at.desc)
     end
 
     def cancel!

@@ -74,7 +74,7 @@ module Integrity
     end
 
     def repo
-      @repo ||= Repository.new(uri, branch)
+      @repo ||= Integrity::Repository.new(uri, branch)
     end
 
     def get_branch(commit=nil)
@@ -85,29 +85,30 @@ module Integrity
       branch
     end
 
-    def build(commit, rebuild=false, service_template=nil)
-      commit = Hashie::Mash.new(commit) if commit.is_a?(Hash)
+    def build(commit, rebuild=false, service=nil)
+      if commit.is_a?(Hash)
+        commit = commit.merge(project_id: id)
+      else
+        commit = commit.attributes.except(:id, :build_id, :created_at, :updated_at)
+      end
+
+      commit = Hashie::Mash.new(commit)
       branch = get_branch(commit)
 
-      commit = {
-        identifier:   commit.try(:identifier),
-        author:       commit.try(:author),
-        message:      commit.try(:message),
-        committed_at: commit.try(:committed_at),
-        branch:       (commit.try(:branch) || branch.name),
-        project_id:   (commit.try(:project_id) || id)
-      }
+      if commit.identifier.present?
+        templ = service.presence || 'spec'
+        build = builds.create(
+          commit: commit,
+          branch: branch,
+          service_template: templ,
+          rebuild: rebuild
+        )
 
-      if commit[:identifier].present?
-        build = builds.create(commit: commit, branch: branch, rebuild: rebuild)
-
-        # Don't create build
-        if build.author == Author.unknown
+        if build.invalid_sha?
           build.destroy if build.saved?
           return
         end
 
-        build.service_template = service_template if service_template
         build.save
         build.run
         build

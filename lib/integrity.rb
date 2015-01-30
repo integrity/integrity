@@ -261,8 +261,9 @@ module Integrity
     environment? :development
   end
 
-  def self.sys_logger(name, level = :debug)
+  def self.sys_logger(name = :integrity, level = :debug)
     return logger unless production?
+    name = (name.presence || :integrity).to_s
     @sys_loggers ||= {}
     unless @sys_loggers[name]
       syslog = Logging.logger[name]

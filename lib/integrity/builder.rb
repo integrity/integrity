@@ -43,6 +43,7 @@ module Integrity
 
     def self.log(msg)
       Integrity.logger.info msg
+      Integrity.sys_logger(:delayed_job).info msg
     end
 
     #### OLD INTEGRITY METHODS - NOT USED ANYMORE

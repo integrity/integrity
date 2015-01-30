@@ -1,8 +1,18 @@
 <section class="container">
 <div class="container-page">
+  <div class="row" style="margin-bottom: 1em;">
+    <div class="col-md-4">
+      <h3 style="text-align: center">Builds</h3>
+      <div id="builds-donut"></div>
+    </div>
+    <div class="col-md-8">
+      <h3 style="text-align: center">Load Utilization</h3>
+      <div id="load-area"></div>
+    </div>
+  </div>
   <div class="row">
     <div class="col-md-12">
-      <h3> Machines </h3>
+      <h3>Machines</h3>
       <ul>
       <% @instance_manager.machines.each do |machine| %>
         <li> <%= machine %> </li>
@@ -12,7 +22,7 @@
   </div>
     <div class="row">
       <div class="col-md-12">
-        <h3> Load Utilization </h3>
+        <h3>Load Utilization</h3>
           <table class="table table-hover table-condensed" id="previous_builds">
             <thead>
               <tr>
