@@ -61,6 +61,7 @@ require 'integrity/author'
 require 'integrity/commit'
 require 'integrity/build'
 require 'integrity/builder'
+require 'integrity/diligence_branch'
 require 'integrity/notifier'
 require 'integrity/notifier/base'
 require 'integrity/payload'
@@ -80,7 +81,7 @@ end
 
 module Integrity
   CannotFindEncoding = Class.new(StandardError)
-  
+
   autoload :ThreadedBuilder, 'integrity/builders/threaded_builder'
   autoload :DelayedBuilder,  'integrity/builders/delayed_builder'
   autoload :ResqueBuilder,   'integrity/builders/resque_builder'
@@ -141,11 +142,11 @@ module Integrity
   def self.delta(time1, time2)
     to_timestamp(time1) - to_timestamp(time2)
   end
-  
+
   def self.human_duration(delta)
     delta > 0 ? ChronicDuration.output(delta, format: :micro) : '0s'
   end
-  
+
   # Replace or delete invalid UTF-8 characters from text, which is assumed
   # to be in UTF-8.
   #
@@ -177,7 +178,7 @@ module Integrity
     end
     text
   end
-  
+
   def self.clean_utf8_iconv
     unless @iconv_loaded
       begin
@@ -194,7 +195,7 @@ module Integrity
     end
     [@iconv, @iconv_fallback]
   end
-  
+
   # Apparently utf-16 is not available everywhere, in particular not on travis.
   # Try to find a usable encoding.
   def self.intermediate_encoding
@@ -240,7 +241,7 @@ module Integrity
   def self.base_url
     config.base_url
   end
-  
+
   def self.logs_url
     config.logs_url
   end

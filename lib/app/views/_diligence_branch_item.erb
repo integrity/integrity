@@ -1,0 +1,54 @@
+<table class="table table-hover table-condensed" id="previous_builds">
+  <thead>
+    <tr>
+      <th>Status</th>
+      <th>ID</th>
+      <th>Build</th>
+      <th>Project</th>
+      <th>Branch</th>
+      <th>Commit Date</th>
+      <th>Commit User</th>
+      <th>Commit Sha</th>
+      <th>Message</th>
+      <th>Endpoint</th>
+      <th>Lock Date</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% diligence_branches.each do |diligence_branch| %>
+      <tr class="<%= diligence_branch.build.try(:bootstrap_class) %>">
+        <td class="status">  <i class="fa fa-<%= build_status(diligence_branch.build).icon %>" </i>  </td>
+        <td> <%= diligence_branch.id %></td>
+        <td> <%= link_to diligence_branch.build.id, build_path(diligence_branch.build) %> </a></td>
+        <td> <%= diligence_branch.branch.project.name %></td>
+        <td> <%= diligence_branch.branch.name %> </td>
+        <td> <%= pacific_time(diligence_branch.commit.committed_at).try(:strftime, '%m/%d %R ') %> </td>
+        <td> <%= diligence_branch.commit.author %> </td>
+        <td> <%= link_to diligence_branch.build.sha1_short, github_commit_url(diligence_branch.build) %> </td>
+        <td> <%= diligence_branch.commit.message %> </td>
+        <td>
+          <% if diligence_branch.build.try(:public_link) %>
+            <a class="btn btn-default" href="<%= diligence_branch.build.public_link %>" target="_blank">
+              <i class="fa fa-laptop"></i>
+            </a>
+          <% end %>
+        </td>
+        <td> <%= pacific_time(diligence_branch.locked_at).try(:strftime, '%m/%d %R ') %> </td>
+
+        <td>
+          <a class="btn btn-default" href="/diligence_branches/<%= diligence_branch.id %>/flip_lock">
+            <i class="fa <%= diligence_branch.locked ? 'fa-lock' : 'fa-unlock-alt' %>"></i>
+          </a>
+        </td>
+
+        <% if diligence_branch.active %>
+          <td> <a class="btn btn-default" href="/diligence_branches/<%= diligence_branch.id %>/stop"> Halt </a></td>
+        <% else %>
+           <td> <a class="btn btn-default" href="/diligence_branches/<%= diligence_branch.branch.id %>/start"> Restart </a></td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

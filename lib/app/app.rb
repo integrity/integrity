@@ -30,6 +30,11 @@ module Integrity
 
     helpers Integrity::Helpers
 
+    def log(msg)
+      params = "{user: #{current_user.inspect}}"
+      Integrity.logger.debug "[Integrity::App]: #{msg} params:#{params}"
+    end
+
     def current_user
       Hashie::Mash.new(session[:user])
     end
@@ -61,6 +66,7 @@ module Integrity
 
     error do
       @error = request.env['sinatra.error']
+      log "error: #{@error.inspect}"
       status 500
       show :error, title: 'something has gone terribly wrong'
     end
@@ -107,6 +113,10 @@ module Integrity
 
       STDERR.puts "BUILD: #{build.inspect}"
 
+      if diligence_branch = Integrity::DiligenceBranch.first(:branch => build.branch)
+        diligence_branch.rebuild_environment
+      end
+
       json build
     end
 
@@ -130,11 +140,13 @@ module Integrity
     end
 
     post '/:project/hook' do |token|
+      log("/:project/hook'(Received Payload) with token: #{token}")
       pass unless github_enabled?
       Payload.build(params[:payload]).to_s
     end
 
     post '/github/:token' do |token|
+      log("/:github/:token'(Received Payload) with params: #{params} and token #{token}")
       pass unless github_enabled?
       halt 403 unless token == github_token
       Payload.build(params).to_s
@@ -181,6 +193,45 @@ module Integrity
       end
     end
 
+    get '/diligence_branches' do
+      load_projects
+      @active_diligence_branches = Integrity::DiligenceBranch.all(order: :id.desc, active: true)
+      @inactive_diligence_branches = Integrity::DiligenceBranch.all(order: :id.desc, active: false)
+      @branches = Integrity::Branch.all(limit:30, order: :last_build_id.desc)
+      show :diligence_branches
+    end
+
+    get '/diligence_branches/:branch_id/start' do |branch_id|
+      login_required
+
+      diligence_branch = Integrity::DiligenceBranch.first(:branch_id => branch_id)
+      unless diligence_branch
+        branch = Integrity::Branch.get(branch_id)
+        diligence_branch = Integrity::DiligenceBranch.create(branch: branch)
+      end
+
+      diligence_branch.start
+      redirect back
+    end
+
+    get '/diligence_branches/:id/stop' do |id|
+      login_required
+
+      diligence_branch = Integrity::DiligenceBranch.get(id)
+
+      diligence_branch.stop
+      redirect back
+    end
+
+    get '/diligence_branches/:id/flip_lock' do |id|
+      login_required
+
+      diligence_branch = Integrity::DiligenceBranch.get(id)
+
+      diligence_branch.flip_lock
+      redirect back
+    end
+
     # List Running Builds (Index)
     get '/running' do
       login_required
@@ -216,7 +267,7 @@ module Integrity
     post '/?' do
       login_required
 
-      Integrity.logger.info "PARAMS:\n#{params.inspect}"
+      log("/? (Create Project) params:#{params.inspect}")
       @project = Project.new(params[:project_data])
 
       if @project.save
@@ -344,8 +395,7 @@ module Integrity
     post '/:project/builds/:build' do
       login_required
 
-      STDERR.puts "BUILD:  #{current_build.inspect}"
-      STDERR.puts "COMMIT: #{current_build.commit.inspect}"
+      log("/:project/builds/:build (Build:Re-build) build:#{current_build.inspect}, commit: #{current_build.commit.inspect}")
       @build = current_project.build(current_build.commit, true, params["template"])
       redirect build_url(@build)
     end
@@ -360,14 +410,15 @@ module Integrity
 
     # Delete Build
     delete '/:project/builds/:build' do
+      log("DELETE /:project/builds/:build (Delete build) build:#{current_build.inspect}")
       login_required
-
       current_build.destroy!
       redirect root_url
     end
 
     # Cancel the Pending or Running Build
     post '/:project/builds/:build/cancel' do
+      log("POST /:project/builds/:build/cancel (Cancel build) build:#{current_build.inspect}")
       login_required
       current_build.cancel!
       redirect project_url(current_project)

@@ -5,6 +5,7 @@ module Integrity
 
     # Only launch build if the number of running builds hasn't reached the limit.
     def self.start_build(build)
+      log "start build #{build.inspect}"
       running   = Build.running(:count)
       run_limit = Integrity.max_running_builds
       log "Checking build queue: #{running} out of #{run_limit} builds running."
@@ -14,34 +15,37 @@ module Integrity
     # Keep Queuing Builds until we have reached the threashhold.
     # Try to queue all pending builds.
     def self.queue_builds!
-      log "#{Build.pending.count} builds pending. Attempting to queue remaining builds..."
+      log "queue_builds! - #{Build.pending.count} builds pending. Attempting to queue remaining builds..."
       Build.pending.map{|b| b.run }
     end
 
     # If there are any pending builds, start the first one.
     def self.queue_next_build
-      log "#{Build.pending.count} builds pending. Queueing next build..."
+      log "queue_next_build - #{Build.pending.count} builds pending. Queueing next build..."
       Build.pending.first.try(:run)
     end
 
     # Launches the passed build on fleet. Before starting, it kills
     # older builds from same branch (and itself if it was a re-run)
     def self.launch_build(build)
-      log "Launching Build: #{build.service_vars.inspect}"
+      log "launch_build - started: #{build.service_vars.inspect}"
       build.cleanup!
       Crust.start(build.service_options)
+      log "launch_build - updating fleet: #{build.service_vars.inspect}"
       Build.update_fleetctl_status
       build.reload.started!
       log "#{Build.running.count} builds running."
+      log "launch_build - completed: #{build.service_vars.inspect}"
     end
 
     # Kill fleet unit and destroy service matching build that was passed.
     def self.destroy_build(build)
-      log "Destroying Build: #{build.service_vars.inspect}"
+      log "destroy_build: #{build.service_vars.inspect}"
       Crust.destroy(build.service_options)
     end
 
     def self.log(msg)
+      msg = "[Integrity::Builder]: #{msg}"
       Integrity.logger.info msg
       Integrity.sys_logger(:delayed_job).info msg
     end
@@ -80,7 +84,7 @@ module Integrity
     end
 
     def start
-      logger.info "Started building #{repo.uri} at #{commit}"
+      logger.info "start - starting #{repo.uri} at #{commit}"
       @build.raise_on_save_failure = true
       @build.update(:started_at => Time.now)
       @build.project.enabled_notifiers.each { |n| n.notify_of_build_start(@build) }
@@ -88,6 +92,7 @@ module Integrity
       # checkout.metadata invokes git and may fail
       @build.commit.raise_on_save_failure = true
       @build.commit.update(checkout.metadata)
+      logger.info "start completed #{repo.uri} at #{commit}"
     end
 
     def run
@@ -108,9 +113,7 @@ module Integrity
     
     def fail(exception)
       failure_message = "#{exception.class}: #{exception.message}"
-      
-      logger.info "Build #{commit} failed with an exception: #{failure_message}"
-      
+      logger.info "fail: #{commit} failed with an exception: #{failure_message}"
       failure_message << "\n\n"
       exception.backtrace.each do |line|
         failure_message << line << "\n"

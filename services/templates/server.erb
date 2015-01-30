@@ -1,6 +1,6 @@
 app:
   image: grnds/<%= project %>_ci
-  command: git clone https://<%= read_token %>@github.com/consultingmd/consultingmd && ./consultingmd/honesty/git-checkout.sh server from_github
+  command: git clone https://<%= read_token %>@github.com/consultingmd/consultingmd && ./consultingmd/docker-run.sh server from_github
   environment:
     BRANCH: <%= branch %>
     SHA: <%= sha %>
@@ -9,14 +9,14 @@ app:
     AWS_SECRET_ACCESS_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
     AWS_SECRET_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
   links:
+    - frick
     - mysql
     - mailcatcher
     - delayedjob
   xfleet:
     machineof: mysql
   ports:
-   - :3000
-   - :8000
+   - :10001
 
 delayedjob:
   image: grnds/<%= project %>_ci
@@ -41,8 +41,22 @@ mailcatcher:
   xfleet:
     machineof: mysql
 
+frick:
+  command: git clone https://<%= read_token %>@github.com/consultingmd/frick && ./frick/docker-run.sh server from_github
+  image: grnds/frick_ci
+  environment:
+    GITHUB_READ_TOKEN: <%= read_token %>
+    AWS_ACCESS_KEY_ID: <%= ENV['AWS_ACCESS_KEY_ID'] %>
+    AWS_SECRET_ACCESS_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
+    AWS_SECRET_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
+  links:
+    - mysql
+  ports:
+    - :10002
+  xfleet:
+    machineof: mysql
+
 mysql:
   image: grnds/mysql
   ports:
     - :3306
-

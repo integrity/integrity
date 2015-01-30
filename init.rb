@@ -14,7 +14,7 @@ require 'i18n'
 I18n.load_path << "#{ROOT_DIR}/config/locale/dates.en.yml"
 require 'integrity'
 
-DataMapper::Logger.new(STDOUT, :debug)
+logger = DataMapper::Logger.new(STDOUT, :debug)
 
 # I18n Translations
 translations = YAML.load_file(File.join(File.dirname(__FILE__), 'config', 'locale', 'en.yml'))
@@ -62,7 +62,7 @@ Integrity.configure do |c|
   c.project_default_build_count = app.builds.display_count  # How many builds to show by default on project pages
   c.build_output_interval       = app.builds.interval       # How often to collect build output from running builds (in secs)
   c.status_image_always_public  = false                     # ake status public for all projects? If false, login required to see status for private projects.
-
+  c.logger                      = logger
   # Use https://github.com/grahamc/git-cachecow to cache repository locally
   # c.checkout_proc             = Proc.new do |runner, repo_uri, branch, sha1, target_directory|
   #   runner.run! "git scclone #{repo_uri} #{target_directory} #{sha1}"

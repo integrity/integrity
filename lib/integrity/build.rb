@@ -5,7 +5,7 @@ module Integrity
     include DataMapper::Resource
     extend DataMapper::Resource::ClassMethods
     include Status
-    
+
     GLOB_CHARS = '*?[]' unless defined?(GLOB_CHARS)
     ZOMBIE_LIFESPAN = 1.hour unless defined?(ZOMBIE_LIFESPAN)
 
@@ -28,6 +28,7 @@ module Integrity
     belongs_to :project
     belongs_to :branch
     has 1,     :commit
+    has 1,     :diligence_branch
 
     delegate :name, :permalink, :repo, :command, to: :project
 
@@ -49,24 +50,29 @@ module Integrity
     end
 
     def run
+      log "run"
       Integrity.config.builder.enqueue(self)
     end
 
     def run!
+      log "run!"
       return false if invalid_sha?
       Builder.start_build(self)
     end
 
     def cleanup!
+      log "cleanup!"
       Integrity::Event.trigger('build:cleanup', self.id)
     end
 
     def complete!(result)
+      log "complete!"
       success = result.respond_to?(:success) ? result.success : result
       set_as_complete(success) and cleanup!
     end
 
     def kill!(params = {})
+      log "kill!"
       params = {cleanup: true}.merge(params)
       cleanup! if params[:cleanup]
       time = completed_at || Time.now
@@ -74,6 +80,7 @@ module Integrity
     end
 
     def cancel_previous_builds!
+      log 'cancelling previous builds'
       (previous_builds << self).map(&:cancel!)
     end
 
@@ -83,11 +90,13 @@ module Integrity
     end
 
     def cancel!
+      log "cancel!"
       if pending?
         update(state: 'cancelled', completed_at: Time.now)
       elsif building?
         kill!
       end
+      Integrity::Event.trigger('diligence_branch:deactivate', self.id)
       Integrity::Event.trigger('build:canceled')
     end
 
@@ -100,11 +109,13 @@ module Integrity
     end
 
     def started!
+      log "started!"
       update(started_at: Time.now)
       update_ports if server?
     end
 
     def fail!(message=nil)
+      log "fail!"
       set_as_complete(false)
     end
 
@@ -130,8 +141,7 @@ module Integrity
     alias_method :sha, :sha1_short
 
     def message
-      commit.try(:message).presence || 'message not loaded'
-    end
+      commit.try(:message).presence || 'message not loaded' end
 
     def full_message
       commit.try(:full_message).presence || message
@@ -286,11 +296,16 @@ module Integrity
       @machine_ip && public_port ? "http://#{machine_ip}:#{public_port}" : false
     end
 
+    def log(msg)
+      puts msg
+      Integrity.logger.info "[Integrity::Build]:[Build:#{id}] event:#{msg}, params:#{self.inspect}"
+    end
     private
 
     def get_public_port
       ports = get_ports(app_service_name)
       port = ports.select{|p| p[:internal_port] == '3000'}.first
+      log "Setting ports as #{port}"
       port[:external_port] if port
     end
 
@@ -300,10 +315,13 @@ module Integrity
       ports.map!{|e| e.split("->")}.map!{|n, m| {external_port:n, internal_port:m}}
       ports.each{|p| p[:external_port] = /0.0.0.0:(\d*)/.match(p[:external_port])[1]}
       ports.each{|p| p[:internal_port] = /(\d*)\//.match(p[:internal_port])[1]}
+      log "get_ports #{ports}"
+      ports
     end
 
     def make_zombie
       #The zombie 'exists' so long as the cleanup is not done. This helps for debugging
+      log "made zombie"
       kill!({ cleanup: false }) if building?
     end
 
@@ -315,6 +333,7 @@ module Integrity
     end
 
     def kill_zombie
+      log "killing zombie"
       cleanup!
     end
   end

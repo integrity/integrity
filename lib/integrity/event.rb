@@ -24,6 +24,7 @@ module Integrity
       )){ Builder.queue_builds! }
 
       on('build:cleanup'){|build_id| Builder.destroy_build(Build.get(build_id)) }
+      on('diligence_branch:deactivate'){|build_id| DiligenceBranch.deactivate(build_id)}
     end
 
     def on(*events, &block)
@@ -36,8 +37,16 @@ module Integrity
     def trigger(event, *args)
       event = event.to_sym
       if (procs = @registered_events[event]).present?
+        log_msg(event, *args)
         procs.each{|proc| proc.call(*args) }
       end
     end
+
+    def log_msg(event, *args)
+     arg_message = args.present? ? " with args #{args.join(',')}" : ''
+     msg = "[Integrity::Event]: #{event} handled" + arg_message
+     Integrity.logger.debug msg
+    end
   end
+
 end

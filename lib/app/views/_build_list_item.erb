@@ -36,9 +36,11 @@
 
     <td><%= pacific_time(build.created_at).try(:strftime, '%m/%d') %></td>
     <td>
-    <%= "#{link_to '<i class="fa fa-github-alt"></i>', github_commit_url(build)}" %>
-    <%= "#{link_to '<i class="fa fa-list"></i>', link_to_logs(build)}" %>
-    <%= "#{link_to '<i class="fa fa-columns"></i>', link_to_tracker(build)}" if link_to_tracker(build) %>
+    <%= "#{link_to '<i class="fa fa-list"></i>', link_to_logs(build), target: '_blank'}"%>
+    </td>
+    <td>
+    <%= "#{link_to '<i class="fa fa-github-alt"></i>', github_commit_url(build), target: '_blank'}" %>
+    <%= "#{link_to '<i class="fa fa-columns"></i>', link_to_tracker(build), target: '_blank'}" if link_to_tracker(build) %>
     </td>
   </tr>
   <% end %>
