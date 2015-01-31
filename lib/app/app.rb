@@ -155,7 +155,8 @@ module Integrity
     # Settings
     get '/settings' do
       login_required
-      @instance_manager = Integrity.instance_manager
+      @load_utilization = LoadUtilization.first
+      # @instance_manager = Integrity.instance_manager
       show :settings, title: 'settings'
     end
 

@@ -27,7 +27,8 @@ module Integrity
         end
 
         def orphaned(query = :all)
-          scope(query, :started_at.lt => 1.hour.ago, completed_at: nil, order: :started_at.asc)
+          max = Integrity.max_run_time
+          scope(query, :started_at.lt => max.minutes.ago, completed_at: nil, order: :started_at.asc)
         end
 
         def completed(query = :all)

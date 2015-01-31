@@ -17,14 +17,25 @@ module Integrity
     def initialize
       @registered_events = {}
 
+      on('build:start'){|build| Integrity.builder.run(:start_build, build) }
+
+      on(*%w(
+        build:cleanup
+        build:cancel
+        build:stop
+      )){|build| Integrity.builder.run(:destroy_build, build) }
+
+      on('branch:cleanup'){|build| Build.get(build).cancel_previous_builds! }
+
       on(*%w(
         build:completed
         build:canceled
         machine:added
       )){ Builder.queue_builds! }
 
-      on('build:cleanup'){|build_id| Builder.destroy_build(Build.get(build_id)) }
       on('diligence_branch:deactivate'){|build_id| DiligenceBranch.deactivate(build_id)}
+
+      on('load:changed'){ Integrity.builder.check_load! }
     end
 
     def on(*events, &block)

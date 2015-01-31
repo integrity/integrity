@@ -40,6 +40,14 @@ module Integrity
       Delayed::Job.enqueue(BuildJob.new(build))
     end
 
+    def run(action, build=nil)
+      Delayed::Job.enqueue(BuildManagerJob.new(action, build))
+    end
+
+    def check_load!
+      Delayed::Job.enqueue(LoadManagerJob.new)
+    end
+
     class BuildJob
       def initialize(build)
         @build = build.id
@@ -47,6 +55,25 @@ module Integrity
 
       def perform
         Build.get!(@build).run!
+        Integrity::Event.trigger('load:changed')
+      end
+    end
+
+    class BuildManagerJob
+      def initialize(action, build=nil)
+        @build = build.id
+        @action = action
+      end
+
+      def perform
+        @action &&= @action.to_sym
+        @build &&= Build.get!(@build)
+        Integrity::Builder.send(@action, @build)
+      end
+    end
+
+    class LoadManagerJob
+      def perform
         Integrity.instance_manager.refresh
       end
     end

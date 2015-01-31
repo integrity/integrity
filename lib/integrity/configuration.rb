@@ -13,6 +13,7 @@ module Integrity
       :password,
       :project_default_build_count,
       :max_running_builds,
+      :max_run_time,
       :trim_branches,
       :build_output_interval,
       :checkout_proc,

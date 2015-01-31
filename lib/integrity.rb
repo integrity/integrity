@@ -126,6 +126,10 @@ module Integrity
     Integrity::App
   end
 
+  def self.builder
+    config.builder
+  end
+
   def self.datetime_to_utc_time(datetime)
     # This converts to utc (borrowed from activesupport DateTime#to_utc)
     datetime = datetime.new_offset(0) unless datetime.offset.zero?
@@ -279,6 +283,10 @@ module Integrity
 
   def self.instance_manager
     InstanceManager.new
+  end
+
+  def self.max_run_time
+    config.max_run_time
   end
 end
 

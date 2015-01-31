@@ -50,29 +50,29 @@ module Integrity
     end
 
     def run
-      log "run"
-      Integrity.config.builder.enqueue(self)
+      log 'run'
+      Integrity.builder.enqueue(self)
     end
 
     def run!
-      log "run!"
+      log 'run!'
       return false if invalid_sha?
-      Builder.start_build(self)
+      Integrity::Event.trigger('build:start', self.id)
     end
 
     def cleanup!
-      log "cleanup!"
+      log 'cleanup!'
       Integrity::Event.trigger('build:cleanup', self.id)
     end
 
     def complete!(result)
-      log "complete!"
+      log 'complete!'
       success = result.respond_to?(:success) ? result.success : result
       set_as_complete(success) and cleanup!
     end
 
     def kill!(params = {})
-      log "kill!"
+      log 'kill!'
       params = {cleanup: true}.merge(params)
       cleanup! if params[:cleanup]
       time = completed_at || Time.now
@@ -81,7 +81,7 @@ module Integrity
 
     def cancel_previous_builds!
       log 'cancelling previous builds'
-      (previous_builds << self).map(&:cancel!)
+      previous_builds.map(&:cancel!)
     end
 
     def previous_builds(on = :branch)
@@ -90,7 +90,7 @@ module Integrity
     end
 
     def cancel!
-      log "cancel!"
+      log 'cancel!'
       if pending?
         update(state: 'cancelled', completed_at: Time.now)
       elsif building?
@@ -109,13 +109,13 @@ module Integrity
     end
 
     def started!
-      log "started!"
+      log 'started!'
       update(started_at: Time.now)
       update_ports if server?
     end
 
     def fail!(message=nil)
-      log "fail!"
+      log 'fail!'
       set_as_complete(false)
     end
 
@@ -160,7 +160,7 @@ module Integrity
     end
 
     def duration
-      return false if !completed? or !started_at
+      return false unless completed? && started?
       Integrity.delta(completed_at, started_at)
     end
 
@@ -171,8 +171,15 @@ module Integrity
 
     def time_since_start
       return if pending?
-      # to_i returns utc timestamp
       Integrity.delta(Time.now, started_at)
+    end
+
+    def run_time
+      duration || time_since_start
+    end
+
+    def human_run_time
+      Integrity.human_duration(run_time)
     end
 
     def build_directory

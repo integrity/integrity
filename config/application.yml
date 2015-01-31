@@ -5,6 +5,7 @@ builds:
   builder: :dj
   dir: '/tmp/docker/builds'
   max_running: 2
+  max_run_time: 35
   output_interval: 5
   trim_branches: true
   display_count: 20
