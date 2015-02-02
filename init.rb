@@ -58,7 +58,8 @@ Integrity.configure do |c|
   c.github_account              = app.github.account        # Name of primary github account, usually owner of token.
   c.trim_branches               = app.builds.trim_branches  # Automatically delete projects when their corresponding branches are deleted
   c.builder                     = :dj, app.database         # Which builder to use [:threaded, :delayed, :resque, :explicit]
-  c.max_running_builds          = app.builds.max_running    # Maximum umber of builds to run per worker machine
+  c.max_running_builds          = app.builds.max_running    # Maximum number of builds to run per worker machine
+  c.max_run_time                = app.builds.max_run_time   # Maximum number of minutes a build can run before being orphaned.
   c.project_default_build_count = app.builds.display_count  # How many builds to show by default on project pages
   c.build_output_interval       = app.builds.interval       # How often to collect build output from running builds (in secs)
   c.status_image_always_public  = false                     # ake status public for all projects? If false, login required to see status for private projects.

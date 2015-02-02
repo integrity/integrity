@@ -5,18 +5,20 @@ module Integrity
 
     # Only launch build if the number of running builds hasn't reached the limit.
     def self.start_build(build)
-      log "start build #{build.inspect}"
+      log_build(:start_build, build, "Clear builds on branch: #{build.branch_name}") { Integrity::Event.trigger('branch:cleanup', build.id) }
+      log_build(:start_build, build, "Checking build queue: #{running} out of #{run_limit} builds running.")
       running   = Build.running(:count)
       run_limit = Integrity.max_running_builds
-      log "Checking build queue: #{running} out of #{run_limit} builds running."
-      launch_build(build) if running < run_limit
+      log_build(:start_build, build, "space available. queueing."){ launch_build(build) } if running < run_limit
     end
 
     # Keep Queuing Builds until we have reached the threashhold.
     # Try to queue all pending builds.
     def self.queue_builds!
-      log "queue_builds! - #{Build.pending.count} builds pending. Attempting to queue remaining builds..."
-      Build.pending.map{|b| b.run }
+      log "queue_builds: - #{Build.pending.count} builds pending. Attempting to queue remaining builds..."
+      Build.pending.map do |b|
+        log_build(:queue_builds, b, :queueing) { b.run }
+      end
     end
 
     # If there are any pending builds, start the first one.
@@ -28,24 +30,41 @@ module Integrity
     # Launches the passed build on fleet. Before starting, it kills
     # older builds from same branch (and itself if it was a re-run)
     def self.launch_build(build)
-      log "launch_build - started: #{build.service_vars.inspect}"
-      build.cleanup!
-      Crust.start(build.service_options)
-      log "launch_build - updating fleet: #{build.service_vars.inspect}"
-      Build.update_fleetctl_status
-      build.reload.started!
-      log "#{Build.running.count} builds running."
-      log "launch_build - completed: #{build.service_vars.inspect}"
+      log_execution(:launch_build, build) do
+        log_build(:launch_build, build, :cleanup) { Crust.destroy(build.service_options) }
+        log_build(:launch_build, build, :starting){ Crust.start(build.service_options) }
+        log_build(:launch_build, build, :started) { build.reload.started! }
+        log_build(:launch_build, build, 'Updating fleet'){ Build.update_fleetctl_status }
+        log_build(:launch_build, build, "#{Build.running.count} builds running.")
+      end
     end
 
     # Kill fleet unit and destroy service matching build that was passed.
     def self.destroy_build(build)
-      log "destroy_build: #{build.service_vars.inspect}"
-      Crust.destroy(build.service_options)
+      log_execution(:destroy_build, build){ Crust.destroy(build.service_options) }
+    end
+
+    def self.cleanup_orphans
+      Build.orphaned.each do |build|
+        log_build(:cleanup_orphans, build, "Orphaned! Running for #{build.human_run_time}. Stopping."){ destroy_build(build) }
+      end
+    end
+
+    def self.log_execution(action, build)
+      log_build action, build, 'starting'
+      yield
+      log_build action, build, 'completed'
+    end
+
+    def self.log_build(action, build, msg)
+      log "#{action}: [Build:#{build.id}] (#{build.service_vars.inspect}) - #{msg}"
+      yield if block_given?
     end
 
     def self.log(msg)
-      Integrity.logger.info ("[Integrity::Builder]: " + msg)
+      msg = "[Integrity::Builder]: #{msg}"
+      Integrity.logger.info msg
+      Integrity.sys_logger(:delayed_job).info msg
     end
 
     #### OLD INTEGRITY METHODS - NOT USED ANYMORE

@@ -126,6 +126,10 @@ module Integrity
     Integrity::App
   end
 
+  def self.builder
+    config.builder
+  end
+
   def self.datetime_to_utc_time(datetime)
     # This converts to utc (borrowed from activesupport DateTime#to_utc)
     datetime = datetime.new_offset(0) unless datetime.offset.zero?
@@ -223,6 +227,7 @@ module Integrity
   def self.say(message)
     STDOUT.puts message
     logger.info message
+    sys_logger.info message
   end
 
   def self.start_logs
@@ -262,8 +267,9 @@ module Integrity
     environment? :development
   end
 
-  def self.sys_logger(name, level = :debug)
+  def self.sys_logger(name = :integrity, level = :debug)
     return logger unless production?
+    name = (name.presence || :integrity).to_s
     @sys_loggers ||= {}
     unless @sys_loggers[name]
       syslog = Logging.logger[name]
@@ -277,6 +283,10 @@ module Integrity
 
   def self.instance_manager
     InstanceManager.new
+  end
+
+  def self.max_run_time
+    config.max_run_time
   end
 end
 

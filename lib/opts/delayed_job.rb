@@ -12,11 +12,11 @@ end
 Delayed::Worker.plugins << PollNotifier
 
 Delayed::Worker.delay_jobs              = true
-Delayed::Worker.destroy_failed_jobs     = false
+Delayed::Worker.destroy_failed_jobs     = true
 Delayed::Worker.sleep_delay             = 1
 Delayed::Worker.max_attempts            = 2
-Delayed::Worker.max_run_time            = 30.minutes
-Delayed::Worker.read_ahead              = 5
+Delayed::Worker.max_run_time            = 1.minute
+Delayed::Worker.read_ahead              = 2
 Delayed::Worker.default_queue_name      = 'integrity'
 Delayed::Worker.raise_signal_exceptions = :term
 Delayed::Worker.logger                  = Integrity.sys_logger('delayed_job')
