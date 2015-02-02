@@ -395,7 +395,7 @@ module Integrity
     post '/:project/builds/:build' do
       login_required
 
-      log("/:project/builds/:build (Build:Re-build) build:#{current_build.inspect}, commit: #{current_build.commit.inspect}")
+      log("[Build:#{current_build.id}] /:project/builds/:build (Build:Re-build) build:#{current_build.inspect}, commit: #{current_build.commit.inspect}")
       @build = current_project.build(current_build.commit, true, params["template"])
       redirect build_url(@build)
     end
@@ -410,7 +410,7 @@ module Integrity
 
     # Delete Build
     delete '/:project/builds/:build' do
-      log("DELETE /:project/builds/:build (Delete build) build:#{current_build.inspect}")
+      log("[Build:#{current_build.id}] DELETE /:project/builds/:build (Delete build) build:#{current_build.inspect}")
       login_required
       current_build.destroy!
       redirect root_url
@@ -418,7 +418,7 @@ module Integrity
 
     # Cancel the Pending or Running Build
     post '/:project/builds/:build/cancel' do
-      log("POST /:project/builds/:build/cancel (Cancel build) build:#{current_build.inspect}")
+      log("[Build:#{current_build.id}] POST /:project/builds/:build/cancel (Cancel build) build:#{current_build.inspect}")
       login_required
       current_build.cancel!
       redirect project_url(current_project)
