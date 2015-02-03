@@ -69,3 +69,6 @@ Integrity.configure do |c|
   #   runner.run! "git scclone #{repo_uri} #{target_directory} #{sha1}"
   # end
 end
+
+# Try to queue pending builds on start
+Integrity.start

@@ -17,6 +17,8 @@ module Integrity
     def initialize
       @registered_events = {}
 
+      on('build:queue'){|build| Integrity.builder.enqueue(build) }
+
       on('build:start'){|build| Integrity.builder.run(:start_build, build) }
 
       on(*%w(
@@ -31,6 +33,8 @@ module Integrity
         build:completed
         build:canceled
         machine:added
+        build:queue:all
+        app:start
       )){ Builder.queue_builds! }
 
       on('diligence_branch:deactivate'){|build_id| DiligenceBranch.deactivate(build_id)}

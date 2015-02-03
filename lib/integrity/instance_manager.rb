@@ -4,20 +4,20 @@ module Integrity
     LARGE_BUILDS_PER_MACHINE = 2
     SMALL_BUILDS_PER_MACHINE = LARGE_BUILDS_PER_MACHINE * 8
 
-    attr_accessor :machines, :load_utilization
+    attr_accessor :machines
 
     def initialize
     end
 
     def utilization_metrics
-      load_utilization.first.metrics
+      LoadUtilization.metrics
     end
 
     def refresh
       @machines = Crust.get_machines
       reset_max_running_builds
-      @load_utilization = LoadUtilization.log(
-        @machines,
+      LoadUtilization.log(
+        @machines.count,
         pending_load_need,
         running_load_need,
         load_need,

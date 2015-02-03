@@ -61,6 +61,7 @@ require 'integrity/author'
 require 'integrity/commit'
 require 'integrity/build'
 require 'integrity/builder'
+require 'integrity/load_utilization'
 require 'integrity/diligence_branch'
 require 'integrity/notifier'
 require 'integrity/notifier/base'
@@ -227,7 +228,6 @@ module Integrity
   def self.say(message)
     STDOUT.puts message
     logger.info message
-    sys_logger.info message
   end
 
   def self.start_logs
@@ -271,7 +271,7 @@ module Integrity
     return logger unless production?
     name = (name.presence || :integrity).to_s
     @sys_loggers ||= {}
-    unless @sys_loggers[name]
+    unless @sys_loggers[name].present?
       syslog = Logging.logger[name]
       syslog.add_appenders Logging.appenders.syslog(name)
       syslog.level = level
@@ -287,6 +287,15 @@ module Integrity
 
   def self.max_run_time
     config.max_run_time
+  end
+
+  def self.queue_builds
+    Integrity::Event.trigger('build:queue:all')
+  end
+
+  def self.start
+    say '[Integrity] Starting - Queue Pending Builds...'
+    Integrity::Event.trigger('app:start')
   end
 end
 

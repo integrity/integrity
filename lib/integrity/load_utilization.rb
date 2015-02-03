@@ -2,7 +2,7 @@ module Integrity
   class LoadUtilization
     include DataMapper::Resource
 
-
+    property :id,                 Serial
     property :pending_builds,     Integer, default: 0, required: true
     property :running_builds,     Integer, default: 0, required: true
     property :active_machines,    Integer, default: 0, required: true
@@ -18,20 +18,25 @@ module Integrity
 
     default_scope(:default).update(order: [:created_at.desc])
 
+    def self.metrics
+      self.first.metrics
+    end
 
     def self.log(machines, pending_load, running_load, load_requirement, load_capacity,
       load_deficit, machines_required, max_running_builds)
+      pcount = Build.pending(:count)
+      rcount = Build.running(:count)
       create(
-        pending_builds: Build.pending(:count),
-        running_builds: Build.running(:count),
-        active_machines: machines,
-        pending_load: pending_load,
-        running_load: running_load,
-        load_requirement: load_requirement,
-        load_capacity: load_capacity,
-        load_deficit: load_deficit,
-        machines_required: machines_required,
-        max_running_builds: max_running_builds,
+        pending_builds: pcount.to_i,
+        running_builds: rcount.to_i,
+        active_machines: machines.to_i,
+        pending_load: pending_load.to_i,
+        running_load: running_load.to_i,
+        load_requirement: load_requirement.to_i,
+        load_capacity: load_capacity.to_i,
+        load_deficit: load_deficit.to_i,
+        machines_required: machines_required.to_i,
+        max_running_builds: max_running_builds.to_i
       )
     end
 
@@ -39,10 +44,12 @@ module Integrity
       {
         pending_builds: pending_builds,
         running_builds: running_builds,
-        machines:       active_machines.count,
+        machines:       active_machines,
         new_machines_requested: machines_required
       }
     end
 
 
+
   end
+end

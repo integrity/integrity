@@ -5,10 +5,10 @@ module Integrity
 
     # Only launch build if the number of running builds hasn't reached the limit.
     def self.start_build(build)
-      log_build(:start_build, build, "Clear builds on branch: #{build.branch_name}") { Integrity::Event.trigger('branch:cleanup', build.id) }
-      log_build(:start_build, build, "Checking build queue: #{running} out of #{run_limit} builds running.")
       running   = Build.running(:count)
       run_limit = Integrity.max_running_builds
+      log_build(:start_build, build, "Clear builds on branch: #{build.branch_name}") { Integrity::Event.trigger('branch:cleanup', build.id) }
+      log_build(:start_build, build, "Checking build queue: #{running} out of #{run_limit} builds running.")
       log_build(:start_build, build, "space available. queueing."){ launch_build(build) } if running < run_limit
     end
 
