@@ -19,7 +19,7 @@ module Integrity
     default_scope(:default).update(order: [:created_at.desc])
 
     def self.metrics
-      first.metrics
+      self.first.metrics
     end
 
     def self.log(machines, pending_load, running_load, load_requirement, load_capacity,
@@ -44,7 +44,7 @@ module Integrity
       {
         pending_builds: pending_builds,
         running_builds: running_builds,
-        machines:       active_machines.count,
+        machines:       active_machines,
         new_machines_requested: machines_required
       }
     end
