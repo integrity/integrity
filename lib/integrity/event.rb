@@ -33,6 +33,8 @@ module Integrity
         build:completed
         build:canceled
         machine:added
+        build:queue:all
+        app:start
       )){ Builder.queue_builds! }
 
       on('diligence_branch:deactivate'){|build_id| DiligenceBranch.deactivate(build_id)}

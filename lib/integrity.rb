@@ -289,6 +289,15 @@ module Integrity
   def self.max_run_time
     config.max_run_time
   end
+
+  def self.queue_builds
+    Integrity::Event.trigger('build:queue:all')
+  end
+
+  def self.start
+    say '[Integrity] Starting - Queue Pending Builds...'
+    Integrity::Event.trigger('app:start')
+  end
 end
 
 require 'opts/crust' # Load integrity before loading crust options, because it uses Integrity root and logger.
