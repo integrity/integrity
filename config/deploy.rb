@@ -24,7 +24,6 @@ load 'config/overrides'
 load 'config/upstart'
 load 'config/restart'
 load 'config/db_setup'
-load 'config/workers'
 load 'config/delayed_job'
 
 before 'deploy:setup', 'rvm:install_ruby'

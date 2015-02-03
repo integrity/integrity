@@ -21,9 +21,11 @@ module Integrity
 
     def self.log(machines, pending_load, running_load, load_requirement, load_capacity,
       load_deficit, machines_required, max_running_builds)
+      pcount = Build.pending(:count)
+      rcount = Build.running(:count)
       create(
-        pending_builds: Build.pending(:count),
-        running_builds: Build.running(:count),
+        pending_builds: pcount,
+        running_builds: rcount,
         active_machines: machines,
         pending_load: pending_load,
         running_load: running_load,
@@ -31,7 +33,7 @@ module Integrity
         load_capacity: load_capacity,
         load_deficit: load_deficit,
         machines_required: machines_required,
-        max_running_builds: max_running_builds,
+        max_running_builds: max_running_builds
       )
     end
 
@@ -46,3 +48,4 @@ module Integrity
 
 
   end
+end
