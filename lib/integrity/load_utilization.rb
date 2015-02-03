@@ -2,7 +2,7 @@ module Integrity
   class LoadUtilization
     include DataMapper::Resource
 
-
+    property :id,                 Serial
     property :pending_builds,     Integer, default: 0, required: true
     property :running_builds,     Integer, default: 0, required: true
     property :active_machines,    Integer, default: 0, required: true
