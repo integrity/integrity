@@ -17,7 +17,7 @@ module Integrity
       @machines = Crust.get_machines
       reset_max_running_builds
       LoadUtilization.log(
-        @machines.count,
+        @machines,
         pending_load_need,
         running_load_need,
         load_need,

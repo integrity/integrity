@@ -14,7 +14,7 @@
     <div class="col-md-12">
       <h3>Machines</h3>
       <ul>
-      <% @instance_manager.machines.each do |machine| %>
+      <% @load_utilization.machines.each do |machine| %>
         <li> <%= machine %> </li>
       <% end %>
       </ul>
@@ -40,16 +40,16 @@
             </thead>
             <tbody>
               <tr>
-                <td><%= Integrity::Build.pending.count %></td>
-                <td><%= @instance_manager.pending_load_need %></td>
-                <td><%= Integrity::Build.running.count %></td>
-                <td><%= @instance_manager.running_load_need %></td>
-                <td><%= @instance_manager.load_need %></td>
-                <td><%= @instance_manager.machines.count %></td>
-                <td><%= @instance_manager.load_capacity %></td>
-                <td><%= @instance_manager.load_deficit %></td>
-                <td><%= @instance_manager.new_machines_required %></td>
-                <td><%= config.max_running_builds %></td>
+                <td><%= @load_utilization.pending_builds %></td>
+                <td><%= @load_utilization.pending_load %></td>
+                <td><%= @load_utilization.running_builds %></td>
+                <td><%= @load_utilization.running_load %></td>
+                <td><%= @load_utilization.load_requirement %></td>
+                <td><%= @load_utilization.active_machines %></td>
+                <td><%= @load_utilization.load_capacity %></td>
+                <td><%= @load_utilization.load_deficit %></td>
+                <td><%= @load_utilization.machines_required %></td>
+                <td><%= @load_utilization.max_running_builds %></td>
               </tr>
             </tbody>
           </table>

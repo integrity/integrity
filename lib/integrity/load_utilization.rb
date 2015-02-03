@@ -3,23 +3,28 @@ module Integrity
     include DataMapper::Resource
 
     property :id,                 Serial
-    property :pending_builds,     Integer, default: 0, required: true
-    property :running_builds,     Integer, default: 0, required: true
-    property :active_machines,    Integer, default: 0, required: true
-    property :pending_load,       Integer, default: 0, required: true
-    property :running_load,       Integer, default: 0, required: true
-    property :load_requirement,   Integer, default: 0, required: true
-    property :load_capacity,      Integer, default: 0, required: true
-    property :load_deficit,       Integer, default: 0, required: true
-    property :machines_required,  Integer, default: 0, required: true
-    property :max_running_builds, Integer, default: 0, required: true
+    property :pending_builds,     Integer, default: 0,  required: true
+    property :running_builds,     Integer, default: 0,  required: true
+    property :active_machines,    Integer, default: 0,  required: true
+    property :pending_load,       Integer, default: 0,  required: true
+    property :running_load,       Integer, default: 0,  required: true
+    property :load_requirement,   Integer, default: 0,  required: true
+    property :load_capacity,      Integer, default: 0,  required: true
+    property :load_deficit,       Integer, default: 0,  required: true
+    property :machines_required,  Integer, default: 0,  required: true
+    property :max_running_builds, Integer, default: 0,  required: true
+    property :machines,           Array,   default: [], required: true
 
     timestamps :at
 
     default_scope(:default).update(order: [:created_at.desc])
 
+    def self.current
+      self.first
+    end
+
     def self.metrics
-      self.first.metrics
+      self.current.metrics
     end
 
     def self.log(machines, pending_load, running_load, load_requirement, load_capacity,
@@ -27,9 +32,10 @@ module Integrity
       pcount = Build.pending(:count)
       rcount = Build.running(:count)
       create(
+        machines: machines,
+        active_machines: machines.count,
         pending_builds: pcount.to_i,
         running_builds: rcount.to_i,
-        active_machines: machines.to_i,
         pending_load: pending_load.to_i,
         running_load: running_load.to_i,
         load_requirement: load_requirement.to_i,
@@ -48,8 +54,6 @@ module Integrity
         new_machines_requested: machines_required
       }
     end
-
-
 
   end
 end
