@@ -50,7 +50,7 @@ module Integrity
 
     class BuildJob
       def initialize(build)
-        @build = build.id
+        @build = build.is_a?(Build) ? build.id : build
       end
 
       def perform
@@ -61,7 +61,7 @@ module Integrity
 
     class BuildManagerJob
       def initialize(action, build=nil)
-        @build = build.id
+        @build = build.is_a?(Build) ? build.id : build
         @action = action
       end
 

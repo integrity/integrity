@@ -17,6 +17,8 @@ module Integrity
     def initialize
       @registered_events = {}
 
+      on('build:queue'){|build| Integrity.builder.enqueue(build) }
+
       on('build:start'){|build| Integrity.builder.run(:start_build, build) }
 
       on(*%w(

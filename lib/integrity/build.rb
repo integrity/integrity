@@ -51,7 +51,7 @@ module Integrity
 
     def run
       log 'run'
-      Integrity.builder.enqueue(self)
+      Integrity::Event.trigger('build:queue', self.id)
     end
 
     def run!
