@@ -43,6 +43,7 @@ module Integrity
     delegate :owner, to: :repo
 
     def build_complete!( params )
+      log("[method:build_complete!] params: #{params.inspect}")
       code = params[:success]
       sha = params[:sha]
       build_id = params[:build_id]
@@ -58,14 +59,15 @@ module Integrity
 
       if build
         success = code.present? && code.zero?
+        log("[method:build_complete!] Completed build with success: #{success}, code: #{code.inspect}")
         build.complete!(success)
       else
-        Integrity.say "Could not find a build corresponding to payload: #{params.inspect}"
+        log("[method:build_complete!] Could not find a build corresponding to payload: #{params.inspect}")
       end
-
     rescue => e
-      Integrity.say e.message
+        log("[method:build_complete!] Rescure error: #{e.message}")
     ensure
+      log("[method:build_complete!] ensure -> triggering build:complete")
       Integrity::Event.trigger('build:completed')
     end
 
@@ -90,6 +92,7 @@ module Integrity
     end
 
     def build(commit, rebuild=false, service=nil)
+      log("[method:build] building commit @{commit.inspec}")
       if commit.is_a?(Hash)
         commit = commit.merge(project_id: id)
       else
@@ -109,6 +112,7 @@ module Integrity
         )
 
         if build.invalid_sha?
+          log("[method:build] Invalid sha for @{commit.inspec} - [Start-complete] invalid_sha")
           build.destroy if build.saved?
           return
         end
@@ -172,5 +176,9 @@ module Integrity
       end
     end
 
+    def log(msg)
+      puts msg
+      Integrity.logger.info "[Integrity::Project]:event:#{msg}"
+    end
   end
 end

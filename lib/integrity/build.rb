@@ -61,18 +61,18 @@ module Integrity
     end
 
     def cleanup!
-      log 'cleanup!'
+      log '[cleanup!][fi]'
       Integrity::Event.trigger('build:cleanup', self.id)
     end
 
     def complete!(result)
-      log 'complete!'
       success = result.respond_to?(:success) ? result.success : result
+      log "[complete!][fi] with success #{success} and result #{result}. Setting_as_complete and cleanup next!"
       set_as_complete(success) and cleanup!
     end
 
     def kill!(params = {})
-      log 'kill!'
+      log "[kill!][fi] #{params}"
       params = {cleanup: true}.merge(params)
       cleanup! if params[:cleanup]
       time = completed_at || Time.now
@@ -80,7 +80,7 @@ module Integrity
     end
 
     def cancel_previous_builds!
-      log 'cancelling previous builds'
+      log '[cancel_previous_builds!]'
       previous_builds.map(&:cancel!)
     end
 
@@ -90,12 +90,15 @@ module Integrity
     end
 
     def cancel!
-      log 'cancel!'
+      log '[cancel!][fi]'
       if pending?
+        log '[cancel!][fi] Build pending, change_state'
         update(state: 'cancelled', completed_at: Time.now)
       elsif building?
+        log '[cancel!][fi] Build pending, kill!'
         kill!
       end
+      log '[cancel!][fi] Triggering diligence_branch:deactivate and build:canceled'
       Integrity::Event.trigger('diligence_branch:deactivate', self.id)
       Integrity::Event.trigger('build:canceled')
     end
@@ -115,7 +118,7 @@ module Integrity
     end
 
     def fail!(message=nil)
-      log 'fail!'
+      log "[fail!][fi] with message #{message}. Setting as complete."
       set_as_complete(false)
     end
 
@@ -187,6 +190,7 @@ module Integrity
     end
 
     def set_as_complete(success = false)
+      log "[set_as_complete!][fi] with success #{success}."
       self.raise_on_save_failure = true
       update(completed_at: Time.now, successful: success)
       notify
