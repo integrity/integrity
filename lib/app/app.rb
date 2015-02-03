@@ -31,8 +31,8 @@ module Integrity
     helpers Integrity::Helpers
 
     def log(msg)
-      params = "{user: #{current_user.inspect}}"
-      Integrity.logger.debug "[Integrity::App]: #{msg} params:#{params}"
+      user = current_user ? "{user: #{current_user.username}}" : ""
+      Integrity.logger.debug "[Integrity::App]: #{msg} user:#{user}"
     end
 
     def current_user
@@ -90,15 +90,14 @@ module Integrity
     post '/status.json', provides: :json do
       params.symbolize_keys!
       @format = :json
-      STDERR.puts "PARAMS:  #{params.inspect}"
-
+      log("[Build:#{params[:build_id]}][fi] POST /status.json - completing current project with params #{params.slice(:success, :sha, :build_id)} Project is #{current_project.inspect}")
       current_project.build_complete!(params.slice(:success, :sha, :build_id))
       json current_project
     end
 
     post '/hook.json', provides: :json do
       @format = :json
-      STDERR.puts "PARAMS: #{params.inspect}"
+      log "/hook.json params: #{params.inspect}"
 
       payload = Payload.new(params)
 
@@ -106,12 +105,12 @@ module Integrity
         halt 404
       elsif not payload.commit
         halt 404
-        STDERR.puts "hook.json called without commit, likely from branch deletion"
+        log "/hook.json params: #{params.inspect} hook.json called without commit, likely from branch deletion"
       end
 
       build = payload.build!
 
-      STDERR.puts "BUILD: #{build.inspect}"
+        log "/hook.json Build: #{build.inspect}"
 
       if diligence_branch = Integrity::DiligenceBranch.first(:branch => build.branch)
         diligence_branch.rebuild_environment
@@ -419,7 +418,7 @@ module Integrity
 
     # Cancel the Pending or Running Build
     post '/:project/builds/:build/cancel' do
-      log("[Build:#{current_build.id}] POST /:project/builds/:build/cancel (Cancel build) build:#{current_build.inspect}")
+      log("[Build:#{current_build.id}][fi] POST /:project/builds/:build/cancel (Cancel build) build:#{current_build.inspect}")
       login_required
       current_build.cancel!
       redirect project_url(current_project)

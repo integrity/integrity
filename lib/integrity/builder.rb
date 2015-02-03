@@ -123,7 +123,7 @@ module Integrity
     end
     
     def complete
-      logger.info "Build #{commit} exited with #{@result.success} got:\n #{@result.output}"
+      logger.info "[fi] Build #{commit} exited with #{@result.success} got:\n #{@result.output}"
       @build.raise_on_save_failure = true
       @build.complete!(@result)
     end
