@@ -10,7 +10,7 @@ module Integrity
     end
 
     def utilization_metrics
-      load_utilization.first.metrics
+      load_utilization.metrics
     end
 
     def refresh
