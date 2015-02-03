@@ -12,5 +12,6 @@ end
 
 desc 'Re-start delayed job'
 task :dj_restart, roles: :dj_worker do
-  run "cd '#{current_path}' && RAILS_ENV=#{rails_env} rake delayed_job:restart"
+  run "cd '#{current_path}' && RAILS_ENV=#{rails_env} #{rake} delayed_job:restart"
+  run "cd '#{current_path}' && RAILS_ENV=#{rails_env} #{rake} delayed_job:restart"
 end
