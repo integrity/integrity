@@ -272,8 +272,8 @@ module Integrity
     return logger unless production?
     name = (name.presence || :integrity).to_s
     @sys_loggers ||= {}
-    unless @sys_loggers[name]
-      syslog = Logging.logger[name] unless @sys_loggers[name].present?
+    unless @sys_loggers[name].present?
+      syslog = Logging.logger[name]
       syslog.add_appenders Logging.appenders.syslog(name)
       syslog.level = level
       @sys_loggers[name] = syslog
