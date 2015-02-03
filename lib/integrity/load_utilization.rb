@@ -24,16 +24,16 @@ module Integrity
       pcount = Build.pending(:count)
       rcount = Build.running(:count)
       create(
-        pending_builds: pcount,
-        running_builds: rcount,
-        active_machines: machines,
-        pending_load: pending_load,
-        running_load: running_load,
-        load_requirement: load_requirement,
-        load_capacity: load_capacity,
-        load_deficit: load_deficit,
-        machines_required: machines_required,
-        max_running_builds: max_running_builds
+        pending_builds: pcount.to_i,
+        running_builds: rcount.to_i,
+        active_machines: machines.to_i,
+        pending_load: pending_load.to_i,
+        running_load: running_load.to_i,
+        load_requirement: load_requirement.to_i,
+        load_capacity: load_capacity.to_i,
+        load_deficit: load_deficit.to_i,
+        machines_required: machines_required.to_i,
+        max_running_builds: max_running_builds.to_i
       )
     end
 
