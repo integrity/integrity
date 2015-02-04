@@ -55,8 +55,8 @@
       Morris.Donut({
         element: 'builds-donut',
         data: [
-          {label: "Running", value: <%= @load_utilization.running_builds %> },
-          {label: "Pending", value: <%= @load_utilization.pending_builds %> }
+          {label: "Running", value: <%= @load_utilization.running_builds if @load_utilization %> },
+          {label: "Pending", value: <%= @load_utilization.pending_builds if @load_utilization %> }
         ],
         resize: true
       });
