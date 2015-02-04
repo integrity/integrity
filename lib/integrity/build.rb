@@ -22,6 +22,7 @@ module Integrity
     property :machine_ip,            String
     property :service_template,      String, default: 'spec'
     property :public_port,           String
+    property :kill_reason,           String, default: '', length:512
 
     timestamps :at
 
@@ -79,9 +80,18 @@ module Integrity
       update(state: 'killed', completed_at: time)
     end
 
+    def kill_with_reason(agent, reason, method_name)
+      description = "Killed by [#{agent}] because [#{reason}] in method [#{method_name}]"
+      log "[kill_with_reason][fi] #{description}"
+      update(kill_reason: description)
+    end
+
     def cancel_previous_builds!
       log '[cancel_previous_builds!]'
-      previous_builds.map(&:cancel!)
+      previous_builds.each do |b|
+        b.kill_with_reason('Honesty', 'More recent commit on branch submitted', 'cancel_previous_builds')
+        b.cancel!
+      end
     end
 
     def previous_builds(on = :branch)
@@ -315,6 +325,7 @@ module Integrity
     def consider_mercy_kill
       if mercy_kill?
         log("[consider_mercy_kill][fi] Mercy Killing Unit")
+        kill_with_reason('Coreos', 'Failed on CoreOS', 'consider_mercy_kill')
         kill
       end
     end
