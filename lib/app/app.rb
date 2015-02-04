@@ -155,6 +155,11 @@ module Integrity
     get '/settings' do
       login_required
       @load_utilization = LoadUtilization.current
+      loads = [Integrity::LoadUtilization.first(:created_at.lt => 10.minutes.ago)]
+      (1..23).each do |n|
+        loads << Integrity::LoadUtilization.first(:created_at.lt => n.hour.ago)
+      end
+      @usage = loads.compact.map(&:usage)
       show :settings, title: 'settings'
     end
 

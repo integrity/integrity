@@ -7,7 +7,7 @@ module Integrity
           extend ClassMethods
         end
       end
-      
+
       HUMAN_STATUS = {
         success:  "Built %s successfully",
         failed:   "Built %s and failed",
@@ -42,7 +42,7 @@ module Integrity
           end
         end
       end
-      
+
       def status
         return state.to_sym if state
         case

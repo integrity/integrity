@@ -55,5 +55,13 @@ module Integrity
       }
     end
 
+    def usage
+      {
+        period: created_at.strftime('%Y-%m-%d %H:%M'),
+        running: running_builds,
+        pending: pending_builds,
+        machines: active_machines
+      }
+    end
   end
 end
