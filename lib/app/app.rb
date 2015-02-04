@@ -77,6 +77,7 @@ module Integrity
       if Integrity.base_url.present?
         Integrity.configure {|c| c.base_url = url_for('/', :full) }
       end
+      @usage = []
     end
 
     before '/secure/*' do
