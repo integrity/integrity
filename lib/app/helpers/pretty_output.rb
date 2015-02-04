@@ -95,7 +95,11 @@ module Integrity
       end
 
       def logs_query(build)
-        "#{build.service_name} AND ([Honesty] OR examples,)"
+        if build.completed?
+          "#{build.service_name} AND ([Honesty] OR examples,)"
+        else
+          "#{build.service_name}"
+        end
       end
 
       def link_to_tracker(build)
