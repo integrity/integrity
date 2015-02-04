@@ -7,7 +7,7 @@ module Integrity
     include Status
 
     GLOB_CHARS = '*?[]' unless defined?(GLOB_CHARS)
-    ZOMBIE_LIFESPAN = 1.hour unless defined?(ZOMBIE_LIFESPAN)
+    MERCY_KILL_TIMESPAN = 20.minutes unless defined?(MERCY_KILL_TIMESPAN)
 
     property :id,                    Serial
     property :project_id,            Integer, required: true
@@ -311,6 +311,14 @@ module Integrity
       puts msg
       Integrity.logger.info "[Integrity::Build]:[Build:#{id}] event:#{msg}, params:#{self.inspect}"
     end
+
+    def consider_mercy_kill
+      if mercy_kill?
+        log("[consider_mercy_kill][fi] Mercy Killing Unit")
+        kill
+      end
+    end
+
     private
 
     def get_public_port
@@ -330,22 +338,17 @@ module Integrity
       ports
     end
 
-    def make_zombie
-      #The zombie 'exists' so long as the cleanup is not done. This helps for debugging
-      log "made zombie"
-      kill!({ cleanup: false }) if building?
+    def mercy_kill?
+      building? && failed_on_docker? && passed_give_up_time?
     end
 
-    def permitted_zombie?
-      made_zombie = (fleetctl_status == 'failed') #This means it must have become a zombie
-      kill_zombie_at = completed_at + ZOMBIE_LIFESPAN
-      permitted = Time.now < kill_zombie_at
-      made_zombie && permitted
+    def failed_on_docker?
+      fleetctl_status == 'failed'
     end
 
-    def kill_zombie
-      log "killing zombie"
-      cleanup!
+    def passed_give_up_time?
+      give_up_at = started_at + MERCY_KILL_TIMESPAN
+      time.now > give_up_at
     end
   end
 end

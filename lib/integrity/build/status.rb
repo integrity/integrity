@@ -127,11 +127,7 @@ module Integrity
           update(fleetctl_status: app_status[:active], machine_ip: app_status[:ip])
         end
         #If the build service file fails, we change its status to 'killed' from 'building'
-        #Then we wait an hour to kill the service_files so we have time to debug them
-        if (fleetctl_status == 'failed')
-          make_zombie #idempotent
-          kill_zombie unless permitted_zombie?
-        end
+        consider_mercy_kill
       end
 
     end
