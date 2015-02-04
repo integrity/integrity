@@ -13,7 +13,7 @@ module Integrity
     property :load_deficit,       Integer, default: 0,  required: true
     property :machines_required,  Integer, default: 0,  required: true
     property :max_running_builds, Integer, default: 0,  required: true
-    property :machines,           Array,   default: [], required: true
+    property :machines,           CommaSeparatedList,   required: true
 
     timestamps :at
 
