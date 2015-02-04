@@ -77,6 +77,7 @@ module Integrity
       if Integrity.base_url.present?
         Integrity.configure {|c| c.base_url = url_for('/', :full) }
       end
+      @load_utilization = LoadUtilization.current
       @usage = []
     end
 
