@@ -15,6 +15,9 @@
       <h3>
       <%= h(build.full_message).gsub("\n", '<br />') %>
       </h3>
+      <% if build.kill_reason %>
+        <p><%= build.kill_reason %></p>
+      <% end %>
       <h4>
         <span class="label label-<%= build_service(build)[:color] %>">
           <i class="fa fa-<%= build_service(build)[:icon] %>" > </i>

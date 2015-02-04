@@ -7,7 +7,7 @@ module Integrity
     include Status
 
     GLOB_CHARS = '*?[]' unless defined?(GLOB_CHARS)
-    ZOMBIE_LIFESPAN = 1.hour unless defined?(ZOMBIE_LIFESPAN)
+    MERCY_KILL_TIMESPAN = 20.minutes unless defined?(MERCY_KILL_TIMESPAN)
 
     property :id,                    Serial
     property :project_id,            Integer, required: true
@@ -22,6 +22,7 @@ module Integrity
     property :machine_ip,            String
     property :service_template,      String, default: 'spec'
     property :public_port,           String
+    property :kill_reason,           String, default: '', length:512
 
     timestamps :at
 
@@ -79,9 +80,18 @@ module Integrity
       update(state: 'killed', completed_at: time)
     end
 
+    def kill_with_reason(agent, reason, method_name)
+      description = "Killed by [#{agent}] because [#{reason}] in method [#{method_name}]"
+      log "[kill_with_reason][fi] #{description}"
+      update(kill_reason: description)
+    end
+
     def cancel_previous_builds!
       log '[cancel_previous_builds!]'
-      previous_builds.map(&:cancel!)
+      previous_builds.each do |b|
+        b.kill_with_reason('Honesty', 'More recent commit on branch submitted', 'cancel_previous_builds')
+        b.cancel!
+      end
     end
 
     def previous_builds(on = :branch)
@@ -311,6 +321,15 @@ module Integrity
       puts msg
       Integrity.logger.info "[Integrity::Build]:[Build:#{id}] event:#{msg}, params:#{self.inspect}"
     end
+
+    def consider_mercy_kill
+      if mercy_kill?
+        log("[consider_mercy_kill][fi] Mercy Killing Unit")
+        kill_with_reason('Coreos', 'Failed on CoreOS', 'consider_mercy_kill')
+        kill
+      end
+    end
+
     private
 
     def get_public_port
@@ -330,22 +349,17 @@ module Integrity
       ports
     end
 
-    def make_zombie
-      #The zombie 'exists' so long as the cleanup is not done. This helps for debugging
-      log "made zombie"
-      kill!({ cleanup: false }) if building?
+    def mercy_kill?
+      building? && failed_on_docker? && passed_give_up_time?
     end
 
-    def permitted_zombie?
-      made_zombie = (fleetctl_status == 'failed') #This means it must have become a zombie
-      kill_zombie_at = completed_at + ZOMBIE_LIFESPAN
-      permitted = Time.now < kill_zombie_at
-      made_zombie && permitted
+    def failed_on_docker?
+      fleetctl_status == 'failed'
     end
 
-    def kill_zombie
-      log "killing zombie"
-      cleanup!
+    def passed_give_up_time?
+      give_up_at = started_at + MERCY_KILL_TIMESPAN
+      time.now > give_up_at
     end
   end
 end
