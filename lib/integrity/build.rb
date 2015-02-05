@@ -1,6 +1,6 @@
 require 'integrity/build/status'
 
-    # The Simple Path for a Build to Run (this is a rebuild, for a new build based on a payload, it is much more complicated)
+    # The Simple Path for a Build to Run (this is a rebuild, for a new build based on a payload, the beginning part is more complicated)
     #- From app.rb, post to /:build to rebuild. this calls project.build
     #- If the build is valid, then project.build creates a new build and calls build.run
     #- build.run is called, triggering action 'build:queue'
@@ -79,7 +79,8 @@ module Integrity
     def complete!(result)
       success = result.respond_to?(:success) ? result.success : result
       log "[complete!][fi] with success #{success} and result #{result}. Setting_as_complete and cleanup next!"
-      set_as_complete(success) and cleanup!
+      set_as_complete(success)
+      Integrity::Event.trigger('build:cleanup', self.id)
     end
 
     def cancel_with_reason(agent, reason, method_name)
@@ -327,11 +328,6 @@ module Integrity
       log '[cancel!][cancel_building!][fi] Build pending, kill!'
       time = completed_at || Time.now
       update(state: 'killed', completed_at: time)
-      cleanup!
-    end
-
-    def cleanup!
-      log '[cleanup!][fi]'
       Integrity::Event.trigger('build:cleanup', self.id)
     end
 

@@ -7,18 +7,12 @@ module Integrity
     def self.start_build(build)
       if build.finished?
         log_build(:start_build, build, "not running because build is finished, in #{build.status} state")
+      elsif at_capacity?
+          log_build(:start_build, build, "not running because Integrity is at capacity")
       else
         log_build(:start_build, build, "Clear builds on branch: #{build.branch_name}") { Integrity::Event.trigger('branch:cleanup', build.id) }
-        log_build(:start_build, build, "space available. Running build"){ launch_build(build) } unless at_capacity
+        log_build(:start_build, build, "Running build"){ launch_build(build) }
       end
-    end
-
-    #According to this, 4 tp builds would be 'at capacity'.  This is probably a mistake, or should be fixed.
-    def at_capacity
-      running   = Build.running(:count)
-      run_limit = Integrity.max_running_builds
-      log_build(:capacity, build, "Checking build queue: #{running} out of #{run_limit} builds running.")
-      running >= run_limit
     end
 
     # Keep Queuing Builds until we have reached the threashhold.
@@ -28,12 +22,6 @@ module Integrity
       Build.pending.map do |b|
         log_build(:queue_builds, b, :queueing) { b.run }
       end
-    end
-
-    # If there are any pending builds, start the first one.
-    def self.queue_next_build
-      log "queue_next_build - #{Build.pending.count} builds pending. Queueing next build..."
-      Build.pending.first.try(:run)
     end
 
     # Launches the passed build on fleet. Before starting, it kills
@@ -52,12 +40,6 @@ module Integrity
       log_execution(:destroy_build, build){ Crust.destroy(build.service_options) }
     end
 
-    def self.cleanup_orphans
-      Build.orphaned.each do |build|
-        log_build(:cleanup_orphans, build, "Orphaned! Running for #{build.human_run_time}. Stopping."){ destroy_build(build) }
-      end
-    end
-
     def self.log_execution(action, build)
       log_build action, build, 'starting'
       yield
@@ -73,6 +55,28 @@ module Integrity
       msg = "[Integrity::Builder]: #{msg}"
       Integrity.logger.info msg
       Integrity.sys_logger(:delayed_job).info msg
+    end
+
+    #According to this, 4 tp builds would be 'at capacity'.  This is probably an artifact, we can discuss later
+    def at_capacity?
+      running   = Build.running(:count)
+      run_limit = Integrity.max_running_builds
+      log_build(:capacity, build, "Checking build queue: #{running} out of #{run_limit} builds running.")
+      running >= run_limit
+    end
+
+    # Dead code
+    # If there are any pending builds, start the first one.
+    def self.queue_next_build
+      log "queue_next_build - #{Build.pending.count} builds pending. Queueing next build..."
+      Build.pending.first.try(:run)
+    end
+
+    # Dead code
+    def self.cleanup_orphans
+      Build.orphaned.each do |build|
+        log_build(:cleanup_orphans, build, "Orphaned! Running for #{build.human_run_time}. Stopping."){ destroy_build(build) }
+      end
     end
 
     #### OLD INTEGRITY METHODS - NOT USED ANYMORE
