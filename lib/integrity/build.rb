@@ -311,7 +311,7 @@ module Integrity
     private
 
     def cancel!
-      log '[cancel!][fi]'
+      log '[cancel!][fi] Starting'
       cancel_pending! if pending?
       cancel_building! if building?
       log '[cancel!][fi] Triggering diligence_branch:deactivate'
@@ -320,7 +320,7 @@ module Integrity
     end
 
     def cancel_pending!
-      log '[cancel!][cancel_pending!][fi] Build pending, change_state'
+      log '[cancel_pending!][fi] Build pending, change_state'
       update(state: 'cancelled', completed_at: Time.now)
     end
 
