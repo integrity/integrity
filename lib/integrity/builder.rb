@@ -5,8 +5,8 @@ module Integrity
 
     # Only launch build if the number of running builds hasn't reached the limit.
     def self.start_build(build)
-      if build.finished?
-        log_build(:start_build, build, "not running because build is finished, in #{build.status} state")
+      if build.started?
+        log_build(:start_build, build, "not running because build started already, in #{build.status} state")
       elsif at_capacity?
           log_build(:start_build, build, "not running because Integrity is at capacity")
       else

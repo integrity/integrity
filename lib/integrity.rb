@@ -295,7 +295,8 @@ module Integrity
 
   def self.start
     say '[Integrity] Starting - Queue Pending Builds...'
-    Integrity::Event.trigger('app:start')
+    #This was causing an error whenever rake db ran with changes in the build.rb file
+    #Integrity::Event.trigger('app:start')
   end
 end
 

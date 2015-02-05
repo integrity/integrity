@@ -38,6 +38,7 @@ module Integrity
     property :service_template,      String, default: 'spec'
     property :public_port,           String
     property :kill_reason,           String, default: '', length:512
+    property :fail_category,         String, default: '', length:512
 
     timestamps :at
 
