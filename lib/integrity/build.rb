@@ -359,7 +359,7 @@ module Integrity
 
     def passed_give_up_time?
       give_up_at = started_at + MERCY_KILL_TIMESPAN
-      time.now > give_up_at
+      Time.now > give_up_at
     end
   end
 end
