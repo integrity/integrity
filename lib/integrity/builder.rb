@@ -47,7 +47,7 @@ module Integrity
     end
 
     def self.log_build(action, build, msg)
-      log "#{action}: [Build:#{build.id}] (#{build.service_vars.inspect}) - #{msg}"
+      log "#{action}: [Build:#{build.try(:id)}] (#{build.service_vars.inspect}) - #{msg}"
       yield if block_given?
     end
 
@@ -58,10 +58,10 @@ module Integrity
     end
 
     #According to this, 4 tp builds would be 'at capacity'.  This is probably an artifact, we can discuss later
-    def at_capacity?
+    def self.at_capacity?
       running   = Build.running(:count)
       run_limit = Integrity.max_running_builds
-      log_build(:capacity, build, "Checking build queue: #{running} out of #{run_limit} builds running.")
+      log "at_capacity?: #{running} out of #{run_limit} builds running."
       running >= run_limit
     end
 

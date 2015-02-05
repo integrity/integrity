@@ -426,7 +426,7 @@ module Integrity
     post '/:project/builds/:build/cancel' do
       login_required
       current_build.cancel_with_reason("user #{current_user.name}", 'manual kill', 'POST /:project/builds/:build/cancel')
-      redirect project_url(current_project)
+      redirect build_url(current_build)
     end
 
     # Get Raw Build Output
