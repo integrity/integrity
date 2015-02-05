@@ -5,11 +5,14 @@ module Integrity
 
     # Only launch build if the number of running builds hasn't reached the limit.
     def self.start_build(build)
-      running   = Build.running(:count)
-      run_limit = Integrity.max_running_builds
-      log_build(:start_build, build, "Clear builds on branch: #{build.branch_name}") { Integrity::Event.trigger('branch:cleanup', build.id) }
-      log_build(:start_build, build, "Checking build queue: #{running} out of #{run_limit} builds running.")
-      log_build(:start_build, build, "space available. queueing."){ launch_build(build) } if running < run_limit
+      if build.finished?
+        log_build(:start_build, build, "not running because build is finished, in #{build.status} state")
+      elsif at_capacity?
+          log_build(:start_build, build, "not running because Integrity is at capacity")
+      else
+        log_build(:start_build, build, "Clear builds on branch: #{build.branch_name}") { Integrity::Event.trigger('branch:cleanup', build.id) }
+        log_build(:start_build, build, "Running build"){ launch_build(build) }
+      end
     end
 
     # Keep Queuing Builds until we have reached the threashhold.
@@ -21,12 +24,6 @@ module Integrity
       end
     end
 
-    # If there are any pending builds, start the first one.
-    def self.queue_next_build
-      log "queue_next_build - #{Build.pending.count} builds pending. Queueing next build..."
-      Build.pending.first.try(:run)
-    end
-
     # Launches the passed build on fleet. Before starting, it kills
     # older builds from same branch (and itself if it was a re-run)
     def self.launch_build(build)
@@ -35,19 +32,12 @@ module Integrity
         log_build(:launch_build, build, :starting){ Crust.start(build.service_options) }
         log_build(:launch_build, build, :started) { build.reload.started! }
         log_build(:launch_build, build, 'Updating fleet'){ Build.update_fleetctl_status }
-        log_build(:launch_build, build, "#{Build.running.count} builds running.")
       end
     end
 
     # Kill fleet unit and destroy service matching build that was passed.
     def self.destroy_build(build)
       log_execution(:destroy_build, build){ Crust.destroy(build.service_options) }
-    end
-
-    def self.cleanup_orphans
-      Build.orphaned.each do |build|
-        log_build(:cleanup_orphans, build, "Orphaned! Running for #{build.human_run_time}. Stopping."){ destroy_build(build) }
-      end
     end
 
     def self.log_execution(action, build)
@@ -57,7 +47,7 @@ module Integrity
     end
 
     def self.log_build(action, build, msg)
-      log "#{action}: [Build:#{build.id}] (#{build.service_vars.inspect}) - #{msg}"
+      log "#{action}: [Build:#{build.try(:id)}] (#{build.service_vars.inspect}) - #{msg}"
       yield if block_given?
     end
 
@@ -65,6 +55,28 @@ module Integrity
       msg = "[Integrity::Builder]: #{msg}"
       Integrity.logger.info msg
       Integrity.sys_logger(:delayed_job).info msg
+    end
+
+    #According to this, 4 tp builds would be 'at capacity'.  This is probably an artifact, we can discuss later
+    def self.at_capacity?
+      running   = Build.running(:count)
+      run_limit = Integrity.max_running_builds
+      log "at_capacity?: #{running} out of #{run_limit} builds running."
+      running >= run_limit
+    end
+
+    # Dead code
+    # If there are any pending builds, start the first one.
+    def self.queue_next_build
+      log "queue_next_build - #{Build.pending.count} builds pending. Queueing next build..."
+      Build.pending.first.try(:run)
+    end
+
+    # Dead code
+    def self.cleanup_orphans
+      Build.orphaned.each do |build|
+        log_build(:cleanup_orphans, build, "Orphaned! Running for #{build.human_run_time}. Stopping."){ destroy_build(build) }
+      end
     end
 
     #### OLD INTEGRITY METHODS - NOT USED ANYMORE
@@ -130,14 +142,13 @@ module Integrity
     
     def fail(exception)
       failure_message = "#{exception.class}: #{exception.message}"
-      logger.info "fail: #{commit} failed with an exception: #{failure_message}"
       failure_message << "\n\n"
       exception.backtrace.each do |line|
         failure_message << line << "\n"
       end
-      
-      @build.raise_on_save_failure = true
-      @build.fail!(failure_message)
+
+      logger.info "[builder][fail][fi] with message #{failure_message}. Setting as complete."
+      @build.set_as_complete!(false)
     end
 
     def notify

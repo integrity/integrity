@@ -33,5 +33,9 @@ module Integrity
       builds(order: [:created_at.desc, :id.desc])
     end
 
+    def builds_before(build)
+      sorted_builds.all(:created_at.lt => build.created_at)
+    end
+
   end
 end

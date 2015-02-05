@@ -99,7 +99,7 @@ module Integrity
 
     post '/hook.json', provides: :json do
       @format = :json
-      log "[RECEIVED_GITHUB_PAYLOD] /hook.json params: #{params.inspect}"
+      log "[RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{params.inspect}"
 
       payload = Payload.new(params)
 
@@ -424,10 +424,9 @@ module Integrity
 
     # Cancel the Pending or Running Build
     post '/:project/builds/:build/cancel' do
-      current_build.kill_with_reason("user #{current_user.name}", 'manual kill', 'POST /:project/builds/:build/cancel')
       login_required
-      current_build.cancel!
-      redirect project_url(current_project)
+      current_build.cancel_with_reason("user #{current_user.name}", 'manual kill', 'POST /:project/builds/:build/cancel')
+      redirect build_url(current_build)
     end
 
     # Get Raw Build Output

@@ -43,8 +43,7 @@ module Integrity
     end
 
     def stop
-      build.kill_with_reason('Diligence', 'New Commit to Branch', 'DiligenceBranch::stop')
-      build.cancel!
+      build.cancel_with_reason('Diligence', 'New Commit to Branch', 'DiligenceBranch::stop')
     end
 
     def latest_commit?

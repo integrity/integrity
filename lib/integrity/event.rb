@@ -17,14 +17,14 @@ module Integrity
     def initialize
       @registered_events = {}
 
+      #Why use this indirection for build.run? This is the only place builder.enqueue is called,
+      #it could go straight in .run
       on('build:queue'){|build| Integrity.builder.enqueue(build) }
 
       on('build:start'){|build| Integrity.builder.run(:start_build, build) }
 
       on(*%w(
         build:cleanup
-        build:cancel
-        build:stop
       )){|build| Integrity.builder.run(:destroy_build, build) }
 
       on('branch:cleanup'){|build| Build.get(build).cancel_previous_builds! }
