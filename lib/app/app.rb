@@ -423,6 +423,13 @@ module Integrity
     end
 
     # Cancel the Pending or Running Build
+    post '/:project/builds/:build/fail_reason' do
+      log("[Build:#{current_build.id}] fail_reason /:project/builds/:build/fail_reason (Give reason for failure) params:#{params}")
+      current_build.update(fail_category: params["fail_reason"])
+      redirect build_url(current_build)
+    end
+
+    # Cancel the Pending or Running Build
     post '/:project/builds/:build/cancel' do
       login_required
       current_build.cancel_with_reason("user #{current_user.name}", 'manual kill', 'POST /:project/builds/:build/cancel')
