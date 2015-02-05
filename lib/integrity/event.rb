@@ -23,7 +23,7 @@ module Integrity
 
       on(*%w(
         build:cleanup
-        build:cancel
+        build:canceled
         build:stop
       )){|build| Integrity.builder.run(:destroy_build, build) }
 

@@ -72,10 +72,9 @@ module Integrity
       set_as_complete(success) and cleanup!
     end
 
-    def kill!(params = {})
-      log "[kill!][fi] #{params}"
-      params = {cleanup: true}.merge(params)
-      cleanup! if params[:cleanup]
+    def kill!
+      log "[kill!][fi]"
+      cleanup!
       time = completed_at || Time.now
       update(state: 'killed', completed_at: time)
     end
