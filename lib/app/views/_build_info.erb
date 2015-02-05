@@ -18,7 +18,7 @@
       <% if build.kill_reason %>
         <p><%= build.kill_reason %></p>
       <% end %>
-      <% if build.fail_category %>
+      <% unless build.fail_category.empty? %>
         <p>Failed Category: <%= build.fail_category %></p>
       <% end %>
       <h4>
@@ -140,37 +140,35 @@
     </div>
   <% end %>
 
-  <% if build.started? %>
-    <div class="row col-md-6">
-      <h2> Report Build Problems </h2>
-      <form action="<%= build_path(build, :fail_reason) %>" method="post" id="fail_reason_form" class="form-horizontal alert alert-danger">
-        <fieldset>
-          <div class="form-group">
-            <label class="col-sm-4 control-label">Did the build process fail?  If so, what happened?</label>
-            <div class="col-sm-6">
-                <select class="form-control" form="fail_reason_form" name="fail_reason">
-                    <option value="rspec-heisen">Heisen Spec</option>
-                    <option value="ruby-gems">Gem Installation Failure</option>
-                    <option value="ruby-db">Database Failure</option>
-                    <option value="bash">Other Bash Process Failure</option>
-                    <option value="delayed_job-stayed-at-pending">Never Started (stayed at pending)</option>
-                    <option value="no-output">No Logging Output</option>
-                    <option value="coreos-multiple-times">Built multiple times</option>
-                    <option value="coreos-stalled">CoreOS Stall</option>
-                    <option value="coreos-other">CoreOS Failure (other)</option>
-                    <option value="other">Other</option>
-                    <option value="">None</option>
-                </select>
-            </div>
-            <div class="col-sm-2">
-              <button class="btn btn-default" title='Update Error' type='submit'>
-                Submit
-              </button>
-            </div>
+  <div class="row col-md-6">
+    <h2> Report Build Problems </h2>
+    <form action="<%= build_path(build, :fail_reason) %>" method="post" id="fail_reason_form" class="form-horizontal alert alert-danger">
+      <fieldset>
+        <div class="form-group">
+          <label class="col-sm-4 control-label">Did the build process fail?  If so, what happened?</label>
+          <div class="col-sm-6">
+              <select class="form-control" form="fail_reason_form" name="fail_reason">
+                  <option value="rspec-heisen">Heisen Spec</option>
+                  <option value="ruby-gems">Gem Installation Failure</option>
+                  <option value="ruby-db">Database Failure</option>
+                  <option value="bash">Other Bash Process Failure</option>
+                  <option value="delayed_job-stayed-at-pending">Never Started (stayed at pending)</option>
+                  <option value="no-output">No Logging Output</option>
+                  <option value="coreos-multiple-times">Built multiple times</option>
+                  <option value="coreos-stalled">CoreOS Stall</option>
+                  <option value="coreos-other">CoreOS Failure (other)</option>
+                  <option value="other">Other</option>
+                  <option value="">None</option>
+              </select>
           </div>
-        </fieldset>
-      </form>
-    </div>
-  <% end %>
+          <div class="col-sm-2">
+            <button class="btn btn-default" title='Update Error' type='submit'>
+              Submit
+            </button>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
 
 </div>
