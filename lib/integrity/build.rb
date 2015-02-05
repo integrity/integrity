@@ -1,5 +1,20 @@
 require 'integrity/build/status'
 
+    # The Simple Path for a Build to Run (this is a rebuild, for a new build based on a payload, it is much more complicated)
+    #- From app.rb, post to /:build to rebuild. this calls project.build
+    #- If the build is valid, then project.build creates a new build and calls build.run
+    #- build.run is called, triggering action 'build:queue'
+    #- 'build:queue' runs Integrity.builder.enqueue(build)
+    #- Integrity.builder.enqueue(build) then calls Delayed::Job.enqueue(BuildJob.new(build))
+    #- BuildJob.new(build) calls Build.get!(@build).run!
+    #- Build.get(@build).run! calls event Integrity::Event.trigger('build:start', self.id)
+    #- Event 'build:start' calls Integrity.builder.run(:start_build, build)
+    #- Integrity.builder.run calls Delayed::Job.enqueue(BuildManagerJob.new(action, build))
+    #- BuildManagerJob.new() calls Integrity::Builder.send(:start_build, @build)
+    #- Integrity::Builder.start_build calls Integrity::Builder.launch_build if there is capacity
+    #- If the build has not already finished and there is capacity, then Integrity::Builder.launch_build, will call Builder.start_build
+    #- Builder.start_build will actually do the build
+
 module Integrity
   class Build
     include DataMapper::Resource
@@ -61,55 +76,25 @@ module Integrity
       Integrity::Event.trigger('build:start', self.id)
     end
 
-    def cleanup!
-      log '[cleanup!][fi]'
-      Integrity::Event.trigger('build:cleanup', self.id)
-    end
-
     def complete!(result)
       success = result.respond_to?(:success) ? result.success : result
       log "[complete!][fi] with success #{success} and result #{result}. Setting_as_complete and cleanup next!"
       set_as_complete(success) and cleanup!
     end
 
-    def kill!
-      log "[kill!][fi]"
-      cleanup!
-      time = completed_at || Time.now
-      update(state: 'killed', completed_at: time)
-    end
-
-    def kill_with_reason(agent, reason, method_name)
+    def cancel_with_reason(agent, reason, method_name)
       description = "Killed by [#{agent}] because [#{reason}] in method [#{method_name}]"
       log "[kill_with_reason][fi] #{description}"
       update(kill_reason: description)
+      cancel!
     end
 
     def cancel_previous_builds!
-      log '[cancel_previous_builds!]'
-      previous_builds.each do |b|
-        b.kill_with_reason('Honesty', 'More recent commit on branch submitted', 'cancel_previous_builds')
-        b.cancel!
+      previous_in_progress_builds = branch.builds_before(self).select{|b| b.in_progress?}
+      log %Q{[cancel_previous_builds!]: #{previous_in_progress_builds.map{|b| b.id}.join(",") }}
+      previous_in_progress_builds.each do |b|
+        b.cancel_with_reason('Honesty', 'More recent commit on branch submitted', 'cancel_previous_builds')
       end
-    end
-
-    def previous_builds(on = :branch)
-      parent = self.send(on)
-      (parent.builds & (self.class.running | self.class.pending)) & self.class.all(:id.not => id, order: :created_at.desc)
-    end
-
-    def cancel!
-      log '[cancel!][fi]'
-      if pending?
-        log '[cancel!][fi] Build pending, change_state'
-        update(state: 'cancelled', completed_at: Time.now)
-      elsif building?
-        log '[cancel!][fi] Build pending, kill!'
-        kill!
-      end
-      log '[cancel!][fi] Triggering diligence_branch:deactivate and build:canceled'
-      Integrity::Event.trigger('diligence_branch:deactivate', self.id)
-      Integrity::Event.trigger('build:canceled')
     end
 
     def spec?
@@ -124,11 +109,6 @@ module Integrity
       log 'started!'
       update(started_at: Time.now)
       update_ports if server?
-    end
-
-    def fail!(message=nil)
-      log "[fail!][fi] with message #{message}. Setting as complete."
-      set_as_complete(false)
     end
 
     def notify
@@ -317,19 +297,43 @@ module Integrity
     end
 
     def log(msg)
-      puts msg
       Integrity.logger.info "[Integrity::Build]:[Build:#{id}] event:#{msg}, params:#{self.inspect}"
     end
 
     def consider_mercy_kill
       if mercy_kill?
         log("[consider_mercy_kill][fi] Mercy Killing Unit")
-        kill_with_reason('Coreos', 'Failed on CoreOS', 'consider_mercy_kill')
-        kill
+        cancel_with_reason('Coreos', 'Failed on CoreOS', 'consider_mercy_kill')
       end
     end
 
     private
+
+    def cancel!
+      log '[cancel!][fi]'
+      cancel_pending! if pending?
+      cancel_building! if building?
+      log '[cancel!][fi] Triggering diligence_branch:deactivate'
+      Integrity::Event.trigger('diligence_branch:deactivate', self.id)
+      Integrity::Event.trigger('build:canceled', self.id)
+    end
+
+    def cancel_pending!
+      log '[cancel!][cancel_pending!][fi] Build pending, change_state'
+      update(state: 'cancelled', completed_at: Time.now)
+    end
+
+    def cancel_building!
+      log '[cancel!][cancel_building!][fi] Build pending, kill!'
+      time = completed_at || Time.now
+      update(state: 'killed', completed_at: time)
+      cleanup!
+    end
+
+    def cleanup!
+      log '[cleanup!][fi]'
+      Integrity::Event.trigger('build:cleanup', self.id)
+    end
 
     def get_public_port
       ports = get_ports(app_service_name)

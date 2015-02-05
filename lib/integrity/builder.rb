@@ -5,11 +5,20 @@ module Integrity
 
     # Only launch build if the number of running builds hasn't reached the limit.
     def self.start_build(build)
+      if build.finished?
+        log_build(:start_build, build, "not running because build is finished, in #{build.status} state")
+      else
+        log_build(:start_build, build, "Clear builds on branch: #{build.branch_name}") { Integrity::Event.trigger('branch:cleanup', build.id) }
+        log_build(:start_build, build, "space available. Running build"){ launch_build(build) } unless at_capacity
+      end
+    end
+
+    #According to this, 4 tp builds would be 'at capacity'.  This is probably a mistake, or should be fixed.
+    def at_capacity
       running   = Build.running(:count)
       run_limit = Integrity.max_running_builds
-      log_build(:start_build, build, "Clear builds on branch: #{build.branch_name}") { Integrity::Event.trigger('branch:cleanup', build.id) }
-      log_build(:start_build, build, "Checking build queue: #{running} out of #{run_limit} builds running.")
-      log_build(:start_build, build, "space available. queueing."){ launch_build(build) } if running < run_limit
+      log_build(:capacity, build, "Checking build queue: #{running} out of #{run_limit} builds running.")
+      running >= run_limit
     end
 
     # Keep Queuing Builds until we have reached the threashhold.
@@ -35,7 +44,6 @@ module Integrity
         log_build(:launch_build, build, :starting){ Crust.start(build.service_options) }
         log_build(:launch_build, build, :started) { build.reload.started! }
         log_build(:launch_build, build, 'Updating fleet'){ Build.update_fleetctl_status }
-        log_build(:launch_build, build, "#{Build.running.count} builds running.")
       end
     end
 
@@ -130,14 +138,13 @@ module Integrity
     
     def fail(exception)
       failure_message = "#{exception.class}: #{exception.message}"
-      logger.info "fail: #{commit} failed with an exception: #{failure_message}"
       failure_message << "\n\n"
       exception.backtrace.each do |line|
         failure_message << line << "\n"
       end
-      
-      @build.raise_on_save_failure = true
-      @build.fail!(failure_message)
+
+      logger.info "[builder][fail][fi] with message #{failure_message}. Setting as complete."
+      @build.set_as_complete!(false)
     end
 
     def notify
