@@ -1,8 +1,8 @@
 GIT
   remote: git://github.com/ConsultingMD/crust.git
-  revision: 5ec9a52703e9a67f9c939f98044103dd2bd9a61b
+  revision: 831b2e606da99270f5b2af69f4be4466d3fbcf20
   specs:
-    crust (0.0.19)
+    crust (0.0.21)
 
 GIT
   remote: git://github.com/ConsultingMD/ruby-fleetctl.git
@@ -287,7 +287,7 @@ DEPENDENCIES
   capistrano-deploytags
   chronic_duration
   contest
-  crust (= 0.0.19)!
+  crust (= 0.0.21)!
   daemons
   data_mapper (~> 1.2)
   delayed_job
