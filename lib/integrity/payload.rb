@@ -22,11 +22,15 @@ module Integrity
     end
 
     def branch
+      project.branches.first(name: branch_name)
+    end
+
+    def branch_name
       @payload[:ref].split('refs/heads/').last
     end
 
     def repo
-      Integrity::Repository.new(uri, branch)
+      Integrity::Repository.new(uri, branch_name)
     end
 
     def commit
@@ -41,7 +45,7 @@ module Integrity
           author:       normalize_author(commit.author),
           message:      commit.message,
           committed_at: commit.timestamp,
-          branch:       branch
+          branch:       branch_name
         )
       end
     end
