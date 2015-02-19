@@ -18,6 +18,7 @@
   </thead>
   <tbody>
     <% diligence_branches.each do |diligence_branch| %>
+      <% next unless diligence_branch.build %>
       <tr class="<%= diligence_branch.build.try(:bootstrap_class) %>">
         <td class="status">  <i class="fa fa-<%= build_status(diligence_branch.build).icon %>" </i>  </td>
         <td> <%= diligence_branch.id %></td>
