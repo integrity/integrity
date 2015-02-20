@@ -58,7 +58,7 @@ frick:
     machineof: mysql
 
 tim:
-  command: git clone https://<%= read_token %>@github.com/consultingmd/tim && ./tim/dockyard-run server from_github
+  command: git clone --branch birdy-bird https://<%= read_token %>@github.com/consultingmd/tim && ./tim/dockyard-run server from_github
   image: grnds/tim_ci
   environment:
     GITHUB_READ_TOKEN: <%= read_token %>
@@ -74,7 +74,7 @@ tim:
     machineof: mysql
 
 timdelayedjob:
-  command: git clone https://<%= read_token %>@github.com/consultingmd/tim && ./tim/dockyard-run delayed_job from_github
+  command: git clone --branch birdy-bird https://<%= read_token %>@github.com/consultingmd/tim && ./tim/dockyard-run delayed_job from_github
   image: grnds/tim_ci
   environment:
     GITHUB_READ_TOKEN: <%= read_token %>
