@@ -5,9 +5,9 @@ app:
     BRANCH: <%= branch %>
     SHA: <%= sha %>
     GITHUB_READ_TOKEN: <%= read_token %>
-    AWS_ACCESS_KEY_ID: <%= ENV['AWS_ACCESS_KEY_ID'] %>
-    AWS_SECRET_ACCESS_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
-    AWS_SECRET_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
+    AWS_ACCESS_KEY_ID: <%= ENV['DEV_AWS_ACCESS_KEY_ID'] %>
+    AWS_SECRET_ACCESS_KEY: <%= ENV['DEV_AWS_SECRET_ACCESS_KEY'] %>
+    AWS_SECRET_KEY: <%= ENV['DEV_AWS_SECRET_ACCESS_KEY'] %>
   links:
     - frick
     - mysql
@@ -24,9 +24,9 @@ delayedjob:
   environment:
     SHA: <%= sha %>
     GITHUB_READ_TOKEN: <%= read_token %>
-    AWS_ACCESS_KEY_ID: <%= ENV['AWS_ACCESS_KEY_ID'] %>
-    AWS_SECRET_ACCESS_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
-    AWS_SECRET_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
+    AWS_ACCESS_KEY_ID: <%= ENV['DEV_AWS_ACCESS_KEY_ID'] %>
+    AWS_SECRET_ACCESS_KEY: <%= ENV['DEV_AWS_SECRET_ACCESS_KEY'] %>
+    AWS_SECRET_KEY: <%= ENV['DEV_AWS_SECRET_ACCESS_KEY'] %>
   links:
     - mysql
     - mailcatcher
@@ -46,9 +46,9 @@ frick:
   image: grnds/frick_ci
   environment:
     GITHUB_READ_TOKEN: <%= read_token %>
-    AWS_ACCESS_KEY_ID: <%= ENV['AWS_ACCESS_KEY_ID'] %>
-    AWS_SECRET_ACCESS_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
-    AWS_SECRET_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
+    AWS_ACCESS_KEY_ID: <%= ENV['DEV_AWS_ACCESS_KEY_ID'] %>
+    AWS_SECRET_ACCESS_KEY: <%= ENV['DEV_AWS_SECRET_ACCESS_KEY'] %>
+    AWS_SECRET_KEY: <%= ENV['DEV_AWS_SECRET_ACCESS_KEY'] %>
   links:
     - mysql
   ports:
