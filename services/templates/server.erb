@@ -10,6 +10,7 @@ app:
     AWS_SECRET_KEY: <%= ENV['DEV_AWS_SECRET_ACCESS_KEY'] %>
   links:
     - frick
+    - tim
     - mysql
     - mailcatcher
     - delayedjob
@@ -20,7 +21,7 @@ app:
 
 delayedjob:
   image: grnds/<%= project %>_ci
-  command: git clone https://<%= read_token %>@github.com/consultingmd/consultingmd && ./consultingmd/honesty/git-checkout.sh delayed_job from_github
+  command: git clone https://<%= read_token %>@github.com/consultingmd/consultingmd && ./consultingmd/docker-run.sh delayed_job from_github
   environment:
     SHA: <%= sha %>
     GITHUB_READ_TOKEN: <%= read_token %>
@@ -53,6 +54,36 @@ frick:
     - mysql
   ports:
     - :10002
+  xfleet:
+    machineof: mysql
+
+tim:
+  command: git clone https://<%= read_token %>@github.com/consultingmd/tim && ./tim/dockyard-run server from_github
+  image: grnds/tim_ci
+  environment:
+    GITHUB_READ_TOKEN: <%= read_token %>
+    AWS_ACCESS_KEY_ID: <%= ENV['DEV_AWS_ACCESS_KEY_ID'] %>
+    AWS_SECRET_ACCESS_KEY: <%= ENV['DEV_AWS_SECRET_ACCESS_KEY'] %>
+    AWS_SECRET_KEY: <%= ENV['DEV_AWS_SECRET_ACCESS_KEY'] %>
+  links:
+    - timdelayedjob
+    - mysql
+  ports:
+    - :10004
+  xfleet:
+    machineof: mysql
+
+timdelayedjob:
+  command: git clone https://<%= read_token %>@github.com/consultingmd/tim && ./tim/dockyard-run delayed_job from_github
+  image: grnds/tim_ci
+  environment:
+    GITHUB_READ_TOKEN: <%= read_token %>
+    AWS_ACCESS_KEY_ID: <%= ENV['DEV_AWS_ACCESS_KEY_ID'] %>
+    AWS_SECRET_ACCESS_KEY: <%= ENV['DEV_AWS_SECRET_ACCESS_KEY'] %>
+    AWS_SECRET_KEY: <%= ENV['DEV_AWS_SECRET_ACCESS_KEY'] %>
+  links:
+    - timdelayedjob
+    - mysql
   xfleet:
     machineof: mysql
 
