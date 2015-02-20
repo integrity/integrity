@@ -1,20 +1,10 @@
 <%= partial(:auto_reload) %>
 
 <% if @projects.empty? %>
-  <div class="blank_slate">
-    <p>None yet, huh?</p>
-    <h1>
-      Why don't you
-      <%#= succeed '?' do %>
-        <a href="<%= path('new') %>">create your first project</a>
-        <% if show_login? %>
-          or
-          <a href="<%= path('login') %>" id="login">login</a>
-        <% end %>
-      <%# end %>
-    </h1>
-  </div>
+  <h3 class="text-center short">No Projects</h3>
+  <p style="text-align:center;"><a href="/new" class="btn btn-danger">Add Project</a></p>
 <% else %>
+
   <div class="row" id="projects">
     <% @masters.each do |branch|
       project = branch.project
@@ -23,6 +13,7 @@
       <%= partial(:project, locals: {project: project, build: build, status: status}) %>
     <% end %>
   </div>
+
   <div class="row" id="builds">
     <% if @running.any? %>
       <h3 class="text-center short"><%= "#{@running.count} Running Build#{@running.count == 1 ? '' : 's'}" %></h3>
@@ -35,4 +26,5 @@
       <h3 class="text-center short">Completed Builds</h3>
     <%= partial(:build_list, locals: {builds: @completed}) if @completed.any? %>
   </div>
+
 <% end %>

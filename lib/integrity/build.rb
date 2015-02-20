@@ -47,20 +47,18 @@ module Integrity
     has 1,     :commit
     has 1,     :diligence_branch
 
-    delegate :name, :permalink, :repo, :command, to: :project
+    delegate :name, :permalink, :repo, :uri, :command, to: :project
 
     after :create do
       project.update(last_build_id: id)
       branch.update(last_build_id: id)
     end
 
+    before :destroy, :reset_last_build
     before :destroy do
       commit.destroy! if commit
-      if project.last_build_id == id
-        last_id = project.builds(:id.not => id).last.try(:id)
-        project.update(last_build_id: last_id)
-      end
     end
+
 
     def branch_name
       branch.try(:name)
@@ -360,6 +358,16 @@ module Integrity
     def passed_give_up_time?
       give_up_at = started_at + MERCY_KILL_TIMESPAN
       Time.now > give_up_at
+    end
+
+    def reset_last_build
+      [project, branch].each do |parent|
+        if parent.last_build_id == id
+          if last_id = parent.builds(:id.not => id).last.try(:id)
+            parent.update(last_build_id: last_id)
+          end
+        end
+      end
     end
   end
 end

@@ -23,6 +23,7 @@ require 'sinatra/authorization'
 
 require 'active_support'
 require 'active_support/core_ext'
+require 'active_support/core_ext/string/inflections'
 require 'active_support/hash_with_indifferent_access'
 
 require 'dm-core'
@@ -51,7 +52,7 @@ require 'docker'
 require 'app/app'
 
 require 'integrity/event'
-require 'integrity/web_utils'
+require 'integrity/data_utils'
 require 'integrity/configuration'
 require 'integrity/bootstrapper'
 require 'integrity/project'

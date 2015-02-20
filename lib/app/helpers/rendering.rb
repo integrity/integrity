@@ -9,8 +9,10 @@ module Integrity
       end
 
       def show(view, options={})
-        @title = breadcrumbs(*options[:title])
-        erb view, layout: true
+        crumbs = options.delete(:title)
+        @title = breadcrumbs(*crumbs)
+        options = {layout: true}.merge(options)
+        erb view, options
       end
 
       # def partial(template, locals={})

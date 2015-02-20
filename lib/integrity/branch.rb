@@ -1,7 +1,7 @@
 module Integrity
   class Branch
     include DataMapper::Resource
-    include Integrity::WebUtils
+    include Integrity::DataUtils
 
     property :id,         Serial
     property :project_id, Integer, required: true
@@ -22,20 +22,8 @@ module Integrity
       builds.destroy!
     end
 
-    delegate :repo, to: :project
+    delegate :repo, :uri, to: :project
     delegate :status, :human_status, :human_duration, :successful?, :failed?, :pending?, :building?, to: :last_build, allow_nil: true
-
-    def blank?
-      last_build.nil?
-    end
-
-    def sorted_builds
-      builds(order: [:created_at.desc, :id.desc])
-    end
-
-    def builds_before(build)
-      sorted_builds.all(:created_at.lt => build.created_at)
-    end
 
   end
 end

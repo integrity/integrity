@@ -1,9 +1,22 @@
-<% if msg = (flash[:notice].presence || flash[:error].presence) %>
+<%
+    msg, alert, icon = nil
+    [:notice, :alert, :info, :error].each do |key| 
+      if (msg = flash[key]).present?
+        alert = key 
+        icon = case alert
+          when :notice, :info then :info
+          when :alert, :error then :exclamation
+        end
+      end
+    end
+    show_notice = (msg.present? && alert.present? && icon.present?)
+%>
+<% if show_notice %>
 <div class="row">
   <div class="col-lg-12">
-    <div class="alert alert-info alert-dismissable">
+    <div class="alert alert-<%= alert %> alert-dismissable">
       <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-      <i class="fa fa-info-circle"></i>  <%= msg %>
+      <i class="fa fa-<%= icon %>-circle"></i>  <%= msg %>
     </div>
   </div>
 </div>

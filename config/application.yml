@@ -23,6 +23,8 @@ database:
   host:     gruzii5m6o5mis.c61hxobewq2s.us-east-1.rds.amazonaws.com
 
 auth:
+  type:
+    oauth:  github
   username: <%= ENV['INTEGRITY_USERNAME'] %>
   password: <%= ENV['INTEGRITY_PASSWORD'] %>
 

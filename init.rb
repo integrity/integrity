@@ -46,6 +46,7 @@ end
 Integrity.configure do |c|
   c.environment                 = app.environment           # Environment to run in (i.e. development, production, etc).
   c.database                    = app.database.url          # DataMapper database connection URI
+  c.auth                        = app.auth.type
   c.username                    = app.auth.username         # Admin username
   c.password                    = app.auth.password         # Admin password
   c.directory                   = app.builds.dir            # Parent directory for builds, relative to Integrity root

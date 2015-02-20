@@ -30,35 +30,6 @@ module Integrity
 
     helpers Integrity::Helpers
 
-    def log(msg)
-      user = current_user ? "{user: #{current_user.username}}" : ""
-      Integrity.logger.debug "[Integrity::App]: #{msg} user:#{user}"
-    end
-
-    def current_user
-      Hashie::Mash.new(session[:user])
-    end
-
-    def logged_in?
-      !!session[:user]
-    end
-
-    def authorized_ip?
-      remote_ip.index('10.') == 0 || Integrity.development?
-    end
-
-    def web_hook?
-      request.path_info.include?('hook')
-    end
-
-    def status_update?
-      request.path_info.include?('status.json')
-    end
-
-    def remote_ip
-      request.env['HTTP_X_FORWARDED_FOR'].to_s
-    end
-
     not_found do
       status 404
       show :not_found, title: 'lost, are we?'
@@ -72,13 +43,8 @@ module Integrity
     end
 
     before do
-      halt 403 unless authorized_ip? || web_hook? || status_update?
-      halt 404 if request.path_info.include?('favico')
-      if Integrity.base_url.present?
-        Integrity.configure {|c| c.base_url = url_for('/', :full) }
-      end
-      @load_utilization = LoadUtilization.current
-      @usage = []
+      login_required
+      setup_env
     end
 
     before '/secure/*' do
@@ -86,6 +52,12 @@ module Integrity
         session[:previous_url] = request.path
         @error = 'Sorry guacamole, you need to be logged in to visit ' + request.path
         halt erb(:login_form)
+      end
+    end
+
+    ['/?', '/projects', "/projects\.json", '/diligence_branches'].each do |path|
+      before path do
+        load_projects
       end
     end
 
@@ -124,7 +96,7 @@ module Integrity
 
         log "[HOOK] /hook.json Build: #{build.inspect}"
 
-      if diligence_branch = Integrity::DiligenceBranch.first(:branch => build.branch)
+      if diligence_branch = Integrity::DiligenceBranch.first(branch: build.branch)
         diligence_branch.rebuild_environment
       end
 
@@ -136,13 +108,16 @@ module Integrity
     end
 
     get '/login' do
-      login_required
-      redirect root_url
+      redirect to root_path unless oauth?
+      notify error: 'You must login to continue' if auth_redirect?
+      show :login, title: 'login', layout: false
     end
 
     get '/logout' do
       session.delete(:user)
-      erb "<div class='alert alert-message'>Logged out</div>"
+      notify alert: 'Logged out'
+      redirect to unauthorized_path
+      show :login, title: 'login', layout: false
     end
 
     get '/auth/github/callback' do
@@ -165,7 +140,6 @@ module Integrity
 
     # Settings
     get '/settings' do
-      login_required
       @load_utilization = LoadUtilization.current
       loads = [Integrity::LoadUtilization.first(:created_at.lt => 10.minutes.ago)]
       (1..23).each do |n|
@@ -177,7 +151,6 @@ module Integrity
 
     # Change Settings
     post '/settings' do
-      login_required
       redirect '/settings'
     end
 
@@ -190,8 +163,6 @@ module Integrity
 
     # New Project (Form)
     get '/new' do
-      login_required
-
       @project = Project.new
       show :new, title: ['projects', 'new project']
     end
@@ -199,7 +170,6 @@ module Integrity
     # List Projects (Index)
     ['/?', '/projects'].each do |path|
       get path, provides: 'html' do
-        load_projects
         @masters = Integrity::Branch.all(name: 'master')
         @builds  = Integrity::Build.all(limit: 30, order: :created_at.desc)
         @pending = @builds.pending.all(order: :created_at.desc)
@@ -210,7 +180,6 @@ module Integrity
     end
 
     get '/diligence_branches' do
-      load_projects
       @active_diligence_branches = Integrity::DiligenceBranch.all(order: :id.desc, active: true)
       @inactive_diligence_branches = Integrity::DiligenceBranch.all(order: :id.desc, active: false)
       @branches = Integrity::Branch.all(limit:30, order: :last_build_id.desc)
@@ -218,9 +187,8 @@ module Integrity
     end
 
     get '/diligence_branches/:branch_id/start' do |branch_id|
-      login_required
-
       diligence_branch = Integrity::DiligenceBranch.first(:branch_id => branch_id)
+
       unless diligence_branch
         branch = Integrity::Branch.get(branch_id)
         diligence_branch = Integrity::DiligenceBranch.create(branch: branch)
@@ -231,8 +199,6 @@ module Integrity
     end
 
     get '/diligence_branches/:id/stop' do |id|
-      login_required
-
       diligence_branch = Integrity::DiligenceBranch.get(id)
 
       diligence_branch.stop
@@ -259,20 +225,7 @@ module Integrity
     # Get Project (Show)
     get '/:project' do
       login_required unless current_project.public?
-
-      if limit = Integrity.config.project_default_build_count
-        @builds = current_project.sorted_builds.all(limit: limit + 1)
-        if @builds.length <= limit
-          @showing_all_builds = true
-        else
-          # we fetched one build more than needed
-          @builds.pop
-        end
-      else
-        @builds = current_project.sorted_builds
-        @showing_all_builds = true
-      end
-
+      load_builds(current_project)
       @status = current_project.status
       @branches = current_project.branches(order: [:name.asc, :created_at.desc]).first(8)
 
@@ -298,7 +251,6 @@ module Integrity
     ['/?', "/projects\.json"].each do |path|
       get path, provides: 'json' do
         @format = :json
-        load_projects
         projects_json = @projects.map do |project|
           project.attributes_for_json
         end
@@ -344,45 +296,21 @@ module Integrity
     # Get Project (List ALL Builds)
     get '/:project/all' do
       login_required unless current_project.public?
-
-      @builds = current_project.sorted_builds
-      @showing_all_builds = true
+      load_builds(current_project, :all)
       @branches = current_project.branches(order: [:name.asc, :created_at.desc])
-
       show :project, title: ['projects', current_project.name]
     end
 
     get '/:project/:branch' do
       login_required unless current_project.public?
-
-      if limit = Integrity.config.project_default_build_count
-        @builds = current_branch.sorted_builds.all(limit: limit + 1)
-        if @builds.length <= limit
-          @showing_all_builds = true
-        else
-          # we fetched one build more than needed
-          @builds.pop
-        end
-      else
-        @builds = current_branch.sorted_builds
-        @showing_all_builds = true
-      end
-
-      @latest_builds = @showing_all_builds ? @builds.all(limit: 12) : @builds.all(limit: 4)
-
+      load_builds(@branch)
       show :branch, title: ['branches', current_branch.name]
     end
-
-
 
     # Get Project (List ALL Builds)
     get '/:project/:branch/all' do
       login_required unless current_project.public?
-
-      @builds = current_branch.sorted_builds
-      @latest_builds = @builds.all(limit: 4)
-      @showing_all_builds = true
-
+      load_builds(@branch, :all)
       show :branch, title: ['branches', current_branch.name]
     end
 
