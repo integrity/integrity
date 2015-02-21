@@ -10,7 +10,6 @@ app:
     AWS_SECRET_KEY: <%= ENV['DEV_AWS_SECRET_ACCESS_KEY'] %>
   links:
     - frick
-    - tim
     - mysql
     - mailcatcher
     - delayedjob
@@ -29,6 +28,7 @@ delayedjob:
     AWS_SECRET_ACCESS_KEY: <%= ENV['DEV_AWS_SECRET_ACCESS_KEY'] %>
     AWS_SECRET_KEY: <%= ENV['DEV_AWS_SECRET_ACCESS_KEY'] %>
   links:
+    - tim
     - mysql
     - mailcatcher
   xfleet:
