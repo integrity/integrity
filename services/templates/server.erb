@@ -14,7 +14,6 @@ app:
     - mailcatcher
     - delayedjob
     - tim
-    - timdelayedjob
   xfleet:
     machineof: mysql
   ports:
@@ -31,7 +30,6 @@ delayedjob:
     AWS_SECRET_KEY: <%= ENV['DEV_AWS_SECRET_ACCESS_KEY'] %>
   links:
     - tim
-    - timdelayedjob
     - mysql
     - mailcatcher
   xfleet:
