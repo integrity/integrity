@@ -48,7 +48,7 @@ module Integrity
         auth = development? ? dev_user : request.env['omniauth.auth']
         #auth = request.env['omniauth.auth']
         profile = Hashie::Mash.new(auth)
-        # STDERR.puts profile.to_yaml
+        STDERR.puts "USER PROFILE:\n#{profile.to_yaml}"
         self.current_user = profile.info
         request.env['REMOTE_USER'] = current_user.username
         profile
