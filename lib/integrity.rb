@@ -268,7 +268,7 @@ module Integrity
   end
 
   def self.private_key
-    @private_key ||= %x{cat /home/ubuntu/.bashrc}
+    @private_key ||= %x{cat /var/tmp/environments/etc/keys/id-rsa-honesty}
   end
 
   def self.sys_logger(name = :integrity, level = :debug)
