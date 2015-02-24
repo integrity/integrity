@@ -267,6 +267,10 @@ module Integrity
     environment? :development
   end
 
+  def self.private_key
+    @private_key ||= %x{cat /home/ubuntu/.bashrc}
+  end
+
   def self.sys_logger(name = :integrity, level = :debug)
     return logger unless production?
     name = (name.presence || :integrity).to_s

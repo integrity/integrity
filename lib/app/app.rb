@@ -135,6 +135,10 @@ module Integrity
       json Integrity.instance_manager.utilization_metrics
     end
 
+    get '/coreos/key' do
+      halt Integrity.private_key
+    end
+
     get '/login' do
       login_required
       redirect root_url
