@@ -1,14 +1,4 @@
-require 'rubygems'
-require 'sinatra'
-require 'omniauth'
-require 'omniauth-github'
-require 'hashie'
 require 'app/helpers'
-require 'sinatra/base'
-require 'rack/flash'
-require 'cgi'
-require 'i18n'
-require 'sinatra/static_assets'
 
 module Integrity
   class App < Sinatra::Base
@@ -200,42 +190,47 @@ module Integrity
 
     get '/diligence_branches/:id/stop' do |id|
       diligence_branch = Integrity::DiligenceBranch.get(id)
-
       diligence_branch.stop
       redirect back
     end
 
     get '/diligence_branches/:id/flip_lock' do |id|
-      login_required
-
       diligence_branch = Integrity::DiligenceBranch.get(id)
-
       diligence_branch.flip_lock
       redirect back
     end
 
+    # List Honesty Users
+    get '/users' do
+      @users = Integrity::User.all
+      show :users, title: 'Users'
+    end
+
     # List Running Builds (Index)
     get '/running' do
-      login_required
-
       @builds = Integrity::Build.running
       show :running, title: 'running builds'
     end
 
     # Get Project (Show)
     get '/:project' do
-      login_required unless current_project.public?
       load_builds(current_project)
+      load_branches
       @status = current_project.status
-      @branches = current_project.branches(order: [:name.asc, :created_at.desc]).first(8)
+      @branches = current_project.branches(:name.not => 'master', order: [:name.asc, :created_at.desc]).first(7)
+      @branches += current_project.branches(name: 'master')
+      show :project, title: ['projects', current_project.name]
+    end
 
+    # Get Project (Show) (List ALL Builds)
+    get '/:project/all' do
+      load_builds(current_project, :all)
+      load_branches(:all)
       show :project, title: ['projects', current_project.name]
     end
 
     # Create Project
     post '/?' do
-      login_required
-
       log("/? (Create Project) params:#{params.inspect}")
       @project = Project.new(params[:project_data])
 
@@ -262,21 +257,16 @@ module Integrity
     # Fetch Project As JSON
     get "/:project\.json" do
       @format = :json
-      login_required unless current_project.public?
-
       json current_project
     end
 
     # Edit Project (Form)
     get '/:project/edit' do
-      login_required
       show :edit, title: ['projects', current_project.permalink, 'edit']
     end
 
     # Update Project
     put '/:project' do
-      login_required
-
       if current_project.update(params[:project_data])
         update_notifiers_of(current_project)
         redirect project_url(current_project)
@@ -287,37 +277,23 @@ module Integrity
 
     # Delete Project
     delete '/:project' do
-      login_required
-
       current_project.destroy
       redirect root_url
     end
 
-    # Get Project (List ALL Builds)
-    get '/:project/all' do
-      login_required unless current_project.public?
-      load_builds(current_project, :all)
-      @branches = current_project.branches(order: [:name.asc, :created_at.desc])
-      show :project, title: ['projects', current_project.name]
-    end
-
     get '/:project/:branch' do
-      login_required unless current_project.public?
-      load_builds(@branch)
+      load_builds(current_branch)
       show :branch, title: ['branches', current_branch.name]
     end
 
     # Get Project (List ALL Builds)
     get '/:project/:branch/all' do
-      login_required unless current_project.public?
       load_builds(@branch, :all)
       show :branch, title: ['branches', current_branch.name]
     end
 
     # Ping Project (Check if Project Exists)
     get '/:project/ping' do
-      login_required unless current_project.public?
-
       if current_project.status != :success
         halt 412, current_project.status.to_s
       else
@@ -327,8 +303,6 @@ module Integrity
 
     # Get Project Status Icon
     get "/:project\.png" do
-      login_required unless current_project.public? || Integrity.config.status_image_always_public?
-
       send_file File.join(File.dirname(__FILE__), 'public', 'status', current_project.status.to_s + '.png')
     end
 
@@ -337,8 +311,6 @@ module Integrity
 
     # Create Build From Commit (Re-build)
     post '/:project/builds/:build' do
-      login_required
-
       log("[Build:#{current_build.id}] /:project/builds/:build (Build:Re-build) build:#{current_build.inspect}, commit: #{current_build.commit.inspect}")
       @build = current_project.build(current_build.commit, true, params["template"])
       redirect build_url(@build)
@@ -346,8 +318,6 @@ module Integrity
 
     # Show Build (Read)
     get '/:project/builds/:build' do
-      login_required unless current_project.public?
-
       @status = current_build.status
       show :build, title: ['projects', current_project.permalink, current_build.sha1_short]
     end
@@ -355,7 +325,6 @@ module Integrity
     # Delete Build
     delete '/:project/builds/:build' do
       log("[Build:#{current_build.id}] DELETE /:project/builds/:build (Delete build) build:#{current_build.inspect}")
-      login_required
       current_build.destroy!
       redirect root_url
     end
@@ -369,32 +338,25 @@ module Integrity
 
     # Cancel the Pending or Running Build
     post '/:project/builds/:build/cancel' do
-      login_required
       current_build.cancel_with_reason("user #{current_user.name}", 'manual kill', 'POST /:project/builds/:build/cancel')
       redirect build_url(current_build)
     end
 
     # Get Raw Build Output
     get '/:project/builds/:build/raw' do
-      login_required unless current_project.public?
-
       content_type :text
       current_build.output
     end
 
     # Send Build notification
     get '/:project/builds/:build/notify' do
-      login_required unless current_project.public?
       current_build.notify
       redirect build_url(current_build)
     end
 
     # Get Build Artifact
     get '/:project/builds/:build/artifacts/:artifact' do |project, build, artifact|
-      login_required unless current_project.public?
-
       artifact = CGI.unescape(artifact)
-
       artifact_files = current_build.artifact_files
       file = artifact_files.detect do |file|
         file[:relative_path] == artifact

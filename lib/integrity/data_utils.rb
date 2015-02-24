@@ -1,6 +1,10 @@
 module Integrity
   module DataUtils
 
+    def self.included(model)
+      model.extend DataMapper::Resource::ClassMethods
+    end
+
     def blank?
       builds.count.zero?
     end

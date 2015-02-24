@@ -29,4 +29,8 @@
     <%= partial(:build_list, locals: {builds: @completed}) if @completed.any? %>
   </div>
 
+  <% unless @showing_all_builds %>
+    <p><a href="<%= branch_path(@branch, :all) %>">See all builds</a></p>
+  <% end %>
+
 <% end %>

@@ -43,7 +43,7 @@ module Integrity
     def setup_env
       set_base_url
       # @load_utilization = LoadUtilization.current
-      # @usage = []
+      @usage = []
     end
 
     def set_base_url
@@ -109,8 +109,18 @@ module Integrity
       @showing_all_builds = count <= limit
       @builds = project.sorted_builds.all(limit: limit)
 
+      @pending   = @builds.pending.all(order: :created_at.desc)
+      @running   = @builds.running.all(order: :started_at.desc)
+      @completed = @builds.completed.all(order: :completed_at.desc)
+
       limit = @showing_all_builds ? 12 : 4
       @latest_builds = @builds.all(limit: limit)
+    end
+
+    def load_branches(all=false)
+      limit = all ? nil : 7
+      @branches = current_project.branches.not_master.all(limit: limit)
+      @branches += current_project.branches.master
     end
 
     def build_limit

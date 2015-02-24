@@ -1,36 +1,11 @@
 ROOT_DIR = File.expand_path('..', __FILE__)
-
-ENV['DATABASE_URL'] = 'mysql2://integrity:MyPassword@gruzii5m6o5mis.c61hxobewq2s.us-east-1.rds.amazonaws.com/integrity'
-
 $LOAD_PATH.unshift(File.join(ROOT_DIR, 'lib'))
 
-begin
-  require '.bundle/environment'
-rescue LoadError
-  require 'bundler/setup'
-end
+DATABASE_URL = ENV['DATABASE_URL'] ||= 'mysql2://integrity:MyPassword@gruzii5m6o5mis.c61hxobewq2s.us-east-1.rds.amazonaws.com/integrity'
 
-require 'i18n'
-I18n.load_path << "#{ROOT_DIR}/config/locale/dates.en.yml"
+require 'setup'
 require 'integrity'
-
-logger = DataMapper::Logger.new(STDOUT, :debug)
-
-# I18n Translations
-translations = YAML.load_file(File.join(File.dirname(__FILE__), 'config', 'locale', 'en.yml'))
-I18n.backend.store_translations(:en, translations)
-
-# Notifiers - Uncomment as appropriate for the notifier you want to use
-require 'integrity/notifier/github'     # = Github commit status
-require 'integrity/notifier/email'      # = Email
-# require 'integrity/notifier/ses'      # = SES Email
-# require 'integrity/notifier/campfire' # = Campfire
-# require 'integrity/notifier/flowdock' # = Flowdock
-# require 'integrity/notifier/tcp'      # = TCP
-# require 'integrity/notifier/http'     # = HTTP
-# require 'integrity/notifier/amqp'     # = AMQP
-# require 'integrity/notifier/shell'    # = Shell
-# require 'integrity/notifier/coop'     # = Co-op
+require 'notifiers'
 
 app = RConfig.application
 
@@ -42,6 +17,8 @@ else
   base_url = 'http://' << %x{ hostname }
   base_url << app.rack.to_s unless base_url['.local']
 end
+
+logger = DataMapper::Logger.new(STDOUT, :debug)
 
 Integrity.configure do |c|
   c.environment                 = app.environment           # Environment to run in (i.e. development, production, etc).
@@ -71,5 +48,4 @@ Integrity.configure do |c|
   # end
 end
 
-# Try to queue pending builds on start
-Integrity.start
+require 'users'

@@ -1,0 +1,39 @@
+<link href="/css/users.css" rel="stylesheet">
+<link href="/css/animate.css" rel="stylesheet">
+
+<div class="row">
+  <% @users.each do |user| %>
+  <div class="col-lg-4">
+    <div class="contact-box animated pulse">
+      <a href="http://webapplayers.com/inspinia_admin-v1.9.2/profile.html">
+        <div class="col-sm-4">
+          <div class="text-center">
+            <img alt="image" class="img-circle m-t-xs img-responsive" src="<%= user.avatar %>">
+            <div class="m-t-xs font-bold"><%= user.title %></div>
+          </div>
+        </div>
+        <div class="col-sm-8">
+          <h3><strong><%= user.name %></strong></h3>
+          <p><i class="fa fa-user"></i> <%= user.username %></p>
+          <p><%= user.title %></p>
+        </div>
+        <div class="clearfix"></div>
+      </a>
+    </div>
+  </div>
+  <% end %>
+</div>
+
+<!--<ul class="users">-->
+  <!--<% @users.each do |user| %>-->
+    <!--<li class="message-preview">-->
+      <!--<div class="media">-->
+        <!--<span class="pull-left"><img src="<%= user.avatar %>"></span>-->
+        <!--<div class="media-body">-->
+          <!--<h4 class="media-heading"><strong><%= user.name %></strong></h4>-->
+          <!--<span class="small text-muted"><i class="fa fa-user"></i> <%= user.username %></span><br>-->
+        <!--</div>-->
+      <!--</div>-->
+    <!--</li>-->
+  <!--<% end %>-->
+<!--</ul>-->

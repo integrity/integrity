@@ -22,6 +22,14 @@ module Integrity
       builds.destroy!
     end
 
+    def self.master(query = :all)
+      scope query, name: 'master'
+    end
+
+    def self.not_master(query = :all)
+      scope query, :name.not => 'master', order: [:name.asc, :created_at.desc]
+    end
+
     delegate :repo, :uri, to: :project
     delegate :status, :human_status, :human_duration, :successful?, :failed?, :pending?, :building?, to: :last_build, allow_nil: true
 
