@@ -25,5 +25,5 @@ def jobs(action = :start)
 end
 
 def check_jobs
-  run 'ps -ef | grep job | grep -v grep'
+  run 'ps -ef | grep job | grep -v grep | grep -v logger'
 end
