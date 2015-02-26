@@ -4,7 +4,7 @@ Crust.configure do |config|
   config.logger = Integrity.logger,
   config.service_templates = "#{Integrity.root}/services/templates",
   config.fleetctl_options = {
-    fleet_host: 'coreos.etcd.1.test.grandrounds.com',
+    fleet_host: 'etcd1.test.grandrounds.com',
     ssh_options: {
       keys: ssh_key_file,
       paranoid: false

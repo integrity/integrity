@@ -1,7 +1,7 @@
 require 'bundler/capistrano'
 require 'erb'
 
-set :branch, 'master'
+set :branch, 'testest'
 
 set :user, 'ubuntu'
 set :use_sudo, false
