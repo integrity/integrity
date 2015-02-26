@@ -16,7 +16,6 @@ task :dj_restart, roles: :dj_worker do
   # run "cd '#{current_path}'; #{rake} jobs:daemons:restart"
   check_jobs
   kill_delayed_job
-  check_jobs
   run "cd '#{current_path}' && #{rake} jobs:daemons:start"
   check_jobs
 end
