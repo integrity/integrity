@@ -2,15 +2,18 @@ require File.join(File.dirname(__FILE__), 'utils')
 
 desc 'Start delayed job'
 task :dj_start, roles: :dj_worker do
-  run "cd '#{current_path}' && RAILS_ENV=#{rails_env} #{rake} delayed_job:start"
+  run "cd '#{current_path}' && #{rake} delayed_job:start"
 end
 
 desc 'Stop delayed job'
 task :dj_stop, roles: :dj_worker do
-  run "cd '#{current_path}' && RAILS_ENV=#{rails_env} #{rake} delayed_job:stop"
+  run "cd '#{current_path}' && #{rake} delayed_job:stop"
 end
 
 desc 'Re-start delayed job'
 task :dj_restart, roles: :dj_worker do
-  run "cd '#{current_path}' && RAILS_ENV=#{rails_env} #{rake} jobs:daemons:restart"
+  # run "cd '#{current_path}' && #{rake} jobs:daemons:restart"
+  # run "cd '#{current_path}'; #{rake} jobs:daemons:restart"
+  kill_delayed_job
+  run "cd '#{current_path}' && #{rake} jobs:daemons:restart || #{rake} jobs:daemons:start"
 end
