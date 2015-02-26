@@ -23,3 +23,7 @@ end
 def jobs(action = :start)
   run "cd '#{current_path}' && #{rake} jobs:daemons:#{action}"
 end
+
+def check_jobs
+  run 'ps -ef | grep job | grep -v grep'
+end

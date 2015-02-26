@@ -30,6 +30,7 @@ before 'deploy:setup', 'rvm:install_ruby'
 after  'deploy:setup', 'write_upstart_envs'
 
 before 'deploy:restart', 'dj_restart'
+after 'deploy:restart', 'dj_restart'
 
 set :rails_env, 'production'
 server 'integrity-2014-12-02-1b.test.grandrounds.com', :rvm, :dj_worker, :webapp, :db
