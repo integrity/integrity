@@ -73,7 +73,7 @@ namespace :jobs do
 
     desc 'restart daemonized worker(s)'
     task :restart do
-      system './script/delayed_job restart 2>&1 | logger -t delayed_job &'
+      system './script/delayed_job restart 2>&1 &'
     end
   end
 end
