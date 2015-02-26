@@ -32,4 +32,4 @@ after  'deploy:setup', 'write_upstart_envs'
 before 'deploy:restart', 'dj_restart'
 
 set :rails_env, 'production'
-server 'integrity-2014-12-02-1b.test.grandrounds.com', :rvm, :dj_worker, :webapp, :db
+server 'integrity-2015-02-25-1b.test.grandrounds.com', :rvm, :dj_worker, :webapp, :db

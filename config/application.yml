@@ -17,8 +17,8 @@ logs:
 database:
   url:      <%= ENV['INTEGRITY_DATABASE_URL'] %>
   adapter:  mysql2
-  database: integrity
-  username: integrity
+  database: integrity_dtest
+  username: dtest
   password: MyPassword
   host:     gruzii5m6o5mis.c61hxobewq2s.us-east-1.rds.amazonaws.com
 
