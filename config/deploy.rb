@@ -29,7 +29,7 @@ load 'config/delayed_job'
 before 'deploy:setup', 'rvm:install_ruby'
 after  'deploy:setup', 'write_upstart_envs'
 
-before 'deploy:restart', 'dj_restart'
+# before 'deploy:restart', 'dj_restart'
 after 'deploy:restart', 'dj_restart'
 
 set :rails_env, 'production'

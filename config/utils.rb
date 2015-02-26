@@ -27,3 +27,7 @@ end
 def check_jobs
   run 'ps -ef | grep job | grep -v grep | grep -v logger'
 end
+
+def kill_delayed_job
+  run "ps -ef | grep delayed_job | grep -v grep | grep -v logger | awk '{print $2}' | kill"
+end
