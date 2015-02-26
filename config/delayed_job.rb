@@ -12,11 +12,9 @@ end
 
 desc 'Re-start delayed job'
 task :dj_restart, roles: :dj_worker do
+  # run "cd '#{current_path}' && #{rake} jobs:daemons:restart"
+  # run "cd '#{current_path}'; #{rake} jobs:daemons:restart"
   check_jobs
-  run "cd '#{current_path}' && #{rake} jobs:daemons:restart"
-  check_jobs
-  run "cd '#{current_path}'; #{rake} jobs:daemons:restart"
-  check_jobs
-  run "cd '#{current_path}'; #{rake} jobs:daemons:stop"
+  run "cd '#{current_path}'; ./script/delayed_job restart 2>&1 | logger -t delayed_job &"
   check_jobs
 end
