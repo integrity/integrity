@@ -232,8 +232,11 @@ module Integrity
 
   def self.start_service service
     service_file = "#{self.root}/services/#{service}.service"
-    parsed_service_file = ERB.new(service_file, nil, '-').result(binding)
-    Crust.start_service(parsed_service_file)
+    parsed_service_file = ERB.new(File.read(service_file), nil, '-').result(binding)
+    file = Tempfile.new ['metrics', '.service']
+    file.write parsed_service_file
+    file.close
+    Crust.start_service file.path
   end
 
   def self.start_services
