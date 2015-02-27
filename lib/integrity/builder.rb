@@ -60,7 +60,7 @@ module Integrity
     #According to this, 4 tp builds would be 'at capacity'.  This is probably an artifact, we can discuss later
     def self.at_capacity?
       running   = Build.running(:count)
-      run_limit = Integrity.max_running_builds
+      run_limit = 6
       log "at_capacity?: #{running} out of #{run_limit} builds running."
       running >= run_limit
     end
