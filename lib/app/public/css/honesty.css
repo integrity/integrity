@@ -56,6 +56,6 @@
   background-color: darkblue;
 }
 
-a.navbar-brand {
-  background-color: red;
+.navbar a.navbar-brand {
+  background-color: red !important;
 }
