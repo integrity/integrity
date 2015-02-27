@@ -51,3 +51,11 @@
   min-height: 12em;
   background: #f5f5f5;
 }
+
+.collapse.navbar-collapse.navbar-ex1-collapse {
+  background-color: darkblue;
+}
+
+a.navbar-brand {
+  background-color: red;
+}
