@@ -1,0 +1,18 @@
+[Unit]
+Description=Metrics
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill metrics
+ExecStartPre=-/usr/bin/docker rm metrics
+ExecStartPre=/usr/bin/docker pull grnds/metrics
+ExecStart=/usr/bin/docker run -e "LIBRATO_TOKEN=1655bedd6b0454c2b06af07157978244d3752eb15c0635fce6f0d7b7e096658f" grnds/metrics
+ExecStop=/usr/bin/docker kill metrics
+ExecStopPost=/usr/bin/docker ps -a -q | xargs docker rm
+RestartSec=2
+Restart=always
+
+[X-Fleet]
+Global=true

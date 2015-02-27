@@ -235,6 +235,11 @@ module Integrity
     Crust.start_service(logspout)
   end
 
+  def self.start_metrics
+    metrics = "#{self.root}/services/metrics.service"
+    Crust.start_service(metrics)
+  end
+
   def self.max_running_builds
     config.max_running_builds
   end
