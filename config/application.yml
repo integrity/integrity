@@ -14,13 +14,15 @@ logs:
   file: 'integrity.log'
   url: 'https://papertrailapp.com/events'
 
+<% uri = ENV['DATABASE_URL'] %>
+
 database:
-  url:      <%= ENV['INTEGRITY_DATABASE_URL'] %>
-  adapter:  mysql2
-  database: integrity
-  username: integrity
-  password: MyPassword
-  host:     gruzii5m6o5mis.c61hxobewq2s.us-east-1.rds.amazonaws.com
+  url: <%= ENV['DATABASE_URL'] %>
+  adapter: <%= URI.parse(uri).scheme %>
+  database: <%= URI.parse(uri).path.gsub(/^\//,'') %>
+  username: <%= URI.parse(uri).user %>
+  password: <%= URI.parse(uri).password %>
+  host:     <%= URI.parse(uri).host %>
 
 auth:
   username: <%= ENV['INTEGRITY_USERNAME'] %>

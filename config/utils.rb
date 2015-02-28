@@ -12,14 +12,6 @@ def db_path
   File.join(shared_path, 'db')
 end
 
-def db_url
-  ENV['DATABASE_URL']
-end
-
-def integrity_db_url
-  ENV['INTEGRITY_DATABASE_URL']
-end
-
 def jobs(action = :start)
   run "cd '#{current_path}' && #{rake} jobs:daemons:#{action}"
 end
