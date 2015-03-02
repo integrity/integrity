@@ -1,7 +1,7 @@
+export APPLICATION_NAME=integrity
 export APP_ROOT=/home/ubuntu/app/integrity
 export RUBYGEMSET=integrity
 export RUBYVERSION=ruby-2.1.5
 export PATH=/usr/local/rvm/gems/${RUBYVERSION}@${RUBYGEMSET}/bin:/usr/local/rvm/gems/${RUBYVERSION}@global/bin:/usr/local/rvm/rubies/${RUBYVERSION}/bin:$PATH
 export GEM_HOME=/usr/local/rvm/gems/${RUBYVERSION}@${RUBYGEMSET}
 export GEM_PATH=/usr/local/rvm/gems/${RUBYVERSION}@${RUBYGEMSET}:/usr/local/rvm/gems/${RUBYVERSION}@global
-export DATABASE_URL=${INTEGRITY_DATABASE_URL}

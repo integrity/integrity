@@ -49,7 +49,7 @@ module Integrity
     end
 
     def database=(uri)
-      DataMapper.setup(:default, uri)
+      DataMapper.setup(:default, uri.gsub('mysql2','mysql'))
     end
 
     def directory=(dir)

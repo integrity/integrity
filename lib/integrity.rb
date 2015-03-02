@@ -230,9 +230,18 @@ module Integrity
     logger.info message
   end
 
-  def self.start_logs
-    logspout = "#{self.root}/services/logspout.service"
-    Crust.start_service(logspout)
+  def self.start_service service
+    service_file = "#{self.root}/services/#{service}.service"
+    parsed_service_file = ERB.new(File.read(service_file), nil, '-').result(binding)
+    file = File.new("/tmp/#{service}.service", 'w+')
+    path = file.path
+    file.write parsed_service_file
+    file.close
+    Crust.start_service file.path
+  end
+
+  def self.start_services
+    ['logspout', 'metrics'].each {|s| self.start_service s}
   end
 
   def self.max_running_builds
