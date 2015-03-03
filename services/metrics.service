@@ -8,7 +8,7 @@ TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker kill metrics
 ExecStartPre=-/usr/bin/docker rm metrics
 ExecStartPre=/usr/bin/docker pull grnds/metrics
-ExecStart=/usr/bin/docker run -rm -e "LIBRATO_TOKEN=<%= ENV['LIBRATO_TOKEN'] %>" --name metrics grnds/metrics
+ExecStart=/usr/bin/docker run -rm -e"HOSTNAME=`hostname`" -e "LIBRATO_TOKEN=<%= ENV['LIBRATO_TOKEN'] %>" --name metrics grnds/metrics
 ExecStop=/usr/bin/docker kill metrics
 ExecStopPost=/usr/bin/docker rm metrics
 RestartSec=2
