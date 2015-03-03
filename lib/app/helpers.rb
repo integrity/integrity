@@ -42,7 +42,7 @@ module Integrity
 
     def setup_env
       set_base_url
-      # @load_utilization = LoadUtilization.current
+      @load_utilization = LoadUtilization.current
       @usage = []
     end
 

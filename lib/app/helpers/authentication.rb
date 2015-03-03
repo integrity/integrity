@@ -3,10 +3,10 @@ module Integrity
     module Authentication
 
       def login_required
-        unauthorized! unless authorized_ip? || web_hook? || status_update? # Ok to talk?
+        unauthorized! unless (authorized_ip? || web_hook? || status_update?) # Ok to talk?
         return true if authorized? || web_hook? || status_update? # Already authenticated
         return unless protected?  # Auth not enabled
-        return if login_page? || logging_out? # Logging in or out
+        return true if login_page? || logging_out? # Logging in or out
 
         # Authenticate with basic auth
         if auth_basic?

@@ -20,10 +20,7 @@ module Integrity
     default_scope(:default).update(order: [:created_at.desc])
 
     def self.current
-      unless self.first
-        Integrity.instance_manager.refresh unless self.first
-      end
-      self.first
+      self.first || Integrity.instance_manager.refresh
     end
 
     def self.metrics
