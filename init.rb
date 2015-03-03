@@ -1,4 +1,5 @@
 ROOT_DIR = File.expand_path('..', __FILE__)
+
 $LOAD_PATH.unshift(File.join(ROOT_DIR, 'lib'))
 
 DATABASE_URL = ENV['DATABASE_URL'] ||= 'mysql2://integrity:MyPassword@gruzii5m6o5mis.c61hxobewq2s.us-east-1.rds.amazonaws.com/integrity'

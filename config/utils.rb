@@ -12,14 +12,14 @@ def db_path
   File.join(shared_path, 'db')
 end
 
-def db_url
-  ENV['DATABASE_URL']
-end
-
-def integrity_db_url
-  ENV['INTEGRITY_DATABASE_URL']
-end
-
 def jobs(action = :start)
-  run "cd '#{current_path}' && RACK_ENV=#{rails_env} #{rake} delayed_job:#{action}"
+  run "cd '#{current_path}' && #{rake} jobs:daemons:#{action}"
+end
+
+def check_jobs
+  run 'ps -ef | grep job | grep -v grep | grep -v logger'
+end
+
+def kill_delayed_job
+  run "pid=`ps -ef | grep delayed_job | grep -v grep | grep -v logger | awk '{print $2}'`; kill $pid"
 end

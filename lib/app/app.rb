@@ -64,6 +64,7 @@ module Integrity
       log "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{params.inspect}"
 
       payload = Payload.new(params)
+      halt 404 unless payload.project
 
       if payload.deleted?
         log "[HOOK] /hook.json Received branch delete notice for: #{payload.branch_name}"
@@ -95,6 +96,10 @@ module Integrity
 
     get '/utilization.json' do
       json Integrity.instance_manager.utilization_metrics
+    end
+
+    get '/coreos/key' do
+      halt Integrity.private_key
     end
 
     get '/login' do

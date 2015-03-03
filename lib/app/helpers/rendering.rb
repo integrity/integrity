@@ -54,7 +54,7 @@ module Integrity
 
       def json(resource)
         headers 'Content-Type' => 'application/json; charset=utf-8'
-        resource.to_json
+        resource.to_json rescue ''.to_json
       end
 
       def json_error(code, message)

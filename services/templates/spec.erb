@@ -12,6 +12,9 @@ app:
     AWS_SECRET_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
     SAUCE_USERNAME: <%= ENV['SAUCE_USERNAME'] %>
     SAUCE_ACCESS_KEY: <%= ENV['SAUCE_ACCESS_KEY'] %>
+    CALLBACK_URL: https://<%= ENV['CALLBACK_HOST'] %>/status.json
+  volumes:
+    - /etc/profile:/mnt/etc/profile
   links:
     - mysql
   xfleet:

@@ -1,7 +1,7 @@
 module Integrity
   class Payload
 
-    attr_reader :builder
+    attr_reader :builder, :payload
 
     def self.build(payload)
       new(payload).build
