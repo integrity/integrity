@@ -1,6 +1,6 @@
 app:
   image: grnds/<%= project %>_ci
-  command: git clone https://<%= read_token %>@github.com/consultingmd/consultingmd && ./consultingmd/docker-run.sh server from_github
+  command: git clone https://<%= read_token %>@github.com/consultingmd/consultingmd && ./consultingmd/dockyard-run server from_github
   environment:
     BRANCH: <%= branch %>
     SHA: <%= sha %>
@@ -20,9 +20,24 @@ app:
   ports:
    - :10001
 
+orchestra:
+  image: grnds/<%= project %>_ci
+  command: git clone https://<%= read_token %>@github.com/consultingmd/consultingmd && ./consultingmd/dockyard-run orchestra from_github
+  environment:
+    BRANCH: <%= branch %>
+    SHA: <%= sha %>
+    GITHUB_READ_TOKEN: <%= read_token %>
+    AWS_ACCESS_KEY_ID: <%= ENV['DEV_AWS_ACCESS_KEY_ID'] %>
+    AWS_SECRET_ACCESS_KEY: <%= ENV['DEV_AWS_SECRET_ACCESS_KEY'] %>
+    AWS_SECRET_KEY: <%= ENV['DEV_AWS_SECRET_ACCESS_KEY'] %>
+  links:
+    - mysql
+  xfleet:
+    machineof: mysql
+
 delayedjob:
   image: grnds/<%= project %>_ci
-  command: git clone https://<%= read_token %>@github.com/consultingmd/consultingmd && ./consultingmd/docker-run.sh delayed_job from_github
+  command: git clone https://<%= read_token %>@github.com/consultingmd/consultingmd && ./consultingmd/dockyard-run delayed_job from_github
   environment:
     SHA: <%= sha %>
     GITHUB_READ_TOKEN: <%= read_token %>
