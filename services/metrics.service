@@ -4,15 +4,9 @@ After=docker.service
 Requires=docker.service
 
 [Service]
-TimeoutStartSec=0
-ExecStartPre=-/usr/bin/docker kill metrics
-ExecStartPre=-/usr/bin/docker rm metrics
-ExecStartPre=/usr/bin/docker pull grnds/metrics
-ExecStart=/usr/bin/docker run -rm -e"HOSTNAME=%m" -e "LIBRATO_TOKEN=<%= ENV['LIBRATO_TOKEN'] %>" --name metrics grnds/metrics
-ExecStop=/usr/bin/docker kill metrics
-ExecStopPost=/usr/bin/docker rm metrics
-RestartSec=2
 Restart=always
+ExecStart=/usr/bin/docker run --rm -e "HOSTNAME=%m" -e "LIBRATO_TOKEN=<%= ENV['LIBRATO_TOKEN'] %>" --name metrics grnds/metrics
+ExecStop=/usr/bin/docker stop metrics
 
 [X-Fleet]
 Global=true

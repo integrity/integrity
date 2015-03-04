@@ -4,15 +4,9 @@ After=docker.service
 Requires=docker.service
 
 [Service]
-TimeoutStartSec=0
-ExecStartPre=-/usr/bin/docker kill logspout
-ExecStartPre=-/usr/bin/docker rm logspout
-ExecStartPre=/usr/bin/docker pull grnds/logspout
-ExecStart=/usr/bin/docker run -rm -v=/var/run/docker.sock:/tmp/docker.sock --name logspout grnds/logspout syslog://logs2.papertrailapp.com:49166
-ExecStop=/usr/bin/docker kill logspout
-ExecStopPost=/usr/bin/docker rm logspout
-RestartSec=2
 Restart=always
+ExecStart=/usr/bin/docker run --rm -v=/var/run/docker.sock:/tmp/docker.sock --name logspout gliderlabs/logspout:latest syslog://logs2.papertrailapp.com:49166
+ExecStop=/usr/bin/docker stop logspout
 
 [X-Fleet]
 Global=true
