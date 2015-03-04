@@ -1,7 +1,5 @@
 # Modules/Components
-
 require 'integrity/event'
-require 'integrity/data_utils'
 require 'integrity/configuration'
 require 'integrity/bootstrapper'
 require 'integrity/project_finder'
@@ -15,17 +13,7 @@ require 'integrity/command_runner'
 require 'integrity/builder'
 require 'integrity/instance_manager'
 
-# Models
-require 'integrity/branch'
-require 'integrity/commit'
-require 'integrity/build'
-require 'integrity/diligence_branch'
-require 'integrity/load_utilization'
-require 'integrity/notifier'
-require 'integrity/project'
-require 'integrity/user'
-
-# Controller
+# Models/Controllers/Helpers/Views
 require 'app/app'
 
 module Integrity

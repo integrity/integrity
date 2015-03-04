@@ -1,5 +1,3 @@
-require 'integrity/project/notifiers'
-
 module Integrity
   class Project
     include DataMapper::Resource

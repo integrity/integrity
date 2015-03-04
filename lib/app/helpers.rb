@@ -29,7 +29,7 @@ module Integrity
     end
 
     def web_hook?
-      request.path_info.include?('hook')
+      request.path_info.include?('hook.json')
     end
 
     def status_update?

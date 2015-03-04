@@ -1,20 +1,18 @@
-require 'integrity/build/status'
-
-    # The Simple Path for a Build to Run (this is a rebuild, for a new build based on a payload, the beginning part is more complicated)
-    #- From app.rb, post to /:build to rebuild. this calls project.build
-    #- If the build is valid, then project.build creates a new build and calls build.run
-    #- build.run is called, triggering action 'build:queue'
-    #- 'build:queue' runs Integrity.builder.enqueue(build)
-    #- Integrity.builder.enqueue(build) then calls Delayed::Job.enqueue(BuildJob.new(build))
-    #- BuildJob.new(build) calls Build.get!(@build).run!
-    #- Build.get(@build).run! calls event Integrity::Event.trigger('build:start', self.id)
-    #- Event 'build:start' calls Integrity.builder.run(:start_build, build)
-    #- Integrity.builder.run calls Delayed::Job.enqueue(BuildManagerJob.new(action, build))
-    #- BuildManagerJob.new() calls Integrity::Builder.send(:start_build, @build)
-    #- Integrity::Builder.start_build calls Integrity::Builder.launch_build if there is capacity
-    #- If the build has not already finished and there is capacity, then Integrity::Builder.launch_build, will call Builder.start_build
-    #- Builder.start_build will actually do the build
-
+#== Build
+# The Simple Path for a Build to Run (this is a rebuild, for a new build based on a payload, the beginning part is more complicated)
+#- From app.rb, post to /:build to rebuild. this calls project.build
+#- If the build is valid, then project.build creates a new build and calls build.run
+#- build.run is called, triggering action 'build:queue'
+#- 'build:queue' runs Integrity.builder.enqueue(build)
+#- Integrity.builder.enqueue(build) then calls Delayed::Job.enqueue(BuildJob.new(build))
+#- BuildJob.new(build) calls Build.get!(@build).run!
+#- Build.get(@build).run! calls event Integrity::Event.trigger('build:start', self.id)
+#- Event 'build:start' calls Integrity.builder.run(:start_build, build)
+#- Integrity.builder.run calls Delayed::Job.enqueue(BuildManagerJob.new(action, build))
+#- BuildManagerJob.new() calls Integrity::Builder.send(:start_build, @build)
+#- Integrity::Builder.start_build calls Integrity::Builder.launch_build if there is capacity
+#- If the build has not already finished and there is capacity, then Integrity::Builder.launch_build, will call Builder.start_build
+#- Builder.start_build will actually do the build
 module Integrity
   class Build
     include DataMapper::Resource

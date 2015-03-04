@@ -1,3 +1,4 @@
+require 'app/models'
 require 'app/helpers'
 require 'app/controllers'
 
