@@ -359,12 +359,9 @@ module Integrity
 
     def reset_last_build
       [project, branch].each do |parent|
-        if parent.last_build_id == id
-          if last_id = parent.builds(:id.not => id).last.try(:id)
-            parent.update(last_build_id: last_id)
-          end
-        end
+        parent.reset_last_build(id)
       end
     end
+
   end
 end

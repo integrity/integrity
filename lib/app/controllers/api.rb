@@ -13,34 +13,38 @@ module Integrity
 
         post '/hook.json', provides: :json do
           @format = :json
-          log "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{params.inspect}"
+
+          pre_msg = "[HOOK] hook.json ::"
+
+          log "#{pre_msg} payload received. params: #{params.inspect}"
 
           payload = Payload.new(params)
           halt 404 unless payload.project
 
           if payload.deleted?
-            log "[HOOK] /hook.json Received branch delete notice for: #{payload.branch_name}"
+            log "#{pre_msg} Received branch delete notice for: #{payload.branch_name}"
             if branch = payload.branch
-              log "[HOOK] /hook.json Found matching branch. DELETING BRANCH: [#{branch.id}] (#{branch.inspect})"
+              log "#{pre_msg} Found matching branch. DELETING BRANCH: [#{branch.id}] (#{branch.inspect})"
               branch.destroy
               json branch and return
             end
           end
 
+
           if not payload.project
-            log "[HOOK] /hook.json params: #{params.inspect} hook.json called without project"
+            log "#{pre_msg} no project in payload"
             halt 404
           elsif not payload.commit
+            log "#{pre_msg} no commit in payload"
             halt 404
-            log "[HOOK] /hook.json params: #{params.inspect} hook.json called without commit"
           end
 
           build = payload.build!
 
-          log "[HOOK] /hook.json Build: #{build.inspect}"
+          log "#{pre_msg} Build: #{build.inspect}"
 
-          if diligence_branch = Integrity::DiligenceBranch.first(branch: build.branch)
-            diligence_branch.rebuild_environment
+          if diligence = Integrity::DiligenceBranch.first(branch: build.branch)
+            diligence.rebuild_environment
           end
 
           json build

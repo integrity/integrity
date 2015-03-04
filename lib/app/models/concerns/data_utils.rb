@@ -31,6 +31,18 @@ module Integrity
 
     private
 
+    def reset_last_build(id = nil)
+      id ||= self.last_build_id
+      return unless last_build?(id)
+      last_id = self.builds(:id.not => id).last.try(:id)
+      self.update(last_build_id: last_id)
+    end
+
+    def last_build?(build)
+      id = build.respond_to?(:id) ? build.id : build
+      self.last_build_id == id
+    end
+
     def set_permalink
       attribute_set(:permalink,
       (name || '').downcase.

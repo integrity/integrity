@@ -63,7 +63,14 @@ module Integrity
     end
 
     def logger
-      @logger ||= Logger.new(log_file)
+      if @logger.nil?
+        @logger = if log_file.present?
+          Logger.new(log_file)
+        else
+          Integrity::Logger.new(:debug)
+        end
+      end
+      @logger
     end
 
     def database=(uri)

@@ -12,6 +12,7 @@ require 'integrity/checkout'
 require 'integrity/command_runner'
 require 'integrity/builder'
 require 'integrity/instance_manager'
+require 'integrity/logger'
 
 # Models/Controllers/Helpers/Views
 require 'app/app'
