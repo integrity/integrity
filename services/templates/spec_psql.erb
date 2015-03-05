@@ -1,0 +1,24 @@
+app:
+  image: grnds/<%= project %>_ci
+  environment:
+    BRANCH: <%= branch %>
+    SHA: <%= sha %>
+    BUILD_ID: <%= id %>
+    GITHUB_READ_TOKEN: <%= read_token %>
+    AWS_ACCESS_KEY_ID: <%= ENV['AWS_ACCESS_KEY_ID'] %>
+    AWS_SECRET_ACCESS_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
+    AWS_SECRET_KEY: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
+    SAUCE_USERNAME: <%= ENV['SAUCE_USERNAME'] %>
+    SAUCE_ACCESS_KEY: <%= ENV['SAUCE_ACCESS_KEY'] %>
+    CALLBACK_URL: https://<%= ENV['CALLBACK_HOST'] %>/status.json
+  volumes:
+    - /etc/profile:/mnt/etc/profile
+  links:
+    - db
+  xfleet:
+    machineof: db
+
+db:
+  image: postgres:9.3
+  ports:
+    - "5432"
