@@ -91,6 +91,23 @@ module Integrity
       branch
     end
 
+    #This is a temporary solution for psql apps to use the psql spec helper. It would be better if 
+    #the correct file were checked out of github.
+    #
+    def choose_service_template(service)
+        template = service.presence || 'spec'
+        template = project_service_spec_template if template == 'spec'
+    end
+
+    def project_service_spec_template
+      uses_psql? ? 'spec_psql' : 'spec'
+    end
+
+    def uses_psql?
+      psql_apps = ['banyan']
+      psql_apps.include?(name)
+    end
+
     def build(commit, rebuild=false, service=nil)
       log("[method:build] building commit @{commit.inspec}")
       if commit.is_a?(Hash)
@@ -101,13 +118,11 @@ module Integrity
 
       commit = Hashie::Mash.new(commit)
       branch = get_branch(commit)
-
       if commit.identifier.present?
-        templ = service.presence || 'spec'
         build = builds.create(
           commit: commit,
           branch: branch,
-          service_template: templ,
+          service_template: choose_service_template(service),
           rebuild: rebuild
         )
 
