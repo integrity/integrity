@@ -1,21 +1,17 @@
 module Sinatra::Partials
   def partial(template, *args)
-    path = template.to_s.split('/')
-    name = path.last.to_sym
-    file = "_#{name}"
-
-    template = (path[0..-2] << file).join('/').to_sym
-    options  = args.extract_options!.merge(layout: false)
-
-    if collection = options.delete(:collection)
-      locals = options[:locals] || {}
-      collection.map do |member|
-        locals  = {name => member}.merge(locals)
-        options = options.merge(locals: locals)
-        erb(template, options)
+    template_array = template.to_s.split('/')
+    template = template_array[0..-2].join('/') + "/_#{template_array[-1]}"
+    options = args.last.is_a?(Hash) ? args.pop : {}
+    options.merge!(layout: false)
+    locals = options[:locals] || {}
+    if collection = options.delete(:collection) then
+      collection.inject([]) do |buffer, member|
+        buffer << erb(:"#{template}",
+                      options.merge(layout: false, locals: {template_array[-1].to_sym => member}.merge(locals)))
       end.join("\n")
     else
-      erb(template, options)
+      erb(:"#{template}", options)
     end
   end
 end

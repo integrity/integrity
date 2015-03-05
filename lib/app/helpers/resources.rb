@@ -7,8 +7,6 @@ module Integrity
 
       def current_branch
         @branch ||= current_project.branches.first(permalink: params[:branch]) or raise Sinatra::NotFound
-        logger.info "CURRENT_BRANCH: #{@branch.inspect}"
-        @branch
       end
 
       def current_build

@@ -11,45 +11,21 @@ require 'app/helpers/authentication'
 module Integrity
   module Helpers
     include Authorization
-    include Authentication
     include Breadcrumbs
     include DateTimeHelper
     include PrettyOutput
     include Rendering
     include Resources
     include Urls
+    include Authentication
 
     include Sinatra::Partials
     include Rack::Utils
 
     alias :h :escape_html
 
-    def settings_page?
-      request.path_info.include?('settings')
-    end
-
-    def web_hook?
-      request.path_info.include?('hook.json')
-    end
-
-    def status_update?
-      request.path_info.include?('status.json')
-    end
-
-    def remote_ip
-      request.env['HTTP_X_FORWARDED_FOR'].to_s
-    end
-
-    def setup_env
-      set_base_url
-      @load_utilization = LoadUtilization.current
-      @usage = []
-    end
-
-    def set_base_url
-      unless Integrity.base_url.present?
-        Integrity.configure {|c| c.base_url = url_for('/', :full) }
-      end
+    def show_login?
+      Integrity.config.protected? && !authorized?
     end
 
     def project_metadata(project)
@@ -62,11 +38,6 @@ module Integrity
         when :pending  then label
         else "#{label} in #{duration}"
       end
-    end
-
-    def notify msg
-      key, msg = msg.is_a?(Hash) ? msg.first : [:notice, msg]
-      flash[key] = msg
     end
 
     private
@@ -85,46 +56,6 @@ module Integrity
 
     def config
       Integrity.config
-    end
-
-    def log(msg)
-      user = current_user ? "{user: #{current_user.username}}" : ""
-      Integrity.logger.debug "[Integrity::App]: #{msg} user:#{user}"
-    end
-
-    def development?
-      Integrity.development?
-    end
-
-    def production?
-      Integrity.production?
-    end
-
-    def load_builds(project, limit=nil)
-      project ||= current_project
-
-      count = project.builds.count
-      limit = limit || build_limit || count
-      limit = count if limit == :all
-      @showing_all_builds = count <= limit
-      @builds = project.sorted_builds.all(limit: limit)
-
-      @pending   = @builds.pending.all(order: :created_at.desc)
-      @running   = @builds.running.all(order: :started_at.desc)
-      @completed = @builds.completed.all(order: :completed_at.desc)
-
-      limit = @showing_all_builds ? 12 : 4
-      @latest_builds = @builds.all(limit: limit)
-    end
-
-    def load_branches(all=false)
-      limit = all ? nil : 7
-      @branches = current_project.branches.not_master.all(limit: limit)
-      @branches += current_project.branches.master
-    end
-
-    def build_limit
-      config.project_default_build_count
     end
 
     def load_projects

@@ -5,7 +5,6 @@ module Integrity
       def self.included(base)
         base.class_eval do
           extend ClassMethods
-          extend DataMapper::Resource::ClassMethods
         end
       end
 

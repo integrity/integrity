@@ -55,14 +55,6 @@ module Integrity
         root_uri(:path_only)
       end
 
-      def login_path
-        path('login')
-      end
-
-      def unauthorized_path
-        oauth? ? login_path : root_path
-      end
-
       def root_uri(type=:full)
         sfx = (type == :full) ? :url : :path
         var = :"@root_#{sfx}"
@@ -75,11 +67,11 @@ module Integrity
       end
 
       def url(*path)
-        root_url.join(path.join('/'))
+        root_url.join(path.join("/"))
       end
 
       def path(*path)
-        root_path.join(path.join('/'))
+        root_path.join(path.join("/"))
       end
 
       def project_url(project, *path)

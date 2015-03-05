@@ -25,8 +25,6 @@ database:
   host:     <%= URI.parse(uri).host %>
 
 auth:
-  type:
-    oauth:  github
   username: <%= ENV['INTEGRITY_USERNAME'] %>
   password: <%= ENV['INTEGRITY_PASSWORD'] %>
 

@@ -1,7 +1,9 @@
+require 'integrity/project/notifiers'
+
 module Integrity
   class Project
     include DataMapper::Resource
-    include Integrity::DataUtils
+    include Integrity::WebUtils
     include Notifiers
 
     property :id,         Serial
@@ -139,6 +141,30 @@ module Integrity
       }
 
       forked
+    end
+
+    def github?
+      uri.to_s.include?('github.com')
+    end
+
+    # TODO: lame, there is got to be a better way
+    def sorted_builds
+      builds(order: [:created_at.desc, :id.desc])
+    end
+
+    def blank?
+      last_build.nil?
+    end
+
+    def attributes_for_json
+      {
+        name:   name,
+        status: status
+      }
+    end
+
+    def to_json
+      {project: attributes_for_json}.to_json
     end
 
     private
