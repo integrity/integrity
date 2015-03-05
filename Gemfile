@@ -10,7 +10,7 @@ gem 'dm-mysql-adapter'
 
 # Workaround until https://github.com/datamapper/dm-core/issues/242
 # is fixed in a released version of datamapper.
-gem 'dm-core', git: 'git://github.com/datamapper/dm-core', branch: 'release-1.2', require: 'dm-core'
+gem 'dm-core', git: 'git://github.com/datamapper/dm-core', branch: 'release-1.2'
 
 gem 'haml'
 gem 'sass'

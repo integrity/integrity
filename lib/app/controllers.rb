@@ -1,7 +1,0 @@
-require 'app/controllers/api'
-require 'app/controllers/authentication'
-require 'app/controllers/branches'
-require 'app/controllers/builds'
-require 'app/controllers/diligence'
-require 'app/controllers/projects'
-require 'app/controllers/web'

@@ -8,12 +8,14 @@ module Integrity
         end
       end
 
-      def show(template, options={})
-        crumbs = options.delete(:title)
-        @title = breadcrumbs(*crumbs)
-        options = {layout: true}.merge(options)
-        erb template, options
+      def show(view, options={})
+        @title = breadcrumbs(*options[:title])
+        erb view, layout: true
       end
+
+      # def partial(template, locals={})
+      #   haml("_#{template}".to_sym, locals: locals, layout: false)
+      # end
 
       def errors_on(object, field)
         return '' unless errors = object.errors.on(field)
@@ -31,7 +33,9 @@ module Integrity
 
       def dropdown(name, id, options, selected='')
         haml_tag(:select, id: id, name: name) do
-          options.each {|opt| haml_tag(:option, opt, value: opt, selected: (opt == selected)) }
+          options.each {|opt|
+            haml_tag :option, opt, value: opt, selected: (opt == selected)
+          }
         end
       end
 

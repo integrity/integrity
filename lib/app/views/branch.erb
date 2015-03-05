@@ -1,36 +1,22 @@
-<%= partial(:auto_reload) %>
+
+<div class="row" id="projects">
+  <% @latest_builds.each do |build|
+    status = branch_status(build) %>
+    <%= partial(:build, locals: {branch: @branch, build: build, project: @project, status: status}) %>
+  <% end %>
+</div>
 
 <% if @branch.blank? %>
-
-  <h3 class="text-center short"><%= "No Builds for #{@branch.name}" %></h3>
   <form action="<%= project_path(@project, :builds) %>" class="blank_slate" method="<%= :post %>">
-    <button type="<%= :submit %>">Build HEAD</button>
+    <p>No builds for this branch, buddy</p>
+    <h1>
+      You can request a
+      <button type="<%= :submit %>">manual build</button>
+    </h1>
   </form>
-
 <% else %>
-
-  <div class="row" id="projects">
-    <% @latest_builds.each do |build|
-      status = branch_status(build) %>
-      <%= partial(:build, locals: {branch: @branch, build: build, project: @project, status: status}) %>
-    <% end %>
-  </div>
-
-  <div class="row" id="builds">
-    <% if @running.any? %>
-      <h3 class="text-center short"><%= "#{@running.count} Running Build#{@running.count == 1 ? '' : 's'}" %></h3>
-      <%= partial(:build_list, locals: {builds: @running}) if @running.any? %>
-    <% end %>
-    <% if @pending.any? %>
-      <h3 class="text-center short"><%= "#{@pending.count} Pending Build#{@running.count == 1 ? '' : 's'}" %></h3>
-      <%= partial(:build_list, locals: {builds: @pending}) if @pending.any? %>
-    <% end %>
-    <h3 class="text-center short">Completed Builds</h3>
-    <%= partial(:build_list, locals: {builds: @completed}) if @completed.any? %>
-  </div>
-
+  <%= partial(:build_list, locals: {builds: @builds}) unless @branch.blank? %>
   <% unless @showing_all_builds %>
     <p><a href="<%= branch_path(@branch, :all) %>">See all builds</a></p>
   <% end %>
-
 <% end %>

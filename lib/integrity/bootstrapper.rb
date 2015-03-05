@@ -1,7 +1,6 @@
 module Integrity
   class Bootstrapper
     class Project < Struct.new(:name, :uri, :branch, :command, :public)
-
       def public
         @public = true
       end
@@ -17,17 +16,16 @@ module Integrity
       end
 
       private
+        def project
+          @project ||= Integrity::Project.first_or_create(:name => name)
+        end
 
-      def project
-        @project ||= Integrity::Project.first_or_create(:name => name)
-      end
-
-      def update
-        project.uri     = uri
-        project.branch  = branch if branch
-        project.command = command
-        project.public  = @public
-      end
+        def update
+          project.uri     = uri
+          project.branch  = branch if branch
+          project.command = command
+          project.public  = @public
+        end
     end
 
     def initialize

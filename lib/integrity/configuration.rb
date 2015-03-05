@@ -9,7 +9,6 @@ module Integrity
       :github_secret,
       :log,
       :logs_url,
-      :auth,
       :username,
       :password,
       :project_default_build_count,
@@ -34,24 +33,7 @@ module Integrity
     end
 
     def protected?
-      (basic? && @username.present? && @password.present?) || oauth?
-    end
-
-    def basic?
-      auth_type == :basic
-    end
-
-    def oauth?
-      auth_type == :oauth
-    end
-
-    def auth_type
-      (@auth.is_a?(Hash) ? @auth.first.first : @auth).to_sym
-    end
-
-    def oauth_provider
-      return unless @auth.is_a?(Hash)
-      @auth.first.last
+      @username && @password
     end
 
     def log_dir
@@ -63,14 +45,7 @@ module Integrity
     end
 
     def logger
-      if @logger.nil?
-        @logger = if log_file.present?
-          Logger.new(log_file)
-        else
-          Integrity::Logger.new(:debug)
-        end
-      end
-      @logger
+      @logger ||= Logger.new(log_file)
     end
 
     def database=(uri)
