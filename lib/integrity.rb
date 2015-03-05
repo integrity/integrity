@@ -1,69 +1,10 @@
-if Object.const_defined?(:Encoding) && Encoding.respond_to?(:default_internal=)
-  # ruby 1.9
-  # Internal encoding is what is used on ruby strings.
-  Encoding.default_internal = Encoding::UTF_8
-  # External encoding is what is used on pipes used to communicate with
-  # launched command runners and is the default encoding used when opening
-  # e.g. the log file.
-  Encoding.default_external = Encoding::UTF_8
-end
-
-require 'yaml'
-require 'logger'
-require 'digest/sha1'
-require 'timeout'
-require 'ostruct'
-require 'pathname'
-require 'json'
-require 'haml'
-require 'sass'
-
-require 'sinatra/base'
-require 'sinatra/authorization'
-
-require 'active_support'
-require 'active_support/core_ext'
-require 'active_support/hash_with_indifferent_access'
-
-require 'dm-core'
-require 'dm-validations'
-require 'dm-types'
-require 'dm-timestamps'
-require 'dm-aggregates'
-require 'dm-migrations'
-
-require 'coreext/data_mapper/resource'
-
-require 'addressable/uri'
-require 'chronic_duration'
-require 'bcat/ansi'
-require 'rconfig'
-require 'i18n'
-require 'rest_client'
-require 'crust'
-
-require 'opts/rconfig'
-
-require 'commands'
-require 'runnable'
-require 'docker'
-
-require 'app/app'
-
+# Modules/Components
 require 'integrity/event'
-require 'integrity/web_utils'
 require 'integrity/configuration'
 require 'integrity/bootstrapper'
-require 'integrity/project'
-require 'integrity/branch'
 require 'integrity/project_finder'
 require 'integrity/author'
-require 'integrity/commit'
-require 'integrity/build'
 require 'integrity/builder'
-require 'integrity/load_utilization'
-require 'integrity/diligence_branch'
-require 'integrity/notifier'
 require 'integrity/notifier/base'
 require 'integrity/payload'
 require 'integrity/payload_builder'
@@ -71,14 +12,10 @@ require 'integrity/checkout'
 require 'integrity/command_runner'
 require 'integrity/builder'
 require 'integrity/instance_manager'
+require 'integrity/logger'
 
-DataMapper.finalize
-
-Addressable::URI.class_eval do
-  def gsub(*args)
-    to_s.gsub(*args)
-  end
-end
+# Models/Controllers/Helpers/Views
+require 'app/app'
 
 module Integrity
   CannotFindEncoding = Class.new(StandardError)

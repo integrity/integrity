@@ -7,7 +7,7 @@ module Integrity
         I18n.t(*args)
       end
 
-      def l(object, options=nil)
+      def l(object, options = nil)
         I18n.l(object, options)
       end
 
