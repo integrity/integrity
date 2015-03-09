@@ -81,6 +81,7 @@ module Integrity
       def build_service(build)
         case build.service_template
         when 'spec' then {color: :warning, icon: :bug}
+        when 'spec_psql' then {color: :warning, icon: :bug}
         when 'server' then {color: :info, icon: :laptop}
         end
       end
