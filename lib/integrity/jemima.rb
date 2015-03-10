@@ -30,14 +30,12 @@ module Integrity
       frick_commit = Integrity::Project.first(name: 'frick').branches.first(name: 'dockyard').builds.last.commit
       tim_commit = Integrity::Project.first(name: 'tim').branches.first(name: 'dockyard').builds.last.commit
 
-      j = Integrity::Jemima.new({
+      Integrity::Jemima.new({
         build_id: build_id,
         frick:  { branch: frick_commit.branch,  sha: frick_commit.identifier },
         jarvis: { branch: jarvis_commit.branch, sha: jarvis_commit.identifier },
         tim:    { branch: tim_commit.branch,    sha: tim_commit.identifier },
       })
-
-      return j.bake_erb
     end
 
     def self.jarvis_build_at_branch(branch_name)
