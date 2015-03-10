@@ -58,9 +58,9 @@ module Integrity
     # - aws_secret_key
     def bake_erb
       github_read_token = ENV['GITHUB_READ_TOKEN']
-      aws_access_key_id = ENV['AWS_ACCESS_KEY_ID']
-      aws_secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
-      aws_secret_key = ENV['AWS_SECRET_KEY']
+      aws_access_key_id = ENV['DEV_AWS_ACCESS_KEY_ID']
+      aws_secret_access_key = ENV['DEV_AWS_SECRET_ACCESS_KEY']
+      aws_secret_key = ENV['DEV_AWS_SECRET_KEY']
       b = binding
 
       mk_out_dir
