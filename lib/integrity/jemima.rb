@@ -22,43 +22,45 @@ module Integrity
       @stack_id      = format("%s_%s", STATIC_PREFIX, @build_id)
     end
 
-    def out_dir
-      File.join('/tmp', @stack_id)
+    # @param build must be a jarvis build
+    def self.make_a_new_one(build)
+      build_id = build.id
+      jarvis_commit = build.commit
+      #jarvis_commit = Integrity::Project.first(name: 'jarvis').branches.first(name: 'dockyard').builds.last.commit
+      frick_commit = Integrity::Project.first(name: 'frick').branches.first(name: 'dockyard').builds.last.commit
+      tim_commit = Integrity::Project.first(name: 'tim').branches.first(name: 'dockyard').builds.last.commit
+
+      j = Integrity::Jemima.new({
+        build_id: build_id,
+        frick:  { branch: frick_commit.branch,  sha: frick_commit.identifier },
+        jarvis: { branch: jarvis_commit.branch, sha: jarvis_commit.identifier },
+        tim:    { branch: tim_commit.branch,    sha: tim_commit.identifier },
+      })
+
+      return j.bake_erb
     end
 
-    def rendered_files
-      Dir["#{out_dir}/*.service"].map do |file|
-        File.open(file, 'r')
-      end
+    def self.jarvis_build_at_branch(branch_name)
+      Integrity::Project.first(name: 'jarvis').branches.first(name: branch_name).builds.last
     end
 
+    # locals/methods needed by the ERB rendering context
+    # - stack_id
+    # - jarvis_branch
+    # - jarvis_sha
+    # - frick_branch
+    # - frick_sha
+    # - tim_branch
+    # - tim_sha
+    # - github_read_token
+    # - aws_access_key_id
+    # - aws_secret_access_key
+    # - aws_secret_key
     def bake_erb
-      #stack_id = ARGV[0]
-      #jarvis_branch = ARGV[1]
-      #jarvis_sha = ARGV[2]
-      #frick_branch = ARGV[3]
-      #frick_sha = ARGV[4]
-      #tim_branch = ARGV[5]
-      #tim_sha = ARGV[6]
       github_read_token = ENV['GITHUB_READ_TOKEN']
       aws_access_key_id = ENV['AWS_ACCESS_KEY_ID']
       aws_secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
       aws_secret_key = ENV['AWS_SECRET_KEY']
-
-      #puts <<-HERE
-      #stack_id      = #{stack_id}
-      #jarvis_branch = #{jarvis_branch}
-      #jarvis_sha    = #{jarvis_sha}
-      #frick_branch  = #{frick_branch}
-      #frick_sha     = #{frick_sha}
-      #tim_branch    = #{tim_branch}
-      #tim_sha       = #{tim_sha}
-      #github_read_token     = #{github_read_token}
-      #aws_access_key_id     = #{aws_access_key_id}
-      #aws_secret_access_key = #{aws_secret_access_key}
-      #aws_secret_key        = #{aws_secret_key}
-      #HERE
-
       b = binding
 
       mk_out_dir
@@ -71,6 +73,14 @@ module Integrity
           f.puts contents
         end
       end
+
+      service_files
+    end
+
+    def service_files
+      Dir["#{out_dir}/*.service"].map do |file|
+        File.open(file, 'r')
+      end
     end
 
     private
@@ -79,28 +89,12 @@ module Integrity
       FileUtils.mkdir_p out_dir
     end
 
-    def erbless_filename(fname)
-      fname.sub(/\.erb$/, '')
+    def out_dir
+      File.join('/tmp', @stack_id)
     end
 
     def baked_filename(fname)
-      File.join(out_dir, "#{@stack_id}_#{File.basename fname}")
+      File.join(out_dir, "#{@stack_id}_#{File.basename fname.sub(/\.erb$/, '')}")
     end
   end
-end
-
-def test_jemima(build)
-  # must be a jarvis build
-  build_id = build.id
-  jarvis_commit = build.commit
-  #jarvis_commit = Integrity::Project.first(name: 'jarvis').branches.first(name: 'dockyard').builds.last.commit
-  frick_commit = Integrity::Project.first(name: 'frick').branches.first(name: 'dockyard').builds.last.commit
-  tim_commit = Integrity::Project.first(name: 'tim').branches.first(name: 'dockyard').builds.last.commit
-
-  Integrity::Jemima.new({
-    build_id: build_id,
-    frick:  { branch: frick_commit.branch,  sha: frick_commit.identifier },
-    jarvis: { branch: jarvis_commit.branch, sha: jarvis_commit.identifier },
-    tim:    { branch: tim_commit.branch,    sha: tim_commit.identifier },
-  })
 end
