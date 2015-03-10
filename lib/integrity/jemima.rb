@@ -6,7 +6,7 @@ module Integrity
     STATIC_PREFIX = 'jemima'
     TEMPLATES_DIR = 'services/templates/server'
 
-    attr_reader :stack_id, :build_id,
+    attr_reader :stack_id, :build_id, :tags,
       :frick_branch, :frick_sha,
       :jarvis_branch, :jarvis_sha,
       :tim_branch, :tim_sha
@@ -19,11 +19,12 @@ module Integrity
       @jarvis_sha    = args[:jarvis][:sha]
       @tim_branch    = args[:tim][:branch]
       @tim_sha       = args[:tim][:sha]
-      @stack_id      = format("%s_%s", STATIC_PREFIX, @build_id)
+      @tags          ||= []
+      @stack_id      = format("%s_%s%s", STATIC_PREFIX, @build_id, tag_string)
     end
 
     # @param build must be a jarvis build
-    def self.make_a_new_one(build)
+    def self.make_a_new_one(build, tags=[])
       build_id = build.id
       jarvis_commit = build.commit
       #jarvis_commit = Integrity::Project.first(name: 'jarvis').branches.first(name: 'dockyard').builds.last.commit
@@ -32,6 +33,7 @@ module Integrity
 
       Integrity::Jemima.new({
         build_id: build_id,
+        tags: tags,
         frick:  { branch: frick_commit.branch,  sha: frick_commit.identifier },
         jarvis: { branch: jarvis_commit.branch, sha: jarvis_commit.identifier },
         tim:    { branch: tim_commit.branch,    sha: tim_commit.identifier },
@@ -43,6 +45,8 @@ module Integrity
     end
 
     def orchestrate
+      bake_erb
+
       mysql = service_files.select{|f| f.path.include?('mysql') }
       Fleetctl.start(mysql)
 
@@ -97,6 +101,11 @@ module Integrity
     end
 
     private
+
+    def tag_string
+      return '' if tags.empty?
+      "_#{tags.join('_')}"
+    end
 
     def mk_out_dir
       FileUtils.mkdir_p out_dir
