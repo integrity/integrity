@@ -1,0 +1,23 @@
+[Unit]
+Description=<%= stack_id %>_frick
+After=<%= stack_id %>_mysql.service
+Requires=<%= stack_id %>_mysql.service
+
+[Service]
+ExecStart=/usr/bin/docker run --rm -v /var/lib/docker/tmp:/tmp/hosttmp --name <%= stack_id %>_frick --net=container:<%= stack_id %>_mysql \
+-e "BRANCH=<%= frick_branch %>" \
+-e "SHA=<%= frick_sha %>" \
+-e "GITHUB_READ_TOKEN=<%= github_read_token %>" \
+-e "AWS_ACCESS_KEY_ID=<%= aws_access_key_id %>" \
+-e "AWS_SECRET_ACCESS_KEY=<%= aws_secret_access_key %>" \
+-e "AWS_SECRET_KEY=<%= aws_secret_key %>" \
+grnds/frick_ci \
+/bin/bash -c 'git clone --branch <%= frick_branch %> https://<%= github_read_token %>@github.com/consultingmd/frick ./test_subject && \
+./test_subject/dockyard-run server from_github'
+ExecStop=/usr/bin/docker rm -f <%= stack_id %>_frick
+
+[Install]
+WantedBy=local.target
+
+[X-Fleet]
+MachineOf=<%= stack_id %>_mysql.service
