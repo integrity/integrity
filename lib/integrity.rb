@@ -43,6 +43,7 @@ require 'rest_client'
 require 'crust'
 
 require 'opts/rconfig'
+require 'opts/fleetctl'
 
 require 'commands'
 require 'runnable'

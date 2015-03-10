@@ -6,7 +6,7 @@ GIT
 
 GIT
   remote: git://github.com/ConsultingMD/ruby-fleetctl.git
-  revision: 5b9a34712b70e196a481360b25d9ecf17ec74c7f
+  revision: 09f8c6734d0fa16b4de3218ab1e50d6124be2777
   branch: master
   specs:
     fleetctl (0.1.4.4)
@@ -159,7 +159,7 @@ GEM
     hashie (2.1.2)
     highline (1.6.21)
     hpricot (0.8.6)
-    i18n (0.6.11)
+    i18n (0.7.0)
     json (1.8.1)
     json_pure (1.8.1)
     jwt (1.2.0)
@@ -177,7 +177,7 @@ GEM
     minitest (4.7.5)
     mocha (1.1.0)
       metaclass (~> 0.0.1)
-    multi_json (1.10.1)
+    multi_json (1.11.0)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
     mysql (2.9.1)
