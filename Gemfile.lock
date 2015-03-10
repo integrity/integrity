@@ -6,7 +6,8 @@ GIT
 
 GIT
   remote: git://github.com/ConsultingMD/ruby-fleetctl.git
-  revision: 6e79581e351af4d610c0b60f021b40cc0ce585e5
+  revision: 5b9a34712b70e196a481360b25d9ecf17ec74c7f
+  branch: master
   specs:
     fleetctl (0.1.4.4)
       activesupport
@@ -297,7 +298,7 @@ DEPENDENCIES
   dm-mysql-adapter
   dm-sweatshop!
   extlib
-  fleetctl (= 0.1.4.4)!
+  fleetctl!
   haml
   hashie
   hpricot
