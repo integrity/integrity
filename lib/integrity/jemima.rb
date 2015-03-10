@@ -44,6 +44,21 @@ module Integrity
       Integrity::Project.first(name: 'jarvis').branches.first(name: branch_name).builds.last
     end
 
+    def orchestrate
+      mysql = service_files.select{|f| f.path.include?('mysql') }
+      Fleetctl.start(mysql)
+
+      sleep 5
+
+      orchs = service_files.select{|f| f.path.include?('orchestra') }
+      Fleetctl.start(orchs)
+
+      sleep 5
+
+      other = service_files.select{|f| !f.path.include?('orchestra') && !f.path.include?('mysql') }
+      Fleetctl.start(other)
+    end
+
     # locals/methods needed by the ERB rendering context
     # - stack_id
     # - jarvis_branch
