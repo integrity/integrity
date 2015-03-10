@@ -8,7 +8,7 @@
       <% if build.public_link %>
         <%= "#{link_to %Q{<i class="fa fa-#{build_service(build)[:icon]}"></i>}, build.public_link}" %>
       <% else %>
-        <i class="fa fa-<%= build_service(build)[:icon] %>">
+        <i class="fa fa-<%= build_service(build)[:icon] if build_service(build) %>">
       <% end %>
     </td>
 
