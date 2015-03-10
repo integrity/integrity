@@ -19,7 +19,7 @@ module Integrity
       @jarvis_sha    = args[:jarvis][:sha]
       @tim_branch    = args[:tim][:branch]
       @tim_sha       = args[:tim][:sha]
-      @tags          ||= []
+      @tags          = args[:tags] || []
       @stack_id      = format("%s_%s%s", STATIC_PREFIX, @build_id, tag_string)
     end
 
