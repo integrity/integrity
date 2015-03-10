@@ -19,7 +19,7 @@ module Integrity
       @jarvis_sha    = args[:jarvis][:sha]
       @tim_branch    = args[:tim][:branch]
       @tim_sha       = args[:tim][:sha]
-      @stack_id      = format("%s_%s", FIXED_PREFIX, @build_id)
+      @stack_id      = format("%s_%s", STATIC_PREFIX, @build_id)
     end
 
     def out_dir
@@ -89,9 +89,18 @@ module Integrity
   end
 end
 
-j = Integrity::Jemima.new {
-    build_id: 123456
-    frick:  { branch: 'dockyard', sha: '' },
-    jarvis: { branch: 'dockyard', sha: '' },
-    tim:    { branch: 'dockyard', sha: '' },
-  }
+def test_jemima(build)
+  # must be a jarvis build
+  build_id = build.id
+  jarvis_commit = build.commit
+  #jarvis_commit = Integrity::Project.first(name: 'jarvis').branches.first(name: 'dockyard').builds.last.commit
+  frick_commit = Integrity::Project.first(name: 'frick').branches.first(name: 'dockyard').builds.last.commit
+  tim_commit = Integrity::Project.first(name: 'tim').branches.first(name: 'dockyard').builds.last.commit
+
+  Integrity::Jemima.new({
+    build_id: build_id,
+    frick:  { branch: frick_commit.branch,  sha: frick_commit.identifier },
+    jarvis: { branch: jarvis_commit.branch, sha: jarvis_commit.identifier },
+    tim:    { branch: tim_commit.branch,    sha: tim_commit.identifier },
+  })
+end
