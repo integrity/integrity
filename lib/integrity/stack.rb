@@ -1,9 +1,9 @@
 require 'fileutils'
 
 module Integrity
-  class Jemima
+  class Stack
 
-    STATIC_PREFIX = 'jemima'
+    STATIC_PREFIX = 'pancakes'
     TEMPLATES_DIR = 'services/templates/server'
 
     attr_reader :stack_id, :build_id, :tags,

@@ -72,7 +72,7 @@ require 'integrity/checkout'
 require 'integrity/command_runner'
 require 'integrity/builder'
 require 'integrity/instance_manager'
-require 'integrity/jemima'
+require 'integrity/stack'
 
 DataMapper.finalize
 
