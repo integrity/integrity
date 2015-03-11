@@ -46,6 +46,7 @@ module Integrity
 
     def orchestrate
       bake_erb
+      Fleetctl.load(service_files)
 
       mysql = service_files.select{|f| f.path.include?('mysql') }
       Fleetctl.start(mysql)
@@ -114,9 +115,13 @@ module Integrity
 
       setup_docker_api_client(worker_ip)
 
-      containers = Docker::Container.all
-      ports = containers.select{|x| x.info['Names'].first =~ /mysql/ }.first.info['Ports']
-      return ports.map{|x| { x['PrivatePort'] => "http://#{worker_ip}:#{x['PublicPort']}" } }
+      containers = Docker::Container.all.select{|x| x.info['Names'].first =~ /mysql/ }
+      if !containers.empty?
+        ports = containers.first.info['Ports']
+        return ports.map{|x| { x['PrivatePort'] => "http://#{worker_ip}:#{x['PublicPort']}" } }
+      else
+        return nil
+      end
     end
 
     private
