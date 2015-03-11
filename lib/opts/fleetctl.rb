@@ -1,1 +1,1 @@
-Fleetctl.config fleet_host: 'etcd1.test.grandrounds.com'
+Fleetctl.config fleet_host: 'dtest-etcd'

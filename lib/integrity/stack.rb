@@ -114,12 +114,15 @@ module Integrity
       end
 
       setup_docker_api_client(worker_ip)
+      net_cont_name = container_name('mysql')
 
-      containers = Docker::Container.all.select{|x| x.info['Names'].first =~ /mysql/ }
-      if !containers.empty?
-        ports = containers.first.info['Ports']
-        return ports.map{|x| { x['PrivatePort'] => "http://#{worker_ip}:#{x['PublicPort']}" } }
-      else
+      begin
+        net_container = Docker::Container.get(net_cont_name)
+        return net_container.info['NetworkSettings']['Ports'].to_a.map do |service_port,host_ports|
+          { service_port.to_i => format("http://%s:%d", worker_ip, host_ports.first['HostPort'].to_i) }
+        end
+      rescue Docker::Error::NotFoundError => e
+        Integrity.logger.warn "networking container not found: #{net_cont_name}"
         return nil
       end
     end
@@ -146,6 +149,10 @@ module Integrity
 
     def baked_filename(fname)
       File.join(out_dir, "#{@stack_id}_#{File.basename fname.sub(/\.erb$/, '')}")
+    end
+
+    def container_name(service)
+      "#{@stack_id}_#{service}"
     end
   end
 end
