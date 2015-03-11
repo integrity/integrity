@@ -150,6 +150,10 @@ GEM
       dm-core (~> 1.2.0)
     do_mysql (0.10.14)
       data_objects (= 0.10.14)
+    docker-api (1.20.0)
+      excon (>= 0.38.0)
+      json
+    excon (0.44.4)
     extlib (0.9.16)
     faraday (0.9.0)
       multipart-post (>= 1.2, < 3)
@@ -297,6 +301,7 @@ DEPENDENCIES
   dm-core!
   dm-mysql-adapter
   dm-sweatshop!
+  docker-api
   extlib
   fleetctl!
   haml
