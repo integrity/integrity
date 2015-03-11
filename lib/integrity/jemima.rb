@@ -31,7 +31,7 @@ module Integrity
       frick_commit = Integrity::Project.first(name: 'frick').branches.first(name: 'dockyard').builds.last.commit
       tim_commit = Integrity::Project.first(name: 'tim').branches.first(name: 'dockyard').builds.last.commit
 
-      Integrity::Jemima.new({
+      new({
         build_id: build_id,
         tags: tags,
         frick:  { branch: frick_commit.branch,  sha: frick_commit.identifier },
@@ -100,7 +100,31 @@ module Integrity
       end
     end
 
+    def get_urls
+      Fleetctl.sync
+      units = Fleetctl.units
+
+      # since all containers in a stack run on the same machine, we can get the worker ip from the first one
+      servers = units.select{|u| u.name.include?(@stack_id) && u.name.include?('-server.') }
+      if !servers.empty?
+        worker_ip = servers.first.ip
+      else
+        return nil
+      end
+
+      setup_docker_api_client(worker_ip)
+
+      containers = Docker::Container.all
+      ports = containers.select{|x| x.info['Names'].first =~ /mysql/ }.first.info['Ports']
+      return ports.map{|x| { x['PrivatePort'] => "http://#{worker_ip}:#{x['PublicPort']}" } }
+    end
+
     private
+
+    def setup_docker_api_client(addr)
+      Docker.url = "tcp://#{addr}:2375"
+      Docker.validate_version!
+    end
 
     def tag_string
       return '' if tags.empty?

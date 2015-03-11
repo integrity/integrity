@@ -82,147 +82,147 @@ module Integrity
     #### OLD INTEGRITY METHODS - NOT USED ANYMORE
     #############################################
 
-    def self.build(_build, directory, logger)
-      new(_build, directory, logger).build
-    end
+    #def self.build(_build, directory, logger)
+      #new(_build, directory, logger).build
+    #end
 
-    def self.docker(_build, directory, logger)
-      new(_build, directory, logger).build_docker_image
-    end
+    #def self.docker(_build, directory, logger)
+      #new(_build, directory, logger).build_docker_image
+    #end
 
-    def initialize(build, directory, logger)
-      @build     = build
-      @directory = directory
-      @logger    = logger
-    end
+    #def initialize(build, directory, logger)
+      #@build     = build
+      #@directory = directory
+      #@logger    = logger
+    #end
 
-    def build
-      begin
-        start
-        run do |chunk|
-          add_output(chunk)
-        end
-      rescue Interrupt, SystemExit
-        raise
-      rescue Exception => e
-        fail(e)
-      else
-        complete
-      end
-      notify
-    end
+    #def build
+      #begin
+        #start
+        #run do |chunk|
+          #add_output(chunk)
+        #end
+      #rescue Interrupt, SystemExit
+        #raise
+      #rescue Exception => e
+        #fail(e)
+      #else
+        #complete
+      #end
+      #notify
+    #end
 
-    def start
-      logger.info "start - starting #{repo.uri} at #{commit}"
-      @build.raise_on_save_failure = true
-      @build.update(:started_at => Time.now)
-      @build.project.enabled_notifiers.each { |n| n.notify_of_build_start(@build) }
-      checkout.run
-      # checkout.metadata invokes git and may fail
-      @build.commit.raise_on_save_failure = true
-      @build.commit.update(checkout.metadata)
-      logger.info "start completed #{repo.uri} at #{commit}"
-    end
+    #def start
+      #logger.info "start - starting #{repo.uri} at #{commit}"
+      #@build.raise_on_save_failure = true
+      #@build.update(:started_at => Time.now)
+      #@build.project.enabled_notifiers.each { |n| n.notify_of_build_start(@build) }
+      #checkout.run
+      ## checkout.metadata invokes git and may fail
+      #@build.commit.raise_on_save_failure = true
+      #@build.commit.update(checkout.metadata)
+      #logger.info "start completed #{repo.uri} at #{commit}"
+    #end
 
-    def run
-      @result = checkout.run_in_dir(command) do |chunk|
-        yield chunk
-      end
-    end
+    #def run
+      #@result = checkout.run_in_dir(command) do |chunk|
+        #yield chunk
+      #end
+    #end
 
-    def add_output(chunk)
-      @build.update(output: @build.output + chunk)
-    end
+    #def add_output(chunk)
+      #@build.update(output: @build.output + chunk)
+    #end
     
-    def complete
-      logger.info "[fi] Build #{commit} exited with #{@result.success} got:\n #{@result.output}"
-      @build.raise_on_save_failure = true
-      @build.complete!(@result)
-    end
+    #def complete
+      #logger.info "[fi] Build #{commit} exited with #{@result.success} got:\n #{@result.output}"
+      #@build.raise_on_save_failure = true
+      #@build.complete!(@result)
+    #end
     
-    def fail(exception)
-      failure_message = "#{exception.class}: #{exception.message}"
-      failure_message << "\n\n"
-      exception.backtrace.each do |line|
-        failure_message << line << "\n"
-      end
+    #def fail(exception)
+      #failure_message = "#{exception.class}: #{exception.message}"
+      #failure_message << "\n\n"
+      #exception.backtrace.each do |line|
+        #failure_message << line << "\n"
+      #end
 
-      logger.info "[builder][fail][fi] with message #{failure_message}. Setting as complete."
-      @build.set_as_complete!(false)
-    end
+      #logger.info "[builder][fail][fi] with message #{failure_message}. Setting as complete."
+      #@build.set_as_complete!(false)
+    #end
 
-    def notify
-      @build.notify
-    end
+    #def notify
+      #@build.notify
+    #end
 
-    def checkout
-      @checkout ||= Checkout.new(repo, commit, directory, logger)
-    end
+    #def checkout
+      #@checkout ||= Checkout.new(repo, commit, directory, logger)
+    #end
 
-    def directory
-      @_directory ||= @directory.join(@build.id.to_s)
-    end
+    #def directory
+      #@_directory ||= @directory.join(@build.id.to_s)
+    #end
 
-    def repo
-      @build.repo
-    end
+    #def repo
+      #@build.repo
+    #end
 
-    def command
-      @build.command
-    end
+    #def command
+      #@build.command
+    #end
 
-    def commit
-      @build.sha1
-    end
+    #def commit
+      #@build.sha1
+    #end
 
-    def docker_start
-      logger.info "Started building #{repo.uri} at #{commit}"
-      @build.raise_on_save_failure = true
-      @build.update(started_at: Time.now)
-      @build.project.enabled_notifiers.each {|n| n.notify_of_build_start(@build) }
-      # checkout.metadata invokes git and may fail
-      # @build.commit.raise_on_save_failure = true
-      # @build.commit.update(checkout.metadata)
-    end
+    #def docker_start
+      #logger.info "Started building #{repo.uri} at #{commit}"
+      #@build.raise_on_save_failure = true
+      #@build.update(started_at: Time.now)
+      #@build.project.enabled_notifiers.each {|n| n.notify_of_build_start(@build) }
+      ## checkout.metadata invokes git and may fail
+      ## @build.commit.raise_on_save_failure = true
+      ## @build.commit.update(checkout.metadata)
+    #end
 
-    def build_docker_image
-      begin
-        docker_start
-        docker = Docker.new(repo, commit, directory, logger)
-        docker.build!
-        result = docker.run(:mysql) do |chunk|
-          add_output(chunk)
-          logger.debug chunk
-        end
-        logger.info "MySQL Running: #{result.success}"
-        logger.info "MySQL ContainerID: #{result.output}"
-        @result = docker.run(:image) do |chunk|
-          add_output(chunk)
-          logger.debug chunk
-        end
-        if @result.output.blank?
-          @result = docker.run(:image) do |chunk|
-            add_output(chunk)
-            logger.debug chunk
-          end
-        end
-      rescue Interrupt, SystemExit
-        raise
-      rescue Exception => e
-        fail(e)
-      else
-        complete
-      end
-      notify
-    end
+    #def build_docker_image
+      #begin
+        #docker_start
+        #docker = Docker.new(repo, commit, directory, logger)
+        #docker.build!
+        #result = docker.run(:mysql) do |chunk|
+          #add_output(chunk)
+          #logger.debug chunk
+        #end
+        #logger.info "MySQL Running: #{result.success}"
+        #logger.info "MySQL ContainerID: #{result.output}"
+        #@result = docker.run(:image) do |chunk|
+          #add_output(chunk)
+          #logger.debug chunk
+        #end
+        #if @result.output.blank?
+          #@result = docker.run(:image) do |chunk|
+            #add_output(chunk)
+            #logger.debug chunk
+          #end
+        #end
+      #rescue Interrupt, SystemExit
+        #raise
+      #rescue Exception => e
+        #fail(e)
+      #else
+        #complete
+      #end
+      #notify
+    #end
 
-    private
+    #private
 
-    def run_cmd(cmd)
-      checkout.run_in_dir(cmd) do |chunk|
-        add_output(chunk)
-      end
-    end
+    #def run_cmd(cmd)
+      #checkout.run_in_dir(cmd) do |chunk|
+        #add_output(chunk)
+      #end
+    #end
 
   end
 end
