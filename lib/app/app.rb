@@ -124,7 +124,7 @@ module Integrity
 
       build = payload.build!
 
-        log "[HOOK] /hook.json Build: #{build.inspect}"
+      log "[HOOK] /hook.json Build: #{build.inspect}"
 
       if diligence_branch = Integrity::DiligenceBranch.first(:branch => build.branch)
         diligence_branch.rebuild_environment

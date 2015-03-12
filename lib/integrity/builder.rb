@@ -27,17 +27,40 @@ module Integrity
     # Launches the passed build on fleet. Before starting, it kills
     # older builds from same branch (and itself if it was a re-run)
     def self.launch_build(build)
-      log_execution(:launch_build, build) do
-        log_build(:launch_build, build, :cleanup) { Crust.destroy(build.service_options) }
-        log_build(:launch_build, build, :starting){ Crust.start(build.service_options) }
-        log_build(:launch_build, build, :started) { build.reload.started! }
-        log_build(:launch_build, build, 'Updating fleet'){ Build.update_fleetctl_status }
+      if build.spec?
+        log_execution(:launch_build, build) do
+          log_build(:launch_build, build, :cleanup) { Crust.destroy(build.service_options) }
+          log_build(:launch_build, build, :starting){ Crust.start(build.service_options) }
+          log_build(:launch_build, build, :started) { build.reload.started! }
+          log_build(:launch_build, build, 'Updating fleet'){ Build.update_fleetctl_status }
+        end
+      elsif build.server?
+        launch_stack(build)
       end
     end
 
     # Kill fleet unit and destroy service matching build that was passed.
     def self.destroy_build(build)
       log_execution(:destroy_build, build){ Crust.destroy(build.service_options) }
+    end
+
+    def self.launch_stack(build)
+      if build.project.name != 'jarvis'
+        error "server builds are only allowed for jarvis, not #{build.project.name}"
+        return
+      end
+
+      stack = Integrity::Stack.new_with_jarvis_build(build)
+      stack.orchestrate
+    end
+
+    def self.destroy_stack(build)
+      # TODO - .stack doesnt exist yet
+      stack = build.stack
+
+      if stack
+        stack.destroy
+      end
     end
 
     def self.log_execution(action, build)
