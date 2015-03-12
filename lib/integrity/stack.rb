@@ -129,7 +129,7 @@ module Integrity
     end
 
     def destroy
-      unit_names = Fleetctl.units.select{|u| u.name.start_with?(@stack_id) }.map(&:name))
+      unit_names = Fleetctl.units.select{|u| u.name.start_with?(@stack_id) }.map(&:name)
       Fleetctl.destroy(*unit_names)
     end
 
