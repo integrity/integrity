@@ -24,7 +24,8 @@ module Integrity
     end
 
     # @param build must be a jarvis build
-    def self.make_a_new_one(build, tags=[])
+    #def self.new_with_default_branches(build, tags=[])
+    def self.new_with_jarvis_build(build, tags=[])
       build_id = build.id
       jarvis_commit = build.commit
       #jarvis_commit = Integrity::Project.first(name: 'jarvis').branches.first(name: 'dockyard').builds.last.commit
@@ -125,6 +126,11 @@ module Integrity
         Integrity.logger.warn "networking container not found: #{net_cont_name}"
         return nil
       end
+    end
+
+    def destroy
+      unit_names = Fleetctl.units.select{|u| u.name.start_with?(@stack_id) }.map(&:name))
+      Fleetctl.destroy(*unit_names)
     end
 
     private
