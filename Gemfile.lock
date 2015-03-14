@@ -5,17 +5,6 @@ GIT
     crust (0.0.22)
 
 GIT
-  remote: git://github.com/ConsultingMD/ruby-fleetctl.git
-  revision: 09f8c6734d0fa16b4de3218ab1e50d6124be2777
-  branch: master
-  specs:
-    fleetctl (0.1.4.4)
-      activesupport
-      hashie (~> 2)
-      net-scp (= 1.2.1)
-      net-ssh (= 2.9.1)
-
-GIT
   remote: git://github.com/datamapper/dm-core
   revision: 03a6425d1616027dd8371ca4f5714c333ba7e789
   branch: release-1.2
@@ -31,6 +20,15 @@ GIT
     dm-sweatshop (1.2.0)
       dm-core (~> 1.2.0)
       randexp (~> 0.1.5)
+
+PATH
+  remote: /home/bird/ruby-fleetctl
+  specs:
+    fleetctl (0.1.4.4)
+      activesupport
+      hashie (~> 2)
+      net-scp (= 1.2.1)
+      net-ssh (= 2.9.1)
 
 GEM
   remote: https://rubygems.org/
@@ -50,11 +48,11 @@ GEM
     activesupport (3.2.21)
       i18n (~> 0.6, >= 0.6.4)
       multi_json (~> 1.0)
-    addressable (2.3.6)
+    addressable (2.3.7)
     amq-protocol (1.9.2)
-    ansi (1.4.3)
+    ansi (1.5.0)
     arel (3.0.3)
-    awesome_print (1.2.0)
+    awesome_print (1.6.1)
     aws-ses (0.4.4)
       builder
       mail (> 2.2.5)
@@ -62,14 +60,14 @@ GEM
       xml-simple
     bcat (0.6.2)
       rack (~> 1.0)
-    bcrypt (3.1.9)
+    bcrypt (3.1.10)
     bcrypt-ruby (3.1.5)
       bcrypt (>= 3.1.3)
     broach (0.3.0)
       multi_json (~> 1.7)
       nap (~> 0.5)
     builder (3.0.4)
-    bunny (1.6.3)
+    bunny (1.7.0)
       amq-protocol (>= 1.9.2)
     byebug (3.5.1)
       columnize (~> 0.8)
@@ -93,7 +91,7 @@ GEM
     contest (0.1.3)
     crack (0.4.2)
       safe_yaml (~> 1.0.0)
-    daemons (1.1.9)
+    daemons (1.2.1)
     data_mapper (1.2.0)
       dm-aggregates (~> 1.2.0)
       dm-constraints (~> 1.2.0)
@@ -104,15 +102,15 @@ GEM
       dm-transactions (~> 1.2.0)
       dm-types (~> 1.2.0)
       dm-validations (~> 1.2.0)
-    data_objects (0.10.14)
+    data_objects (0.10.15)
       addressable (~> 2.1)
     debugger-linecache (1.2.0)
-    delayed_job (4.0.4)
-      activesupport (>= 3.0, < 4.2)
-    delayed_job_active_record (4.0.2)
-      activerecord (>= 3.0, < 4.2)
+    delayed_job (4.0.6)
+      activesupport (>= 3.0, < 5.0)
+    delayed_job_active_record (4.0.3)
+      activerecord (>= 3.0, < 5.0)
       delayed_job (>= 3.0, < 4.1)
-    delayed_job_web (1.2.9)
+    delayed_job_web (1.2.10)
       activerecord (> 3.0.0)
       delayed_job (> 2.0.3)
       sinatra (>= 1.4.4)
@@ -148,26 +146,26 @@ GEM
       uuidtools (~> 2.1)
     dm-validations (1.2.0)
       dm-core (~> 1.2.0)
-    do_mysql (0.10.14)
-      data_objects (= 0.10.14)
+    do_mysql (0.10.15)
+      data_objects (= 0.10.15)
     docker-api (1.20.0)
       excon (>= 0.38.0)
       json
     excon (0.44.4)
     extlib (0.9.16)
-    faraday (0.9.0)
+    faraday (0.9.1)
       multipart-post (>= 1.2, < 3)
     fastercsv (1.5.5)
     haml (4.0.6)
       tilt
     hashie (2.1.2)
-    highline (1.6.21)
+    highline (1.7.1)
     hpricot (0.8.6)
     i18n (0.7.0)
-    json (1.8.1)
-    json_pure (1.8.1)
-    jwt (1.2.0)
-    kgio (2.9.2)
+    json (1.8.2)
+    json_pure (1.8.2)
+    jwt (1.4.1)
+    kgio (2.9.3)
     little-plugger (1.1.3)
     logging (1.8.2)
       little-plugger (>= 1.1.3)
@@ -177,7 +175,7 @@ GEM
     metaclass (0.0.4)
     method_source (0.8.2)
     mime-types (2.4.3)
-    mini_portile (0.6.1)
+    mini_portile (0.6.2)
     minitest (4.7.5)
     mocha (1.1.0)
       metaclass (~> 0.0.1)
@@ -185,7 +183,7 @@ GEM
     multi_xml (0.5.5)
     multipart-post (2.0.0)
     mysql (2.9.1)
-    mysql2 (0.3.17)
+    mysql2 (0.3.18)
     nap (0.8.0)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
@@ -194,8 +192,8 @@ GEM
     net-ssh (2.9.1)
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
-    netrc (0.10.0)
-    nokogiri (1.6.5)
+    netrc (0.10.3)
+    nokogiri (1.6.6.2)
       mini_portile (~> 0.6.0)
     numerizer (0.1.1)
     oauth2 (1.0.0)
@@ -221,14 +219,14 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
-    rack (1.5.2)
+    rack (1.6.0)
     rack-contrib (1.2.0)
       rack (>= 0.9.1)
     rack-flash3 (1.0.5)
       rack
     rack-protection (1.5.3)
       rack
-    rack-test (0.6.2)
+    rack-test (0.6.3)
       rack (>= 1.0)
     raindrops (0.13.0)
     rake (10.4.2)
@@ -236,14 +234,14 @@ GEM
     rconfig (0.4.3.1)
       activesupport (~> 3.0)
     redgreen (1.2.2)
-    rest-client (1.7.2)
+    rest-client (1.7.3)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
     rr (1.1.2)
     rvm-capistrano (1.3.4)
       capistrano (>= 2.0.0)
     safe_yaml (1.0.4)
-    sass (3.4.9)
+    sass (3.4.13)
     shout-bot (0.0.7)
       addressable
     sinatra (1.4.5)
@@ -254,14 +252,18 @@ GEM
       sinatra (>= 0.9.1.1)
     sinatra-static-assets (1.0.4)
       sinatra (>= 1.1.0)
+    slim (3.0.3)
+      temple (~> 0.7.3)
+      tilt (>= 1.3.3, < 2.1)
     slop (3.6.0)
     stringex (1.5.1)
+    temple (0.7.5)
     tilt (1.4.1)
-    timecop (0.7.1)
+    timecop (0.7.3)
     turn (0.9.7)
       ansi
       minitest (~> 4)
-    tzinfo (0.3.42)
+    tzinfo (0.3.43)
     unicorn (4.8.3)
       kgio (~> 2.6)
       rack
@@ -274,7 +276,7 @@ GEM
       nokogiri (>= 1.2.0)
       rack (>= 1.0)
       rack-test (>= 0.5.3)
-    xml-simple (1.1.4)
+    xml-simple (1.1.5)
 
 PLATFORMS
   ruby
@@ -332,6 +334,7 @@ DEPENDENCIES
   sinatra
   sinatra-authorization
   sinatra-static-assets
+  slim
   timecop
   turn
   unicorn

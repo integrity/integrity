@@ -59,3 +59,15 @@
 .navbar a.navbar-brand {
   background-color: red !important;
 }
+
+.mono {
+  font-family: monospace;
+}
+
+td.actions {
+  text-align: right;
+}
+
+td.actions > * {
+  margin-left: 6px;
+}

@@ -113,6 +113,38 @@ module Integrity
         time.in_time_zone("Pacific Time (US & Canada)")
       end
 
+      def pretty_time(time)
+        return if !time
+        pacific_time(time).try(:strftime, '%m/%d %R')
+      end
+
+      def pancakes_state_fa_icon(pancakes)
+        if pancakes.running?
+          'thumbs-up'
+        elsif pancakes.starting?
+          'cog'
+        elsif pancakes.failed?
+          'thumbs-down'
+        elsif pancakes.off?
+          'power-off'
+        elsif pancakes.fucked_up?
+          'question'
+        end
+      end
+
+      def pancakes_state_bootstrap_class(pancakes)
+        if pancakes.running?
+          'success'
+        elsif pancakes.starting?
+          'info'
+        elsif pancakes.failed?
+          'danger'
+        elsif pancakes.off?
+          'default'
+        elsif pancakes.fucked_up?
+          'default'
+        end
+      end
     end
   end
 end

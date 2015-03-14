@@ -8,11 +8,15 @@ module Integrity
     property :name,       String,  required: true, length: 255
     property :permalink,  String,  length: 255
     property :last_build_id, Integer, required: false
+    property :pancaked,        Boolean, required: true, default: false
+    property :pancakes_locked, Boolean, required: true, default: false
+    # pancakes_serialno is used to uniquely identify each instance of a pancake stack.
+    # this avoids races in fleet between deleting an old stack and bringing up a new one.
+    property :pancakes_serialno, Integer, required: true, default: 1
 
     timestamps :at
 
     has n, :builds
-    has 1, :diligence_branch
     belongs_to :project
     belongs_to :last_build, 'Build'
 
@@ -37,5 +41,75 @@ module Integrity
       sorted_builds.all(:created_at.lt => build.created_at)
     end
 
+    def most_recent_build
+      builds.first(order: :created_at.desc)
+    end
+
+    #
+    # Pancakes #################################################################
+    #
+
+    def pancakes
+      assert_jarvis_branch!
+
+      Integrity::Pancakes.new_with_jarvis_branch(
+        branch: self
+        )
+    end
+
+    def make_pancakes
+      assert_jarvis_branch!
+
+      self.pancaked = true
+      self.pancakes_locked = false
+      self.pancakes_serialno += 1
+
+      if save
+        return pancakes
+      else
+        raise "couldn't save branch trying to make pancakes"
+      end
+    end
+
+    def destroy_pancakes
+      pancakes.destroy
+    end
+
+    def flip_lock
+      self.pancakes_locked = !self.pancakes_locked
+      save
+    end
+
+    def stop_tracking
+      self.pancaked = false
+      self.pancakes_locked = false
+      save
+      destroy_pancakes
+    end
+
+    #def resume_tracking
+      #self.pancaked = true
+      #self.pancakes_locked = false
+      #save
+    #end
+
+    def start_tracking
+      pk = make_pancakes
+      pk.orchestrate
+    end
+
+    def restart_tracking
+      destroy_pancakes
+      start_tracking
+    end
+
+    private
+
+    # pancakes only work for jarvis branches as of the time i wrote this
+    def assert_jarvis_branch!
+      if project.name != 'jarvis'
+        raise 'pancakes only work for jarvis so far'
+      end
+    end
   end
 end

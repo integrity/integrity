@@ -1,0 +1,68 @@
+/javascript:
+  /= partial(:auto_reload)
+
+- if !@pancaked_branches.empty?
+  .row#active_diligence_branches
+    h3.text-center.short
+      = "#{@pancaked_branches.size} Pancakes"
+      div: small: i
+        |  Locked means a branch will not get updated when a new commit is pushed.
+        |  Destroying a pancakes will also discontinue tracking.
+    table.table.table-hover.table-condensed#previous_builds
+      thead
+        tr
+          th Status
+          th ID
+          th Build
+          th Project
+          th Branch
+          th SHA
+          th Commit Time
+          th Author
+          th Message
+          th Links
+          th
+      tbody
+        - @pancaked_branches.each do |branch|
+          - next unless branch.last_build
+          == slim :_pancake_item, layout: false, locals: { branch: branch, build: branch.last_build, commit: branch.last_build.commit, pancakes: branch.pancakes }
+
+  /<%#<div class="row" id="inactive_diligence_branches">%>
+    <%#<h3 class="text-center short"><%= "#{@inactive_diligence_branches.size} Inactive Diligence Build#{@inactive_diligence_branches.size == 1 ? '' : 's'}" %></h3>%>
+    <%#<%= partial(:diligence_branch_item, locals: {diligence_branches: @inactive_diligence_branches}) %>%>
+
+- if !@unpancaked_branches.empty?
+  .row#branches
+    h3.text-center.short
+      = "#{@unpancaked_branches.size} Recent Branch#{@unpancaked_branches.size == 1 ? '' : 'es'}"
+      div: small: i
+        |  Services other than jarvis will try to use a branch
+        |  of the same name as the jarvis branch, and otherwise master.
+    .table-responsive
+      table.table.table-hover.table-condensed#previous_builds
+        thead
+          tr
+            th Spec Status
+            th Project
+            th Branch
+            th Last Build
+            th Commit Time
+            th Author
+            th SHA
+            th Message
+            th
+        tbody
+          - @unpancaked_branches.each do |branch|
+            tr class=branch.last_build.try(:bootstrap_class)
+              td.status
+                i class="fa fa-#{branch_status(branch).icon}"
+              td = branch.project.name
+              td = branch.name
+              td == branch.last_build ? link_to(branch.last_build_id, build_path(branch.last_build)) : nil
+              td = branch.last_build ? time_ago_in_words(branch.last_build.committed_at) : nil
+              td = branch.last_build.try(:author)
+              td == branch.last_build ? link_to(branch.last_build.sha1_short, github_commit_url(branch.last_build)) : nil
+              td = branch.last_build.try(:message)
+              td.actions
+                - if !branch.pancaked?
+                  a.btn.btn-success.start-tracking-btn href="/pancakes/#{branch.id}/start_tracking" Start Tracking

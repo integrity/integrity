@@ -1,0 +1,30 @@
+tr class=pancakes_state_bootstrap_class(pancakes)
+  td.status.mono
+    /i class="fa fa-#{pancakes_state_fa_icon(pancakes)}"
+    = pancakes.state_of_the_pancakes.to_s.upcase
+
+  td = branch.id.to_s + " no" + branch.pancakes_serialno.to_s
+  td == link_to build.id, build_path(build)
+  td = branch.project.name
+  td = branch.name
+  td == link_to build.sha1_short, github_commit_url(build)
+  td = time_ago_in_words(commit.committed_at)
+  td = build.author
+  td = commit.message
+  td
+    == slim :_pancake_urls, layout: false, locals: { urls_hash: urls_for_branch_id(@urls, branch.id) }
+
+  td.actions
+    a.btn.btn-default href="/pancakes/#{branch.id}/flip_lock"
+      | #{branch.pancakes_locked? ? 'Unlock' : 'Lock'}
+    /a.btn.btn-default href="/pancakes/#{branch.id}/flip_lock"
+      i class="fa #{branch.pancakes_locked? ? 'fa-unlock-alt' : 'fa-lock'}"
+    /- if branch.pancaked?
+      /a class="btn btn-danger" href="/pancakes/#{branch.id}/stop_tracking" Stop Tracking
+    /- else
+      /a class="btn btn-default" href="/pancakes/#{branch.id}/resume_tracking" Resume Tracking
+
+    /- if pancakes.running?
+    a class="btn btn-danger" href="/pancakes/#{branch.id}/destroy" Destroy
+    /- else
+      a class="btn btn-danger" href="/pancakes/#{branch.id}/restart" Restart

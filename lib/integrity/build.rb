@@ -45,7 +45,6 @@ module Integrity
     belongs_to :project
     belongs_to :branch
     has 1,     :commit
-    has 1,     :diligence_branch
 
     delegate :name, :permalink, :repo, :command, to: :project
 
@@ -315,8 +314,8 @@ module Integrity
       log '[cancel!][fi] Starting'
       cancel_pending! if pending?
       cancel_building! if building?
-      log '[cancel!][fi] Triggering diligence_branch:deactivate'
-      Integrity::Event.trigger('diligence_branch:deactivate', self.id)
+      #log '[cancel!][fi] Triggering diligence_branch:deactivate'
+      #Integrity::Event.trigger('diligence_branch:deactivate', self.id)
       Integrity::Event.trigger('build:canceled', self.id)
     end
 

@@ -63,6 +63,12 @@ module Integrity
       def render_haml(klass, layout, locals={})
         haml(klass.to_haml, layout: layout, locals: locals).to_s
       end
+
+      def urls_for_branch_id(urls, branch_id)
+        if urls[branch_id]
+          urls[branch_id][:urls]
+        end
+      end
     end
   end
 end

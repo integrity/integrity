@@ -23,6 +23,7 @@ module Integrity
       set :partial_template_engine, :erb
       set :session_secret, 'secret'
       set :environment, ENV['RACK_ENV'] || :production
+      set :slim, layout_engine: :erb, layout: :layout
 
       I18n.load_path += Dir[File.join(settings.root, 'config', 'locale', '*.yml')]
       I18n.backend.load_translations
@@ -126,9 +127,9 @@ module Integrity
 
       log "[HOOK] /hook.json Build: #{build.inspect}"
 
-      if diligence_branch = Integrity::DiligenceBranch.first(:branch => build.branch)
-        diligence_branch.rebuild_environment
-      end
+      #if diligence_branch = Integrity::DiligenceBranch.first(:branch => build.branch)
+        #diligence_branch.rebuild_environment
+      #end
 
       json build
     end
@@ -215,44 +216,65 @@ module Integrity
       end
     end
 
-    get '/diligence_branches' do
-      load_projects
-      @active_diligence_branches = Integrity::DiligenceBranch.all(order: :id.desc, active: true)
-      @inactive_diligence_branches = Integrity::DiligenceBranch.all(order: :id.desc, active: false)
-      @branches = Integrity::Branch.all(limit:30, order: :last_build_id.desc)
-      show :diligence_branches
+    #
+    # Pancakes
+    #
+
+    get '/pancakes' do
+      jarvis = Integrity::Project.first(name: 'jarvis')
+      @pancaked_branches = Integrity::Branch.all(project_id: jarvis.id, order: :last_build_id.desc, pancaked: true)
+      @unpancaked_branches = Integrity::Branch.all(project_id: jarvis.id, limit:30, order: :last_build_id.desc, pancaked: false)
+      @urls = Integrity::Pancakes.refresh_all_urls
+      slim :pancakes
     end
 
-    get '/diligence_branches/:branch_id/start' do |branch_id|
+    get '/pancakes/:branch_id/start_tracking' do |branch_id|
       login_required
 
-      diligence_branch = Integrity::DiligenceBranch.first(:branch_id => branch_id)
-      unless diligence_branch
-        branch = Integrity::Branch.get(branch_id)
-        diligence_branch = Integrity::DiligenceBranch.create(branch: branch)
-      end
+      branch = Integrity::Branch.get(branch_id)
+      branch.start_tracking
 
-      diligence_branch.start
       redirect back
     end
 
-    get '/diligence_branches/:id/stop' do |id|
+    #get '/pancakes/:branch_id/stop_tracking' do |branch_id|
+      #login_required
+      #branch = Integrity::Branch.get(branch_id)
+      #branch.stop_tracking
+      #redirect back
+    #end
+
+    #get '/pancakes/:branch_id/resume_tracking' do |branch_id|
+      #login_required
+      #branch = Integrity::Branch.get(branch_id)
+      #branch.resume_tracking
+      #redirect back
+    #end
+
+    get '/pancakes/:branch_id/destroy' do |branch_id|
       login_required
-
-      diligence_branch = Integrity::DiligenceBranch.get(id)
-
-      diligence_branch.stop
+      branch = Integrity::Branch.get(branch_id)
+      branch.stop_tracking
       redirect back
     end
 
-    get '/diligence_branches/:id/flip_lock' do |id|
+    #get '/pancakes/:branch_id/restart' do |branch_id|
+      #login_required
+      #branch = Integrity::Branch.get(branch_id)
+      #branch.restart_tracking
+      #redirect back
+    #end
+
+    get '/pancakes/:branch_id/flip_lock' do |branch_id|
       login_required
-
-      diligence_branch = Integrity::DiligenceBranch.get(id)
-
-      diligence_branch.flip_lock
+      branch = Integrity::Branch.get(branch_id)
+      branch.flip_lock
       redirect back
     end
+
+    #
+    # End Pancakes
+    #
 
     # List Running Builds (Index)
     get '/running' do

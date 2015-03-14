@@ -16,6 +16,5 @@ module Integrity
 
     belongs_to :project
     belongs_to :build
-    has 1, :diligence_branch
   end
 end
