@@ -49,8 +49,13 @@ module Integrity
     # Pancakes #################################################################
     #
 
+    def should_update_pancakes?
+      self.pancaked? && !self.pancakes_locked?
+    end
+
     def pancakes
       assert_jarvis_branch!
+      # TODO the pancakes object should obviously not be re-created everytime this method is called
       Integrity::Pancakes.new_with_jarvis_branch(branch: self)
     end
 
@@ -77,7 +82,7 @@ module Integrity
       self.pancaked = false
       self.pancakes_locked = false
       save
-      pancakes.destroy
+      destroy_pancakes
     end
 
     def start_tracking
@@ -85,7 +90,16 @@ module Integrity
       pk.orchestrate
     end
 
+    def update_pancakes
+      destroy_pancakes
+      make_pancakes
+    end
+
     private
+
+    def destroy_pancakes
+      pancakes.destroy
+    end
 
     # pancakes only work for jarvis branches as of the time i wrote this
     def assert_jarvis_branch!

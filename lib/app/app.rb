@@ -101,7 +101,6 @@ module Integrity
     post '/hook.json', provides: :json do
       @format = :json
       log "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{params.inspect}"
-      halt 200
 
       payload = Payload.new(params)
       halt 404 unless payload.project
@@ -127,9 +126,12 @@ module Integrity
 
       log "[HOOK] /hook.json Build: #{build.inspect}"
 
-      #if diligence_branch = Integrity::DiligenceBranch.first(:branch => build.branch)
-        #diligence_branch.rebuild_environment
-      #end
+      branch = build.branch
+
+      if branch.should_update_pancakes?
+        log "[HOOK][pancakes] updating pancakes stack #{branch.pancakes.stack_id} from github hook"
+        branch.update_pancakes
+      end
 
       json build
     end
