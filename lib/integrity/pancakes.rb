@@ -179,19 +179,20 @@ module Integrity
 
     def orchestrate
       bake_erb
-      Fleetctl.load(service_files)
+      files = service_files
+      Fleetctl.load(files)
 
-      mysql = service_files.select{|f| f.path.include?('mysql') }
+      mysql = files.select{|f| f.path.include?('mysql') }
       Fleetctl.start(mysql)
 
-      sleep 5
+      sleep 2
 
-      orchs = service_files.select{|f| f.path.include?('orchestra') }
+      orchs = files.select{|f| f.path.include?('orchestra') || f.path.include?('mailcatcher') }
       Fleetctl.start(orchs)
 
-      sleep 5
+      sleep 2
 
-      other = service_files.select{|f| !f.path.include?('orchestra') && !f.path.include?('mysql') }
+      other = files.select{|f| !f.path.include?('orchestra') && !f.path.include?('mysql') }
       Fleetctl.start(other)
     end
 
