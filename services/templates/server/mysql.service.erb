@@ -5,7 +5,7 @@ Requires=docker.service
 
 [Service]
 ExecStart=/usr/bin/docker run --rm -v /var/lib/docker/tmp:/tmp/hosttmp --name <%= stack_id %>_mysql \
--p 10001 -p 10002 -p 10004 -p 3306 \
+-p 10001 -p 10002 -p 10004 -p 25 -p 80 -p 3306 \
 grnds/mysql
 ExecStop=/usr/bin/docker rm -f <%= stack_id %>_mysql
 
