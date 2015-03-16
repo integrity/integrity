@@ -51,10 +51,7 @@ module Integrity
 
     def pancakes
       assert_jarvis_branch!
-
-      Integrity::Pancakes.new_with_jarvis_branch(
-        branch: self
-        )
+      Integrity::Pancakes.new_with_jarvis_branch(branch: self)
     end
 
     def make_pancakes
