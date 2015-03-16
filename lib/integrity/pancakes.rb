@@ -203,10 +203,6 @@ module Integrity
     # - aws_secret_access_key
     # - aws_secret_key
     def bake_erb
-      ENV['GITHUB_READ_TOKEN']='bfbb0cece2e8d8aff8a951a235ca60775e013a77'
-      ENV['DEV_AWS_ACCESS_KEY_ID']='AKIAJSRWDVGADA6KZMMQ'
-      ENV['DEV_AWS_SECRET_ACCESS_KEY']='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'
-      ENV['DEV_AWS_SECRET_KEY']='Q0btI8hzOShMmWRpCcKiFEchMjkTFpzSgevYTxSi'
       github_read_token = ENV['GITHUB_READ_TOKEN']
       aws_access_key_id = ENV['DEV_AWS_ACCESS_KEY_ID']
       aws_secret_access_key = ENV['DEV_AWS_SECRET_ACCESS_KEY']
