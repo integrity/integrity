@@ -130,7 +130,7 @@ module Integrity
     # - :failed    anything failed
     # - :fucked_up fallback
     def state_of_my_units
-      expected_services = %w[frick-server jarvis-dj jarvis-orchestra jarvis-server mysql tim-dj tim-orchestra tim-server]
+      expected = expected_services()
       units = my_units
 
       none_exist = units.size == 0
@@ -140,12 +140,12 @@ module Integrity
 
       unit_names = units.map(&:name)
       # make sure each of the expected services exist
-      all_exist = expected_services.reduce(true){|memo,val| memo && !!unit_names.detect{|name| name.include?(val) } }
+      all_exist = expected.reduce(true){|memo,val| memo && !!unit_names.detect{|name| name.include?(val) } }
       # active state refers to the 'ACTIVE' column when you run 'fleetctl list-units'
       active_states = units.map(&:active)
 
       if !all_exist
-        Integrity.logger.warn "expected the following services: <#{expected_services.join(', ')}> but got units <#{unit_names.join(', ')}>"
+        Integrity.logger.warn "expected the following services: <#{expected.join(', ')}> but got units <#{unit_names.join(', ')}>"
         return :fucked_up
       end
 
@@ -354,6 +354,10 @@ module Integrity
     def self.set_docker_api_client_url(addr)
       Docker.url = "tcp://#{addr}:2375"
       Docker.validate_version!
+    end
+
+    def self.expected_services
+      Dir[TEMPLATES_DIR + '/*.erb'].map { |t| File.basename(t).sub(/\.\w+\.erb$/, '') }
     end
 
     #
