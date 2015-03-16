@@ -237,33 +237,12 @@ module Integrity
       redirect back
     end
 
-    #get '/pancakes/:branch_id/stop_tracking' do |branch_id|
-      #login_required
-      #branch = Integrity::Branch.get(branch_id)
-      #branch.stop_tracking
-      #redirect back
-    #end
-
-    #get '/pancakes/:branch_id/resume_tracking' do |branch_id|
-      #login_required
-      #branch = Integrity::Branch.get(branch_id)
-      #branch.resume_tracking
-      #redirect back
-    #end
-
     get '/pancakes/:branch_id/destroy' do |branch_id|
       login_required
       branch = Integrity::Branch.get(branch_id)
       branch.stop_tracking
       redirect back
     end
-
-    #get '/pancakes/:branch_id/restart' do |branch_id|
-      #login_required
-      #branch = Integrity::Branch.get(branch_id)
-      #branch.restart_tracking
-      #redirect back
-    #end
 
     get '/pancakes/:branch_id/flip_lock' do |branch_id|
       login_required

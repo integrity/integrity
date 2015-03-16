@@ -71,10 +71,6 @@ module Integrity
       end
     end
 
-    def destroy_pancakes
-      pancakes.destroy
-    end
-
     def flip_lock
       self.pancakes_locked = !self.pancakes_locked
       save
@@ -84,23 +80,12 @@ module Integrity
       self.pancaked = false
       self.pancakes_locked = false
       save
-      destroy_pancakes
+      pancakes.destroy
     end
-
-    #def resume_tracking
-      #self.pancaked = true
-      #self.pancakes_locked = false
-      #save
-    #end
 
     def start_tracking
       pk = make_pancakes
       pk.orchestrate
-    end
-
-    def restart_tracking
-      destroy_pancakes
-      start_tracking
     end
 
     private

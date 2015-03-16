@@ -15,16 +15,5 @@ tr class=pancakes_state_bootstrap_class(pancakes)
     == slim :_pancake_urls, layout: false, locals: { urls_hash: urls_for_branch_id(@urls, branch.id) }
 
   td.actions
-    a.btn.btn-default href="/pancakes/#{branch.id}/flip_lock"
-      | #{branch.pancakes_locked? ? 'Unlock' : 'Lock'}
-    /a.btn.btn-default href="/pancakes/#{branch.id}/flip_lock"
-      i class="fa #{branch.pancakes_locked? ? 'fa-unlock-alt' : 'fa-lock'}"
-    /- if branch.pancaked?
-      /a class="btn btn-danger" href="/pancakes/#{branch.id}/stop_tracking" Stop Tracking
-    /- else
-      /a class="btn btn-default" href="/pancakes/#{branch.id}/resume_tracking" Resume Tracking
-
-    /- if pancakes.running?
-    a class="btn btn-danger" href="/pancakes/#{branch.id}/destroy" Destroy
-    /- else
-      a class="btn btn-danger" href="/pancakes/#{branch.id}/restart" Restart
+    a.btn.btn-default href="/pancakes/#{branch.id}/flip_lock" #{branch.pancakes_locked? ? 'Unlock' : 'Lock'}
+    a.btn.btn-danger  href="/pancakes/#{branch.id}/destroy" Destroy
