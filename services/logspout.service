@@ -5,7 +5,7 @@ Requires=docker.service
 
 [Service]
 Restart=always
-ExecStart=/usr/bin/docker run --rm -v=/var/run/docker.sock:/tmp/docker.sock --name logspout gliderlabs/logspout:latest syslog://logs2.papertrailapp.com:49166
+ExecStart=/usr/bin/docker run --rm -v=/var/run/docker.sock:/tmp/docker.sock --name=logspout gliderlabs/logspout:latest syslog://173.247.105.172:49166
 ExecStop=/usr/bin/docker stop logspout
 
 [X-Fleet]
