@@ -5,6 +5,17 @@ GIT
     crust (0.0.22)
 
 GIT
+  remote: git://github.com/ConsultingMD/ruby-fleetctl.git
+  revision: 035a22a7045fdb6e2e4780b710eb1c1377384610
+  branch: master
+  specs:
+    fleetctl (0.1.4.4)
+      activesupport
+      hashie (~> 2)
+      net-scp (= 1.2.1)
+      net-ssh (= 2.9.1)
+
+GIT
   remote: git://github.com/datamapper/dm-core
   revision: 03a6425d1616027dd8371ca4f5714c333ba7e789
   branch: release-1.2
@@ -20,15 +31,6 @@ GIT
     dm-sweatshop (1.2.0)
       dm-core (~> 1.2.0)
       randexp (~> 0.1.5)
-
-PATH
-  remote: /home/bird/ruby-fleetctl
-  specs:
-    fleetctl (0.1.4.4)
-      activesupport
-      hashie (~> 2)
-      net-scp (= 1.2.1)
-      net-ssh (= 2.9.1)
 
 GEM
   remote: https://rubygems.org/
