@@ -15,7 +15,7 @@ module Integrity
 
     @cached_urls = nil
 
-    attr_reader :stack_id, :branch_id, :tags,
+    attr_reader :stack_id, :branch_id, :tags, :serialno,
       :frick_branch, :frick_sha,
       :jarvis_branch, :jarvis_sha,
       :tim_branch, :tim_sha
@@ -28,10 +28,9 @@ module Integrity
       @jarvis_sha    = args[:jarvis][:sha]
       @tim_branch    = args[:tim][:branch]
       @tim_sha       = args[:tim][:sha]
-      serialno       = "#{SERIALNO_PREFIX}#{args[:serialno]}"
+      @serialno      = args[:serialno]
       @tags          = args[:tags] || []
-      # convention: the serialno tag, which should always be present, is always the first tag
-      @tags.unshift(serialno)
+      #@tags.unshift(serialno)
       @stack_id      = nil
       @cached_state_of_the_pancakes = nil
       refresh_stack_id
@@ -44,7 +43,13 @@ module Integrity
     end
 
     def refresh_stack_id
-      @stack_id = format("%s_%s%s", STATIC_PREFIX, @branch_id, tag_string)
+      tag_str = @tags.empty? ? '' : "_#{@tags.join('_')}"
+      @stack_id = format("%s_%s_%s%d%s", STATIC_PREFIX, @branch_id, SERIALNO_PREFIX, @serialno, tag_str)
+    end
+
+    def serialno=(value)
+      @serialno = value
+      refresh_stack_id
     end
 
     # @param build must be a jarvis branch
@@ -363,11 +368,6 @@ module Integrity
     #
     # private instance methods
     #
-
-    def tag_string
-      return '' if tags.empty?
-      "_#{tags.join('_')}"
-    end
 
     def mk_out_dir
       FileUtils.mkdir_p out_dir
