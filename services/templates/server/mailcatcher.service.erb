@@ -1,11 +1,11 @@
 [Unit]
 Description=<%= stack_id %>_mailcatcher
-After=<%= stack_id %>_mysql.service
-Requires=<%= stack_id %>_mysql.service
-BindsTo=<%= stack_id %>_mysql.service
+#After=<%= stack_id %>_mysql.service
+#Requires=<%= stack_id %>_mysql.service
+#BindsTo=<%= stack_id %>_mysql.service
 
 [Service]
-ExecStart=/usr/bin/docker run --rm -v /var/lib/docker/tmp:/tmp/hosttmp --name <%= stack_id %>_mailcatcher \
+ExecStart=/usr/bin/docker run --rm -v /var/lib/docker/tmp:/tmp/hosttmp --name <%= stack_id %>_mailcatcher --net=container:<%= stack_id %>_mysql \
 simpledrupalcloud/mailcatcher
 ExecStop=/usr/bin/docker rm -f <%= stack_id %>_mailcatcher
 
