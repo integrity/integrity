@@ -135,7 +135,7 @@ module Integrity
     # - :failed    anything failed
     # - :fucked_up fallback
     def state_of_my_units
-      expected = expected_services()
+      expected = self.class.expected_services()
       units = my_units
 
       none_exist = units.size == 0
