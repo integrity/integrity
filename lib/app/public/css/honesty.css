@@ -73,5 +73,5 @@ td.actions > * {
 }
 
 .pancakes-item .fa-lock {
-  color: black;
+  color: black !important;
 }
