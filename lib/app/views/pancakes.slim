@@ -6,8 +6,9 @@
     h3.text-center.short
       = "#{@pancaked_branches.size} Pancakes"
       div: small: i
-        |  Locked means a branch will not get updated when a new commit is pushed.
-        |  Destroying a pancakes will also discontinue tracking.
+        |  Locked means a branch will not get updated when a new commit is pushed, although the branch will show the more recent commit.
+        |  Destroying a stack will also stop tracking.
+        |  Unlocking will not update the branch, branches will only update after a github push.
     table.table.table-hover.table-condensed#previous_builds
       thead
         tr
