@@ -8,7 +8,7 @@ tr class=pancakes_state_bootstrap_class(pancakes)
   td = branch.project.name
   td = branch.name
   td == link_to build.sha1_short, github_commit_url(build)
-  td = time_ago_in_words(commit.committed_at)
+  td = time_ago_in_words(pacific_time(commit.committed_at))
   td = build.author
   td = commit.message
   td

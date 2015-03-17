@@ -371,7 +371,7 @@ module Integrity
 
     def self.logger(level: :debug)
       @logger ||=
-        if Integrity.production?
+        if true || Integrity.production?
           name = :pancakes
           @sys_loggers ||= {}
           unless @sys_loggers[name].present?

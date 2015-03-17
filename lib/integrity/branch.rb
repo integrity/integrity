@@ -92,7 +92,7 @@ module Integrity
 
     def update_pancakes
       destroy_pancakes
-      make_pancakes
+      start_tracking
     end
 
     private

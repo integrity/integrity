@@ -118,20 +118,6 @@ module Integrity
         pacific_time(time).try(:strftime, '%m/%d %R')
       end
 
-      def pancakes_state_fa_icon(pancakes)
-        if pancakes.running?
-          'thumbs-up'
-        elsif pancakes.starting?
-          'cog'
-        elsif pancakes.failed?
-          'thumbs-down'
-        elsif pancakes.off?
-          'power-off'
-        elsif pancakes.fucked_up?
-          'question'
-        end
-      end
-
       def pancakes_state_bootstrap_class(pancakes)
         if pancakes.running?
           'success'
