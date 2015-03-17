@@ -7,6 +7,7 @@ module Integrity
     SERIALNO_PREFIX = 'no'
     TEMPLATES_DIR = 'services/templates/server'
     SERVICE_TO_PRIVATE_PORT_MAPPING = {
+      80    => :mailcatcher,
       3306  => :mysql,
       10001 => :jarvis,
       10002 => :frick,
@@ -118,9 +119,6 @@ module Integrity
     @fleet_client = Fleet.new
 
     attr_reader :stack_id, :branch_id, :tags, :serialno
-      #:frick_branch, :frick_sha,
-      #:jarvis_branch, :jarvis_sha,
-      #:tim_branch, :tim_sha
 
     def initialize(branch_id: nil, frick: nil, jarvis: nil, tim: nil, serialno: nil, tags: [])
       @branch_id = branch_id
@@ -130,13 +128,6 @@ module Integrity
         jarvis: jarvis,
         tim:    tim,
       }
-
-      #@frick_branch  = args[:frick][:branch]
-      #@frick_sha     = args[:frick][:sha]
-      #@jarvis_branch = args[:jarvis][:branch]
-      #@jarvis_sha    = args[:jarvis][:sha]
-      #@tim_branch    = args[:tim][:branch]
-      #@tim_sha       = args[:tim][:sha]
 
       @serialno      = serialno
       @tags          = tags || []
@@ -245,7 +236,7 @@ module Integrity
     # - :failed    anything failed
     # - :fucked_up fallback
     def state_of_my_units
-      expected = self.class.expected_services()
+      expected = SERVICES.keys.map(&:to_s)
       units = my_units
 
       none_exist = units.size == 0
@@ -253,11 +244,11 @@ module Integrity
         return :off
       end
 
-      unit_names = units.map(&:name)
+      unit_names = units.map{ |u| u[:name] }
       # make sure each of the expected services exist
       all_exist = expected.reduce(true){|memo,val| memo && !!unit_names.detect{|name| name.include?(val) } }
       # active state refers to the 'ACTIVE' column when you run 'fleetctl list-units'
-      active_states = units.map(&:active)
+      active_states = units.map{ |u| u[:active_state] }
 
       if !all_exist
         Integrity.logger.warn "expected the following services: <#{expected.join(', ')}> but got units <#{unit_names.join(', ')}>"
@@ -283,15 +274,7 @@ module Integrity
       return :fucked_up
     end
 
-    #def self.jarvis_build_at_branch(branch_name)
-      #Integrity::Project.first(name: 'jarvis').branches.first(name: branch_name).builds.last
-    #end
-
     def orchestrate
-      #bake_erb
-      #files = service_files
-      #Fleetctl.load(files)
-
       # start mysql first since it's sort of more important
       service_hash = detect_and_make_template(:mysql)
       unit_file = gen_unit_file_name(:mysql)
@@ -314,8 +297,6 @@ module Integrity
 
       sleep 1
 
-      #round1 = files.select{|f| f.path.include?('mysql') }
-      #Fleetctl.start(mysql)
       [:mysql].each do |service|
         fleet_client.start gen_unit_file_name(service)
         sleep 0.3
@@ -323,8 +304,6 @@ module Integrity
 
       sleep 2
 
-      #round2 = files.select{|f| f.path.include?('orchestra') || f.path.include?('mailcatcher') }
-      #Fleetctl.start(round2)
       %i[mailcatcher jarvis-orchestra tim-orchestra frick-server].each do |service|
         fleet_client.start gen_unit_file_name(service)
         sleep 0.3
@@ -332,52 +311,11 @@ module Integrity
 
       sleep 2
 
-      #round3 = files.select{|f| !f.path.include?('orchestra') && !f.path.include?('mysql') }
-      #Fleetctl.start(round3)
       %i{jarvis-server jarvis-delayed_job tim-server tim-delayed_job}.each do |service|
         fleet_client.start gen_unit_file_name(service)
         sleep 0.3
       end
     end
-
-    # locals/methods needed by the ERB rendering context
-    # - stack_id
-    # - jarvis_branch
-    # - jarvis_sha
-    # - frick_branch
-    # - frick_sha
-    # - tim_branch
-    # - tim_sha
-    # - github_read_token
-    # - aws_access_key_id
-    # - aws_secret_access_key
-    # - aws_secret_key
-    #def bake_erb
-      #github_read_token = ENV['GITHUB_READ_TOKEN']
-      #aws_access_key_id = ENV['DEV_AWS_ACCESS_KEY_ID']
-      #aws_secret_access_key = ENV['DEV_AWS_SECRET_ACCESS_KEY']
-      #aws_secret_key = ENV['DEV_AWS_SECRET_KEY']
-      #b = binding
-
-      #mk_out_dir
-
-      #Dir[TEMPLATES_DIR + '/*.erb'].each do |erb_fname|
-        #contents = ERB.new(File.read(erb_fname)).result(b)
-        #outf = baked_filename(erb_fname)
-
-        #File.open(outf, 'w') do |f|
-          #f.puts contents
-        #end
-      #end
-
-      #service_files
-    #end
-
-    #def service_files
-      #Dir["#{out_dir}/*.service"].map do |file|
-        #File.open(file, 'r')
-      #end
-    #end
 
     def detect_and_make_template(service)
       if service == :mysql
@@ -389,23 +327,11 @@ module Integrity
       end
     end
 
-    #def service_names
-      #%w[mailcatcher frick-server jarvis-dj jarvis-orchestra jarvis-server mysql tim-dj tim-orchestra tim-server].map do |service|
-        #{ service.to_sym => gen_container_name(service) }
-      #end.reduce(&:merge)
-    #end
-
     def my_units
-      #Fleetctl.units.select{|u| u.name.start_with?(@stack_id) }
-      fleet_client.list.select{|u| u[:name].start_with?(@stack_id) }
+      self.class.pancakes_units.select{|u| u[:name].start_with?(@stack_id) }
     end
 
     def destroy
-      #unit_names = my_units.map(&:name)
-      #if !unit_names.empty?
-        #Fleetctl.destroy(*unit_names)
-      #end
-
       my_units.each do |unit|
         fleet_client.destroy(unit[:name])
         sleep 0.2
@@ -448,11 +374,7 @@ module Integrity
     end
 
     def self.refresh_all_urls
-      #Fleetctl.clear_units
-      #units = Fleetctl.units
-      units = fleet_client.list
-
-      worker_ips = units.map{|unit| unit[:machine_ip] }.to_set
+      worker_ips = pancakes_units.map{|unit| unit[:machine_ip] }.to_set
       if worker_ips.empty?
         @cached_urls = {}
         return @cached_urls
@@ -474,20 +396,30 @@ module Integrity
     private
 
     # @api private
+    def self.pancakes_units
+      fleet_client.list.select{|u| u[:name].start_with?(STATIC_PREFIX) }
+    end
+
+    # @api private
     def self.get_urls_for_machine_by_branch_id(ip)
       set_docker_api_client_url(ip)
-      mysql_containers = Docker::Container.all.select{|c| get_container_name(c).match(/mysql/) }
+      network_containers = Docker::Container.all.select{|c| get_container_name(c)[net_container.to_s] }
 
-      if mysql_containers.empty?
+      if network_containers.empty?
         Integrity.logger.warn "no networking containers found on worker with addr #{ip}"
         return {}
       end
 
-      return mysql_containers.map do |container|
+      return network_containers.map do |container|
         unit_info = parse_unit_name(get_container_name(container))
         ports = container.info["Ports"].map do |ports|
-          service = SERVICE_TO_PRIVATE_PORT_MAPPING.fetch(ports['PrivatePort'])
-          { service => "http://#{ip}:#{ports['PublicPort']}" }
+          private_port = ports['PrivatePort']
+          if SERVICE_TO_PRIVATE_PORT_MAPPING.has_key?(private_port)
+            service = SERVICE_TO_PRIVATE_PORT_MAPPING.fetch(private_port)
+            { service => "http://#{ip}:#{ports['PublicPort']}" }
+          else
+            {}
+          end
         end
         .reduce(&:merge)
         {
@@ -538,13 +470,13 @@ module Integrity
     end
 
     # @api private
-    def self.expected_services
-      Dir[TEMPLATES_DIR + '/*.erb'].map { |t| File.basename(t).sub(/\.\w+\.erb$/, '') }
+    def self.fleet_client
+      @fleet_client
     end
 
     # @api private
-    def self.fleet_client
-      @fleet_client
+    def self.net_container
+      :mysql
     end
 
 
@@ -600,11 +532,6 @@ module Integrity
     end
 
     # @api private
-    def net_container
-      :mysql
-    end
-
-    # @api private
     def base_template(service:, cmd: nil, more_env: {})
       conf = SERVICES[service]
 
@@ -614,7 +541,7 @@ module Integrity
         environment: (conf[:env] || {}).merge(more_env),
         image: conf[:image],
         machineof: gen_service_file_name(conf[:machineof]),
-        net_container_name: gen_container_name(net_container),
+        net_container_name: gen_container_name(self.class.net_container),
         ports: conf[:ports],
         requires: smart_requires(conf[:requires]),
         oneshot: !!service.to_s['orchestra']
