@@ -154,7 +154,7 @@ module Integrity
     end
 
     def is_service_up?(service_name)
-      logger.warn("can't ping mysql") if service_name.to_sym == :mysql
+      log_stack(:warn, "can't ping mysql") if service_name.to_sym == :mysql
       begin
         resp = RestClient.get("#{self.class.all_urls[@branch_id][:urls][service_name]}/status")
         return resp.code == 200
@@ -230,56 +230,56 @@ module Integrity
       active_states = units.map{ |u| u[:active_state] }
 
       if !all_exist
-        logger.warn "expected the following services: <#{expected.join(', ')}> but got units <#{unit_names.join(', ')}>"
+        log_stack :warn, "expected the following services: <#{expected.join(', ')}> but got units <#{unit_names.join(', ')}>"
         return :fucked_up
       end
 
       all_active = active_states.reduce(true){|memo,val| memo && val == 'active' }
       if all_active
-        logger.info "#@stack_id stack is nominal"
+        log_stack :info, "stack is nominal"
         return :nominal
       end
 
       active_or_inactive = active_states.reduce(true){|memo,val| memo && %w[active inactive activating].include?(val) }
       if active_or_inactive
-        logger.info "#@stack_id stack is starting"
+        log_stack :info, "stack is starting"
         return :starting
       end
 
       any_failed = active_states.reduce(false){|memo,val| memo || val == 'failed' }
       if any_failed
-        logger.info "#@stack_id stack failed"
+        log_stack :info, "stack failed"
         return :failed
       end
 
-      logger.warn "#@stack_id stack is fucked_up"
+      log_stack :warn, "stack is fucked_up"
       return :fucked_up
     end
 
     def orchestrate
-      logger.info "#@stack_id orchestration starting"
+      log_stack :info, "orchestration starting"
 
       # start mysql first since it's sort of more important
       service_hash = detect_and_make_template(:mysql)
       unit_file = gen_unit_file_name(:mysql)
-      logger.debug "#@stack_id orchestration submitting #{unit_file}"
+      log_stack :debug, "orchestration submitting #{unit_file}"
       fleet_client.submit(unit_file, service_hash)
       sleep 0.2
-      logger.debug "#@stack_id orchestration loading #{unit_file}"
+      log_stack :debug, "orchestration loading #{unit_file}"
       fleet_client.load(unit_file)
       sleep 0.5
 
       (SERVICES.keys - [:mysql]).each do |service|
         service_hash = detect_and_make_template(service)
         unit_file = gen_unit_file_name(service)
-        logger.debug "#@stack_id orchestration submitting #{unit_file}"
+        log_stack :debug, "orchestration submitting #{unit_file}"
         fleet_client.submit(unit_file, service_hash)
         sleep 0.3
       end
 
       (SERVICES.keys - [:mysql]).each do |service|
         unit_file = gen_unit_file_name(service)
-        logger.debug "#@stack_id orchestration loading #{unit_file}"
+        log_stack :debug, "orchestration loading #{unit_file}"
         fleet_client.load(unit_file)
         sleep 0.3
       end
@@ -288,7 +288,7 @@ module Integrity
 
       [:mysql].each do |service|
         unit_file = gen_unit_file_name(service)
-        logger.debug "#@stack_id orchestration starting #{unit_file}"
+        log_stack :debug, "orchestration starting #{unit_file}"
         fleet_client.start(unit_file)
         sleep 0.3
       end
@@ -297,7 +297,7 @@ module Integrity
 
       %i[mailcatcher jarvis-orchestra tim-orchestra frick-server].each do |service|
         unit_file = gen_unit_file_name(service)
-        logger.debug "#@stack_id orchestration starting #{unit_file}"
+        log_stack :debug, "orchestration starting #{unit_file}"
         fleet_client.start(unit_file)
         sleep 0.3
       end
@@ -306,12 +306,12 @@ module Integrity
 
       %i{jarvis-server jarvis-delayed_job tim-server tim-delayed_job}.each do |service|
         unit_file = gen_unit_file_name(service)
-        logger.debug "#@stack_id orchestration starting #{unit_file}"
+        log_stack :debug, "orchestration starting #{unit_file}"
         fleet_client.start(unit_file)
         sleep 0.3
       end
 
-      logger.info "#@stack_id orchestration done"
+      log_stack :info, "orchestration done"
     end
 
     def detect_and_make_template(service)
@@ -361,7 +361,11 @@ module Integrity
     end
 
     def logger
-      self.class.logger(level: :debug)
+      self.class.logger
+    end
+
+    def log_stack(level, msg)
+      logger.send(level, "[pancakes][#@stack_id] #{msg}")
     end
 
 
@@ -370,23 +374,12 @@ module Integrity
     #
 
     def self.logger(level: :debug)
-      @logger ||=
-        if true || Integrity.production?
-          name = :pancakes
-          @sys_loggers ||= {}
-          unless @sys_loggers[name].present?
-            syslog = Logging.logger[name]
-            syslog.add_appenders Logging.appenders.syslog(name)
-            syslog.level = level
-            @sys_loggers[name] = syslog
-          end
-          @sys_loggers[name].level = level
-          @sys_loggers[name]
-        else
-          l = Logger.new(STDOUT)
-          l.level = level
-          l
-        end
+      Integrity.logger
+    end
+
+    # log_pancakes
+    def self.logp(level, msg)
+      logger.send(level, "[pancakes] #{msg}")
     end
 
     # @param build must be a jarvis branch
@@ -448,7 +441,7 @@ module Integrity
       network_containers = Docker::Container.all.select{|c| get_container_name(c)[net_container.to_s] }
 
       if network_containers.empty?
-        logger.warn "no networking containers found on worker with addr #{ip}"
+        logp :warn, "no networking containers found on worker with addr #{ip}"
         return {}
       end
 
