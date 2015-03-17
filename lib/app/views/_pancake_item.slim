@@ -1,6 +1,7 @@
 tr class=pancakes_state_bootstrap_class(pancakes)
   td.status.mono
-    /i class="fa fa-#{pancakes_state_fa_icon(pancakes)}"
+    - if branch.pancakes_locked?
+      i class="fa fa-lock"
     = pancakes.state_of_the_pancakes.to_s.upcase
 
   td = branch.id.to_s + " no" + branch.pancakes_serialno.to_s
