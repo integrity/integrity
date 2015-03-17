@@ -71,3 +71,7 @@ td.actions {
 td.actions > * {
   margin-left: 6px;
 }
+
+.pancakes-item .fa-lock {
+  color: black;
+}
