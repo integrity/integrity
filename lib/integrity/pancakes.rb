@@ -183,16 +183,21 @@ module Integrity
       state_of_the_pancakes == :off
     end
 
+    def incomplete?
+      state_of_the_pancakes == :incomplete
+    end
+
     def fucked_up?
       state_of_the_pancakes == :fucked_up
     end
 
     # states
-    # - :running   units nominal and jarvis pingable
-    # - :starting  units nominal and jarvis unpingable, or units starting
-    # - :off       no units
-    # - :failed    any unit failed
-    # - :fucked_up ...
+    # - :running    units nominal and jarvis pingable
+    # - :starting   units nominal and jarvis unpingable, or units starting
+    # - :off        no units
+    # - :failed     any unit failed
+    # - :incomplete something is missing
+    # - :fucked_up  fallback
     def refresh_state_of_the_pancakes
       jarvis_up = is_service_up?(:jarvis)
       units_state = state_of_my_units
@@ -209,11 +214,12 @@ module Integrity
     end
 
     # states
-    # - :nominal   all active
-    # - :off       no units
-    # - :starting  active | inactive
-    # - :failed    anything failed
-    # - :fucked_up fallback
+    # - :nominal    all active
+    # - :off        no units
+    # - :starting   active | inactive
+    # - :failed     anything failed
+    # - :incomplete something is missing
+    # - :fucked_up  fallback
     def state_of_my_units
       expected = SERVICES.keys.map(&:to_s)
       units = my_units
@@ -230,8 +236,8 @@ module Integrity
       active_states = units.map{ |u| u[:active_state] }
 
       if !all_exist
-        log_stack :warn, "expected the following services: <#{expected.join(', ')}> but got units <#{unit_names.join(', ')}>"
-        return :fucked_up
+        log_stack :warn, "stack is incomplete. expected the following services: <#{expected.join(', ')}> but got units <#{unit_names.join(', ')}>"
+        return :incomplete
       end
 
       all_active = active_states.reduce(true){|memo,val| memo && val == 'active' }
@@ -252,7 +258,7 @@ module Integrity
         return :failed
       end
 
-      log_stack :warn, "stack is fucked_up"
+      log_stack :warn, "stack is fucked_up with states: #{active_states.inspect}"
       return :fucked_up
     end
 
@@ -373,11 +379,11 @@ module Integrity
     # class methods
     #
 
-    def self.logger(level: :debug)
+    def self.logger
       Integrity.logger
     end
 
-    # log_pancakes
+    # LOGPancakes - ghetto tagged logging
     def self.logp(level, msg)
       logger.send(level, "[pancakes] #{msg}")
     end
