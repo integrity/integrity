@@ -14,23 +14,32 @@ module Integrity
     }
 
     @cached_urls = nil
+    @fleet_client = Fleet.new
 
-    attr_reader :stack_id, :branch_id, :tags, :serialno,
-      :frick_branch, :frick_sha,
-      :jarvis_branch, :jarvis_sha,
-      :tim_branch, :tim_sha
+    attr_reader :stack_id, :branch_id, :tags, :serialno
+      #:frick_branch, :frick_sha,
+      #:jarvis_branch, :jarvis_sha,
+      #:tim_branch, :tim_sha
 
-    def initialize(args={})
-      @branch_id     = args[:branch_id]
-      @frick_branch  = args[:frick][:branch]
-      @frick_sha     = args[:frick][:sha]
-      @jarvis_branch = args[:jarvis][:branch]
-      @jarvis_sha    = args[:jarvis][:sha]
-      @tim_branch    = args[:tim][:branch]
-      @tim_sha       = args[:tim][:sha]
-      @serialno      = args[:serialno]
-      @tags          = args[:tags] || []
-      #@tags.unshift(serialno)
+    def initialize(branch_id: nil, frick: nil, jarvis: nil, tim: nil, serialno: nil, tags: [])
+      @branch_id = branch_id
+
+      @git_branches = {
+        frick:  frick,
+        jarvis: jarvis,
+        tim:    tim,
+      }
+
+      #@frick_branch  = args[:frick][:branch]
+      #@frick_sha     = args[:frick][:sha]
+      #@jarvis_branch = args[:jarvis][:branch]
+      #@jarvis_sha    = args[:jarvis][:sha]
+      #@tim_branch    = args[:tim][:branch]
+      #@tim_sha       = args[:tim][:sha]
+
+      @serialno      = serialno
+      @tags          = tags || []
+
       @stack_id      = nil
       @cached_state_of_the_pancakes = nil
       refresh_stack_id
@@ -63,14 +72,14 @@ module Integrity
       frick_commit = commit_with_branch_name_or_master('frick', branch_name)
       tim_commit   = commit_with_branch_name_or_master('tim', branch_name)
 
-      new({
+      new(
         branch_id: branch_id,
         serialno: branch.pancakes_serialno,
         tags: tags,
         frick:  { branch: frick_commit.branch,  sha: frick_commit.identifier },
         jarvis: { branch: jarvis_commit.branch, sha: jarvis_commit.identifier },
         tim:    { branch: tim_commit.branch,    sha: tim_commit.identifier },
-      })
+      )
     end
 
     def is_service_up?(service_name)
@@ -178,22 +187,56 @@ module Integrity
     #end
 
     def orchestrate
-      bake_erb
-      files = service_files
-      Fleetctl.load(files)
+      #bake_erb
+      #files = service_files
+      #Fleetctl.load(files)
 
-      mysql = files.select{|f| f.path.include?('mysql') }
-      Fleetctl.start(mysql)
+      # start mysql first since it's sort of more important
+      service_hash = detect_and_make_template(:mysql)
+      unit_file = gen_unit_file_name(:mysql)
+      fleet_client.submit(unit_file, service_hash)
+      sleep 0.2
+      fleet_client.load(unit_file)
+      sleep 0.5
+
+      (SERVICES.keys - [:mysql]).each do |service|
+        service_hash = detect_and_make_template(service)
+        unit_file = gen_unit_file_name(service)
+        fleet_client.submit(unit_file, service_hash)
+        sleep 0.3
+      end
+
+      (SERVICES.keys - [:mysql]).each do |service|
+        fleet_client.load gen_unit_file_name(service)
+        sleep 0.3
+      end
+
+      sleep 1
+
+      #round1 = files.select{|f| f.path.include?('mysql') }
+      #Fleetctl.start(mysql)
+      [:mysql].each do |service|
+        fleet_client.start gen_unit_file_name(service)
+        sleep 0.3
+      end
 
       sleep 2
 
-      orchs = files.select{|f| f.path.include?('orchestra') || f.path.include?('mailcatcher') }
-      Fleetctl.start(orchs)
+      #round2 = files.select{|f| f.path.include?('orchestra') || f.path.include?('mailcatcher') }
+      #Fleetctl.start(round2)
+      %i[mailcatcher jarvis-orchestra tim-orchestra frick-server].each do |service|
+        fleet_client.start gen_unit_file_name(service)
+        sleep 0.3
+      end
 
       sleep 2
 
-      other = files.select{|f| !f.path.include?('orchestra') && !f.path.include?('mysql') }
-      Fleetctl.start(other)
+      #round3 = files.select{|f| !f.path.include?('orchestra') && !f.path.include?('mysql') }
+      #Fleetctl.start(round3)
+      %i{jarvis-server jarvis-delayed_job tim-server tim-delayed_job}.each do |service|
+        fleet_client.start gen_unit_file_name(service)
+        sleep 0.3
+      end
     end
 
     # locals/methods needed by the ERB rendering context
@@ -208,60 +251,240 @@ module Integrity
     # - aws_access_key_id
     # - aws_secret_access_key
     # - aws_secret_key
-    def bake_erb
-      github_read_token = ENV['GITHUB_READ_TOKEN']
-      aws_access_key_id = ENV['DEV_AWS_ACCESS_KEY_ID']
-      aws_secret_access_key = ENV['DEV_AWS_SECRET_ACCESS_KEY']
-      aws_secret_key = ENV['DEV_AWS_SECRET_KEY']
-      b = binding
+    #def bake_erb
+      #github_read_token = ENV['GITHUB_READ_TOKEN']
+      #aws_access_key_id = ENV['DEV_AWS_ACCESS_KEY_ID']
+      #aws_secret_access_key = ENV['DEV_AWS_SECRET_ACCESS_KEY']
+      #aws_secret_key = ENV['DEV_AWS_SECRET_KEY']
+      #b = binding
 
-      mk_out_dir
+      #mk_out_dir
 
-      Dir[TEMPLATES_DIR + '/*.erb'].each do |erb_fname|
-        contents = ERB.new(File.read(erb_fname)).result(b)
-        outf = baked_filename(erb_fname)
+      #Dir[TEMPLATES_DIR + '/*.erb'].each do |erb_fname|
+        #contents = ERB.new(File.read(erb_fname)).result(b)
+        #outf = baked_filename(erb_fname)
 
-        File.open(outf, 'w') do |f|
-          f.puts contents
-        end
-      end
-
-      service_files
-    end
-
-    def service_files
-      Dir["#{out_dir}/*.service"].map do |file|
-        File.open(file, 'r')
-      end
-    end
-
-    #def get_urls
-      #Fleetctl.clear_units
-      #units = Fleetctl.units
-
-      ## since all containers in a stack run on the same machine, we can get the worker ip from the first one
-      #servers = units.select{|u| u.name.include?(@stack_id) && u.name.include?('-server.') }
-      #if !servers.empty?
-        #worker_ip = servers.first.ip
-      #else
-        #return nil
+        #File.open(outf, 'w') do |f|
+          #f.puts contents
+        #end
       #end
 
-      #setup_docker_api_client(worker_ip)
-      #net_cont_name = gen_container_name('mysql')
+      #service_files
+    #end
 
-      #begin
-        #net_container = Docker::Container.get(net_cont_name)
-        #@cached_urls = net_container.info['NetworkSettings']['Ports'].to_a.map do |service_port,host_ports|
-          #{ SERVICE_TO_PRIVATE_PORT_MAPPING[service_port.to_i] => format("http://%s:%d", worker_ip, host_ports.first['HostPort'].to_i) }
-        #end
-          #.reduce(&:merge)
-        #return @cached_urls
-      #rescue Docker::Error::NotFoundError => e
-        #Integrity.logger.warn "networking container not found: #{net_cont_name}"
-        #return nil
+    #def service_files
+      #Dir["#{out_dir}/*.service"].map do |file|
+        #File.open(file, 'r')
       #end
     #end
+
+
+    def detect_and_make_template(service)
+      if service == :mysql
+        mysql_template
+      elsif service == :mailcatcher
+        mailcatcher_template
+      else
+        dockyard_template(service)
+      end
+    end
+
+    #def service_names
+      #%w[mailcatcher frick-server jarvis-dj jarvis-orchestra jarvis-server mysql tim-dj tim-orchestra tim-server].map do |service|
+        #{ service.to_sym => gen_container_name(service) }
+      #end.reduce(&:merge)
+    #end
+
+    def my_units
+      #Fleetctl.units.select{|u| u.name.start_with?(@stack_id) }
+      fleet_client.list.select{|u| u[:name].start_with?(@stack_id) }
+    end
+
+    def destroy
+      #unit_names = my_units.map(&:name)
+      #if !unit_names.empty?
+        #Fleetctl.destroy(*unit_names)
+      #end
+
+      my_units.each do |unit|
+        fleet_client.destroy(unit[:name])
+      end
+    end
+
+    # @param service :jarvis, :frick, :tim
+    # @api private
+    def git_env(app)
+      {
+        'BRANCH' => @git_branches[app][:branch],
+        'SHA'    => @git_branches[app][:sha],
+      }
+    end
+
+    def mysql_template
+      base_template service: :mysql
+    end
+
+    def mailcatcher_template
+      base_template service: :mailcatcher
+    end
+
+    # @api private
+    def base_template(service:, cmd: nil, more_env: {})
+      conf = SERVICES[service]
+
+      Integrity::FleetApiTemplateBuilder.base_hash(
+        cmd: cmd,
+        container_name: gen_container_name(service),
+        environment: (conf[:env] || {}).merge(more_env),
+        image: conf[:image],
+        machineof: gen_service_file_name(conf[:machineof]),
+        net_container_name: gen_container_name(net_container),
+        ports: conf[:ports],
+        requires: smart_requires(conf[:requires]),
+        oneshot: !!service.to_s['orchestra']
+      )
+    end
+
+    # @api private
+    def smart_requires(dep)
+      if SERVICES.keys.include?(dep)
+        gen_service_file_name(dep)
+      else
+        dep
+      end
+    end
+
+    # @api private
+    def net_container
+      :mysql
+    end
+
+    def dockyard_template(service)
+      raise "#{service} is definitely not a service" unless SERVICES.keys.include?(service.to_sym)
+      app, dockyard_cmd = service.to_s.split('-')
+      service = service.to_sym
+      app = app.to_sym
+      conf = SERVICES[service]
+      cmd = Integrity::FleetApiTemplateBuilder.dockyard_cmd(
+        branch: @git_branches[app][:branch],
+        gh_read_token: github_read_token,
+        repo: conf[:repo],
+        dockyard_cmd: dockyard_cmd,
+        dockyard_source: 'from_github',
+      )
+
+      base_template service: service, cmd: cmd, more_env: git_env(app)
+    end
+
+    # @api private
+    def github_read_token
+      ENV['GITHUB_READ_TOKEN']
+    end
+
+    SERVICES = {
+      mysql: {
+        image: 'grnds/mysql',
+        net_container: true,
+        ports: [25, 80, 3306, 10001, 10002, 10004],
+        requires: 'docker.service',
+      },
+      mailcatcher: {
+        image: 'simpledrupalcloud/mailcatcher',
+        requires: :mysql,
+        machineof: :mysql,
+      },
+      :"frick-server" => {
+        repo: 'consultingmd/frick',
+        image: 'grnds/frick_ci',
+        machineof: :mysql,
+        requires: :mysql,
+        env: {
+          'GITHUB_READ_TOKEN'     => ENV['GITHUB_READ_TOKEN'],
+          'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
+          'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
+          'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
+        },
+      },
+      :"jarvis-orchestra" => {
+        image: 'grnds/jarvis_ci',
+        repo: 'consultingmd/consultingmd',
+        machineof: :mysql,
+        requires: :mysql,
+        env: {
+          'GITHUB_READ_TOKEN'     => ENV['GITHUB_READ_TOKEN'],
+          'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
+          'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
+          'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
+        },
+      },
+      :"jarvis-server" => {
+        image: 'grnds/jarvis_ci',
+        repo: 'consultingmd/consultingmd',
+        machineof: :mysql,
+        requires: :"jarvis-orchestra",
+        env: {
+          'MAILCATCHER_SMTP_PORT' => 25,
+          'GITHUB_READ_TOKEN'     => ENV['GITHUB_READ_TOKEN'],
+          'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
+          'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
+          'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
+        },
+      },
+      :"jarvis-delayed_job" => {
+        image: 'grnds/jarvis_ci',
+        repo: 'consultingmd/consultingmd',
+        machineof: :mysql,
+        requires: :"jarvis-orchestra",
+        env: {
+          'MAILCATCHER_SMTP_PORT' => 25,
+          'GITHUB_READ_TOKEN'     => ENV['GITHUB_READ_TOKEN'],
+          'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
+          'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
+          'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
+        },
+      },
+      :"tim-orchestra" => {
+        image: 'grnds/tim_ci',
+        repo: 'consultingmd/tim',
+        machineof: :mysql,
+        requires: :mysql,
+        env: {
+          'GITHUB_READ_TOKEN'     => ENV['GITHUB_READ_TOKEN'],
+          'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
+          'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
+          'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
+        },
+      },
+      :"tim-server" => {
+        image: 'grnds/tim_ci',
+        repo: 'consultingmd/tim',
+        machineof: :mysql,
+        requires: :"tim-orchestra",
+        env: {
+          'GITHUB_READ_TOKEN'     => ENV['GITHUB_READ_TOKEN'],
+          'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
+          'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
+          'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
+        },
+      },
+      :"tim-delayed_job" => {
+        image: 'grnds/tim_ci',
+        repo: 'consultingmd/tim',
+        machineof: :mysql,
+        requires: :"tim-orchestra",
+        env: {
+          'GITHUB_READ_TOKEN'     => ENV['GITHUB_READ_TOKEN'],
+          'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
+          'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
+          'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
+        },
+      },
+    }
+
+
+    #
+    # class methods
+    #
 
     def self.all_urls
       refresh_all_urls unless @cached_urls
@@ -269,10 +492,11 @@ module Integrity
     end
 
     def self.refresh_all_urls
-      Fleetctl.clear_units
-      units = Fleetctl.units
+      #Fleetctl.clear_units
+      #units = Fleetctl.units
+      units = fleet_client.list
 
-      worker_ips = units.map(&:ip).to_set
+      worker_ips = units.map{|unit| unit[:machine_ip] }.to_set
       if worker_ips.empty?
         @cached_urls = {}
         return @cached_urls
@@ -286,17 +510,6 @@ module Integrity
       return @cached_urls
     end
 
-    def my_units
-      Fleetctl.clear_units
-      Fleetctl.units.select{|u| u.name.start_with?(@stack_id) }
-    end
-
-    def destroy
-      unit_names = my_units.map(&:name)
-      if !unit_names.empty?
-        Fleetctl.destroy(*unit_names)
-      end
-    end
 
     private
 
@@ -366,9 +579,18 @@ module Integrity
       Dir[TEMPLATES_DIR + '/*.erb'].map { |t| File.basename(t).sub(/\.\w+\.erb$/, '') }
     end
 
+    def self.fleet_client
+      @fleet_client
+    end
+
+
     #
     # private instance methods
     #
+
+    def fleet_client
+      self.class.fleet_client
+    end
 
     def mk_out_dir
       FileUtils.mkdir_p out_dir
@@ -383,7 +605,14 @@ module Integrity
     end
 
     def gen_container_name(service)
+      return nil unless service
       "#{@stack_id}_#{service}"
     end
+
+    def gen_service_file_name(service)
+      return nil unless service
+      "#{gen_container_name(service)}.service"
+    end
+    alias :gen_unit_file_name :gen_service_file_name
   end
 end

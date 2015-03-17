@@ -42,9 +42,10 @@ require 'rconfig'
 require 'i18n'
 require 'rest_client'
 require 'crust'
+require 'fleet'
 
 require 'opts/rconfig'
-require 'opts/fleetctl'
+require 'opts/fleet_api'
 
 require 'commands'
 require 'runnable'
@@ -73,7 +74,9 @@ require 'integrity/checkout'
 require 'integrity/command_runner'
 require 'integrity/builder'
 require 'integrity/instance_manager'
+
 require 'integrity/pancakes'
+require 'integrity/pancake_mixer'
 
 DataMapper.finalize
 
