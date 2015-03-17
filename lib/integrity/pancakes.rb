@@ -153,29 +153,8 @@ module Integrity
       refresh_stack_id
     end
 
-    # @param build must be a jarvis branch
-    def self.new_with_jarvis_branch(branch: nil, tags: [])
-      branch_id = branch.id
-      branch_name = branch.name
-      jarvis_commit = branch.most_recent_build.commit
-      #jarvis_commit = Integrity::Project.first(name: 'jarvis').branches.first(name: 'dockyard').builds.last.commit
-      #frick_branch = Integrity::Project.first(name: 'frick').branches.first(name: 'dockyard')
-      #tim_commit = Integrity::Project.first(name: 'tim').branches.first(name: 'dockyard').builds.last.commit
-      frick_commit = commit_with_branch_name_or_master('frick', branch_name)
-      tim_commit   = commit_with_branch_name_or_master('tim', branch_name)
-
-      new(
-        branch_id: branch_id,
-        serialno: branch.pancakes_serialno,
-        tags: tags,
-        frick:  { branch: frick_commit.branch,  sha: frick_commit.identifier },
-        jarvis: { branch: jarvis_commit.branch, sha: jarvis_commit.identifier },
-        tim:    { branch: tim_commit.branch,    sha: tim_commit.identifier },
-      )
-    end
-
     def is_service_up?(service_name)
-      Integrity.logger.warn("can't ping mysql") if service_name.to_sym == :mysql
+      logger.warn("can't ping mysql") if service_name.to_sym == :mysql
       begin
         resp = RestClient.get("#{self.class.all_urls[@branch_id][:urls][service_name]}/status")
         return resp.code == 200
@@ -251,70 +230,88 @@ module Integrity
       active_states = units.map{ |u| u[:active_state] }
 
       if !all_exist
-        Integrity.logger.warn "expected the following services: <#{expected.join(', ')}> but got units <#{unit_names.join(', ')}>"
+        logger.warn "expected the following services: <#{expected.join(', ')}> but got units <#{unit_names.join(', ')}>"
         return :fucked_up
       end
 
       all_active = active_states.reduce(true){|memo,val| memo && val == 'active' }
       if all_active
+        logger.info "#@stack_id stack is nominal"
         return :nominal
       end
 
       active_or_inactive = active_states.reduce(true){|memo,val| memo && %w[active inactive activating].include?(val) }
       if active_or_inactive
+        logger.info "#@stack_id stack is starting"
         return :starting
       end
 
       any_failed = active_states.reduce(false){|memo,val| memo || val == 'failed' }
       if any_failed
+        logger.info "#@stack_id stack failed"
         return :failed
       end
 
-      Integrity.logger.warn "something isn't right with unit states"
+      logger.warn "#@stack_id stack is fucked_up"
       return :fucked_up
     end
 
     def orchestrate
+      logger.info "#@stack_id orchestration starting"
+
       # start mysql first since it's sort of more important
       service_hash = detect_and_make_template(:mysql)
       unit_file = gen_unit_file_name(:mysql)
+      logger.debug "#@stack_id orchestration submitting #{unit_file}"
       fleet_client.submit(unit_file, service_hash)
       sleep 0.2
+      logger.debug "#@stack_id orchestration loading #{unit_file}"
       fleet_client.load(unit_file)
       sleep 0.5
 
       (SERVICES.keys - [:mysql]).each do |service|
         service_hash = detect_and_make_template(service)
         unit_file = gen_unit_file_name(service)
+        logger.debug "#@stack_id orchestration submitting #{unit_file}"
         fleet_client.submit(unit_file, service_hash)
         sleep 0.3
       end
 
       (SERVICES.keys - [:mysql]).each do |service|
-        fleet_client.load gen_unit_file_name(service)
+        unit_file = gen_unit_file_name(service)
+        logger.debug "#@stack_id orchestration loading #{unit_file}"
+        fleet_client.load(unit_file)
         sleep 0.3
       end
 
       sleep 1
 
       [:mysql].each do |service|
-        fleet_client.start gen_unit_file_name(service)
+        unit_file = gen_unit_file_name(service)
+        logger.debug "#@stack_id orchestration starting #{unit_file}"
+        fleet_client.start(unit_file)
         sleep 0.3
       end
 
       sleep 2
 
       %i[mailcatcher jarvis-orchestra tim-orchestra frick-server].each do |service|
-        fleet_client.start gen_unit_file_name(service)
+        unit_file = gen_unit_file_name(service)
+        logger.debug "#@stack_id orchestration starting #{unit_file}"
+        fleet_client.start(unit_file)
         sleep 0.3
       end
 
       sleep 2
 
       %i{jarvis-server jarvis-delayed_job tim-server tim-delayed_job}.each do |service|
-        fleet_client.start gen_unit_file_name(service)
+        unit_file = gen_unit_file_name(service)
+        logger.debug "#@stack_id orchestration starting #{unit_file}"
+        fleet_client.start(unit_file)
         sleep 0.3
       end
+
+      logger.info "#@stack_id orchestration done"
     end
 
     def detect_and_make_template(service)
@@ -363,10 +360,55 @@ module Integrity
       base_template service: service, cmd: cmd, more_env: git_env(app)
     end
 
+    def logger
+      self.class.logger(:debug)
+    end
+
 
     #
     # class methods
     #
+
+    def self.logger(level: :debug)
+      @logger ||=
+        if Integrity.production?
+          name = :pancakes
+          @sys_loggers ||= {}
+          unless @sys_loggers[name].present?
+            syslog = Logging.logger[name]
+            syslog.add_appenders Logging.appenders.syslog(name)
+            syslog.level = level
+            @sys_loggers[name] = syslog
+          end
+          @sys_loggers[name].level = level
+          @sys_loggers[name]
+        else
+          l = Logger.new(STDOUT)
+          l.level = level
+          l
+        end
+    end
+
+    # @param build must be a jarvis branch
+    def self.new_with_jarvis_branch(branch: nil, tags: [])
+      branch_id = branch.id
+      branch_name = branch.name
+      jarvis_commit = branch.most_recent_build.commit
+      #jarvis_commit = Integrity::Project.first(name: 'jarvis').branches.first(name: 'dockyard').builds.last.commit
+      #frick_branch = Integrity::Project.first(name: 'frick').branches.first(name: 'dockyard')
+      #tim_commit = Integrity::Project.first(name: 'tim').branches.first(name: 'dockyard').builds.last.commit
+      frick_commit = commit_with_branch_name_or_master('frick', branch_name)
+      tim_commit   = commit_with_branch_name_or_master('tim', branch_name)
+
+      new(
+        branch_id: branch_id,
+        serialno: branch.pancakes_serialno,
+        tags: tags,
+        frick:  { branch: frick_commit.branch,  sha: frick_commit.identifier },
+        jarvis: { branch: jarvis_commit.branch, sha: jarvis_commit.identifier },
+        tim:    { branch: tim_commit.branch,    sha: tim_commit.identifier },
+      )
+    end
 
     def self.all_urls
       refresh_all_urls unless @cached_urls
@@ -406,7 +448,7 @@ module Integrity
       network_containers = Docker::Container.all.select{|c| get_container_name(c)[net_container.to_s] }
 
       if network_containers.empty?
-        Integrity.logger.warn "no networking containers found on worker with addr #{ip}"
+        logger.warn "no networking containers found on worker with addr #{ip}"
         return {}
       end
 
@@ -548,7 +590,7 @@ module Integrity
       )
     end
 
-    # @param service :jarvis, :frick, :tim
+    # @param app :jarvis, :frick, :tim, etc. ie, not jarvis-server, tim-orchestra, etc. only the app part of the service name.
     # @api private
     def git_env(app)
       {
