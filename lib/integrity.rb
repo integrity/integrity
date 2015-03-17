@@ -76,7 +76,7 @@ require 'integrity/builder'
 require 'integrity/instance_manager'
 
 require 'integrity/pancakes'
-require 'integrity/pancake_mixer'
+require 'integrity/fleet_api_template_builder'
 
 DataMapper.finalize
 

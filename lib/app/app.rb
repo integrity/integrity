@@ -101,6 +101,7 @@ module Integrity
     post '/hook.json', provides: :json do
       @format = :json
       log "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{params.inspect}"
+      #halt 200
 
       payload = Payload.new(params)
       halt 404 unless payload.project

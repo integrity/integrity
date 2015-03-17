@@ -13,6 +13,107 @@ module Integrity
       10004 => :tim,
     }
 
+    SERVICES = {
+      mysql: {
+        image: 'grnds/mysql',
+        net_container: true,
+        ports: [25, 80, 3306, 10001, 10002, 10004],
+        requires: 'docker.service',
+      },
+      mailcatcher: {
+        image: 'simpledrupalcloud/mailcatcher',
+        requires: :mysql,
+        machineof: :mysql,
+      },
+      :"frick-server" => {
+        repo: 'consultingmd/frick',
+        image: 'grnds/frick_ci',
+        machineof: :mysql,
+        requires: :mysql,
+        env: {
+          'GITHUB_READ_TOKEN'     => ENV['GITHUB_READ_TOKEN'],
+          'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
+          'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
+          'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
+        },
+      },
+      :"jarvis-orchestra" => {
+        image: 'grnds/jarvis_ci',
+        repo: 'consultingmd/consultingmd',
+        machineof: :mysql,
+        requires: :mysql,
+        env: {
+          'GITHUB_READ_TOKEN'     => ENV['GITHUB_READ_TOKEN'],
+          'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
+          'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
+          'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
+        },
+      },
+      :"jarvis-server" => {
+        image: 'grnds/jarvis_ci',
+        repo: 'consultingmd/consultingmd',
+        machineof: :mysql,
+        requires: :"jarvis-orchestra",
+        env: {
+          'MAILCATCHER_SMTP_PORT' => 25,
+          'GITHUB_READ_TOKEN'     => ENV['GITHUB_READ_TOKEN'],
+          'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
+          'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
+          'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
+        },
+      },
+      :"jarvis-delayed_job" => {
+        image: 'grnds/jarvis_ci',
+        repo: 'consultingmd/consultingmd',
+        machineof: :mysql,
+        requires: :"jarvis-orchestra",
+        env: {
+          'MAILCATCHER_SMTP_PORT' => 25,
+          'GITHUB_READ_TOKEN'     => ENV['GITHUB_READ_TOKEN'],
+          'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
+          'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
+          'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
+        },
+      },
+      :"tim-orchestra" => {
+        image: 'grnds/tim_ci',
+        repo: 'consultingmd/tim',
+        machineof: :mysql,
+        requires: :mysql,
+        env: {
+          'GITHUB_READ_TOKEN'     => ENV['GITHUB_READ_TOKEN'],
+          'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
+          'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
+          'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
+        },
+      },
+      :"tim-server" => {
+        image: 'grnds/tim_ci',
+        repo: 'consultingmd/tim',
+        machineof: :mysql,
+        requires: :"tim-orchestra",
+        env: {
+          'GITHUB_READ_TOKEN'     => ENV['GITHUB_READ_TOKEN'],
+          'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
+          'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
+          'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
+        },
+      },
+      :"tim-delayed_job" => {
+        image: 'grnds/tim_ci',
+        repo: 'consultingmd/tim',
+        machineof: :mysql,
+        requires: :"tim-orchestra",
+        env: {
+          'GITHUB_READ_TOKEN'     => ENV['GITHUB_READ_TOKEN'],
+          'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
+          'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
+          'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
+        },
+      },
+    }
+
+
     @cached_urls = nil
     @fleet_client = Fleet.new
 
@@ -278,7 +379,6 @@ module Integrity
       #end
     #end
 
-
     def detect_and_make_template(service)
       if service == :mysql
         mysql_template
@@ -308,16 +408,8 @@ module Integrity
 
       my_units.each do |unit|
         fleet_client.destroy(unit[:name])
+        sleep 0.2
       end
-    end
-
-    # @param service :jarvis, :frick, :tim
-    # @api private
-    def git_env(app)
-      {
-        'BRANCH' => @git_branches[app][:branch],
-        'SHA'    => @git_branches[app][:sha],
-      }
     end
 
     def mysql_template
@@ -326,37 +418,6 @@ module Integrity
 
     def mailcatcher_template
       base_template service: :mailcatcher
-    end
-
-    # @api private
-    def base_template(service:, cmd: nil, more_env: {})
-      conf = SERVICES[service]
-
-      Integrity::FleetApiTemplateBuilder.base_hash(
-        cmd: cmd,
-        container_name: gen_container_name(service),
-        environment: (conf[:env] || {}).merge(more_env),
-        image: conf[:image],
-        machineof: gen_service_file_name(conf[:machineof]),
-        net_container_name: gen_container_name(net_container),
-        ports: conf[:ports],
-        requires: smart_requires(conf[:requires]),
-        oneshot: !!service.to_s['orchestra']
-      )
-    end
-
-    # @api private
-    def smart_requires(dep)
-      if SERVICES.keys.include?(dep)
-        gen_service_file_name(dep)
-      else
-        dep
-      end
-    end
-
-    # @api private
-    def net_container
-      :mysql
     end
 
     def dockyard_template(service)
@@ -375,111 +436,6 @@ module Integrity
 
       base_template service: service, cmd: cmd, more_env: git_env(app)
     end
-
-    # @api private
-    def github_read_token
-      ENV['GITHUB_READ_TOKEN']
-    end
-
-    SERVICES = {
-      mysql: {
-        image: 'grnds/mysql',
-        net_container: true,
-        ports: [25, 80, 3306, 10001, 10002, 10004],
-        requires: 'docker.service',
-      },
-      mailcatcher: {
-        image: 'simpledrupalcloud/mailcatcher',
-        requires: :mysql,
-        machineof: :mysql,
-      },
-      :"frick-server" => {
-        repo: 'consultingmd/frick',
-        image: 'grnds/frick_ci',
-        machineof: :mysql,
-        requires: :mysql,
-        env: {
-          'GITHUB_READ_TOKEN'     => ENV['GITHUB_READ_TOKEN'],
-          'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
-          'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
-          'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
-        },
-      },
-      :"jarvis-orchestra" => {
-        image: 'grnds/jarvis_ci',
-        repo: 'consultingmd/consultingmd',
-        machineof: :mysql,
-        requires: :mysql,
-        env: {
-          'GITHUB_READ_TOKEN'     => ENV['GITHUB_READ_TOKEN'],
-          'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
-          'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
-          'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
-        },
-      },
-      :"jarvis-server" => {
-        image: 'grnds/jarvis_ci',
-        repo: 'consultingmd/consultingmd',
-        machineof: :mysql,
-        requires: :"jarvis-orchestra",
-        env: {
-          'MAILCATCHER_SMTP_PORT' => 25,
-          'GITHUB_READ_TOKEN'     => ENV['GITHUB_READ_TOKEN'],
-          'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
-          'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
-          'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
-        },
-      },
-      :"jarvis-delayed_job" => {
-        image: 'grnds/jarvis_ci',
-        repo: 'consultingmd/consultingmd',
-        machineof: :mysql,
-        requires: :"jarvis-orchestra",
-        env: {
-          'MAILCATCHER_SMTP_PORT' => 25,
-          'GITHUB_READ_TOKEN'     => ENV['GITHUB_READ_TOKEN'],
-          'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
-          'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
-          'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
-        },
-      },
-      :"tim-orchestra" => {
-        image: 'grnds/tim_ci',
-        repo: 'consultingmd/tim',
-        machineof: :mysql,
-        requires: :mysql,
-        env: {
-          'GITHUB_READ_TOKEN'     => ENV['GITHUB_READ_TOKEN'],
-          'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
-          'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
-          'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
-        },
-      },
-      :"tim-server" => {
-        image: 'grnds/tim_ci',
-        repo: 'consultingmd/tim',
-        machineof: :mysql,
-        requires: :"tim-orchestra",
-        env: {
-          'GITHUB_READ_TOKEN'     => ENV['GITHUB_READ_TOKEN'],
-          'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
-          'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
-          'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
-        },
-      },
-      :"tim-delayed_job" => {
-        image: 'grnds/tim_ci',
-        repo: 'consultingmd/tim',
-        machineof: :mysql,
-        requires: :"tim-orchestra",
-        env: {
-          'GITHUB_READ_TOKEN'     => ENV['GITHUB_READ_TOKEN'],
-          'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
-          'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
-          'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
-        },
-      },
-    }
 
 
     #
@@ -511,12 +467,13 @@ module Integrity
     end
 
 
-    private
-
     #
     # private class methods
     #
 
+    private
+
+    # @api private
     def self.get_urls_for_machine_by_branch_id(ip)
       set_docker_api_client_url(ip)
       mysql_containers = Docker::Container.all.select{|c| get_container_name(c).match(/mysql/) }
@@ -543,10 +500,12 @@ module Integrity
       .reduce(&:merge)
     end
 
+    # @api private
     def self.get_container_name(container)
       container.info['Names'].first
     end
 
+    # @api private
     def self.commit_with_branch_name_or_master(project_name, branch_name)
       branch = branch_of_project(project_name, branch_name)
       if !branch
@@ -555,10 +514,12 @@ module Integrity
       branch.builds.last.commit
     end
 
+    # @api private
     def self.branch_of_project(project_name, branch_name)
       Integrity::Project.first(name: project_name).branches.first(name: branch_name)
     end
 
+    # @api private
     def self.parse_unit_name(unit_name)
       match = unit_name.match((/\/?(?:pancakes)_(?<branch_id>\d+)_no(?<serialno>\d+)(?<tag_string>_\w+)?_(?<service>\w+)/))
       raise "unit name '#{unit_name}' didnt match the expected format" unless match
@@ -570,15 +531,18 @@ module Integrity
       }
     end
 
+    # @api private
     def self.set_docker_api_client_url(addr)
       Docker.url = "tcp://#{addr}:2375"
       Docker.validate_version!
     end
 
+    # @api private
     def self.expected_services
       Dir[TEMPLATES_DIR + '/*.erb'].map { |t| File.basename(t).sub(/\.\w+\.erb$/, '') }
     end
 
+    # @api private
     def self.fleet_client
       @fleet_client
     end
@@ -588,31 +552,82 @@ module Integrity
     # private instance methods
     #
 
+    # @api private
     def fleet_client
       self.class.fleet_client
     end
 
+    # @api private
     def mk_out_dir
       FileUtils.mkdir_p out_dir
     end
 
+    # @api private
     def out_dir
       File.join('/tmp', @stack_id)
     end
 
+    # @api private
     def baked_filename(fname)
       File.join(out_dir, "#{@stack_id}_#{File.basename fname.sub(/\.erb$/, '')}")
     end
 
+    # @api private
     def gen_container_name(service)
       return nil unless service
       "#{@stack_id}_#{service}"
     end
 
+    # @api private
     def gen_service_file_name(service)
       return nil unless service
       "#{gen_container_name(service)}.service"
     end
     alias :gen_unit_file_name :gen_service_file_name
+
+    # @api private
+    def github_read_token
+      ENV['GITHUB_READ_TOKEN']
+    end
+
+    # @api private
+    def smart_requires(dep)
+      if SERVICES.keys.include?(dep)
+        gen_service_file_name(dep)
+      else
+        dep
+      end
+    end
+
+    # @api private
+    def net_container
+      :mysql
+    end
+
+    # @api private
+    def base_template(service:, cmd: nil, more_env: {})
+      conf = SERVICES[service]
+
+      Integrity::FleetApiTemplateBuilder.base_hash(
+        cmd: cmd,
+        container_name: gen_container_name(service),
+        environment: (conf[:env] || {}).merge(more_env),
+        image: conf[:image],
+        machineof: gen_service_file_name(conf[:machineof]),
+        net_container_name: gen_container_name(net_container),
+        ports: conf[:ports],
+        requires: smart_requires(conf[:requires]),
+        oneshot: !!service.to_s['orchestra']
+      )
+    end
+
+    # @param service :jarvis, :frick, :tim
+    # @api private
+    def git_env(app)
+      {
+        'BRANCH' => @git_branches[app][:branch],
+        'SHA'    => @git_branches[app][:sha],
+      }
+    end
   end
 end
