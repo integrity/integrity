@@ -361,7 +361,7 @@ module Integrity
     end
 
     def logger
-      self.class.logger(:debug)
+      self.class.logger(level: :debug)
     end
 
 
