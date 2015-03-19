@@ -266,7 +266,7 @@ module Integrity
         service = service.to_sym
         app = app.to_sym
         conf = service_configuration[service]
-        cmd = Integrity::FleetApiTemplateBuilder.dockyard_cmd(
+        cmd = Integrity::Pancakes::FleetApiTemplateBuilder.dockyard_cmd(
           branch: @git_branches[app][:branch],
           gh_read_token: ENV['GITHUB_READ_TOKEN'],
           repo: conf[:repo],
@@ -396,7 +396,7 @@ module Integrity
         conf = service_configuration[service]
         ports = conf[:net_container] ? service_configuration.to_a.map{|k,v| v[:ports] || [] }.reduce(&:+) : nil
 
-        Integrity::FleetApiTemplateBuilder.base_hash(
+        Integrity::Pancakes::FleetApiTemplateBuilder.base_hash(
           cmd: cmd,
           container_name: gen_container_name(service),
           environment: (conf[:env] || {}).merge(more_env),
