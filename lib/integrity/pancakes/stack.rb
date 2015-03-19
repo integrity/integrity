@@ -148,9 +148,9 @@ module Integrity
       end
 
       def is_service_up?(service_name)
-        log_stack(:warn, "can't ping mysql") if service_name.to_sym == :mysql
+        log_stack(:warn, "sorry, can't check mysql") if %i[mysql mailcatcher].include?(service_name.to_sym)
         begin
-          resp = RestClient.get("#{self.class.all_urls[@branch_id][:urls][service_name]}/status")
+          resp = RestClient.get("#{url_for_service(service_name)}/status")
           return resp.code == 200
         rescue
           return false
@@ -336,8 +336,6 @@ module Integrity
 
       private
 
-
-
       # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
       # private instance methods # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
       # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -384,6 +382,11 @@ module Integrity
       # @api private
       def service_configuration
         self.class.service_configuration
+      end
+
+      # @api private
+      def url_for_service(service_name)
+        self.class.all_urls[@branch_id][:urls][service_name]
       end
 
 
@@ -463,7 +466,7 @@ module Integrity
       #
       # @api private
       def refresh_state_of_the_pancakes
-        jarvis_up = is_service_up?(:jarvis)
+        jarvis_up = is_service_up?(:"jarvis-server")
         units_state = state_of_my_units
 
         @cached_state_of_the_pancakes =
