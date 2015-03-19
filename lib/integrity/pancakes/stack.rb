@@ -381,6 +381,11 @@ module Integrity
       end
       alias :gen_unit_file_name :gen_service_file_name
 
+      # @api private
+      def service_configuration
+        self.class.service_configuration
+      end
+
 
       #
       # templating
