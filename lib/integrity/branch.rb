@@ -98,6 +98,7 @@ module Integrity
     private
 
     def destroy_pancakes
+      Pancakes::Freezer.remove(pancakes)
       pancakes.destroy
     end
 
