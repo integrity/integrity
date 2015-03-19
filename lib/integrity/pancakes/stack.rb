@@ -291,10 +291,6 @@ module Integrity
         base_template service: service, cmd: cmd, more_env: git_env(app)
       end
 
-      def logging_prefix_for_service(service)
-        "#{STATIC_PREFIX} #@stack_id #{service}"
-      end
-
 
       # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
       # public class methods # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -381,6 +377,11 @@ module Integrity
         self.class.all_urls[@branch_id][:urls][service_name]
       end
 
+      # @api private
+      def logging_prefix_for_service(service)
+        "#{STATIC_PREFIX} #@stack_id #{service}"
+      end
+
 
       #
       # templating
@@ -425,7 +426,8 @@ module Integrity
       # @api private
       def mysql_template
         template = base_template service: :mysql, more_env: { 'STACK_ID' => branch_identifier }
-        template['Service']['ExecStop'].unshift "/usr/bin/docker exec #{gen_container_name(:mysql)} /root/freeze.sh |& sed -u -e's/^/[#{logging_prefix_for_service(:mysql)}] /'"
+        cmd = Pancakes::FleetApiTemplateBuilder.logging_prefix_pipe(logging_prefix_for_service(:mysql), "/usr/bin/docker exec #{gen_container_name(:mysql)} /root/freeze.sh")
+        template['Service']['ExecStop'].unshift(cmd)
         template
       end
 
