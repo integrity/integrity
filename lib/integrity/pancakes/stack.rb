@@ -285,10 +285,14 @@ module Integrity
           dockyard_cmd: dockyard_cmd,
           dockyard_source: 'from_github',
           branch_identifier: branch_identifier,
-          logging_prefix: "pancakes #@stack_id #{service}"
+          logging_prefix: logging_prefix_for_service(service)
         )
 
         base_template service: service, cmd: cmd, more_env: git_env(app)
+      end
+
+      def logging_prefix_for_service(service)
+        "#{STATIC_PREFIX} #@stack_id #{service}"
       end
 
 
@@ -421,7 +425,7 @@ module Integrity
       # @api private
       def mysql_template
         template = base_template service: :mysql, more_env: { 'STACK_ID' => branch_identifier }
-        template['Service']['ExecStop'].unshift "/usr/bin/docker exec #{gen_container_name(:mysql)} /root/freeze.sh"
+        template['Service']['ExecStop'].unshift "/usr/bin/docker exec #{gen_container_name(:mysql)} /root/freeze.sh |& sed -u -e's/^/[#{logging_prefix_for_service(:mysql)}] /'"
         template
       end
 
