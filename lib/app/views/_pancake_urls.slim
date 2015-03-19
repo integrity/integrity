@@ -1,8 +1,8 @@
 - if urls_hash
   == link_to 'jarvis', urls_hash[:"jarvis-server"], target: '_blank'
   |, 
-  == link_to 'frick', urls_hash[:"frick-server"], target: '_blank'
+  == link_to 'frick', urls_hash[:"frick-server"] + '/status', target: '_blank'
   |, 
-  == link_to 'tim', urls_hash[:"tim-server"], target: '_blank'
+  == link_to 'tim', urls_hash[:"tim-server"] + '/status', target: '_blank'
   |, 
   == link_to 'mailcatcher', urls_hash[:mailcatcher], target: '_blank'
