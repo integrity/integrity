@@ -36,7 +36,7 @@ module Integrity
           },
           'Service' => {
             'ExecStart' => _docker_run_cmd,
-            'ExecStop'  => docker_rm(container_name: container_name),
+            'ExecStop'  => [docker_rm(container_name: container_name)],
           }.merge(maybe_oneshot),
           'Install' => {
             'WantedBy' => 'local.target',
@@ -53,7 +53,6 @@ module Integrity
       # @api private
       def env_string(env_hash)
         env_hash.to_a.map do |k,v|
-          v = v.call if v.respond_to?(:call)
           format('-e "%s=%s"', k.to_s, v.to_s)
         end.join(' ')
       end

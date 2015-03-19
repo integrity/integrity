@@ -13,7 +13,7 @@ module Integrity
           ports: [3306],
           requires: 'docker.service',
           env: {
-            'STACK_ID'              => lambda { @stack_id },
+            'STACK_ID'              => nil,  # this gets set later. should be cleaned up.
             'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
             'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
             'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
@@ -424,7 +424,8 @@ module Integrity
 
       # @api private
       def mysql_template
-        base_template service: :mysql
+        template = base_template service: :mysql, more_env: { 'STACK_ID' => branch_identifier }
+        template['Service']['ExecStop'].unshift "/usr/bin/docker exec #{gen_container_name(:mysql)} /root/freeze.sh"
       end
 
       # @api private
