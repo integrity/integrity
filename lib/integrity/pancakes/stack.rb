@@ -434,6 +434,7 @@ module Integrity
       def mysql_template
         template = base_template service: :mysql, more_env: { 'STACK_ID' => branch_identifier }
         template['Service']['ExecStop'].unshift "/usr/bin/docker exec #{gen_container_name(:mysql)} /root/freeze.sh"
+        template
       end
 
       # @api private
