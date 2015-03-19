@@ -47,7 +47,7 @@ module Integrity
 
       def dockyard_cmd(branch:, gh_read_token:, repo:, dockyard_cmd:, dockyard_source:, stack_id:)
         clone_dir = 'test_subject'
-        %Q|/bin/bash -c 'git clone --branch #{branch} https://#{gh_read_token}@github.com/#{repo} ./#{clone_dir} && ./#{clone_dir}/dockyard-run #{dockyard_cmd} #{dockyard_source} #{stack_id}'|
+        %Q|/bin/bash -c 'git clone --depth 1 --branch #{branch} https://#{gh_read_token}@github.com/#{repo} ./#{clone_dir} && ./#{clone_dir}/dockyard-run #{dockyard_cmd} #{dockyard_source} #{stack_id}'|
       end
 
       # @api private
