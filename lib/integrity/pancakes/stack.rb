@@ -285,6 +285,7 @@ module Integrity
           dockyard_cmd: dockyard_cmd,
           dockyard_source: 'from_github',
           stack_id: branch_identifier,
+          logging_prefix: "pancakes #{service}"
         )
 
         base_template service: service, cmd: cmd, more_env: git_env(app)

@@ -45,9 +45,9 @@ module Integrity
         }
       end
 
-      def dockyard_cmd(branch:, gh_read_token:, repo:, dockyard_cmd:, dockyard_source:, stack_id:)
+      def dockyard_cmd(branch:, gh_read_token:, repo:, dockyard_cmd:, dockyard_source:, stack_id:, logging_prefix:)
         clone_dir = 'test_subject'
-        %Q|/bin/bash -c 'git clone --depth 1 --branch #{branch} https://#{gh_read_token}@github.com/#{repo} ./#{clone_dir} && ./#{clone_dir}/dockyard-run #{dockyard_cmd} #{dockyard_source} #{stack_id}'|
+        %Q</bin/bash -c 'git clone --depth 1 --branch #{branch} https://#{gh_read_token}@github.com/#{repo} ./#{clone_dir} && ./#{clone_dir}/dockyard-run #{dockyard_cmd} #{dockyard_source} #{stack_id} |& sed -u -e"s/^/[#{logging_prefix}] /"'>
       end
 
       # @api private
