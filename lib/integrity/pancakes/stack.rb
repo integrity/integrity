@@ -284,8 +284,8 @@ module Integrity
           repo: conf[:repo],
           dockyard_cmd: dockyard_cmd,
           dockyard_source: 'from_github',
-          stack_id: branch_identifier,
-          logging_prefix: "pancakes #{service}"
+          branch_identifier: branch_identifier,
+          logging_prefix: "pancakes #@stack_id #{service}"
         )
 
         base_template service: service, cmd: cmd, more_env: git_env(app)
@@ -343,7 +343,6 @@ module Integrity
       # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
       # private instance methods # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
       # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
 
       #
       # pancakes
