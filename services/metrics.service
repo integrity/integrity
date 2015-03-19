@@ -10,3 +10,4 @@ ExecStop=/usr/bin/docker stop metrics
 
 [X-Fleet]
 Global=true
+MachineMetadata=role=worker

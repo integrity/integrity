@@ -65,7 +65,6 @@ require 'integrity/commit'
 require 'integrity/build'
 require 'integrity/builder'
 require 'integrity/load_utilization'
-#require 'integrity/diligence_branch'
 require 'integrity/notifier'
 require 'integrity/notifier/base'
 require 'integrity/payload'
@@ -76,7 +75,6 @@ require 'integrity/builder'
 require 'integrity/instance_manager'
 
 require 'integrity/pancakes'
-require 'integrity/fleet_api_template_builder'
 
 DataMapper.finalize
 

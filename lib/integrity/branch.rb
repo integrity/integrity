@@ -45,9 +45,9 @@ module Integrity
       builds.first(order: :created_at.desc)
     end
 
-    #
-    # Pancakes #################################################################
-    #
+    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+    # Pancakes # # # # # # # # # # # # # # # # # # # # # # # # # # #
+    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
     def should_update_pancakes?
       self.pancaked? && !self.pancakes_locked?
@@ -56,7 +56,7 @@ module Integrity
     def pancakes
       assert_jarvis_branch!
       # TODO the pancakes object should obviously not be re-created everytime this method is called
-      Integrity::Pancakes.new_with_jarvis_branch(branch: self)
+      Integrity::Pancakes::Stack.new_with_jarvis_branch(branch: self)
     end
 
     def make_pancakes
