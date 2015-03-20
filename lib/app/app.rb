@@ -227,7 +227,6 @@ module Integrity
       jarvis = Integrity::Project.first(name: 'jarvis')
       @pancaked_branches = Integrity::Branch.all(project_id: jarvis.id, order: :last_build_id.desc, pancaked: true)
       @unpancaked_branches = Integrity::Branch.all(project_id: jarvis.id, limit:30, order: :last_build_id.desc, pancaked: false)
-      @urls = Integrity::Pancakes::Stack.refresh_all_urls
       slim :pancakes
     end
 

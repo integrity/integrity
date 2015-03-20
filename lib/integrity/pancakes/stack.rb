@@ -13,7 +13,6 @@ module Integrity
           ports: [3306],
           requires: 'docker.service',
           env: {
-            'STACK_ID'              => nil,  # this gets set later. should be cleaned up.
             'AWS_ACCESS_KEY_ID'     => ENV['DEV_AWS_ACCESS_KEY_ID'],
             'AWS_SECRET_ACCESS_KEY' => ENV['DEV_AWS_SECRET_ACCESS_KEY'],
             'AWS_SECRET_KEY'        => ENV['DEV_AWS_SECRET_KEY'],
@@ -118,6 +117,7 @@ module Integrity
 
 
       @cached_urls = nil
+      @cached_all_pancakes_units = nil
       @fleet_client = Fleet.new
 
       attr_reader :stack_id, :branch_id, :tags, :serialno
@@ -133,9 +133,7 @@ module Integrity
         @tags     = tags || []
 
         @stack_id = nil
-        @cached_state_of_the_pancakes = nil
         refresh_stack_id
-        refresh_state_of_the_pancakes
       end
 
       #
@@ -159,6 +157,10 @@ module Integrity
         refresh_stack_id
       end
 
+      def urls
+        self.class.all_urls[@branch_id][:urls]
+      end
+
       def is_service_up?(service_name)
         log(:warn, "sorry, can't check mysql") if %i[mysql mailcatcher].include?(service_name.to_sym)
         begin
@@ -169,8 +171,39 @@ module Integrity
         end
       end
 
+      def all_services_up?
+        #%i[jarvis-server tim-server frick-server].map do |service|
+        %i[jarvis-server].map do |service|
+          is_service_up?(service)
+        end
+          .reduce(true){|memo,val| memo && val }
+      end
+
+      # states
+      # - :running    units nominal and jarvis pingable
+      # - :starting   units nominal and jarvis unpingable, or units starting
+      # - :off        no units
+      # - :failed     any unit failed
+      # - :incomplete something is missing
+      # - :fucked_up  fallback
       def state_of_the_pancakes
-        @cached_state_of_the_pancakes
+        units_state = state_of_my_units
+
+        if units_state == :nominal
+          if all_services_up?
+            return :running
+          else
+            return :starting
+          end
+        else
+          return units_state
+        end
+      end
+
+      def state_of_the_pancakes!
+        self.class.refresh_all_pancakes_units!
+        #self.class.refresh_all_urls!
+        state_of_the_pancakes
       end
 
       def running?
@@ -197,7 +230,7 @@ module Integrity
         state_of_the_pancakes == :fucked_up
       end
 
-      def orchestrate
+      def orchestrate_async
         log :info, "orchestration starting"
 
         # start mysql first since it's sort of more important
@@ -265,11 +298,28 @@ module Integrity
         end
       end
 
-      def destroy
+      def destroy_async
         my_units.each do |unit|
-          fleet_client.destroy(unit[:name])
+          unit_name = unit[:name]
+          log :info, "orchestration destroying #{unit_name}"
+          fleet_client.destroy(unit_name)
           sleep 0.2
         end
+      end
+
+      def destroy
+        destroy_async
+        block_until_desired_pancakes_state(desired_state: :off)
+      end
+
+      # @return see block_until_desired_state_of_method
+      def block_until_desired_units_state(desired_state:, timeout: 30)
+        block_until_desired_state_of_method(method: :state_of_my_units!, desired_state: desired_state, timeout: timeout)
+      end
+
+      # @return see block_until_desired_state_of_method
+      def block_until_desired_pancakes_state(desired_state:, timeout: 30)
+        block_until_desired_state_of_method(method: :state_of_the_pancakes!, desired_state: desired_state, timeout: timeout)
       end
 
       def dockyard_template(service)
@@ -318,11 +368,12 @@ module Integrity
       end
 
       def self.all_urls
-        refresh_all_urls unless @cached_urls
-        return @cached_urls
+        return refresh_all_urls! unless @cached_urls
+        Pancakes.logp :info, "using cached container urls"
+        @cached_urls
       end
 
-      def self.refresh_all_urls
+      def self.refresh_all_urls!
         worker_ips = all_pancakes_units.map{|unit| unit[:machine_ip] }.to_set
         if worker_ips.empty?
           @cached_urls = {}
@@ -330,7 +381,7 @@ module Integrity
         end
 
         @cached_urls = worker_ips.map do |worker_ip|
-          get_urls_for_machine_grouped_by_branch_id(worker_ip)
+          get_urls_for_machine_grouped_by_branch_id!(worker_ip)
         end
         .reduce(&:merge)
 
@@ -382,6 +433,33 @@ module Integrity
         "#{STATIC_PREFIX} #@stack_id #{service}"
       end
 
+      # @api private
+      # @return true if state was reached, false if there was a timeout
+      def block_until_desired_state_of_method(method:, desired_state:, timeout: 30)
+        raise "can't call #{method}" unless respond_to?(method)
+        self.class.refresh_all_urls!
+        poll_interval = 1
+        counter = 1
+        start = Time.now
+
+        while (Time.now - start) <= timeout do
+          log :debug, "polling for #{desired_state.inspect} #{counter}"
+
+          state = send(method)
+
+          if state == desired_state
+            log :debug, "#{method} desired_state #{desired_state.inspect} reached"
+            return true
+          end
+
+          sleep(poll_interval)
+          counter += 1
+        end
+
+        log :warn, "timeout of #{timeout}s reached calling #{method} for desired_state #{desired_state.inspect}"
+        return false
+      end
+
 
       #
       # templating
@@ -390,7 +468,7 @@ module Integrity
       # @api private
       def base_template(service:, cmd: nil, more_env: {})
         conf = service_configuration[service]
-        ports = conf[:net_container] ? service_configuration.to_a.map{|k,v| v[:ports] || [] }.reduce(&:+) : nil
+        ports = conf[:net_container] ? self.class.all_ports : nil
 
         Integrity::Pancakes::FleetApiTemplateBuilder.base_hash(
           cmd: cmd,
@@ -425,8 +503,11 @@ module Integrity
 
       # @api private
       def mysql_template
-        template = base_template service: :mysql, more_env: { 'STACK_ID' => branch_identifier }
-        cmd = Pancakes::FleetApiTemplateBuilder.logging_prefix_pipe(logging_prefix_for_service(:mysql), "/usr/bin/docker exec #{gen_container_name(:mysql)} /root/freeze.sh")
+        template = base_template service: :mysql
+        cmd = Pancakes::FleetApiTemplateBuilder.logging_prefix_pipe(
+          logging_prefix_for_service(:mysql),
+          "/usr/bin/docker exec #{gen_container_name(:mysql)} /root/freeze.sh #{branch_identifier}"
+        )
         template['Service']['ExecStop'].unshift(cmd)
         template
       end
@@ -451,28 +532,10 @@ module Integrity
         self.class.all_pancakes_units.select{|u| u[:name].start_with?(@stack_id) }
       end
 
-      # states
-      # - :running    units nominal and jarvis pingable
-      # - :starting   units nominal and jarvis unpingable, or units starting
-      # - :off        no units
-      # - :failed     any unit failed
-      # - :incomplete something is missing
-      # - :fucked_up  fallback
-      #
       # @api private
-      def refresh_state_of_the_pancakes
-        jarvis_up = is_service_up?(:"jarvis-server")
-        units_state = state_of_my_units
-
-        @cached_state_of_the_pancakes =
-          if units_state == :nominal && jarvis_up
-            :running
-          elsif units_state == :nominal && !jarvis_up
-            :starting
-          else
-            units_state
-          end
-        return @cached_state_of_the_pancakes
+      def state_of_my_units!
+        self.class.refresh_all_pancakes_units!
+        state_of_my_units
       end
 
       # states
@@ -488,8 +551,7 @@ module Integrity
         expected = service_configuration.keys.map(&:to_s)
         units = my_units
 
-        none_exist = units.size == 0
-        if none_exist
+        if units.empty?
           return :off
         end
 
@@ -500,32 +562,31 @@ module Integrity
         active_states = units.map{ |u| u[:active_state] }
 
         if !all_exist
-          log :warn, "stack is incomplete. expected the following services: <#{expected.join(', ')}> but got units <#{unit_names.join(', ')}>"
+          log :warn, "stack is incomplete. expected the following services: <#{expected.sort.join(', ')}> but got units <#{unit_names.sort.join(', ')}>. missing: <#{(expected - unit_names).sort.join(', ')}>"
           return :incomplete
         end
 
         all_active = active_states.reduce(true){|memo,val| memo && val == 'active' }
         if all_active
-          log :info, "stack is nominal"
+          log :debug, "stack is nominal"
           return :nominal
         end
 
         active_or_inactive = active_states.reduce(true){|memo,val| memo && %w[active inactive activating].include?(val) }
         if active_or_inactive
-          log :info, "stack is starting"
+          log :debug, "stack is starting"
           return :starting
         end
 
         any_failed = active_states.reduce(false){|memo,val| memo || val == 'failed' }
         if any_failed
-          log :info, "stack failed"
+          log :warn, "stack failed: #{self.class.unit_states_string(units)}"
           return :failed
         end
 
-        log :warn, "stack is fucked_up with states: #{active_states.inspect}"
+        log :warn, "stack is fucked_up with states: #{self.class.unit_states_string(units)}"
         return :fucked_up
       end
-
 
       # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
       # 'private' class methods  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -533,14 +594,24 @@ module Integrity
 
       # @api private
       def self.all_pancakes_units
-        fleet_client.list.select{|u| u[:name].start_with?(STATIC_PREFIX) }
+        return refresh_all_pancakes_units! unless @cached_all_pancakes_units
+        Pancakes.logp :info, "using cached units"
+        @cached_all_pancakes_units
       end
 
       # @api private
-      def self.get_urls_for_machine_grouped_by_branch_id(machine_ip)
+      def self.refresh_all_pancakes_units!
+        Pancakes.logp :info, "getting latest units from fleet"
+        @cached_all_pancakes_units = fleet_client.list.select{|u| u[:name].start_with?(STATIC_PREFIX) }
+      end
+
+      # @api private
+      # @return a hash like { 526 => { :"jarvis-server" => "http://10.0.80.1:43631", :"frick-server" => ... }  }
+      def self.get_urls_for_machine_grouped_by_branch_id!(machine_ip)
         Docker.url = "tcp://#{machine_ip}:#{DOCKER_API_PORT}"
         Docker.validate_version!
 
+        Pancakes.logp :info, "getting latest containers from docker on #{machine_ip}"
         network_containers = Docker::Container.all.select{|c| get_container_name(c)[net_container.to_s] }
 
         if network_containers.empty?
@@ -561,6 +632,7 @@ module Integrity
       end
 
       # @api private
+      # @return a hash like { :"jarvis-server" => "http://10.0.80.1:43631", :"frick-server" => ... }
       def self.service_names_mapped_to_public_port_url(docker_ports, machine_ip)
         docker_ports.map do |port_pair|
           public_port, private_port = port_pair['PublicPort'], port_pair['PrivatePort']
@@ -571,6 +643,7 @@ module Integrity
       end
 
       # @api private
+      # @return a symbol like :"jarvis-server" or :"frick-server"
       def self.service_name_with_private_port(private_port)
         service_configuration.each do |name,conf|
           if conf[:ports] && conf[:ports].include?(private_port)
@@ -623,12 +696,26 @@ module Integrity
 
       # @api private
       def self.net_container
-        :mysql
+        service_configuration.each_pair do |service,conf|
+          if conf[:net_container] == true
+            return service
+          end
+        end
+
+        raise "no net_container is specified"
       end
 
       # @api private
       def self.all_ports
+        service_configuration.to_a.map{|k,v| v[:ports] || [] }.reduce(&:+)
+      end
 
+      # @api private
+      def self.unit_states_string(units)
+        units.map do |unit|
+          format('%s<active=%s, sub=%s>', unit[:name], unit[:active_state], unit[:sub_state])
+        end
+          .join(' ')
       end
     end
   end

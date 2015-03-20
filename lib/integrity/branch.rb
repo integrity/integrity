@@ -82,25 +82,22 @@ module Integrity
       self.pancaked = false
       self.pancakes_locked = false
       save
-      destroy_pancakes
+      pancakes.destroy
+      sleep 3
+      Pancakes::Freezer.remove(pancakes)
     end
 
     def start_tracking
       pk = make_pancakes
-      pk.orchestrate
+      pk.orchestrate_async
     end
 
     def update_pancakes
-      destroy_pancakes
+      pancakes.destroy_async
       start_tracking
     end
 
     private
-
-    def destroy_pancakes
-      Pancakes::Freezer.remove(pancakes)
-      pancakes.destroy
-    end
 
     # pancakes only work for jarvis branches as of the time i wrote this
     def assert_jarvis_branch!

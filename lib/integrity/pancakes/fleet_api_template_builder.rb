@@ -85,7 +85,6 @@ module Integrity
         else
           net_str = ''
         end
-        #cmd = %Q|/usr/bin/docker run --rm -v /var/lib/docker/tmp:/tmp/hosttmp --name=#{container_name} #{net_str} #{env_string(environment)} #{ports_str(ports)} #{image} #{cmd}|
         its_a_string = [net_str, env_string(environment), ports_str(ports), image, cmd].flatten.map(&:to_s).map(&:strip).join(' ')
         %Q|/usr/bin/docker run --rm -v /var/lib/docker/tmp:/tmp/hosttmp --name=#{container_name} #{its_a_string}|
       end

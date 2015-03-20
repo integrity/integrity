@@ -13,7 +13,7 @@ tr.pancakes-item class=pancakes_state_bootstrap_class(pancakes)
   td = build.author
   td = commit.message
   td
-    == slim :_pancake_urls, layout: false, locals: { urls_hash: urls_for_branch_id(@urls, branch.id) }
+    == slim :_pancake_urls, layout: false, locals: { urls_hash: pancakes.urls }
 
   td.actions
     a.btn.btn-default href="/pancakes/#{branch.id}/flip_lock" #{branch.pancakes_locked? ? 'Unlock' : 'Lock'}
