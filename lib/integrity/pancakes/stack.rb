@@ -311,16 +311,16 @@ module Integrity
 
       def destroy
         destroy_async
-        block_until_desired_pancakes_state(desired_state: :off)
+        block_until_desired_pancakes_state(desired_state: :off, timeout: 30)
       end
 
       # @return see block_until_desired_state_of_method
-      def block_until_desired_units_state(desired_state:, timeout: 30)
-        block_until_desired_state_of_method(method: :state_of_my_units!, desired_state: desired_state, timeout: timeout)
-      end
+      #def block_until_desired_units_state(desired_state:, timeout:)
+        #block_until_desired_state_of_method(method: :state_of_my_units!, desired_state: desired_state, timeout: timeout)
+      #end
 
       # @return see block_until_desired_state_of_method
-      def block_until_desired_pancakes_state(desired_state:, timeout: 30)
+      def block_until_desired_pancakes_state(desired_state:, timeout:)
         block_until_desired_state_of_method(method: :state_of_the_pancakes!, desired_state: desired_state, timeout: timeout)
       end
 
@@ -434,7 +434,7 @@ module Integrity
 
       # @api private
       # @return true if state was reached, false if there was a timeout
-      def block_until_desired_state_of_method(method:, desired_state:, timeout: 30)
+      def block_until_desired_state_of_method(method:, desired_state:, timeout:)
         raise "can't call #{method}" unless respond_to?(method)
         self.class.refresh_all_urls!
         poll_interval = 1
