@@ -83,7 +83,7 @@ module Integrity
       self.pancakes_locked = false
       save
       pancakes.destroy
-      sleep 3
+      sleep 3  # to avoid a race, give the mysql container a chance to freeze stuff before we delete it.
       Pancakes::Freezer.remove(pancakes)
     end
 
