@@ -325,21 +325,24 @@ module Integrity
 
       def dockyard_template(service)
         raise "#{service} is definitely not a service" unless service_configuration.keys.include?(service.to_sym)
-        app, dockyard_cmd = service.to_s.split('-')
+        codebase, service_type = service.to_s.split('-')
         service = service.to_sym
-        app = app.to_sym
+        codebase = codebase.to_sym
         conf = service_configuration[service]
         cmd = Integrity::Pancakes::FleetApiTemplateBuilder.dockyard_cmd(
-          branch: @git_branches[app][:branch],
-          gh_read_token: ENV['GITHUB_READ_TOKEN'],
+          branch: @git_branches[codebase][:branch],
+          sha: @git_branches[codebase][:sha],
           repo: conf[:repo],
-          dockyard_cmd: dockyard_cmd,
+          codebase: codebase,
+          service_type: service_type,
           dockyard_source: 'from_github',
           branch_identifier: branch_identifier,
-          logging_prefix: logging_prefix_for_service(service)
+          logging_prefix: logging_prefix_for_service(service),
+          gh_read_token: ENV['GITHUB_READ_TOKEN'],
+          debug: !!ENV['DOCKYARD_DEBUG'],
         )
 
-        base_template service: service, cmd: cmd, more_env: git_env(app)
+        base_template service: service, cmd: cmd, more_env: git_env(codebase)
       end
 
 
@@ -487,12 +490,12 @@ module Integrity
         end
       end
 
-      # @param app :jarvis, :frick, :tim, etc. ie, not jarvis-server, tim-orchestra, etc. only the app part of the service name.
+      # @param codebase :jarvis, :frick, :tim, etc. ie, not jarvis-server, tim-orchestra, etc. only the codebase part of the service name.
       # @api private
-      def git_env(app)
+      def git_env(codebase)
         {
-          'BRANCH' => @git_branches[app][:branch],
-          'SHA'    => @git_branches[app][:sha],
+          'BRANCH' => @git_branches[codebase][:branch],
+          'SHA'    => @git_branches[codebase][:sha],
         }
       end
 

@@ -45,11 +45,14 @@ module Integrity
         }
       end
 
-      def dockyard_cmd(branch:, gh_read_token:, repo:, dockyard_cmd:, dockyard_source:, branch_identifier:, logging_prefix:)
+      def dockyard_cmd(branch:, sha:, repo:, codebase:, service_type:, dockyard_source:, branch_identifier:, logging_prefix:, gh_read_token:, debug: false)
         clone_dir = 'test_subject'
+        debug_arg = debug ? 'DEBUG=true' : ''
         cmd = logging_prefix_pipe(
           logging_prefix,
-          "git clone --depth 1 --branch #{branch} https://#{gh_read_token}@github.com/#{repo} ./#{clone_dir} && ./#{clone_dir}/dockyard-run #{dockyard_cmd} #{dockyard_source} #{branch_identifier}"
+          #"git clone --depth 1 --branch #{branch} https://#{gh_read_token}@github.com/#{repo} ./#{clone_dir} && ./#{clone_dir}/dockyard-run #{service_type} #{dockyard_source} #{branch_identifier}"
+
+          "git clone --depth 1 --branch pancakes https://#{gh_read_token}@github.com/consultingmd/dockyard dockyard && ./dockyard/build.sh #{branch} #{sha} #{repo} #{codebase} #{clone_dir} #{service_type} #{branch_identifier} #{debug_arg}"
         )
         "/bin/bash -c '#{cmd}'"
       end
