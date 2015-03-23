@@ -1,11 +1,11 @@
 [Unit]
-Description=Metrics v03
+Description=Metrics v04
 After=docker.service
 Requires=docker.service
 
 [Service]
 Restart=always
-ExecStart=/usr/bin/docker run --rm -e "HOSTNAME=%m" -e "LIBRATO_TOKEN=<%= ENV['LIBRATO_TOKEN'] %>" --name metrics grnds/metrics
+ExecStart=/usr/bin/docker run --rm -e "STATHAT_EZ_TOKEN=<%= ENV['STATHAT_EZ_TOKEN'] %>" --name metrics grnds/metrics
 ExecStop=/usr/bin/docker stop metrics
 
 [X-Fleet]
