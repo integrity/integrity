@@ -46,6 +46,7 @@ require 'fleet'
 
 require 'opts/rconfig'
 require 'opts/fleet_api'
+require 'opts/github'
 
 require 'commands'
 require 'runnable'

@@ -64,6 +64,7 @@ gem 'awesome_print', require: 'awesome_print'
 gem 'pry', require: 'pry', group: :development
 gem 'sinatra-static-assets'
 gem 'docker-api', :require => 'docker'
+gem 'octokit', '~> 3.0'
 
 group :test do
   gem 'aws-ses', '~> 0.4.3', require: 'aws/ses'
