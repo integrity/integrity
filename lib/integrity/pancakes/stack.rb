@@ -159,7 +159,12 @@ module Integrity
 
       def urls
         self.class.refresh_all_urls!
-        self.class.all_urls[@branch_id][@serialno][:urls]
+        br = self.class.all_urls[@branch_id]
+        if br && br.has_key?(@serialno)
+          br[@serialno][:urls]
+        else
+          nil
+        end
       end
 
       def is_service_up?(service_name)
@@ -424,7 +429,7 @@ module Integrity
 
       # @api private
       def url_for_service(service_name)
-        self.class.all_urls[@branch_id][@serialno][:urls][service_name]
+        urls[service_name]
       end
 
       # @api private

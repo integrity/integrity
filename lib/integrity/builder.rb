@@ -133,13 +133,13 @@ module Integrity
     #def add_output(chunk)
       #@build.update(output: @build.output + chunk)
     #end
-    
+
     #def complete
       #logger.info "[fi] Build #{commit} exited with #{@result.success} got:\n #{@result.output}"
       #@build.raise_on_save_failure = true
       #@build.complete!(@result)
     #end
-    
+
     #def fail(exception)
       #failure_message = "#{exception.class}: #{exception.message}"
       #failure_message << "\n\n"
