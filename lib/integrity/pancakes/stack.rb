@@ -347,19 +347,13 @@ module Integrity
       # public class methods # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
       # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-      # @param build must be a jarvis branch
-      def self.new_with_jarvis_branch(branch: nil, tags: [])
-        branch_id = branch.id
-        branch_name = branch.name
-        jarvis_commit = branch.most_recent_build.commit
-        #jarvis_commit = Integrity::Project.first(name: 'jarvis').branches.first(name: 'dockyard').builds.last.commit
-        #frick_branch = Integrity::Project.first(name: 'frick').branches.first(name: 'dockyard')
-        #tim_commit = Integrity::Project.first(name: 'tim').branches.first(name: 'dockyard').builds.last.commit
-        frick_commit = commit_with_branch_name_or_master('frick', branch_name)
-        tim_commit   = commit_with_branch_name_or_master('tim', branch_name)
+      def self.new_with_branch(branch:, tags: [])
+        jarvis_commit = commit_with_branch_name_or_master('jarvis', branch.name)
+        frick_commit  = commit_with_branch_name_or_master('frick', branch.name)
+        tim_commit    = commit_with_branch_name_or_master('tim', branch.name)
 
         new(
-          branch_id: branch_id,
+          branch_id: branch.id,
           serialno: branch.pancakes_serialno,
           tags: tags,
           frick:  { branch: frick_commit.branch,  sha: frick_commit.identifier },

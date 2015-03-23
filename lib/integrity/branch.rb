@@ -54,13 +54,13 @@ module Integrity
     end
 
     def pancakes
-      assert_jarvis_branch!
+      #assert_jarvis_branch!
       # TODO the pancakes object should obviously not be re-created everytime this method is called
-      Integrity::Pancakes::Stack.new_with_jarvis_branch(branch: self)
+      Integrity::Pancakes::Stack.new_with_branch(branch: self)
     end
 
     def make_pancakes
-      assert_jarvis_branch!
+      #assert_jarvis_branch!
 
       self.pancaked = true
       self.pancakes_locked = false
@@ -100,10 +100,10 @@ module Integrity
     private
 
     # pancakes only work for jarvis branches as of the time i wrote this
-    def assert_jarvis_branch!
-      if project.name != 'jarvis'
-        raise 'pancakes only work for jarvis so far'
-      end
-    end
+    #def assert_jarvis_branch!
+      #if project.name != 'jarvis'
+        #raise 'pancakes only work for jarvis so far'
+      #end
+    #end
   end
 end
