@@ -163,6 +163,7 @@ module Integrity
 
       def is_service_up?(service_name)
         log(:warn, "sorry, can't check mysql") if %i[mysql mailcatcher].include?(service_name.to_sym)
+        self.class.refresh_all_urls!
         begin
           resp = RestClient.get("#{url_for_service(service_name)}/status")
           return resp.code == 200
