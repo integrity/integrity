@@ -158,7 +158,8 @@ module Integrity
       end
 
       def urls
-        self.class.all_urls[@branch_id][:urls]
+        self.class.refresh_all_urls!
+        self.class.all_urls[@branch_id][@serialno][:urls]
       end
 
       def is_service_up?(service_name)
@@ -423,7 +424,7 @@ module Integrity
 
       # @api private
       def url_for_service(service_name)
-        self.class.all_urls[@branch_id][:urls][service_name]
+        self.class.all_urls[@branch_id][@serialno][:urls][service_name]
       end
 
       # @api private
@@ -604,7 +605,6 @@ module Integrity
       end
 
       # @api private
-      # @return a hash like { 526 => { :"jarvis-server" => "http://10.0.80.1:43631", :"frick-server" => ... }  }
       def self.get_urls_for_machine_grouped_by_branch_id!(machine_ip)
         Docker.url = "tcp://#{machine_ip}:#{DOCKER_API_PORT}"
         Docker.validate_version!
@@ -619,14 +619,26 @@ module Integrity
 
         return network_containers.map do |container|
           parsed_unit_info = parse_unit_name(get_container_name(container))
-          {
-            parsed_unit_info[:branch_id] => {
-              urls: service_names_mapped_to_public_port_url(container.info['Ports'], machine_ip),
-              #worker_ip: machine_ip,
+          urls = service_names_mapped_to_public_port_url(container.info['Ports'], machine_ip)
+
+          [
+            parsed_unit_info[:branch_id],
+            {
+              parsed_unit_info[:serialno] => {
+                urls: urls,
+                worker_ip: machine_ip,
+              }
             }
-          }
+          ]
         end
-        .reduce(&:merge)
+        .reduce({}) do |memo,(branch_id,urls)|
+          if memo.has_key?(branch_id)
+            memo[branch_id] = memo[branch_id].merge(urls)
+          else
+            memo[branch_id] = urls
+          end
+          memo
+        end
       end
 
       # @api private
