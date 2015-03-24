@@ -32,10 +32,10 @@
     <%#<h3 class="text-center short"><%= "#{@inactive_diligence_branches.size} Inactive Diligence Build#{@inactive_diligence_branches.size == 1 ? '' : 's'}" %></h3>%>
     <%#<%= partial(:diligence_branch_item, locals: {diligence_branches: @inactive_diligence_branches}) %>%>
 
-- if !@unpancaked_branches.empty?
+- if !@not_pancaked_branches.empty?
   .row#branches
     h3.text-center.short
-      = "#{@unpancaked_branches.size} Recent Branch#{@unpancaked_branches.size == 1 ? '' : 'es'}"
+      = "#{@not_pancaked_branches.size} Recent Branch#{@not_pancaked_branches.size == 1 ? '' : 'es'}"
       div: small: i
         |  Services other than jarvis will try to use a branch
         |  of the same name as the jarvis branch, and otherwise master.
@@ -53,7 +53,7 @@
             th Message
             th
         tbody
-          - @unpancaked_branches.each do |branch|
+          - @not_pancaked_branches.each do |branch|
             tr class=branch.last_build.try(:bootstrap_class)
               td.status
                 i class="fa fa-#{branch_status(branch).icon}"

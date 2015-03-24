@@ -224,9 +224,8 @@ module Integrity
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
     get '/pancakes' do
-      jarvis = Integrity::Project.first(name: 'jarvis')
-      @pancaked_branches = Integrity::Branch.all(project_id: jarvis.id, order: :last_build_id.desc, pancaked: true)
-      @unpancaked_branches = Integrity::Branch.all(project_id: jarvis.id, limit:30, order: :last_build_id.desc, pancaked: false)
+      @pancaked_branches = Integrity::Branch.pancaked
+      @not_pancaked_branches = Integrity::Branch.not_pancaked
       Integrity::Pancakes::Stack.refresh_all_urls!
       slim :pancakes
     end

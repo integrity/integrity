@@ -29,6 +29,17 @@ module Integrity
     delegate :repo, to: :project
     delegate :status, :human_status, :human_duration, :successful?, :failed?, :pending?, :building?, to: :last_build, allow_nil: true
 
+    def self.not_pancaked
+     # project_id: 10  # jarvis
+     # project_id: 3   # tim
+     # project_id: 2   # frick
+      Integrity::Branch.all(project_id: [2, 3, 10], limit:30, order: :last_build_id.desc, pancaked: false)
+    end
+
+    def self.pancaked
+      Integrity::Branch.all(order: :last_build_id.desc, pancaked: true)
+    end
+
     def blank?
       last_build.nil?
     end
