@@ -690,7 +690,7 @@ module Integrity
 
         if !branch
           if only_head
-            Pancakes.logp :warn, "can't find #{project_name} branch #{branch_name} and only_head=true"
+            Pancakes.logp :warn, "can't find #{project_name} #{branch_name} and only_head=true"
             return nil
           end
 
@@ -701,18 +701,25 @@ module Integrity
 
         bu = branch.last_build
 
-        if bu && bu.successful?
-          Pancakes.logp :warn, "using last_build for #{project_name} branch #{branch_name}"
-          return bu.commit
+        if !bu
+          Pancakes.logp :warn, "#{project_name} #{branch_name} has nil last_build"
+          return nil
+        elsif bu.successful?
+          ci = bu.commit
+          Pancakes.logp :warn, "using last_build commit(#{ci.identifier}) for #{project_name} #{branch_name}"
+          return ci
+        else
+          Pancakes.logp :warn, "#{project_name} #{branch_name} tip commit(#{bu.commit.identifier}) isn't green. using latest green commit instead."
         end
 
-        Pancakes.logp :warn, "#{project_name} branch #{branch_name} HEAD commit isn't green. using latest green commit."
         bu = branch.builds.first(successful: true, order: :completed_at.desc)
 
         if bu
-          return bu.commit
+          ci = bu.commit
+          Pancakes.logp :warn, "using last green commit(#{ci.identifier}) for #{project_name} #{branch_name}"
+          return ci
         else
-          Pancakes.logp :warn, "#{project_name} branch #{branch_name} has no green commits I can use"
+          Pancakes.logp :warn, "#{project_name} #{branch_name} has no green commits I can use"
           return nil
         end
       end
