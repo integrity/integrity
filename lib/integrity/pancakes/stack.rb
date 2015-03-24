@@ -621,7 +621,10 @@ module Integrity
         Docker.validate_version!
 
         Pancakes.logp :info, "getting latest containers from docker on #{machine_ip}"
-        network_containers = Docker::Container.all.select{|c| get_container_name(c)[net_container.to_s] }
+        network_containers = Docker::Container.all.select do |c|
+          parsed_unit_info = parse_unit_name(get_container_name(c))
+          !parsed_unit_info.nil? && parsed_unit_info[:service_type]
+        end
 
         if network_containers.empty?
           Pancakes.logp :warn, "no networking containers found on worker with addr #{machine_ip}"
@@ -641,7 +644,7 @@ module Integrity
               }
             }
           ]
-        end
+        end   # reduce [[branch_id, {serialno => {urls:...}}]] to {branch_id => {serialno =>..., serialno =>...}}
         .reduce({}) do |memo,(branch_id,urls)|
           if memo.has_key?(branch_id)
             memo[branch_id] = memo[branch_id].merge(urls)
@@ -731,13 +734,16 @@ module Integrity
 
       # @api private
       def self.parse_unit_name(unit_name)
-        match = unit_name.match((/\/?(?:pancakes)_(?<branch_id>\d+)_no(?<serialno>\d+)(?<tag_string>_\w+)?_(?<service>\w+)/))
-        raise "unit name '#{unit_name}' didnt match the expected format" unless match
+        match = unit_name.match((/\/?(?:pancakes)_(?<branch_id>\d+)_no(?<serialno>\d+)(?<tag_string>_\w+)?_(?<service_type>\w+)/))
+        if !match
+          Pancakes.logp :warn, "unit name '#{unit_name}' didnt match the expected format"
+          return nil
+        end
         {
           branch_id: match[:branch_id].to_i,
           serialno:  match[:serialno].to_i,
           tags:      (match[:tag_string] || '').split('_').delete_if(&:empty?),
-          service:   match[:service],
+          service_type: match[:service_type],
         }
       end
 
