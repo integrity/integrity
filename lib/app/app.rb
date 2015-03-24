@@ -226,6 +226,7 @@ module Integrity
     get '/pancakes' do
       @pancaked_branches = Integrity::Branch.pancaked
       @not_pancaked_branches = Integrity::Branch.not_pancaked
+      Integrity::Pancakes::Stack.refresh_all_pancakes_units!
       Integrity::Pancakes::Stack.refresh_all_urls!
       slim :pancakes
     end

@@ -357,13 +357,15 @@ module Integrity
       # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
       def self.new_with_branch(branch:, tags: [])
-        jarvis_commit = commit_with_branch_name_or_master('jarvis', branch.name)
-        frick_commit  = commit_with_branch_name_or_master('frick', branch.name)
-        tim_commit    = commit_with_branch_name_or_master('tim', branch.name)
+        branch_prj_name = branch.project.name
+        jarvis_commit = commit_with_branch_name_or_master(project_name: 'jarvis', branch_name: branch.name, only_head: branch_prj_name == 'jarvis')
+        frick_commit  = commit_with_branch_name_or_master(project_name: 'frick', branch_name: branch.name, only_head: branch_prj_name == 'frick')
+        tim_commit    = commit_with_branch_name_or_master(project_name: 'tim', branch_name: branch.name, only_head: branch_prj_name == 'tim')
 
-        #if !jarvis_commit || !frick_commit || !tim_commit
-          #debugger;1
-        #end
+        if !jarvis_commit || !frick_commit || !tim_commit
+          Pancakes.logp :warn, "commit was nil jarvis_commit=#{jarvis_commit.inspect} frick_commit=#{frick_commit.inspect} tim_commit=#{tim_commit.inspect}"
+          return nil
+        end
 
         new(
           branch_id: branch.id,
@@ -683,12 +685,36 @@ module Integrity
       end
 
       # @api private
-      def self.commit_with_branch_name_or_master(project_name, branch_name)
+      def self.commit_with_branch_name_or_master(project_name:, branch_name:, only_head: false)
         branch = branch_of_project(project_name, branch_name)
+
         if !branch
-          branch = branch_of_project(project_name, 'master')
+          if only_head
+            Pancakes.logp :warn, "can't find #{project_name} branch #{branch_name} and only_head=true"
+            return nil
+          end
+
+          Pancakes.logp :info, "using #{project_name} master instead of #{branch_name}"
+          branch_name = 'master'
+          branch = branch_of_project(project_name, branch_name)
         end
-        branch.builds.last.commit
+
+        bu = branch.last_build
+
+        if bu && bu.successful?
+          Pancakes.logp :warn, "using last_build for #{project_name} branch #{branch_name}"
+          return bu.commit
+        end
+
+        Pancakes.logp :warn, "#{project_name} branch #{branch_name} HEAD commit isn't green. using latest green commit."
+        bu = branch.builds.first(successful: true, order: :completed_at.desc)
+
+        if bu
+          return bu.commit
+        else
+          Pancakes.logp :warn, "#{project_name} branch #{branch_name} has no green commits I can use"
+          return nil
+        end
       end
 
       # @api private

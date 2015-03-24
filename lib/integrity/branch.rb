@@ -29,11 +29,18 @@ module Integrity
     delegate :repo, to: :project
     delegate :status, :human_status, :human_duration, :successful?, :failed?, :pending?, :building?, to: :last_build, allow_nil: true
 
+    # @return 30 most recent green branches
     def self.not_pancaked
-     # project_id: 10  # jarvis
-     # project_id: 3   # tim
-     # project_id: 2   # frick
-      Integrity::Branch.all(project_id: [2, 3, 10], limit:30, order: :last_build_id.desc, pancaked: false)
+      # project_id 10 jarvis
+      # project_id  3 tim
+      # project_id  2 frick
+      branches = Integrity::Branch.all(project_id: [2, 3, 10], pancaked: false)
+      branches.select do |x|
+        lb = x.last_build
+        lb && lb.successful == true && lb.state == nil
+      end
+        .sort{|a,b| b.last_build.completed_at <=> a.last_build.completed_at }
+        .take(30)
     end
 
     def self.pancaked

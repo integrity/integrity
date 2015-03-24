@@ -25,7 +25,7 @@
           th
       tbody
         - @pancaked_branches.each do |branch|
-          - next unless branch.last_build
+          - next unless branch.pancakes
           == slim :_pancake_item, layout: false, locals: { branch: branch, build: branch.last_build, commit: branch.last_build.commit, pancakes: branch.pancakes }
 
   /<%#<div class="row" id="inactive_diligence_branches">%>
