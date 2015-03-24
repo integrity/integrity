@@ -1,8 +1,14 @@
 - if urls_hash
-  == link_to 'jarvis', urls_hash[:"jarvis-server"], target: '_blank'
-  |, 
-  == link_to 'frick', urls_hash[:"frick-server"] + '/status', target: '_blank'
-  |, 
-  == link_to 'tim', urls_hash[:"tim-server"] + '/status', target: '_blank'
-  |, 
-  == link_to 'mailcatcher', urls_hash[:mailcatcher], target: '_blank'
+  table.urls
+    tbody
+      - %i[jarvis frick tim].each do |codebase|
+        tr
+          td == link_to codebase, urls_hash["#{codebase}-server".to_sym], target: '_blank'
+          td.mono.small == link_to pancakes.sha_for(codebase)[0..6], github_commit_url(pancakes.commit_for(codebase)), target: '_blank'
+          td.mono.small = pancakes.branch_name_for(codebase)
+          td.small = time_ago_in_words pacific_time(pancakes.commit_for(codebase).committed_at)
+          td.small = pancakes.commit_for(codebase).author.name
+          td.small = pancakes.commit_for(codebase).message
+      tr
+        td == link_to 'mailcatcher', urls_hash[:mailcatcher], target: '_blank'
+        td

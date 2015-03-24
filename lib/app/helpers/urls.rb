@@ -21,8 +21,12 @@ module Integrity
         %Q{<a href="#{url}">#{label}</a>}
       end
 
-      def github_commit_url(build)
-         "#{github_project_url(build.project)}/commit/#{build.sha1}"
+      def github_commit_url(thing)
+        if thing.is_a?(Integrity::Build)
+          "#{github_project_url(thing.project)}/commit/#{thing.sha1}"
+        elsif thing.is_a?(Integrity::Commit)
+          "#{github_project_url(thing.project)}/commit/#{thing.identifier}"
+        end
       end
 
       def project_status_image_url(project)

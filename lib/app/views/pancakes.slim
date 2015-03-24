@@ -14,23 +14,19 @@
         tr
           th Status
           th ID
-          th Build
-          th Project
-          th Branch
-          th SHA
-          th Commit Time
-          th Author
-          th Message
-          th Links
+          /th Build
+          th Tracking
+          /th Branch
+          /th SHA
+          /th Commit Time
+          /th Author
+          /th Message
+          th Services
           th
       tbody
         - @pancaked_branches.each do |branch|
           - next unless branch.pancakes
-          == slim :_pancake_item, layout: false, locals: { branch: branch, build: branch.last_build, commit: branch.last_build.commit, pancakes: branch.pancakes }
-
-  /<%#<div class="row" id="inactive_diligence_branches">%>
-    <%#<h3 class="text-center short"><%= "#{@inactive_diligence_branches.size} Inactive Diligence Build#{@inactive_diligence_branches.size == 1 ? '' : 's'}" %></h3>%>
-    <%#<%= partial(:diligence_branch_item, locals: {diligence_branches: @inactive_diligence_branches}) %>%>
+          == slim :_pancake_item, layout: false, locals: { branch: branch, pancakes: branch.pancakes }
 
 - if !@not_pancaked_branches.empty?
   .row#branches

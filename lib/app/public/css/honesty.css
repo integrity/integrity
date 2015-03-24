@@ -75,3 +75,16 @@ td.actions > * {
 .pancakes-item .fa-lock {
   color: black !important;
 }
+
+table.urls td {
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+table.urls td:last-child {
+  font-style: italic;
+}
+
+table.urls tr:nth-child(odd) {
+  background-color: rgb(205, 228, 213);
+}

@@ -122,12 +122,12 @@ module Integrity
 
       attr_reader :stack_id, :branch_id, :tags, :serialno
 
-      def initialize(branch_id: nil, frick: nil, jarvis: nil, tim: nil, serialno: nil, tags: [])
+      def initialize(branch_id:, frick_commit:, jarvis_commit:, tim_commit:, serialno:, tags: [])
         @branch_id = branch_id
-        @git_branches = {
-          frick:  frick,
-          jarvis: jarvis,
-          tim:    tim,
+        @commits = {
+          frick:  frick_commit,
+          jarvis: jarvis_commit,
+          tim:    tim_commit,
         }
         @serialno = serialno
         @tags     = tags || []
@@ -336,8 +336,8 @@ module Integrity
         codebase = codebase.to_sym
         conf = service_configuration[service]
         cmd = Integrity::Pancakes::FleetApiTemplateBuilder.dockyard_cmd(
-          branch: @git_branches[codebase][:branch],
-          sha: @git_branches[codebase][:sha],
+          branch: branch_name_for(codebase),
+          sha: sha_for(codebase),
           repo: conf[:repo],
           codebase: codebase,
           service_type: service_type,
@@ -349,6 +349,18 @@ module Integrity
         )
 
         base_template service: service, cmd: cmd, more_env: git_env(codebase)
+      end
+
+      def commit_for(codebase)
+        @commits[codebase]
+      end
+
+      def sha_for(codebase)
+        commit_for(codebase).identifier
+      end
+
+      def branch_name_for(codebase)
+        commit_for(codebase).branch
       end
 
 
@@ -371,9 +383,9 @@ module Integrity
           branch_id: branch.id,
           serialno: branch.pancakes_serialno,
           tags: tags,
-          frick:  { branch: frick_commit.branch,  sha: frick_commit.identifier },
-          jarvis: { branch: jarvis_commit.branch, sha: jarvis_commit.identifier },
-          tim:    { branch: tim_commit.branch,    sha: tim_commit.identifier },
+          frick_commit:  frick_commit,
+          jarvis_commit: jarvis_commit,
+          tim_commit:    tim_commit,
         )
       end
 
@@ -506,8 +518,8 @@ module Integrity
       # @api private
       def git_env(codebase)
         {
-          'BRANCH' => @git_branches[codebase][:branch],
-          'SHA'    => @git_branches[codebase][:sha],
+          'BRANCH' => branch_name_for(codebase),
+          'SHA'    => sha_for(codebase),
         }
       end
 
