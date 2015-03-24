@@ -361,6 +361,10 @@ module Integrity
         frick_commit  = commit_with_branch_name_or_master('frick', branch.name)
         tim_commit    = commit_with_branch_name_or_master('tim', branch.name)
 
+        #if !jarvis_commit || !frick_commit || !tim_commit
+          #debugger;1
+        #end
+
         new(
           branch_id: branch.id,
           serialno: branch.pancakes_serialno,
