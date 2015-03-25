@@ -85,6 +85,6 @@ table.urls td:last-child {
   font-style: italic;
 }
 
-table.urls tr:nth-child(odd) {
-  background-color: rgb(205, 228, 213);
+table.urls tr:not(:last-child) {
+  border-bottom: 1px solid #999;
 }
