@@ -68,5 +68,8 @@ Integrity.configure do |c|
   # end
 end
 
+Pancakes.logger = Integrity.logger
+Pancakes.logger.level = 0
+
 # Try to queue pending builds on start
 Integrity.start

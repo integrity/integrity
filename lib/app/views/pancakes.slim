@@ -1,32 +1,27 @@
 /javascript:
   /= partial(:auto_reload)
 
-- if !@pancaked_branches.empty?
-  .row#active_diligence_branches
-    h3.text-center.short
-      = "#{@pancaked_branches.size} Pancakes"
+/- if !@pancaked_branches.empty?
+.row#active_diligence_branches
+  h3.text-center.short
+    = "#{@stacks.size} Stacks of Pancakes"
+    - if @stacks.size > 0
       div: small: i
-        |  Locked means a branch will not get updated when a new commit is pushed, although the branch will show the more recent commit.
+        |  Locked means a stack will not get updated when a new commit is pushed to one of it's unlocked services.
         |  Destroying a stack will also stop tracking.
-        |  Unlocking will not update the branch, branches will only update after a github push.
+        |  Unlocking will not update the stack.
+        |   They will only update after a github push.
+  - if @stacks.size > 0
     table.table.table-hover.table-condensed#previous_builds
       thead
         tr
           th Status
           th ID
-          /th Build
-          th Tracking
-          /th Branch
-          /th SHA
-          /th Commit Time
-          /th Author
-          /th Message
           th Services
           th
       tbody
-        - @pancaked_branches.each do |branch|
-          - next unless branch.pancakes
-          == slim :_pancake_item, layout: false, locals: { branch: branch, pancakes: branch.pancakes }
+        - @stacks.each do |stack|
+          == slim :"pancakes/_stack", layout: false, locals: { stack: stack }
 
 - if !@not_pancaked_branches.empty?
   .row#branches

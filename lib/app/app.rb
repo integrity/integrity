@@ -224,7 +224,7 @@ module Integrity
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
     get '/pancakes' do
-      @pancaked_branches = Integrity::Branch.pancaked
+      @stacks = Pancakes::Stack.all
       @not_pancaked_branches = Integrity::Branch.not_pancaked
       Pancakes::Stack.refresh_all_pancakes_units!
       Pancakes::Stack.refresh_all_urls!
@@ -240,17 +240,25 @@ module Integrity
       redirect back
     end
 
-    get '/pancakes/:branch_id/destroy' do |branch_id|
+    get '/pancakes/:branch_id/:serialno/destroy' do |branch_id,serialno|
       login_required
-      branch = Integrity::Branch.get(branch_id)
-      branch.stop_tracking
+      pk = Pancakes::Stack.get(branch_id, serialno)
+      pk.destroy_async
+      #branch = Integrity::Branch.get(stack_id)
+      #branch.stop_tracking
       redirect back
     end
 
-    get '/pancakes/:branch_id/flip_lock' do |branch_id|
+    get '/pancakes/:branch_id/:serialno/:codebase/flip_lock' do |branch_id,serialno,codebase|
       login_required
-      branch = Integrity::Branch.get(branch_id)
-      branch.flip_lock
+      pk = Pancakes::Stack.get(branch_id, serialno)
+      if pk
+        ci = pk.commit_for(codebase)
+        ci.flip_lock
+      end
+      pk.save
+      #branch = Integrity::Branch.get(stack_id)
+      #branch.flip_lock
       redirect back
     end
 

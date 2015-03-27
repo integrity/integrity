@@ -166,20 +166,23 @@ module Pancakes
       refresh_stack_id
     end
 
+    def serialno_str
+      "#{SERIALNO_PREFIX}#{serialno}"
+    end
+
     def urls
       self.class.refresh_all_urls!
-      br = self.class.all_urls[@branch_id]
+      self.class.all_urls[@stack_id]
 
-      if br && br.has_key?(@serialno)
-        br[@serialno][:urls]
-      else
-        nil
-      end
+      #if br && br.has_key?(@serialno)
+        #br[@serialno][:urls]
+      #else
+        #nil
+      #end
     end
 
     def is_service_up?(service_name)
       log(:warn, "sorry, can't check mysql") if %i[mysql mailcatcher].include?(service_name.to_sym)
-      self.class.refresh_all_urls!
       begin
         resp = RestClient.get("#{url_for_service(service_name)}/status")
         return resp.code == 200
@@ -189,9 +192,11 @@ module Pancakes
     end
 
     def all_services_up?
+      #self.class.refresh_all_urls!
       #%i[jarvis-server tim-server frick-server].map do |service|
       %i[jarvis-server].map do |service|
-        is_service_up?(service)
+        result = is_service_up?(service)
+        log :info, "#{service} is not up" unless result
       end
         .reduce(true){|memo,val| memo && val }
     end
@@ -219,7 +224,6 @@ module Pancakes
 
     def state_of_the_pancakes!
       self.class.refresh_all_pancakes_units!
-      #self.class.refresh_all_urls!
       state_of_the_pancakes
     end
 
@@ -300,10 +304,6 @@ module Pancakes
       state_of_the_pancakes == :fucked_up
     end
 
-    def create_async
-      async.create
-    end
-
     def as_json(opts={})
       {
         branch_id: @branch_id,
@@ -318,21 +318,28 @@ module Pancakes
       new(json)
     end
 
+    # @api private
     def store_in_etcd
-      etcd.set("/#{STACK_PREFIX}/#{branch_id}/#{SERIALNO_PREFIX}#{serialno}", value: JSON.dump(as_json))
+      etcd.set("/#{STACK_PREFIX}/#{branch_id}/#{serialno_str}", value: JSON.dump(as_json))
     end
+    alias :save :store_in_etcd
 
+    # @api private
     def get_from_etcd
       self.class.get_from_etcd(branch_id, serialno)
     end
 
+    # @api private
     def delete_stack_from_etcd
-      etcd.delete("/#{STACK_PREFIX}/#{branch_id}/#{SERIALNO_PREFIX}#{serialno}")
-      if etcd.get("/#{STACK_PREFIX}/#{branch_id}").value == nil
+      etcd.delete("/#{STACK_PREFIX}/#{branch_id}/#{serialno_str}")
+      dir = etcd.get("/#{STACK_PREFIX}/#{branch_id}")
+      if dir.value == nil && dir.children.empty?
         etcd.delete("/#{STACK_PREFIX}/#{branch_id}", recursive: true)
       end
+    rescue Etcd::KeyNotFound
     end
 
+    # @api private
     def self.get_from_etcd(branch_id, serialno)
       resp = etcd.get("/#{STACK_PREFIX}/#{branch_id}/#{SERIALNO_PREFIX}#{serialno}")
       if resp.value
@@ -340,12 +347,42 @@ module Pancakes
       else
         nil
       end
+    rescue Etcd::KeyNotFound
+      nil
+    end
+
+    def self.etcd_stored_stacks
+      resp = etcd.get('/pancakes', recursive: true)
+
+      print_node = lambda do |node|
+        if node.dir == true
+          child_keys = node.children.map do |node|
+            print_node.call(node)
+          end.reduce(&:+)
+        end
+
+        return [node.key] + (child_keys || [])
+
+      end
+
+      print_node.call(resp.node)
+    rescue Etcd::KeyNotFound
+      return []
+    end
+
+    def self.etcd_clear_all!
+      etcd.delete("/#{STACK_PREFIX}", recursive: true)
+    end
+
+    def create_async
+      async.create
     end
 
     def create
       log :info, "orchestration starting"
-      StatHatWrapper.post_count('orchestration starts', 1)
+      StatHatWrapper.post_count('pancakes orchestration starts', 1)
       start_time = Time.now
+      store_in_etcd
 
       # start mysql first since it's sort of more important
       service_hash = detect_and_make_template(:mysql)
@@ -403,13 +440,14 @@ module Pancakes
       if block_until_desired_pancakes_state(desired_state: :running, timeout: timeout)
         orch_time = Time.now - start_time
         log :info, "orchestration took #{format('%.1f', orch_time)}s"
-        StatHatWrapper.post_value('orchestration duration', orch_time)
+        StatHatWrapper.post_value('pancakes orchestration duration', orch_time)
       else
         log :warn, "orchestration timed out after #{timeout}s"
-        StatHatWrapper.post_count('orchestration timeouts', 1)
+        StatHatWrapper.post_count('pancakes orchestration timeouts', 1)
       end
 
       log :info, "orchestration done"
+      nil
     end
 
     def detect_and_make_template(service)
@@ -449,11 +487,24 @@ module Pancakes
         log :info, "stack destroy timeout after #{timeout}s"
         StatHatWrapper.post_count('pancakes destroy timeouts', 1)
       end
+
+      delete_stack_from_etcd
       log :info, 'destroy done'
+      nil
     end
 
     def remove_from_freezer
       Pancakes::Freezer.remove(self)
+    end
+
+    def restart_async
+      destroy_async
+      inc_serialno
+      create_async
+    end
+
+    def inc_serialno
+      self.serialno = self.serialno + 1
     end
 
     # @return see block_until_desired_state_of_method
@@ -462,7 +513,7 @@ module Pancakes
     #end
 
     # @return see block_until_desired_state_of_method
-    def block_until_desired_pancakes_state(desired_state:, timeout:)
+    def block_until_desired_pancakes_state(desired_state:, timeout: 30)
       block_until_desired_state_of_method(method: :state_of_the_pancakes!, desired_state: desired_state, timeout: timeout)
     end
 
@@ -472,6 +523,7 @@ module Pancakes
       service = service.to_sym
       codebase = codebase.to_sym
       conf = service_configuration[service]
+
       cmd = ::Pancakes::FleetApiTemplateBuilder.dockyard_cmd(
         branch: commit_for(codebase).branch_name,
         sha: commit_for(codebase).sha,
@@ -489,7 +541,7 @@ module Pancakes
     end
 
     def commit_for(codebase)
-      @commits[codebase]
+      @commits[codebase.to_sym]
     end
 
 
@@ -506,6 +558,29 @@ module Pancakes
       .map do |stack_info|
         get_from_etcd(stack_info[:branch_id], stack_info[:serialno])
       end
+    end
+
+    def self.all_with_branches(branches={})
+      all.select do |pk|
+        branches.reduce(false) do |memo,br|
+          codebase, branch_name = br.to_a
+          memo || pk.commit_for(codebase).branch_name == branch_name
+        end
+      end
+    end
+
+    def self.get(branch_id, serialno)
+      serialno = parse_serialno(serialno)
+      # get all units and get etcd data from their unit names, then find the first one
+      #all.detect { |stack| stack.branch_id == branch_id && stack.serialno == serialno  }
+
+      # just get stack info from etcd
+      get_from_etcd(branch_id, serialno)
+    end
+
+    # @api private
+    def self.parse_serialno(serialno)
+      serialno.to_s.sub(/^#{SERIALNO_PREFIX}/, '').to_i
     end
 
     def self.all_urls
@@ -576,12 +651,12 @@ module Pancakes
 
     # @api private
     # @return true if state was reached, false if there was a timeout
-    def block_until_desired_state_of_method(method:, desired_state:, timeout:)
+    def block_until_desired_state_of_method(method:, desired_state:, timeout: 30)
       raise "can't call #{method}" unless respond_to?(method)
-      self.class.refresh_all_urls!
       poll_interval = 1
       counter = 1
       start = Time.now
+      log :debug, "polling for #{desired_state} with timeout=#{timeout}"
 
       while (Time.now - start) <= timeout do
         log :debug, "polling for #{desired_state} #{counter}"
@@ -682,8 +757,13 @@ module Pancakes
 
     # @api private
     def self.refresh_all_pancakes_units!
-      Pancakes.logp :info, "getting latest units from fleet"
-      @cached_all_pancakes_units = fleet.list.select{|u| u[:name].start_with?(STACK_PREFIX) }
+      Pancakes.logp :debug, "getting latest units from fleet"
+      @cached_all_pancakes_units = fleet.list.select{|u| is_pancakes_unit?(u[:name]) }
+    end
+
+    # @api private
+    def self.is_pancakes_unit?(name)
+      name.start_with?(STACK_PREFIX)
     end
 
     # @api private
@@ -691,10 +771,12 @@ module Pancakes
       Docker.url = "tcp://#{machine_ip}:#{Pancakes::DOCKER_API_PORT}"
       Docker.validate_version!
 
-      Pancakes.logp :info, "getting latest containers from docker on #{machine_ip}"
-      network_containers = Docker::Container.all.select do |c|
-        parsed_unit_info = parse_unit_name(get_container_name(c))
-        !parsed_unit_info.nil? && parsed_unit_info[:service_type]
+      Pancakes.logp :debug, "getting latest containers from docker on #{machine_ip}"
+      network_containers = Docker::Container.all.select do |container|
+        name = get_container_name(container)
+        next false if !is_pancakes_unit?(name)
+        parsed_unit_info = parse_unit_name(name)
+        !parsed_unit_info.nil? && parsed_unit_info[:service_type].to_sym == net_container
       end
 
       if network_containers.empty?
@@ -706,24 +788,14 @@ module Pancakes
         parsed_unit_info = parse_unit_name(get_container_name(container))
         urls = service_names_mapped_to_public_port_url(container.info['Ports'], machine_ip)
 
-        [
-          parsed_unit_info[:branch_id],
-          {
-            parsed_unit_info[:serialno] => {
-              urls: urls,
-              worker_ip: machine_ip,
-            }
+        {
+          make_stack_id(parsed_unit_info[:branch_id], parsed_unit_info[:serialno]) => {
+            urls: urls,
+            worker_ip: machine_ip,
           }
-        ]
-      end   # reduce [[branch_id, {serialno => {urls:...}}]] to {branch_id => {serialno =>..., serialno =>...}}
-      .reduce({}) do |memo,(branch_id,urls)|
-        if memo.has_key?(branch_id)
-          memo[branch_id] = memo[branch_id].merge(urls)
-        else
-          memo[branch_id] = urls
-        end
-        memo
+        }
       end
+      .reduce(&:merge)
     end
 
     # @api private
@@ -755,7 +827,7 @@ module Pancakes
 
     # @api private
     def self.get_container_name(container)
-      container.info['Names'].first
+      container.info['Names'].first.sub(/^\//, '')
     end
 
     # @api private

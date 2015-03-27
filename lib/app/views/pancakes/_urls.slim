@@ -1,0 +1,26 @@
+- if urls_hash
+  table.urls
+    tbody
+      - %i[jarvis frick tim].each do |codebase|
+        - commit = stack.commit_for(codebase)
+        tr
+          td
+            a.btn.flip-lock-btn href="/pancakes/#{stack.branch_id}/#{stack.serialno_str}/#{codebase}/flip_lock"
+              - if commit.locked?
+                i.fa.fa-unlock
+              - else
+                i.fa.fa-lock
+          td == link_to codebase, urls_hash["#{codebase}-server".to_sym], target: '_blank'
+          td.mono.small == link_to commit.sha[0..6], github_commit_url(commit.sha), target: '_blank'
+          td.mono.small = commit.branch_name
+          td.small = time_ago_in_words pacific_time(commit.date_as_date)
+          td.small = commit.author_name
+          td.small = commit.message
+      tr
+        td
+        td == link_to 'mailcatcher', urls_hash[:mailcatcher], target: '_blank'
+        td
+        td
+        td
+        td
+        td

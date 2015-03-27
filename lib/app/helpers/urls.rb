@@ -26,8 +26,9 @@ module Integrity
           "#{github_project_url(thing.project)}/commit/#{thing.sha1}"
         elsif thing.is_a?(Integrity::Commit)
           "#{github_project_url(thing.project)}/commit/#{thing.identifier}"
-        elsif thing.is_a?(String)
+        elsif thing.is_a?(Pancakes::Commit)
           "#{github_project_url(thing.project)}/commit/#{thing}"
+          "http://github.com/#{thing.repo}/commit/#{thing.sha}"
         end
       end
 

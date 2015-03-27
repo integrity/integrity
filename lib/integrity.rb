@@ -324,6 +324,4 @@ module Integrity
   end
 end
 
-Pancakes.logger = Integrity.logger
-
 require 'opts/crust' # Load integrity before loading crust options, because it uses Integrity root and logger.

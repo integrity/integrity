@@ -12,13 +12,15 @@ module Pancakes
 
   class StackMaker
 
+    # @param serialno [Integer] it's just a number
+    # @param locks [Array] hash like [:jarvis]
     # @param branch_names [Hash] hash like { jarvis: 'master', ... }
-    def self.new_with_branch_names(serialno: nil, **branch_names)
+    def self.new_with_branch_names(serialno: nil, locks: [], **branch_names)
       commits = branch_names.map do |service,branch_name|
         {
           service =>
           Pancakes::Commit.new_from_github_api_commit(
-            github_tip_commit(
+            github_tip_commit_hash(
               Pancakes.repo_name(service),
               branch_name),
             branch_name)
@@ -26,11 +28,47 @@ module Pancakes
       end
       .reduce(&:merge)
 
+      set_locks(commits, locks)
+
       Stack.new(
         branch_id: branch_names_sha(branch_names.values),
         serialno:  serialno || Time.now.to_i,
         commits:   commits
       )
+    end
+
+    # @param locks [Array] hash like [:jarvis]
+    def self.new_with_integrity_branch(branch, locks=[])
+      branch_prj_name = branch.project.name
+      jarvis_commit = commit_with_branch_name_or_master(project_name: 'jarvis', branch_name: branch.name, only_head: branch_prj_name == 'jarvis')
+      frick_commit  = commit_with_branch_name_or_master(project_name: 'frick', branch_name: branch.name, only_head: branch_prj_name == 'frick')
+      tim_commit    = commit_with_branch_name_or_master(project_name: 'tim', branch_name: branch.name, only_head: branch_prj_name == 'tim')
+
+      if !jarvis_commit || !frick_commit || !tim_commit
+        Pancakes.logp :warn, "commit was nil jarvis_commit=#{jarvis_commit.inspect} frick_commit=#{frick_commit.inspect} tim_commit=#{tim_commit.inspect}"
+        return nil
+      end
+
+      commits = {
+        jarvis: Pancakes::Commit.new_from_integrity_commit(jarvis_commit),
+        frick:  Pancakes::Commit.new_from_integrity_commit(frick_commit),
+        tim:    Pancakes::Commit.new_from_integrity_commit(tim_commit),
+      }
+
+      set_locks(commits, locks)
+
+      Stack.new(
+        branch_id: branch.id,
+        serialno:  branch.pancakes_serialno,
+        commits:   commits,
+      )
+    end
+
+    # @api private
+    def self.set_locks(commits, locks)
+      locks.each do |lock|
+        commits[lock].lock
+      end
     end
 
     # @api private
@@ -44,31 +82,9 @@ module Pancakes
     end
 
     # @api private
-    def self.github_tip_commit(repo, branch_name)
+    def self.github_tip_commit_hash(repo, branch_name)
       ref = Octokit.ref(repo, heads_string(branch_name))
       commit = Octokit.commit(repo, ref[:object][:sha])
-    end
-
-    def self.new_with_integrity_branch(branch)
-      branch_prj_name = branch.project.name
-      jarvis_commit = commit_with_branch_name_or_master(project_name: 'jarvis', branch_name: branch.name, only_head: branch_prj_name == 'jarvis')
-      frick_commit  = commit_with_branch_name_or_master(project_name: 'frick', branch_name: branch.name, only_head: branch_prj_name == 'frick')
-      tim_commit    = commit_with_branch_name_or_master(project_name: 'tim', branch_name: branch.name, only_head: branch_prj_name == 'tim')
-
-      if !jarvis_commit || !frick_commit || !tim_commit
-        Pancakes.logp :warn, "commit was nil jarvis_commit=#{jarvis_commit.inspect} frick_commit=#{frick_commit.inspect} tim_commit=#{tim_commit.inspect}"
-        return nil
-      end
-
-      Stack.new(
-        branch_id: branch.id,
-        serialno:  branch.pancakes_serialno,
-        commits:   {
-          jarvis: Pancakes::Commit.new_from_integrity_commit(jarvis_commit),
-          frick:  Pancakes::Commit.new_from_integrity_commit(frick_commit),
-          tim:    Pancakes::Commit.new_from_integrity_commit(tim_commit),
-        }
-      )
     end
 
     # @api private
