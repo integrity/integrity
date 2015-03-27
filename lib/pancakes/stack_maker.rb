@@ -31,7 +31,7 @@ module Pancakes
       set_locks(commits, locks)
 
       Stack.new(
-        branch_id: branch_names_sha(branch_names.values),
+        branch_id: branch_names_sha(branch_names),
         serialno:  serialno || Time.now.to_i,
         commits:   commits
       )
@@ -72,8 +72,8 @@ module Pancakes
     end
 
     # @api private
-    def self.branch_names_sha(names)
-      Digest::SHA1.hexdigest(names.sort.join('-'))[0..7]
+    def self.branch_names_sha(branch_names)
+      Digest::SHA1.hexdigest(branch_names.to_a.map{|b| b.join(':') }.sort.join('+'))[0..7]
     end
 
     # @api private
