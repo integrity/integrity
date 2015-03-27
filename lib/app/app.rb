@@ -127,11 +127,13 @@ module Integrity
 
       log "[HOOK] /hook.json Build: #{build.inspect}"
 
-      branch = build.branch
-
-      if branch.should_update_pancakes?
-        log "[HOOK][pancakes] updating pancakes stack #{branch.pancakes.stack_id} from github hook"
-        branch.update_pancakes
+      event_hash = params.deep_symbolize_keys
+      repo_name = event_hash[:repository][:name].downcase
+      codebase = ({'consultingmd' => 'jarvis'}[repo_name]) || repo_name
+      branch_name = event_hash[:ref].sub('refs/heads/', '')
+      pk_to_update = Pancakes::Stack.all_with_unlocked_branches(codebase => branch_name)
+      pk_to_update.each do |pk|
+        pk.restart_async
       end
 
       json build
@@ -224,10 +226,10 @@ module Integrity
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
     get '/pancakes' do
-      @stacks = Pancakes::Stack.all
-      @not_pancaked_branches = Integrity::Branch.not_pancaked
       Pancakes::Stack.refresh_all_pancakes_units!
       Pancakes::Stack.refresh_all_urls!
+      @stacks = Pancakes::Stack.all
+      @not_pancaked_branches = Integrity::Branch.not_pancaked
       slim :pancakes
     end
 
@@ -244,21 +246,21 @@ module Integrity
       login_required
       pk = Pancakes::Stack.get(branch_id, serialno)
       pk.destroy_async
-      #branch = Integrity::Branch.get(stack_id)
-      #branch.stop_tracking
       redirect back
     end
 
     get '/pancakes/:branch_id/:serialno/:codebase/flip_lock' do |branch_id,serialno,codebase|
       login_required
+
       pk = Pancakes::Stack.get(branch_id, serialno)
+
       if pk
         ci = pk.commit_for(codebase)
         ci.flip_lock
       end
+
       pk.save
-      #branch = Integrity::Branch.get(stack_id)
-      #branch.flip_lock
+
       redirect back
     end
 

@@ -23,7 +23,7 @@
         - @stacks.each do |stack|
           == slim :"pancakes/_stack", layout: false, locals: { stack: stack }
 
-- if !@not_pancaked_branches.empty?
+/- if !@not_pancaked_branches.empty?
   .row#branches
     h3.text-center.short
       = "#{@not_pancaked_branches.size} Recent Branch#{@not_pancaked_branches.size == 1 ? '' : 'es'}"

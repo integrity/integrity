@@ -5,7 +5,7 @@ tr.pancakes-item class=pancakes_state_bootstrap_class(stack)
   td.mono.small = stack.branch_id.to_s + " no" + stack.serialno.to_s
   /td = branch.project.name
   td
-    == slim :"pancakes/_urls", layout: false, locals: { urls_hash: stack.urls, stack: stack }
+    == slim :"pancakes/_urls", layout: false, locals: { stack: stack }
 
   td.actions
     /a.btn.btn-default href="/pancakes/#{stack.branch_id}/flip_lock" #{branch.pancakes_locked? ? 'Unlock' : 'Lock'}

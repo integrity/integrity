@@ -129,6 +129,8 @@ module Integrity
           'default'
         elsif pancakes.fucked_up?
           'default'
+        else
+          'default'
         end
       end
     end

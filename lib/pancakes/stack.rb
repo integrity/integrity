@@ -143,6 +143,8 @@ module Pancakes
       @stack_id = nil
       refresh_stack_id
       init_mutex  # must call before using .async
+      @state_of_my_units = nil
+      @state_of_the_pancakes = nil
     end
 
     #
@@ -150,7 +152,7 @@ module Pancakes
     #
 
     def logger
-      ::Pancakes.logger
+      Pancakes.logger
     end
 
     def log(level, msg)
@@ -170,21 +172,24 @@ module Pancakes
       "#{SERIALNO_PREFIX}#{serialno}"
     end
 
-    def urls
-      self.class.refresh_all_urls!
-      self.class.all_urls[@stack_id]
+    def tcp_info(service_name=nil)
+      i =  self.class.all_tcp_info[@stack_id][:tcp_info]
+      if service_name
+        i[service_name.to_sym]
+      else
+        i
+      end
+    end
 
-      #if br && br.has_key?(@serialno)
-        #br[@serialno][:urls]
-      #else
-        #nil
-      #end
+    def service_url(service_name)
+      i = tcp_info(service_name)
+      "http://#{i[:host]}:#{i[:port]}"
     end
 
     def is_service_up?(service_name)
       log(:warn, "sorry, can't check mysql") if %i[mysql mailcatcher].include?(service_name.to_sym)
       begin
-        resp = RestClient.get("#{url_for_service(service_name)}/status")
+        resp = RestClient.get("#{service_url(service_name)}/status")
         return resp.code == 200
       rescue
         return false
@@ -192,13 +197,18 @@ module Pancakes
     end
 
     def all_services_up?
-      #self.class.refresh_all_urls!
       #%i[jarvis-server tim-server frick-server].map do |service|
       %i[jarvis-server].map do |service|
         result = is_service_up?(service)
-        log :info, "#{service} is not up" unless result
+        log :info, "#{service} is not up" if !result
+        result
       end
-        .reduce(true){|memo,val| memo && val }
+      .reduce(true) { |memo,val| memo && val }
+    end
+
+    def state_of_the_pancakes
+      state_of_the_pancakes! unless @state_of_the_pancakes
+      @state_of_the_pancakes
     end
 
     # states
@@ -208,28 +218,27 @@ module Pancakes
     # - :failed     any unit failed
     # - :incomplete something is missing
     # - :fucked_up  fallback
-    def state_of_the_pancakes
-      units_state = state_of_my_units
-
-      if units_state == :nominal
-        if all_services_up?
-          return :running
-        else
-          return :starting
-        end
-      else
-        return units_state
-      end
-    end
-
     def state_of_the_pancakes!
-      self.class.refresh_all_pancakes_units!
-      state_of_the_pancakes
+      units_state = state_of_my_units!
+
+      @state_of_the_pancakes =
+        if units_state == :nominal
+          if all_services_up?
+            log :debug, "pancakes state is running"
+            :running
+          else
+            log :debug, "pancakes state is starting"
+            :starting
+          end
+        else
+          units_state
+        end
+      return @state_of_the_pancakes
     end
 
-    def state_of_my_units!
-      self.class.refresh_all_pancakes_units!
-      state_of_my_units
+    def state_of_my_units
+      state_of_my_units! unless @state_of_my_units
+      @state_of_my_units
     end
 
     # states
@@ -239,12 +248,15 @@ module Pancakes
     # - :failed     anything failed
     # - :incomplete something is missing
     # - :fucked_up  fallback
-    def state_of_my_units
+    def state_of_my_units!
+      self.class.refresh_all_pancakes_units!
+
       expected = service_configuration.keys.map(&:to_s)
       units = my_units
 
       if units.empty?
-        return :off
+        @state_of_my_units = :off
+        return @state_of_my_units
       end
 
       unit_names = units.map{ |u| u[:name] }
@@ -254,30 +266,35 @@ module Pancakes
       active_states = units.map{ |u| u[:active_state] }
 
       if !all_exist
-        log :warn, "stack is incomplete. expected the following services: <#{expected.sort.join(', ')}> but got units <#{unit_names.sort.join(', ')}>. missing: <#{(expected - unit_names).sort.join(', ')}>"
-        return :incomplete
+        log :debug, "my_units state is incomplete. expected the following services: <#{expected.sort.join(', ')}> but got units <#{unit_names.sort.join(', ')}>. missing: <#{(expected - unit_names).sort.join(', ')}>"
+        @state_of_my_units = :incomplete
+        return @state_of_my_units
       end
 
       all_active = active_states.reduce(true){|memo,val| memo && val == 'active' }
       if all_active
-        log :debug, "stack is nominal"
-        return :nominal
+        log :debug, "my_units state is nominal"
+        @state_of_my_units = :nominal
+        return @state_of_my_units
       end
 
       active_or_inactive = active_states.reduce(true){|memo,val| memo && %w[active inactive activating].include?(val) }
       if active_or_inactive
-        log :debug, "stack is starting"
-        return :starting
+        log :debug, "my_units state is starting"
+        @state_of_my_units = :starting
+        return @state_of_my_units
       end
 
       any_failed = active_states.reduce(false){|memo,val| memo || val == 'failed' }
       if any_failed
-        log :warn, "stack failed: #{self.class.unit_states_string(units)}"
-        return :failed
+        log :debug, "stack failed: #{self.class.unit_states_string(units)}"
+        @state_of_my_units = :failed
+        return @state_of_my_units
       end
 
-      log :warn, "stack is fucked_up with states: #{self.class.unit_states_string(units)}"
-      return :fucked_up
+      log :debug, "my_units state is fucked_up with states: #{self.class.unit_states_string(units)}"
+      @state_of_my_units = :fucked_up
+      return @state_of_my_units
     end
 
     def running?
@@ -446,7 +463,6 @@ module Pancakes
         StatHatWrapper.post_count('pancakes orchestration timeouts', 1)
       end
 
-      log :info, "orchestration done"
       nil
     end
 
@@ -479,17 +495,15 @@ module Pancakes
       timeout = 60
       if block_until_desired_pancakes_state(desired_state: :off, timeout: timeout)
         destroy_time = Time.now - start_time
-        log :info, "orchestration took #{format('%.1f', destroy_time)}s"
-        log :info, 'destroyed pancakes'
-        StatHatWrapper.post_value('orchestration duration', destroy_time)
+        log :info, "destroy took #{format('%.1f', destroy_time)}s"
+        StatHatWrapper.post_value('pancakes destroy duration', destroy_time)
         StatHatWrapper.post_count('pancakes destroyed', 1)
       else
-        log :info, "stack destroy timeout after #{timeout}s"
+        log :info, "destroy timeout after #{timeout}s"
         StatHatWrapper.post_count('pancakes destroy timeouts', 1)
       end
 
       delete_stack_from_etcd
-      log :info, 'destroy done'
       nil
     end
 
@@ -499,12 +513,11 @@ module Pancakes
 
     def restart_async
       destroy_async
-      inc_serialno
-      create_async
-    end
-
-    def inc_serialno
-      self.serialno = self.serialno + 1
+      j = self.as_json
+      j['serialno'] += 1
+      pk = Stack.from_json(j)
+      pk.create_async
+      pk
     end
 
     # @return see block_until_desired_state_of_method
@@ -524,7 +537,7 @@ module Pancakes
       codebase = codebase.to_sym
       conf = service_configuration[service]
 
-      cmd = ::Pancakes::FleetApiTemplateBuilder.dockyard_cmd(
+      cmd = Pancakes::FleetApiTemplateBuilder.dockyard_cmd(
         branch: commit_for(codebase).branch_name,
         sha: commit_for(codebase).sha,
         repo: conf[:repo],
@@ -560,11 +573,12 @@ module Pancakes
       end
     end
 
-    def self.all_with_branches(branches={})
+    def self.all_with_unlocked_branches(branches={})
       all.select do |pk|
         branches.reduce(false) do |memo,br|
           codebase, branch_name = br.to_a
-          memo || pk.commit_for(codebase).branch_name == branch_name
+          ci = pk.commit_for(codebase)
+          memo || (ci.branch_name == branch_name && !ci.locked?)
         end
       end
     end
@@ -583,7 +597,7 @@ module Pancakes
       serialno.to_s.sub(/^#{SERIALNO_PREFIX}/, '').to_i
     end
 
-    def self.all_urls
+    def self.all_tcp_info
       return refresh_all_urls! unless @cached_urls
       #Pancakes.logp :info, "using cached container urls"
       @cached_urls
@@ -640,11 +654,6 @@ module Pancakes
     end
 
     # @api private
-    def url_for_service(service_name)
-      urls[service_name]
-    end
-
-    # @api private
     def logging_prefix_for_service(service)
       "#{STACK_PREFIX} #@stack_id #{service}"
     end
@@ -664,7 +673,7 @@ module Pancakes
         state = send(method)
 
         if state == desired_state
-          log :debug, "#{method} desired_state #{desired_state.inspect} reached"
+          log :debug, "#{method} desired_state #{desired_state} reached"
           return true
         end
 
@@ -672,7 +681,7 @@ module Pancakes
         counter += 1
       end
 
-      log :warn, "timeout of #{timeout}s reached calling #{method} for desired_state #{desired_state.inspect}"
+      log :warn, "timeout of #{timeout}s reached calling #{method} for desired_state #{desired_state}"
       return false
     end
 
@@ -686,7 +695,7 @@ module Pancakes
       conf = service_configuration[service]
       ports = conf[:net_container] ? self.class.all_ports : nil
 
-      ::Pancakes::FleetApiTemplateBuilder.base_hash(
+      Pancakes::FleetApiTemplateBuilder.base_hash(
         cmd: cmd,
         container_name: gen_container_name(service),
         environment: (conf[:env] || {}).merge(more_env),
@@ -786,11 +795,11 @@ module Pancakes
 
       return network_containers.map do |container|
         parsed_unit_info = parse_unit_name(get_container_name(container))
-        urls = service_names_mapped_to_public_port_url(container.info['Ports'], machine_ip)
+        tcp_info = service_names_mapped_to_public_port_and_host(container.info['Ports'], machine_ip)
 
         {
           make_stack_id(parsed_unit_info[:branch_id], parsed_unit_info[:serialno]) => {
-            urls: urls,
+            tcp_info: tcp_info,
             worker_ip: machine_ip,
           }
         }
@@ -799,12 +808,14 @@ module Pancakes
     end
 
     # @api private
-    # @return a hash like { :"jarvis-server" => "http://10.0.80.1:43631", :"frick-server" => ... }
-    def self.service_names_mapped_to_public_port_url(docker_ports, machine_ip)
+    ## @return a hash like { :"jarvis-server" => "http://10.0.80.1:43631", ... }
+    # @return a hash like { :"jarvis-server" => { host: "10.0.80.1", port: 43631 }, ... }
+    def self.service_names_mapped_to_public_port_and_host(docker_ports, machine_ip)
       docker_ports.map do |port_pair|
         public_port, private_port = port_pair['PublicPort'], port_pair['PrivatePort']
         service_name = service_name_with_private_port(private_port)
-        service_name ? { service_name => "http://#{machine_ip}:#{public_port}" } : {}
+        #service_name ? { service_name => "http://#{machine_ip}:#{public_port}" } : {}
+        service_name ? { service_name => { host: machine_ip, port: public_port } } : {}
       end
       .reduce(&:merge)
     end

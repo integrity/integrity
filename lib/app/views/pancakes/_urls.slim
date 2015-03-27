@@ -1,16 +1,16 @@
-- if urls_hash
+- if stack.tcp_info
   table.urls
     tbody
       - %i[jarvis frick tim].each do |codebase|
         - commit = stack.commit_for(codebase)
         tr
           td
-            a.btn.flip-lock-btn href="/pancakes/#{stack.branch_id}/#{stack.serialno_str}/#{codebase}/flip_lock"
+            a.btn.btn-primary.flip-lock-btn href="/pancakes/#{stack.branch_id}/#{stack.serialno_str}/#{codebase}/flip_lock"
               - if commit.locked?
-                i.fa.fa-unlock
+                | unlock
               - else
-                i.fa.fa-lock
-          td == link_to codebase, urls_hash["#{codebase}-server".to_sym], target: '_blank'
+                | lock
+          td == link_to codebase, stack.service_url("#{codebase}-server"), target: '_blank'
           td.mono.small == link_to commit.sha[0..6], github_commit_url(commit.sha), target: '_blank'
           td.mono.small = commit.branch_name
           td.small = time_ago_in_words pacific_time(commit.date_as_date)
@@ -18,9 +18,9 @@
           td.small = commit.message
       tr
         td
-        td == link_to 'mailcatcher', urls_hash[:mailcatcher], target: '_blank'
+        td(colspan='5') == link_to 'mailcatcher', stack.service_url(:mailcatcher), target: '_blank'
         td
+      tr
         td
-        td
-        td
+        td.mono.small(colspan='5') = "mysql -u root -h #{stack.tcp_info(:mysql)[:host]} -P #{stack.tcp_info(:mysql)[:port]}"
         td
