@@ -44,12 +44,15 @@ require 'i18n'
 require 'rest_client'
 require 'crust'
 require 'fleet'
+require 'etcd'
+require 'octokit'
 require 'stathat_wrapper'
 
 require 'opts/rconfig'
 require 'opts/fleet_api'
 require 'opts/github'
 require 'opts/stathat'
+require 'opts/etcd'
 
 require 'commands'
 require 'runnable'
@@ -78,7 +81,7 @@ require 'integrity/command_runner'
 require 'integrity/builder'
 require 'integrity/instance_manager'
 
-require 'integrity/pancakes'
+require 'pancakes'
 
 DataMapper.finalize
 
@@ -320,5 +323,7 @@ module Integrity
     #Integrity::Event.trigger('app:start')
   end
 end
+
+Pancakes.logger = Integrity.logger
 
 require 'opts/crust' # Load integrity before loading crust options, because it uses Integrity root and logger.

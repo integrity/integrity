@@ -51,6 +51,7 @@ gem 'fleetctl', git: 'git://github.com/ConsultingMD/ruby-fleetctl.git', branch: 
 #gem 'fleetctl', path: '/home/bird/ruby-fleetctl'
 gem 'fleet-api', require: 'fleet'
 gem 'crust', '0.0.22', git: 'git://github.com/ConsultingMD/crust.git'
+gem 'etcd'
 # gem 'crust', path: '/Users/rconda/Projects/GrandRounds/crust'
 #gem 'crust', path: '/home/ozzie/crust'
 
@@ -66,6 +67,7 @@ gem 'sinatra-static-assets'
 gem 'docker-api', :require => 'docker'
 gem 'octokit', '~> 3.0'
 gem 'stathat'
+gem 'concurrent-ruby'
 
 group :test do
   gem 'aws-ses', '~> 0.4.3', require: 'aws/ses'
