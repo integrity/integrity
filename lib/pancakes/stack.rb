@@ -128,16 +128,17 @@ module Pancakes
     @cached_urls = nil
     @cached_all_pancakes_units = nil
 
-    attr_reader :stack_id, :branch_id, :commits, :serialno
+    attr_reader :stack_id, :branch_id, :commits, :serialno, :start_time
 
     # @param branch_id [String,Integer] Tracking number of the stack. This stays the same throughout the lifetime of the stack.
     # @param serialno [Integer] unique identifier for an instance of a stack in a series of stacks
     # @param commits [Hash] a hash of { jarvis: Pancakes::Commit, ... } which represents which
     #   commits the stack is using and the branches they belong to
-    def initialize(branch_id:, serialno:, commits:) # not really used -> , tags: [])
-      @branch_id = branch_id
-      @serialno  = serialno
-      @commits   = commits
+    def initialize(branch_id:, serialno:, commits:, start_time:nil) # not really used -> , tags: [])
+      @branch_id  = branch_id
+      @serialno   = serialno
+      @commits    = commits
+      @start_time = start_time
       #@tags      = tags || []
 
       @stack_id = nil
@@ -145,6 +146,10 @@ module Pancakes
       init_mutex  # must call before using .async
       @state_of_my_units = nil
       @state_of_the_pancakes = nil
+    end
+
+    def start_time_as_date
+      Time.parse(@start_time)
     end
 
     #
@@ -323,9 +328,10 @@ module Pancakes
 
     def as_json(opts={})
       {
-        branch_id: @branch_id,
-        serialno:  @serialno,
-        commits:   @commits.as_json,
+        branch_id:  @branch_id,
+        serialno:   @serialno,
+        start_time: @start_time,
+        commits:    @commits.as_json,
       }.stringify_keys
     end
 
@@ -333,39 +339,6 @@ module Pancakes
       json = json.deep_symbolize_keys
       json[:commits] = json[:commits].map{|k,v| {k => Pancakes::Commit.from_json(v)} }.reduce(&:merge)
       new(json)
-    end
-
-    # @api private
-    def store_in_etcd
-      etcd.set("/#{STACK_PREFIX}/#{branch_id}/#{serialno_str}", value: JSON.dump(as_json))
-    end
-    alias :save :store_in_etcd
-
-    # @api private
-    def get_from_etcd
-      self.class.get_from_etcd(branch_id, serialno)
-    end
-
-    # @api private
-    def delete_stack_from_etcd
-      etcd.delete("/#{STACK_PREFIX}/#{branch_id}/#{serialno_str}")
-      dir = etcd.get("/#{STACK_PREFIX}/#{branch_id}")
-      if dir.value == nil && dir.children.empty?
-        etcd.delete("/#{STACK_PREFIX}/#{branch_id}", recursive: true)
-      end
-    rescue Etcd::KeyNotFound
-    end
-
-    # @api private
-    def self.get_from_etcd(branch_id, serialno)
-      resp = etcd.get("/#{STACK_PREFIX}/#{branch_id}/#{SERIALNO_PREFIX}#{serialno}")
-      if resp.value
-        from_json JSON.load(resp.value)
-      else
-        nil
-      end
-    rescue Etcd::KeyNotFound
-      nil
     end
 
     def self.etcd_stored_stacks
@@ -399,6 +372,7 @@ module Pancakes
       log :info, "orchestration starting"
       StatHatWrapper.post_count('pancakes orchestration starts', 1)
       start_time = Time.now
+      @start_time = start_time.to_s
       store_in_etcd
 
       # start mysql first since it's sort of more important
@@ -569,7 +543,7 @@ module Pancakes
         uniq
       end
       .map do |stack_info|
-        get_from_etcd(stack_info[:branch_id], stack_info[:serialno])
+        get_from_etcd(branch_id: stack_info[:branch_id], serialno: stack_info[:serialno])
       end
     end
 
@@ -589,7 +563,12 @@ module Pancakes
       #all.detect { |stack| stack.branch_id == branch_id && stack.serialno == serialno  }
 
       # just get stack info from etcd
-      get_from_etcd(branch_id, serialno)
+      get_from_etcd(branch_id: branch_id, serialno: serialno)
+    end
+
+    def self.get_with_branches(branches)
+      sha = Pancakes::StackMaker.branch_names_sha(branches)
+      get_from_etcd(branch_id: sha)
     end
 
     # @api private
@@ -628,6 +607,34 @@ module Pancakes
     #
     # pancakes
     #
+
+    # @api private
+    def store_in_etcd
+      key = "/#{STACK_PREFIX}/#{branch_id}/#{serialno_str}"
+      log :info, "storing #{key} in etcd"
+      etcd.set(key, value: JSON.dump(as_json))
+    end
+    alias :save :store_in_etcd
+
+    # @api private
+    def get_from_etcd
+      self.class.get_from_etcd(branch_id, serialno)
+    end
+
+    # @api private
+    def delete_stack_from_etcd
+      key = "/#{STACK_PREFIX}/#{branch_id}/#{serialno_str}"
+      log :info, "deleting stack #{key} from etcd"
+      etcd.delete(key)
+
+      key = "/#{STACK_PREFIX}/#{branch_id}"
+      dir = etcd.get(key)
+      if dir.value == nil && dir.children.empty?
+        log :info, "deleting all stacks in #{key} from etcd"
+        etcd.delete(key, recursive: true)
+      end
+    rescue Etcd::KeyNotFound
+    end
 
     # @api private
     def refresh_stack_id
@@ -675,6 +682,9 @@ module Pancakes
         if state == desired_state
           log :debug, "#{method} desired_state #{desired_state} reached"
           return true
+        #elsif state == :failed
+          #log :debug, "#{method} failed waiting for desired_state #{desired_state}"
+          #return false
         end
 
         sleep(poll_interval)
@@ -884,6 +894,37 @@ module Pancakes
     # @api private
     def self.make_stack_id(branch_id, serialno)
       @stack_id = format("%s_%s_%s%d", STACK_PREFIX, branch_id, SERIALNO_PREFIX, serialno)
+    end
+
+    # If serialno is nil, get the stack with the highest serialno within branch_id.
+    #
+    # @api private
+    def self.get_from_etcd(branch_id:, serialno: nil)
+      branch_path = "/#{STACK_PREFIX}/#{branch_id}"
+
+      if serialno
+        resp = etcd.get("#{branch_path}/#{SERIALNO_PREFIX}#{serialno}")
+
+        if resp.value
+          from_json JSON.load(resp.value)
+        else
+          nil
+        end
+      else
+        branch_resp = etcd.get(branch_path)
+
+        if branch_resp.node.dir && !branch_resp.node.children.empty?
+          last_serialno = branch_resp.node.children.map(&:key).sort.last
+          resp = etcd.get(last_serialno)
+          if resp.value
+            from_json JSON.load(resp.value)
+          else
+            nil
+          end
+        end
+      end
+    rescue Etcd::KeyNotFound
+      nil
     end
   end
 end

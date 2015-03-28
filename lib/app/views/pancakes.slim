@@ -1,6 +1,15 @@
 /javascript:
   /= partial(:auto_reload)
 
+form#create-pancakes-form action='/pancakes/create' method='post'
+  - if @error
+    div.alert.alert-danger.alert-dismissible = @error
+  - %w[jarvis frick tim].each do |codebase|
+    div.ui-widget
+      label for="#{codebase}_branch" #{codebase} branch
+      input type='text' name='#{codebase}-branch' id="#{codebase}_branch" autocomplete='off'
+  input type='submit' value='Make Pancakes'
+
 /- if !@pancaked_branches.empty?
 .row#active_diligence_branches
   h3.text-center.short
@@ -17,6 +26,7 @@
         tr
           th Status
           th ID
+          th Uptime
           th Services
           th
       tbody

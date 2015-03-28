@@ -1,3 +1,4 @@
 Octokit.configure do |c|
   c.access_token = ENV['GITHUB_READ_TOKEN']
+  c.auto_paginate = true
 end

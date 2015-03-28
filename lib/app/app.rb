@@ -229,17 +229,36 @@ module Integrity
       Pancakes::Stack.refresh_all_pancakes_units!
       Pancakes::Stack.refresh_all_urls!
       @stacks = Pancakes::Stack.all
-      @not_pancaked_branches = Integrity::Branch.not_pancaked
       slim :pancakes
     end
 
-    get '/pancakes/:branch_id/start_tracking' do |branch_id|
-      login_required
+    #get '/pancakes/:branch_id/start_tracking' do |branch_id|
+      #login_required
 
-      branch = Integrity::Branch.get(branch_id)
-      branch.start_tracking
+      #branch = Integrity::Branch.get(branch_id)
+      #branch.start_tracking
 
-      redirect back
+      #redirect back
+    #end
+
+    post '/pancakes/create' do
+      branches = {
+        jarvis: params['jarvis-branch'],
+        frick:  params['frick-branch'],
+        tim:    params['tim-branch']
+      }
+      pk = Pancakes::Stack.get_with_branches(branches)
+      if !pk
+        pk = Pancakes::StackMaker.new_with_branch_names(branches)
+        pk.create_async
+        redirect back
+      else
+        @error = 'stack with those branches already exists'
+        Pancakes::Stack.refresh_all_pancakes_units!
+        Pancakes::Stack.refresh_all_urls!
+        @stacks = Pancakes::Stack.all
+        slim :pancakes
+      end
     end
 
     get '/pancakes/:branch_id/:serialno/destroy' do |branch_id,serialno|
@@ -262,6 +281,34 @@ module Integrity
       pk.save
 
       redirect back
+    end
+
+    get '/pancakes/branches/:codebase.json' do |codebase|
+      term = params[:term]
+      cache_key = "#{codebase}_branches"
+
+      if params[:fresh]
+        Pancakes.cache.delete(cache_key)
+      end
+
+      if !Pancakes.cache[cache_key]
+        br = Octokit.branches("consultingmd/#{{'jarvis' => 'consultingmd'}[codebase] || codebase}").map{|b| b[:name] }
+        if br.delete('master')
+          br.sort!
+          br.unshift('master')
+        end
+        Pancakes.cache[cache_key] = br
+      end
+
+      if term
+        branches = Pancakes.cache[cache_key].select do |name|
+          !!name[term]
+        end
+      else
+        branches = Pancakes.cache[cache_key]
+      end
+
+      JSON.dump(branches)
     end
 
     #

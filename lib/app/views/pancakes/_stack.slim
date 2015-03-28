@@ -3,11 +3,9 @@ tr.pancakes-item class=pancakes_state_bootstrap_class(stack)
     = stack.state_of_the_pancakes.to_s.upcase
 
   td.mono.small = stack.branch_id.to_s + " no" + stack.serialno.to_s
-  /td = branch.project.name
+  td = time_ago_in_words(pacific_time(stack.start_time_as_date)).sub(' ago', '')
   td
     == slim :"pancakes/_urls", layout: false, locals: { stack: stack }
 
   td.actions
-    /a.btn.btn-default href="/pancakes/#{stack.branch_id}/flip_lock" #{branch.pancakes_locked? ? 'Unlock' : 'Lock'}
-    /a.btn.btn-default href="/pancakes/#{stack.branch_id}/flip_lock" TODO
     a.btn.btn-danger  href="/pancakes/#{stack.branch_id}/#{stack.serialno_str}/destroy" Destroy

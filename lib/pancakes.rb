@@ -4,6 +4,11 @@ module Pancakes
   @logger = nil
   @fleet_client = Fleet.new
   @etcd_client  = Etcd.client(host: ENV['ETCD_HOSTNAME'])
+  @cache = {}
+
+  def self.cache
+    @cache
+  end
 
   def self.logger
     @logger

@@ -100,3 +100,7 @@ table.urls tr:not(:last-child) {
   padding-left: 6px;
   font-size: 75%;
 }
+
+#create-pancakes-form label {
+  width: 130px;
+}
