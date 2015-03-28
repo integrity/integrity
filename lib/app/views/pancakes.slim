@@ -7,7 +7,7 @@ form#create-pancakes-form action='/pancakes/create' method='post'
   - %w[jarvis frick tim].each do |codebase|
     div.ui-widget
       label for="#{codebase}_branch" #{codebase} branch
-      input type='text' name='#{codebase}-branch' id="#{codebase}_branch" autocomplete='off'
+      input type='text' name='#{codebase}-branch' id="#{codebase}_branch" autocomplete='off' placeholder='master'
   input type='submit' value='Make Pancakes'
 
 /- if !@pancaked_branches.empty?
