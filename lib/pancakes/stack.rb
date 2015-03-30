@@ -612,6 +612,14 @@ module Pancakes
       return @cached_urls
     end
 
+    def etcd_store_myself
+      key = self.class.etcd_sn_path(branch_id: branch_id, serialno: serialno)
+      log :info, "storing #{key} in etcd"
+      etcd.set(key, value: JSON.dump(as_json))
+      self.class.etcd_set_last_sn(branch_id: branch_id, serialno: serialno)
+    end
+    alias :save :etcd_store_myself
+
 
     private
 
@@ -622,16 +630,6 @@ module Pancakes
     #
     # pancakes
     #
-
-    # @api private
-    def etcd_store_myself
-      key = self.class.etcd_sn_path(branch_id: branch_id, serialno: serialno)
-      log :info, "storing #{key} in etcd"
-      etcd.set(key, value: JSON.dump(as_json))
-      self.class.etcd_set_last_sn(branch_id: branch_id, serialno: serialno)
-    end
-    alias :save :etcd_store_myself
-    public :etcd_store_myself
 
     # @api private
     def self.etcd_update_last_sn(branch_id: branch_id)
