@@ -492,12 +492,12 @@ module Pancakes
       end
 
       etcd_delete_myself
-      sleep 5
-      remove_from_freezer if rm_frozen == true
+      async.wait_and_remove_from_freezer if rm_frozen == true
       nil
     end
 
-    def remove_from_freezer
+    def wait_and_remove_from_freezer
+      sleep 10
       Pancakes::Freezer.remove(self)
     end
 
@@ -627,17 +627,21 @@ module Pancakes
       key = self.class.etcd_sn_path(branch_id: branch_id, serialno: serialno)
       log :info, "storing #{key} in etcd"
       etcd.set(key, value: JSON.dump(as_json))
-      etcd_update_last_sn(branch_id: branch_id)
+      self.etcd_set_last_sn(branch_id: branch_id, serialno: serialno)
     end
     alias :save :etcd_store_myself
     public :etcd_store_myself
 
     # @api private
-    def etcd_update_last_sn(branch_id: branch_id)
-      key = self.class.etcd_last_serialno_path(branch_id: branch_id)
-      last_sn = self.class.etcd_get_last_sn(branch_id: branch_id)
-      log :info, "storing #{key} in etcd"
-      etcd.set(key, value: last_sn)
+    def self.etcd_update_last_sn(branch_id: branch_id)
+      last_sn = etcd_get_last_sn(branch_id: branch_id)
+      etcd_set_last_sn(branch_id: branch_id, serialno: last_sn)
+    end
+
+    # @api private
+    def self.etcd_set_last_sn(branch_id: branch_id, serialno: serialno)
+      key = etcd_last_serialno_path(branch_id: branch_id)
+      etcd.set(key, value: serialno)
     end
 
     # @api private
@@ -924,13 +928,16 @@ module Pancakes
 
     # @api private
     def self.etcd_get_last_sn(branch_id:)
-      branch_resp = etcd.get(etcd_branch_path(branch_id: branch_id) + "/serialnos")
+      last_sn = etcd.get(etcd_last_serialno_path(branch_id: branch_id))
+      return last_sn.value.to_i
 
-      if branch_resp.node.dir && !branch_resp.node.children.empty?
-        branch_resp.node.children.map(&:key).sort.last.split('/').last.to_i
-      else
-        nil
-      end
+      #branch_resp = etcd.get(etcd_branch_path(branch_id: branch_id) + "/serialnos")
+
+      #if branch_resp.node.dir && !branch_resp.node.children.empty?
+        #branch_resp.node.children.map(&:key).sort.last.split('/').last.to_i
+      #else
+        #nil
+      #end
     rescue Etcd::KeyNotFound
       nil
     end
