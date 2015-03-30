@@ -210,8 +210,8 @@ module Pancakes
     end
 
     def all_services_up?
-      #%i[jarvis-server tim-server frick-server].map do |service|
-      %i[jarvis-server].map do |service|
+      #%i[jarvis-server].map do |service|
+      %i[jarvis-server tim-server frick-server].map do |service|
         result = is_service_up?(service)
         log :info, "#{service} is not up" if !result
         result
@@ -492,13 +492,14 @@ module Pancakes
       end
 
       etcd_delete_myself
-      async.wait_and_remove_from_freezer if rm_frozen == true
+      async.remove_from_freezer(10) if rm_frozen == true
       nil
     end
 
-    def wait_and_remove_from_freezer
-      sleep 10
-      Pancakes::Freezer.remove(self)
+    def remove_from_freezer(delay=0)
+      sleep(delay)
+      log :info, "removing #{self.branch_id} from freezer"
+      Pancakes::Freezer.remove(self.branch_identifier)
     end
 
     def restart_async
