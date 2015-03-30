@@ -11,8 +11,8 @@
               - else
                 | lock
           td == link_to codebase, stack.service_url("#{codebase}-server"), target: '_blank'
-          td.mono.small == link_to commit.sha[0..6], github_commit_url(commit.sha), target: '_blank'
-          td.mono.small = commit.branch_name
+          td.mono.small == link_to commit.sha[0..6], github_commit_url(commit), target: '_blank'
+          td.mono.small.branch-name = commit.branch_name
           td.small = time_ago_in_words pacific_time(commit.date_as_date)
           td.small = commit.author_name
           td.small = commit.message

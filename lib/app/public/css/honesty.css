@@ -102,5 +102,14 @@ table.urls tr:not(:last-child) {
 }
 
 #create-pancakes-form label {
-  width: 130px;
+  width: 100px;
+}
+
+#create-pancakes-form .ui-widget {
+  display: inline-block;
+  margin-right: 2em;
+}
+
+.branch-name {
+  color: darkviolet;
 }
