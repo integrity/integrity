@@ -17,6 +17,7 @@ require 'pathname'
 require 'json'
 require 'haml'
 require 'sass'
+require 'stathat'
 
 require 'sinatra/base'
 require 'sinatra/authorization'
@@ -41,8 +42,10 @@ require 'rconfig'
 require 'i18n'
 require 'rest_client'
 require 'crust'
+require 'stathat_wrapper'
 
 require 'opts/rconfig'
+require 'opts/stathat'
 
 require 'commands'
 require 'runnable'

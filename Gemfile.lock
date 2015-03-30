@@ -250,6 +250,7 @@ GEM
     sinatra-static-assets (1.0.4)
       sinatra (>= 1.1.0)
     slop (3.6.0)
+    stathat (0.1.7)
     stringex (1.5.1)
     tilt (1.4.1)
     timecop (0.7.1)
@@ -326,6 +327,7 @@ DEPENDENCIES
   sinatra
   sinatra-authorization
   sinatra-static-assets
+  stathat
   timecop
   turn
   unicorn
