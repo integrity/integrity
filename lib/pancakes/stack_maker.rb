@@ -2,11 +2,19 @@ require 'digest/sha1'
 
 module Pancakes
 
-  def self.repo_name(service)
-    if service.to_sym == :jarvis
+  def self.repo_name(codebase)
+    if codebase.to_sym == :jarvis
       'consultingmd/consultingmd'
     else
-      "consultingmd/#{service}"
+      "consultingmd/#{codebase}"
+    end
+  end
+
+  def self.codebase_name(repo)
+    if repo.downcase == 'consultingmd'
+      :jarvis
+    else
+      repo.split('/').last
     end
   end
 

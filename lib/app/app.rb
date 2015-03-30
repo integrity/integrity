@@ -129,7 +129,7 @@ module Integrity
 
       event_hash = params.deep_symbolize_keys
       repo_name = event_hash[:repository][:name].downcase
-      codebase = ({'consultingmd' => 'jarvis'}[repo_name]) || repo_name
+      codebase = Pancakes.codebase_name(repo_name)
       branch_name = event_hash[:ref].sub('refs/heads/', '')
       pk_to_update = Pancakes::Stack.all_with_unlocked_branches(codebase => branch_name)
       pk_to_update.each do |pk|
@@ -292,7 +292,7 @@ module Integrity
       end
 
       if !Pancakes.cache[cache_key]
-        br = Octokit.branches("consultingmd/#{{'jarvis' => 'consultingmd'}[codebase] || codebase}").map{|b| b[:name] }
+        br = Octokit.branches(Pancakes.repo_name(codebase)).map{|b| b[:name] }
         if br.delete('master')
           br.sort!
           br.unshift('master')
