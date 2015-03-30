@@ -185,6 +185,7 @@ module Integrity
       self.raise_on_save_failure = true
       update(completed_at: Time.now, successful: success)
       notify
+      StatHatWrapper.post_value('honesty completed build duration', run_time / 60.0)
     end
 
     def escape_glob(path)
