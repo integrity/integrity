@@ -19,6 +19,7 @@ require 'haml'
 require 'sass'
 require 'slim'
 require 'stathat'
+require 'ap'
 
 require 'sinatra/base'
 require 'sinatra/authorization'

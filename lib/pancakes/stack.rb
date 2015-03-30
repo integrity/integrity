@@ -178,17 +178,25 @@ module Pancakes
     end
 
     def tcp_info(service_name=nil)
-      i =  self.class.all_tcp_info[@stack_id][:tcp_info]
-      if service_name
-        i[service_name.to_sym]
+      stack_info =  self.class.all_tcp_info[@stack_id]
+      if stack_info && info = stack_info[:tcp_info]
+        if service_name
+          info[service_name.to_sym]
+        else
+          info
+        end
       else
-        i
+        nil
       end
     end
 
     def service_url(service_name)
-      i = tcp_info(service_name)
-      "http://#{i[:host]}:#{i[:port]}"
+      info = tcp_info(service_name)
+      if info
+        "http://#{info[:host]}:#{info[:port]}"
+      else
+        nil
+      end
     end
 
     def is_service_up?(service_name)
