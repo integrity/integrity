@@ -63,7 +63,7 @@ namespace :jobs do
   namespace :daemons do
     desc 'start daemonized worker(s)'
     task :start do
-      system 'bundle exec /home/ubuntu/app/integrity/current/script/delayed_job start 2>&1'
+      system '/home/ubuntu/app/integrity/current/script/delayed_job start 2>&1 | logger -t delayed_job &'
     end
 
     desc 'stop daemonized worker(s)'
@@ -73,7 +73,7 @@ namespace :jobs do
 
     desc 'restart daemonized worker(s)'
     task :restart do
-      system 'bundle exec /home/ubuntu/app/integrity/current/script/delayed_job restart 2>&1 | logger -t delayed_job &'
+      system '/home/ubuntu/app/integrity/current/script/delayed_job restart 2>&1 | logger -t delayed_job &'
     end
   end
 end
