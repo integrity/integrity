@@ -492,7 +492,7 @@ module Pancakes
       end
 
       etcd_delete_myself
-      async.remove_from_freezer(10) if rm_frozen == true
+      async.remove_from_freezer(20) if rm_frozen == true
       nil
     end
 
