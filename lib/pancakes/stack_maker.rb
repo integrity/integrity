@@ -26,10 +26,11 @@ module Pancakes
     def self.new_with_branch_names(serialno: nil, locks: [], **branch_names)
       commits = commits_from_branch_names(branch_names)
       set_locks(commits, locks)
+      bid = branch_names_sha(branch_names)
 
       Stack.new(
-        branch_id: branch_names_sha(branch_names),
-        serialno:  serialno || 1,
+        branch_id: bid,
+        serialno:  serialno || Pancakes::Stack.etcd_get_next_sn(branch_id: bid),
         commits:   commits
       )
     end
