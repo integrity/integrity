@@ -97,6 +97,11 @@ module Integrity
       json current_project
     end
 
+    post '/_send_stats' do
+      StatHatWrapper.post_count("honesty running builds all", Integrity::Build.running.count)
+      StatHatWrapper.post_count("honesty pending builds all", Integrity::Build.pending.count)
+    end
+
     post '/hook.json', provides: :json do
       @format = :json
       log "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{params.inspect}"
