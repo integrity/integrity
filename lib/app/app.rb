@@ -98,8 +98,8 @@ module Integrity
     end
 
     post '/_send_stats' do
-      StatHatWrapper.post_count("honesty running builds all", Integrity::Build.running.count)
-      StatHatWrapper.post_count("honesty pending builds all", Integrity::Build.pending.count)
+      StatHatWrapper.post_value("honesty running builds all", Integrity::Build.running.count)
+      StatHatWrapper.post_value("honesty pending builds all", Integrity::Build.pending.count)
     end
 
     post '/hook.json', provides: :json do
