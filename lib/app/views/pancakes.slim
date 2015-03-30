@@ -1,6 +1,3 @@
-/javascript:
-  /= partial(:auto_reload)
-
 form#create-pancakes-form action='/pancakes/create' method='post'
   - if @error
     div.alert.alert-danger.alert-dismissible = @error
@@ -10,7 +7,6 @@ form#create-pancakes-form action='/pancakes/create' method='post'
       input type='text' name='#{codebase}-branch' id="#{codebase}_branch" autocomplete='off' placeholder='master'
   input type='submit' value='Make Pancakes'
 
-/- if !@pancaked_branches.empty?
 .row#active_diligence_branches
   h3.text-center.short
     = "#{@stacks.size} Stacks of Pancakes"
@@ -32,39 +28,3 @@ form#create-pancakes-form action='/pancakes/create' method='post'
       tbody
         - @stacks.each do |stack|
           == slim :"pancakes/_stack", layout: false, locals: { stack: stack }
-
-/- if !@not_pancaked_branches.empty?
-  .row#branches
-    h3.text-center.short
-      = "#{@not_pancaked_branches.size} Recent Branch#{@not_pancaked_branches.size == 1 ? '' : 'es'}"
-      div: small: i
-        |  Services other than jarvis will try to use a branch
-        |  of the same name as the jarvis branch, and otherwise master.
-    .table-responsive
-      table.table.table-hover.table-condensed#previous_builds
-        thead
-          tr
-            th Spec Status
-            th Project
-            th Branch
-            th Last Build
-            th Commit Time
-            th Author
-            th SHA
-            th Message
-            th
-        tbody
-          - @not_pancaked_branches.each do |branch|
-            tr class=branch.last_build.try(:bootstrap_class)
-              td.status
-                i class="fa fa-#{branch_status(branch).icon}"
-              td = branch.project.name
-              td = branch.name
-              td == branch.last_build ? link_to(branch.last_build_id, build_path(branch.last_build)) : nil
-              td = branch.last_build ? time_ago_in_words(branch.last_build.committed_at) : nil
-              td = branch.last_build.try(:author)
-              td == branch.last_build ? link_to(branch.last_build.sha1_short, github_commit_url(branch.last_build)) : nil
-              td = branch.last_build.try(:message)
-              td.actions
-                - if !branch.pancaked?
-                  a.btn.btn-success.start-tracking-btn href="/pancakes/#{branch.id}/start_tracking" Start Tracking
