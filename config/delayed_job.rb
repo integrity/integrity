@@ -12,8 +12,7 @@ end
 
 desc 'Re-start delayed job'
 task :dj_restart, roles: :dj_worker do
-  # run "cd '#{current_path}' && #{rake} jobs:daemons:restart"
-  # run "cd '#{current_path}'; #{rake} jobs:daemons:restart"
-  kill_delayed_job
-  run "cd '#{current_path}' && #{rake} jobs:daemons:restart || #{rake} jobs:daemons:start"
+  ps_dj = "ps -ef | grep delayed_job | grep -v grep | grep -v logger"
+  run "#{ps_dj} && #{ps_dj} | awk '{print $2}' | xargs kill || true"
+  run "cd #{current_path} && #{rake} jobs:daemons:restart || #{rake} jobs:daemons:start"
 end
