@@ -495,9 +495,7 @@ module Pancakes
 
     def restart_async
       destroy_async
-      j = self.as_json
-      j['serialno'] += 1
-      pk = Stack.from_json(j)
+      pk = StackMaker.new_for_restart(self)
       pk.create_async
       pk
     end

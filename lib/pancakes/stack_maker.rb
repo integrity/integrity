@@ -24,24 +24,29 @@ module Pancakes
     # @param locks [Array] hash like [:jarvis]
     # @param branch_names [Hash] hash like { jarvis: 'master', ... }
     def self.new_with_branch_names(serialno: nil, locks: [], **branch_names)
-      commits = branch_names.map do |service,branch_name|
-        {
-          service =>
-          Pancakes::Commit.new_from_github_api_commit(
-            github_tip_commit_hash(
-              Pancakes.repo_name(service),
-              branch_name),
-            branch_name)
-        }
-      end
-      .reduce(&:merge)
-
+      commits = commits_from_branch_names(branch_names)
       set_locks(commits, locks)
 
       Stack.new(
         branch_id: branch_names_sha(branch_names),
         serialno:  serialno || 1,
         commits:   commits
+      )
+    end
+
+    # @param stack [Stack] the stack to restart
+    def self.new_for_restart(stack)
+      old_commits = stack.commits.to_a
+      branch_names = old_commits.map{|codebase,commit| [codebase, commit.branch_name] }
+      locks = old_commits.select{|codebase,commit| commit.locked? == true }.map(&:first)
+      new_commits = commits_from_branch_names(branch_names)
+      set_locks(new_commits, locks)
+      new_sn = stack.serialno + 1
+
+      Stack.new(
+        branch_id: branch_names_sha(branch_names),
+        serialno:  new_sn,
+        commits:   new_commits,
       )
     end
 
@@ -74,6 +79,22 @@ module Pancakes
 
     def self.branch_names_sha(branch_names)
       Digest::SHA1.hexdigest(branch_names.to_a.map{|b| b.join(':') }.sort.join('+'))[0..7]
+    end
+
+    # @param branch_names [Hash] hash like { jarvis: 'master', ... }
+    # @api private
+    def self.commits_from_branch_names(branch_names)
+      branch_names.map do |codebase,branch_name|
+        {
+          codebase =>
+          Pancakes::Commit.new_from_github_api_commit(
+            github_tip_commit_hash(
+              Pancakes.repo_name(codebase),
+              branch_name),
+            branch_name)
+        }
+      end
+      .reduce(&:merge)
     end
 
     # @api private
