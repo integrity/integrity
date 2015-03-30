@@ -486,6 +486,7 @@ module Pancakes
       end
 
       delete_stack_from_etcd
+      sleep 5
       remove_from_freezer if rm_frozen == true
       nil
     end
