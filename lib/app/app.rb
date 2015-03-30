@@ -264,7 +264,7 @@ module Integrity
     get '/pancakes/:branch_id/:serialno/destroy' do |branch_id,serialno|
       login_required
       pk = Pancakes::Stack.get(branch_id, serialno)
-      pk.destroy_async
+      pk.destroy_async(rm_frozen: true)
       redirect back
     end
 

@@ -458,11 +458,11 @@ module Pancakes
       end
     end
 
-    def destroy_async
-      async.destroy
+    def destroy_async(rm_frozen: false)
+      async.destroy(rm_frozen: rm_frozen)
     end
 
-    def destroy
+    def destroy(rm_frozen: false)
       log :info, 'destroying stack'
       start_time = Time.now
       StatHatWrapper.post_count('pancakes destroys', 1)
@@ -486,6 +486,7 @@ module Pancakes
       end
 
       delete_stack_from_etcd
+      remove_from_freezer if rm_frozen == true
       nil
     end
 
@@ -688,7 +689,7 @@ module Pancakes
         if state == desired_state
           log :debug, "#{method} desired_state #{desired_state} reached"
           return true
-        #elsif state == :failed
+        #elsif state == :failed # TODO this kind of changes the method api, so figure out a better way
           #log :debug, "#{method} failed waiting for desired_state #{desired_state}"
           #return false
         end
