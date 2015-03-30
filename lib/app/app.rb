@@ -243,9 +243,9 @@ module Integrity
 
     post '/pancakes/create' do
       branches = {
-        jarvis: params['jarvis-branch'] || 'master',
-        frick:  params['frick-branch'] || 'master',
-        tim:    params['tim-branch'] || 'master',
+        jarvis: params['jarvis-branch'].empty? ? 'master' : params['jarvis-branch'],
+        frick: params['frick-branch'].empty? ? 'master' : params['frick-branch'],
+        tim: params['tim-branch'].empty? ? 'master' : params['tim-branch'],
       }
       pk = Pancakes::Stack.get_with_branches(branches)
       if !pk
