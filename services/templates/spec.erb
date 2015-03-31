@@ -13,6 +13,9 @@ app:
     SAUCE_USERNAME: <%= ENV['SAUCE_USERNAME'] %>
     SAUCE_ACCESS_KEY: <%= ENV['SAUCE_ACCESS_KEY'] %>
     CALLBACK_URL: https://<%= ENV['CALLBACK_HOST'] %>/status.json
+    DATABASE_URL: <%= mysql_database_url %>
+    CAPYBARA_SERVER_ADDR: <%= jarvis_addr %>
+
   volumes:
     - /etc/profile:/mnt/etc/profile
   links:
