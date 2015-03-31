@@ -125,7 +125,7 @@ module Pancakes
     }
 
 
-    @cached_urls = nil
+    @cached_tcp_info = nil
     @cached_all_pancakes_units = nil
 
     attr_reader :stack_id, :branch_id, :commits, :serialno, :start_time
@@ -191,11 +191,14 @@ module Pancakes
     end
 
     def service_url(service_name)
+      service_name = service_name.to_sym
       info = tcp_info(service_name)
-      if info
-        "http://#{info[:host]}:#{info[:port]}"
+      return nil unless info
+
+      if service_name == :mysql
+        "mysql2://#{info[:host]}:#{info[:port]}"
       else
-        nil
+        "http://#{info[:host]}:#{info[:port]}"
       end
     end
 
@@ -581,7 +584,10 @@ module Pancakes
       etcd_get_stack(branch_id: branch_id, serialno: serialno)
     end
 
-    def self.get_with_branches(branches)
+    def self.get_with_branches(fallback_master: false, **branches)
+      if fallback_master
+        branches = Pancakes::StackMaker.fallback_branch_names_to_master(branches)
+      end
       sha = Pancakes::StackMaker.branch_names_sha(branches)
       etcd_get_stack(branch_id: sha)
     end
@@ -592,24 +598,23 @@ module Pancakes
     end
 
     def self.all_tcp_info
-      return refresh_all_urls! unless @cached_urls
-      #Pancakes.logp :info, "using cached container urls"
-      @cached_urls
+      return refresh_tcp_info! unless @cached_tcp_info
+      @cached_tcp_info
     end
 
-    def self.refresh_all_urls!
+    def self.refresh_tcp_info!
       worker_ips = all_pancakes_units.map{|unit| unit[:machine_ip] }.to_set
       if worker_ips.empty?
-        @cached_urls = {}
-        return @cached_urls
+        @cached_tcp_info = {}
+        return @cached_tcp_info
       end
 
-      @cached_urls = worker_ips.map do |worker_ip|
-        get_urls_for_machine_grouped_by_branch_id!(worker_ip)
+      @cached_tcp_info = worker_ips.map do |worker_ip|
+        get_tcp_info_for_machine_grouped_by_branch_id!(worker_ip)
       end
       .reduce(&:merge)
 
-      return @cached_urls
+      return @cached_tcp_info
     end
 
     def etcd_store_myself
@@ -815,7 +820,7 @@ module Pancakes
     end
 
     # @api private
-    def self.get_urls_for_machine_grouped_by_branch_id!(machine_ip)
+    def self.get_tcp_info_for_machine_grouped_by_branch_id!(machine_ip)
       Docker.url = "tcp://#{machine_ip}:#{Pancakes::DOCKER_API_PORT}"
       Docker.validate_version!
 

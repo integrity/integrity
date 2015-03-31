@@ -227,7 +227,7 @@ module Integrity
 
     get '/pancakes' do
       Pancakes::Stack.refresh_all_pancakes_units!
-      Pancakes::Stack.refresh_all_urls!
+      Pancakes::Stack.refresh_tcp_info!
       @stacks = Pancakes::Stack.all
       slim :pancakes
     end
@@ -255,7 +255,7 @@ module Integrity
       else
         @error = 'stack with those branches already exists'
         Pancakes::Stack.refresh_all_pancakes_units!
-        Pancakes::Stack.refresh_all_urls!
+        Pancakes::Stack.refresh_tcp_info!
         @stacks = Pancakes::Stack.all
         slim :pancakes
       end

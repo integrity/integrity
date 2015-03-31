@@ -56,6 +56,28 @@ module Pancakes
       Digest::SHA1.hexdigest(branch_names.to_a.map{|b| b.join(':') }.sort.join('+'))[0..7]
     end
 
+    # check to see if the provided non-master branch names exist, and if not, replace them
+    # with 'master'.
+    #
+    # @param branch_names [Hash] hash like { jarvis: 'xyz', ... }
+    def self.fallback_branch_names_to_master(branch_names)
+      branch_names.map do |codebase,branch_name|
+        repo = Pancakes.repo_name(codebase)
+        begin
+          ref = Octokit.ref(repo, heads_string(branch_name))
+          { codebase => branch_name }
+        rescue Octokit::NotFound
+          { codebase => 'master' }
+        end
+      end
+      .reduce(&:merge)
+    end
+
+
+    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+    # private # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
     # @param branch_names [Hash] hash like { jarvis: 'master', ... }
     # @api private
     def self.commits_from_branch_names(branch_names)
