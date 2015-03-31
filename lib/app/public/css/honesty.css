@@ -110,6 +110,6 @@ table.urls tr:not(:last-child) {
   margin-right: 2em;
 }
 
-.branch-name {
+.urls .branch-name {
   color: darkviolet;
 }
