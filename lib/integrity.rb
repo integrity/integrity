@@ -18,6 +18,7 @@ require 'json'
 require 'haml'
 require 'sass'
 require 'stathat'
+require 'fleet'
 
 require 'sinatra/base'
 require 'sinatra/authorization'
@@ -52,6 +53,8 @@ require 'runnable'
 require 'docker'
 
 require 'app/app'
+
+require 'fleet_helper'
 
 require 'integrity/event'
 require 'integrity/web_utils'
