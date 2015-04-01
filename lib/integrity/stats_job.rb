@@ -8,6 +8,7 @@ class StatsJob
   }
 
   def perform(schedule_next: true)
+    Integrity.logger.info 'sending stats'
     FleetHelper.running_build_count_by_machine.each do |machine_ip,count|
       StatHatWrapper.post_value("honesty running builds #{self.class.pretty_worker_name(machine_ip)}", count)
     end
