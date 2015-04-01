@@ -47,6 +47,7 @@ require 'stathat_wrapper'
 
 require 'opts/rconfig'
 require 'opts/stathat'
+require 'opts/fleet'
 
 require 'commands'
 require 'runnable'
