@@ -50,16 +50,18 @@ require 'octokit'
 require 'stathat_wrapper'
 
 require 'opts/rconfig'
-require 'opts/fleet_api'
 require 'opts/github'
 require 'opts/stathat'
 require 'opts/etcd'
+require 'opts/fleet'
 
 require 'commands'
 require 'runnable'
 require 'docker'
 
 require 'app/app'
+
+require 'fleet_helper'
 
 require 'integrity/event'
 require 'integrity/web_utils'
@@ -81,6 +83,7 @@ require 'integrity/checkout'
 require 'integrity/command_runner'
 require 'integrity/builder'
 require 'integrity/instance_manager'
+require 'integrity/stats_job'
 
 require 'pancakes'
 

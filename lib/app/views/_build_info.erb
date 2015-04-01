@@ -22,8 +22,8 @@
         <p>Failed Category: <%= build.fail_category %></p>
       <% end %>
       <h4>
-        <span class="label label-<%= build_service(build)[:color] %>">
-          <i class="fa fa-<%= build_service(build)[:icon] %>" > </i>
+        <span class="label label-<%= build_service(build)[:color] if build_service(build) %>">
+          <i class="fa fa-<%= build_service(build)[:icon] if build_service(build) %>" > </i>
           <%= build.service_template %>
         </span>
       </h4>
