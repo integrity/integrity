@@ -10,6 +10,7 @@ end
 
 require 'yaml'
 require 'logger'
+require 'logging'
 require 'digest/sha1'
 require 'timeout'
 require 'ostruct'
@@ -322,7 +323,7 @@ module Integrity
   end
 
   def self.start
-    say '[Integrity] Starting - Queue Pending Builds...'
+    say 'starting and queuing pending builds'
     #This was causing an error whenever rake db ran with changes in the build.rb file
     #Integrity::Event.trigger('app:start')
   end

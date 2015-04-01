@@ -12,7 +12,7 @@ require 'i18n'
 I18n.load_path << "#{ROOT_DIR}/config/locale/dates.en.yml"
 require 'integrity'
 
-logger = DataMapper::Logger.new(STDOUT, :debug)
+logger = DataMapper::Logger.new(STDOUT, :info)
 
 # I18n Translations
 translations = YAML.load_file(File.join(File.dirname(__FILE__), 'config', 'locale', 'en.yml'))
@@ -41,6 +41,10 @@ else
   base_url << app.rack.to_s unless base_url['.local']
 end
 
+Logging.logger.root.appenders = Logging.appenders.stdout(layout: ::Logging::Layouts::Pattern.new(pattern: "%.1l [%d] - %h - %c : %m\n"))
+Logging.logger['honesty'].level  = :info
+Logging.logger['pancakes'].level = :debug
+
 Integrity.configure do |c|
   c.environment                 = app.environment           # Environment to run in (i.e. development, production, etc).
   c.database                    = app.database.url          # DataMapper database connection URI
@@ -61,15 +65,14 @@ Integrity.configure do |c|
   c.project_default_build_count = app.builds.display_count  # How many builds to show by default on project pages
   c.build_output_interval       = app.builds.interval       # How often to collect build output from running builds (in secs)
   c.status_image_always_public  = false                     # ake status public for all projects? If false, login required to see status for private projects.
-  c.logger                      = logger
+  c.logger                      = Logging.logger['honesty']
   # Use https://github.com/grahamc/git-cachecow to cache repository locally
   # c.checkout_proc             = Proc.new do |runner, repo_uri, branch, sha1, target_directory|
   #   runner.run! "git scclone #{repo_uri} #{target_directory} #{sha1}"
   # end
 end
 
-Pancakes.logger = Integrity.logger
-Pancakes.logger.level = 0
+Pancakes.logger = Logging.logger['pancakes']
 
 # Try to queue pending builds on start
 Integrity.start

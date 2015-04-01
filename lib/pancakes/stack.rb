@@ -146,6 +146,8 @@ module Pancakes
       init_mutex  # must call before using .async
       @state_of_my_units = nil
       @state_of_the_pancakes = nil
+
+      Logging.logger[@stack_id].level = :debug
     end
 
     def start_time_as_date
@@ -157,11 +159,7 @@ module Pancakes
     #
 
     def logger
-      Pancakes.logger
-    end
-
-    def log(level, msg)
-      logger.send(level, "[pancakes][#@stack_id] #{msg}")
+      Logging.logger[@stack_id]
     end
 
     def branch_identifier
@@ -203,7 +201,7 @@ module Pancakes
     end
 
     def is_service_up?(service_name)
-      log(:warn, "sorry, can't check mysql") if %i[mysql mailcatcher].include?(service_name.to_sym)
+      logger.warn("sorry, can't check mysql") if %i[mysql mailcatcher].include?(service_name.to_sym)
       begin
         resp = RestClient.get("#{service_url(service_name)}/status")
         return resp.code == 200
@@ -216,7 +214,7 @@ module Pancakes
       #%i[jarvis-server].map do |service|
       %i[jarvis-server tim-server frick-server].map do |service|
         result = is_service_up?(service)
-        log :info, "#{service} is not up" if !result
+        logger.info "#{service} is not up" if !result
         result
       end
       .reduce(true) { |memo,val| memo && val }
@@ -240,10 +238,10 @@ module Pancakes
       @state_of_the_pancakes =
         if units_state == :nominal
           if all_services_up?
-            log :debug, "pancakes state is running"
+            logger.debug "pancakes state is running"
             :running
           else
-            log :debug, "pancakes state is starting"
+            log.debug "pancakes state is starting"
             :starting
           end
         else
@@ -282,33 +280,33 @@ module Pancakes
       active_states = units.map{ |u| u[:active_state] }
 
       if !all_exist
-        log :debug, "my_units state is incomplete. expected the following services: <#{expected.sort.join(', ')}> but got units <#{unit_names.sort.join(', ')}>. missing: <#{(expected - unit_names).sort.join(', ')}>"
+        logger.debug "my_units state is incomplete. expected the following services: <#{expected.sort.join(', ')}> but got units <#{unit_names.sort.join(', ')}>. missing: <#{(expected - unit_names).sort.join(', ')}>"
         @state_of_my_units = :incomplete
         return @state_of_my_units
       end
 
       all_active = active_states.reduce(true){|memo,val| memo && val == 'active' }
       if all_active
-        log :debug, "my_units state is nominal"
+        logger.debug "my_units state is nominal"
         @state_of_my_units = :nominal
         return @state_of_my_units
       end
 
       active_or_inactive = active_states.reduce(true){|memo,val| memo && %w[active inactive activating].include?(val) }
       if active_or_inactive
-        log :debug, "my_units state is starting"
+        logger.debug "my_units state is starting"
         @state_of_my_units = :starting
         return @state_of_my_units
       end
 
       any_failed = active_states.reduce(false){|memo,val| memo || val == 'failed' }
       if any_failed
-        log :debug, "stack failed: #{self.class.unit_states_string(units)}"
+        logger.debug "stack failed: #{self.class.unit_states_string(units)}"
         @state_of_my_units = :failed
         return @state_of_my_units
       end
 
-      log :debug, "my_units state is fucked_up with states: #{self.class.unit_states_string(units)}"
+      logger.debug "my_units state is fucked_up with states: #{self.class.unit_states_string(units)}"
       @state_of_my_units = :fucked_up
       return @state_of_my_units
     end
@@ -386,7 +384,7 @@ module Pancakes
     end
 
     def create
-      log :info, "orchestration starting"
+      logger.info "orchestration starting"
       StatHatWrapper.post_count('pancakes orchestration starts', 1)
       start_time = Time.now
       @start_time = start_time.to_s
@@ -395,24 +393,24 @@ module Pancakes
       # start mysql first since it's sort of more important
       service_hash = detect_and_make_template(:mysql)
       unit_file = gen_unit_file_name(:mysql)
-      log :debug, "orchestration submitting #{unit_file}"
+      logger.debug "orchestration submitting #{unit_file}"
       fleet.submit(unit_file, service_hash)
       sleep 0.2
-      log :debug, "orchestration loading #{unit_file}"
+      logger.debug "orchestration loading #{unit_file}"
       fleet.load(unit_file)
       sleep 0.5
 
       (service_configuration.keys - [:mysql]).each do |service|
         service_hash = detect_and_make_template(service)
         unit_file = gen_unit_file_name(service)
-        log :debug, "orchestration submitting #{unit_file}"
+        logger.debug "orchestration submitting #{unit_file}"
         fleet.submit(unit_file, service_hash)
         sleep 0.3
       end
 
       (service_configuration.keys - [:mysql]).each do |service|
         unit_file = gen_unit_file_name(service)
-        log :debug, "orchestration loading #{unit_file}"
+        logger.debug "orchestration loading #{unit_file}"
         fleet.load(unit_file)
         sleep 0.3
       end
@@ -421,7 +419,7 @@ module Pancakes
 
       [:mysql].each do |service|
         unit_file = gen_unit_file_name(service)
-        log :debug, "orchestration starting #{unit_file}"
+        logger.debug "orchestration starting #{unit_file}"
         fleet.start(unit_file)
         sleep 0.3
       end
@@ -430,7 +428,7 @@ module Pancakes
 
       %i[mailcatcher jarvis-orchestra tim-orchestra frick-server].each do |service|
         unit_file = gen_unit_file_name(service)
-        log :debug, "orchestration starting #{unit_file}"
+        logger.debug "orchestration starting #{unit_file}"
         fleet.start(unit_file)
         sleep 0.3
       end
@@ -439,7 +437,7 @@ module Pancakes
 
       %i{jarvis-server jarvis-delayed_job tim-server tim-delayed_job}.each do |service|
         unit_file = gen_unit_file_name(service)
-        log :debug, "orchestration starting #{unit_file}"
+        logger.debug "orchestration starting #{unit_file}"
         fleet.start(unit_file)
         sleep 0.3
       end
@@ -447,10 +445,10 @@ module Pancakes
       timeout = 60*4
       if block_until_desired_pancakes_state(desired_state: :running, timeout: timeout)
         orch_time = Time.now - start_time
-        log :info, "orchestration took #{format('%.1f', orch_time)}s"
+        logger.info "orchestration took #{format('%.1f', orch_time)}s"
         StatHatWrapper.post_value('pancakes orchestration duration', orch_time)
       else
-        log :warn, "orchestration timed out after #{timeout}s"
+        logger.warn "orchestration timed out after #{timeout}s"
         StatHatWrapper.post_count('pancakes orchestration timeouts', 1)
       end
 
@@ -472,13 +470,13 @@ module Pancakes
     end
 
     def destroy(rm_frozen: false)
-      log :info, 'destroying stack'
+      logger.info 'destroying stack'
       start_time = Time.now
       StatHatWrapper.post_count('pancakes destroys', 1)
 
       my_units.each do |unit|
         unit_name = unit[:name]
-        log :info, "orchestration destroying #{unit_name}"
+        logger.info "orchestration destroying #{unit_name}"
         fleet.destroy(unit_name)
         sleep 0.2
       end
@@ -486,11 +484,11 @@ module Pancakes
       timeout = 60
       if block_until_desired_pancakes_state(desired_state: :off, timeout: timeout)
         destroy_time = Time.now - start_time
-        log :info, "destroy took #{format('%.1f', destroy_time)}s"
+        logger.info "destroy took #{format('%.1f', destroy_time)}s"
         StatHatWrapper.post_value('pancakes destroy duration', destroy_time)
         StatHatWrapper.post_count('pancakes destroyed', 1)
       else
-        log :info, "destroy timeout after #{timeout}s"
+        logger.info "destroy timeout after #{timeout}s"
         StatHatWrapper.post_count('pancakes destroy timeouts', 1)
       end
 
@@ -501,7 +499,7 @@ module Pancakes
 
     def remove_from_freezer(delay=0)
       sleep(delay)
-      log :info, "removing #{self.branch_id} from freezer"
+      logger.info "removing #{self.branch_id} from freezer"
       Pancakes::Freezer.remove(self.branch_identifier)
     end
 
@@ -619,7 +617,7 @@ module Pancakes
 
     def etcd_store_myself
       key = self.class.etcd_sn_path(branch_id: branch_id, serialno: serialno)
-      log :info, "storing #{key} in etcd"
+      logger.info "storing #{key} in etcd"
       etcd.set(key, value: JSON.dump(as_json))
       self.class.etcd_set_last_sn(branch_id: branch_id, serialno: serialno)
     end
@@ -656,14 +654,14 @@ module Pancakes
     # @api private
     def etcd_delete_myself
       key = self.class.etcd_sn_path(branch_id: branch_id, serialno: serialno)
-      log :info, "deleting stack #{key} from etcd"
+      logger.info "deleting stack #{key} from etcd"
       etcd.delete(key)
 
       #key = self.class.etcd_branch_path(branch_id: branch_id)
       #dir = etcd.get(key)
 
       #if dir.value == nil && dir.children.empty?
-        #log :info, "deleting all stacks in #{key} from etcd"
+        #logger.info "deleting all stacks in #{key} from etcd"
         #etcd.delete(key, recursive: true)
       #end
     rescue Etcd::KeyNotFound
@@ -706,18 +704,18 @@ module Pancakes
       poll_interval = 1
       counter = 1
       start = Time.now
-      log :debug, "polling for #{desired_state} with timeout=#{timeout}"
+      logger.debug "polling for #{desired_state} with timeout=#{timeout}"
 
       while (Time.now - start) <= timeout do
-        log :debug, "polling for #{desired_state} #{counter}"
+        logger.debug "polling for #{desired_state} #{counter}"
 
         state = send(method)
 
         if state == desired_state
-          log :debug, "#{method} desired_state #{desired_state} reached"
+          logger.debug "#{method} desired_state #{desired_state} reached"
           return true
         #elsif state == :failed # TODO this kind of changes the method api, so figure out a better way
-          #log :debug, "#{method} failed waiting for desired_state #{desired_state}"
+          #logger.debug "#{method} failed waiting for desired_state #{desired_state}"
           #return false
         end
 
@@ -725,7 +723,7 @@ module Pancakes
         counter += 1
       end
 
-      log :warn, "timeout of #{timeout}s reached calling #{method} for desired_state #{desired_state}"
+      logger.warn "timeout of #{timeout}s reached calling #{method} for desired_state #{desired_state}"
       return false
     end
 
@@ -804,13 +802,13 @@ module Pancakes
     # @api private
     def self.all_pancakes_units
       return refresh_all_pancakes_units! unless @cached_all_pancakes_units
-      #Pancakes.logp :info, "using cached units"
+      #Pancakes.logger.info "using cached units"
       @cached_all_pancakes_units
     end
 
     # @api private
     def self.refresh_all_pancakes_units!
-      Pancakes.logp :debug, "getting latest units from fleet"
+      Pancakes.logger.debug "getting latest units from fleet"
       @cached_all_pancakes_units = fleet.list.select{|u| is_pancakes_unit?(u[:name]) }
     end
 
@@ -824,7 +822,7 @@ module Pancakes
       Docker.url = "tcp://#{machine_ip}:#{Pancakes::DOCKER_API_PORT}"
       Docker.validate_version!
 
-      Pancakes.logp :debug, "getting latest containers from docker on #{machine_ip}"
+      Pancakes.logger.debug "getting latest containers from docker on #{machine_ip}"
       network_containers = Docker::Container.all.select do |container|
         name = get_container_name(container)
         next false if !is_pancakes_unit?(name)
@@ -833,7 +831,7 @@ module Pancakes
       end
 
       if network_containers.empty?
-        Pancakes.logp :warn, "no networking containers found on worker with addr #{machine_ip}"
+        Pancakes.logger.warn "no networking containers found on worker with addr #{machine_ip}"
         return {}
       end
 
@@ -890,7 +888,7 @@ module Pancakes
       #match = unit_name.match((/\/?(?:pancakes)_(?<branch_id>[0-9a-f]+)_no(?<serialno>\d+)(?<tag_string>_\w+)?_(?<service_type>\w+)/))
       match = unit_name.match((/\/?(?:pancakes)_(?<branch_id>[0-9a-f]+)_no(?<serialno>\d+)_(?<service_type>\w+)/))
       if !match
-        Pancakes.logp :warn, "unit name '#{unit_name}' didnt match the expected format"
+        Pancakes.logger.warn "unit name '#{unit_name}' didnt match the expected format"
         return nil
       end
       {
