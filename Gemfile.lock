@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/ConsultingMD/crust.git
-  revision: 1f9b40218db83339ff388a949868aef42ddf9532
+  revision: 0baa9b01dea58d626c68fa37be33932d43af34dc
   specs:
     crust (0.0.22)
 
