@@ -15,6 +15,7 @@ app:
     CALLBACK_URL: https://<%= ENV['CALLBACK_HOST'] %>/status.json
     DATABASE_URL: <%= mysql_database_url %>
     CAPYBARA_SERVER_ADDR: <%= jarvis_addr %>
+    FRICK_PORT: <%= frick_url %>
 
   volumes:
     - /etc/profile:/mnt/etc/profile

@@ -277,7 +277,8 @@ module Integrity
         pk = Pancakes::Stack.get_with_branches(jarvis: commit.branch, frick: commit.branch, tim: commit.branch, fallback_master: true)
         opts.merge!(
           mysql_database_url: pk.service_url(:mysql),
-          jarvis_addr: pk.service_url('jarvis-server').sub('http://', '')
+          jarvis_addr: pk.service_url('jarvis-server').sub('http://', ''),
+          frick_url: pk.service_url('frick-server')
         )
       end
 
