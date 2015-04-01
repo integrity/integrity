@@ -71,6 +71,25 @@
         resize: true
       });
     }
+
+    window.snds = [new Audio("/0.wav"), new Audio("/1.wav"), new Audio("/2.wav"), new Audio("/3.wav")];
+
+    $('a').on('click', function(e) {
+        var i = Math.floor((Math.random() * window.snds.length));
+        window.snds[i].volume = 0.5;
+        window.snds[i].play();
+
+        var destination = $(this).attr('href');
+        if (destination && destination.charAt(0) == '/') {
+        e.preventDefault();
+            setTimeout(function() { window.location.href = window.location.origin + destination; }, 1500);
+        }
+        else if (destination) {
+        e.preventDefault();
+            setTimeout(function() { window.location.href = destination; }, 1500);
+        }
+    });
+
   </script>
 </body>
 </html>
