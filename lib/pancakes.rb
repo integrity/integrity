@@ -26,11 +26,6 @@ module Pancakes
     @etcd_client
   end
 
-  # LOGPancakes - ghetto tagged logging
-  def self.logp(level, msg)
-    logger.send(level, "[pancakes] #{msg}")
-  end
-
   module Clients
     def fleet
       Pancakes.fleet

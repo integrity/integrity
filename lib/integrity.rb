@@ -10,6 +10,7 @@ end
 
 require 'yaml'
 require 'logger'
+require 'logging'
 require 'digest/sha1'
 require 'timeout'
 require 'ostruct'
@@ -50,16 +51,18 @@ require 'octokit'
 require 'stathat_wrapper'
 
 require 'opts/rconfig'
-require 'opts/fleet_api'
 require 'opts/github'
 require 'opts/stathat'
 require 'opts/etcd'
+require 'opts/fleet'
 
 require 'commands'
 require 'runnable'
 require 'docker'
 
 require 'app/app'
+
+require 'fleet_helper'
 
 require 'integrity/event'
 require 'integrity/web_utils'
@@ -81,6 +84,7 @@ require 'integrity/checkout'
 require 'integrity/command_runner'
 require 'integrity/builder'
 require 'integrity/instance_manager'
+require 'integrity/stats_job'
 
 require 'pancakes'
 
@@ -319,7 +323,7 @@ module Integrity
   end
 
   def self.start
-    say '[Integrity] Starting - Queue Pending Builds...'
+    say 'starting and queuing pending builds'
     #This was causing an error whenever rake db ran with changes in the build.rb file
     #Integrity::Event.trigger('app:start')
   end
