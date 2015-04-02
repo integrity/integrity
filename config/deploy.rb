@@ -1,7 +1,7 @@
 require 'bundler/capistrano'
 require 'erb'
 
-set :branch, 'integration-specs'
+set :branch, 'dtest'
 
 set :user, 'ubuntu'
 set :use_sudo, false
