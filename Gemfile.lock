@@ -154,7 +154,7 @@ GEM
       json
     domain_name (0.5.23)
       unf (>= 0.0.5, < 1.0.0)
-    etcd (0.3.0)
+    etcd (0.2.4)
       mixlib-log
     excon (0.45.1)
     extlib (0.9.16)
@@ -326,7 +326,7 @@ DEPENDENCIES
   dm-mysql-adapter
   dm-sweatshop!
   docker-api
-  etcd
+  etcd (~> 0.2.4)
   extlib
   fleet-api
   fleetctl!

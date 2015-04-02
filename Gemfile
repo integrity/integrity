@@ -49,7 +49,7 @@ gem 'rest-client'
 gem 'fleetctl', git: 'git://github.com/ConsultingMD/ruby-fleetctl.git', branch: 'master'
 gem 'fleet-api'
 gem 'crust', '0.0.22', git: 'git://github.com/ConsultingMD/crust.git'
-gem 'etcd'
+gem 'etcd', '~> 0.2.4'
 # gem 'crust', path: '/Users/rconda/Projects/GrandRounds/crust'
 #gem 'crust', path: '/home/ozzie/crust'
 
