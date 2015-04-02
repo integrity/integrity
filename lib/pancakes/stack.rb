@@ -932,14 +932,6 @@ module Pancakes
     def self.etcd_get_last_sn(branch_id:)
       last_sn = etcd.get(etcd_last_serialno_path(branch_id: branch_id))
       return last_sn.value.to_i
-
-      #branch_resp = etcd.get(etcd_branch_path(branch_id: branch_id) + "/serialnos")
-
-      #if branch_resp.node.dir && !branch_resp.node.children.empty?
-        #branch_resp.node.children.map(&:key).sort.last.split('/').last.to_i
-      #else
-        #nil
-      #end
     rescue Etcd::KeyNotFound
       nil
     end
