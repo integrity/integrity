@@ -133,8 +133,6 @@ module Integrity
         end
 
         build.save
-        # TODO take this out when you're ready
-        #log "[method:build] build.run is not being called"
         build.run
         build
       end

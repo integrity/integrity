@@ -16,4 +16,5 @@ task :dj_restart, roles: :dj_worker do
   run "#{ps_dj} && #{ps_dj} | awk '{print $2}' | xargs kill || true"
   #run "cd #{current_path} && #{rake} jobs:daemons:restart || #{rake} jobs:daemons:start"
   run "cd #{current_path} && bundle exec /home/ubuntu/app/integrity/current/script/delayed_job restart || bundle exec /home/ubuntu/app/integrity/current/script/delayed_job start"
+  run ps_dj  # just to prove it was restarted
 end
