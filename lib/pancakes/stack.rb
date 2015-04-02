@@ -241,7 +241,7 @@ module Pancakes
             logger.debug "pancakes state is running"
             :running
           else
-            log.debug "pancakes state is starting"
+            logger.debug "pancakes state is starting"
             :starting
           end
         else
