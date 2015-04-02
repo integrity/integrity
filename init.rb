@@ -19,8 +19,8 @@ translations = YAML.load_file(File.join(File.dirname(__FILE__), 'config', 'local
 I18n.backend.store_translations(:en, translations)
 
 # Notifiers - Uncomment as appropriate for the notifier you want to use
-require 'integrity/notifier/github'     # = Github commit status
-require 'integrity/notifier/email'      # = Email
+#require 'integrity/notifier/github'     # = Github commit status
+# require 'integrity/notifier/email'      # = Email
 # require 'integrity/notifier/ses'      # = SES Email
 # require 'integrity/notifier/campfire' # = Campfire
 # require 'integrity/notifier/flowdock' # = Flowdock
