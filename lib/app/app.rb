@@ -413,7 +413,7 @@ module Integrity
 
       @builds = current_project.sorted_builds
       @showing_all_builds = true
-      @branches = current_project.branches(order: [:name.asc, :created_at.desc])
+      @branches = []
 
       show :project, title: ['projects', current_project.name]
     end
