@@ -1,16 +1,10 @@
 [Unit]
-Description=Forward Systemd Journal to logentries.com
+Description=Forward Systemd Journal to logentries.com, ignoring docker container output
 
 [Service]
+Restart=on-failure
 TimeoutStartSec=0
-ExecStartPre=-/usr/bin/docker kill journal-2-logentries
-ExecStartPre=-/usr/bin/docker rm journal-2-logentries
-ExecStartPre=/usr/bin/docker pull quay.io/kelseyhightower/journal-2-logentries
-ExecStart=/usr/bin/bash -c \
-"/usr/bin/docker run --name journal-2-logentries \
--v /run/journald.sock:/run/journald.sock \
--e LOGENTRIES_TOKEN=`etcdctl get /logentries.com/token` \
-quay.io/kelseyhightower/journal-2-logentries"
+ExecStart=/usr/bin/bash -c 'journalctl -o short -f | grep -v -e "docker\[[0-9]\+\]:" | ncat --udp data.logentries.com 15745'
 
 [X-Fleet]
 Global=true
