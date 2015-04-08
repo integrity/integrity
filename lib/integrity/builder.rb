@@ -64,19 +64,5 @@ module Integrity
       log "at_capacity?: #{running} out of #{run_limit} builds running."
       running >= run_limit
     end
-
-    # Dead code
-    # If there are any pending builds, start the first one.
-    #def self.queue_next_build
-      #log "queue_next_build - #{Build.pending.count} builds pending. Queueing next build..."
-      #Build.pending.first.try(:run)
-    #end
-
-    # Dead code
-    #def self.cleanup_orphans
-      #Build.orphaned.each do |build|
-        #log_build(:cleanup_orphans, build, "Orphaned! Running for #{build.human_run_time}. Stopping."){ destroy_build(build) }
-      #end
-    #end
   end
 end

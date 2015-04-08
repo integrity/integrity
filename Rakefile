@@ -63,17 +63,17 @@ namespace :jobs do
   namespace :daemons do
     desc 'start daemonized worker(s)'
     task :start do
-      system '/home/ubuntu/app/integrity/current/script/delayed_job start 2>&1 | logger -t delayed_job &'
+      system './script/delayed_job start 2>&1 | logger -t delayed_job &'
     end
 
     desc 'stop daemonized worker(s)'
     task :stop do
-      system '/home/ubuntu/app/integrity/current/script/delayed_job stop 2>&1 | logger -t delayed_job &'
+      system './script/delayed_job stop 2>&1 | logger -t delayed_job &'
     end
 
     desc 'restart daemonized worker(s)'
     task :restart do
-      system '/home/ubuntu/app/integrity/current/script/delayed_job restart 2>&1 | logger -t delayed_job &'
+      system './script/delayed_job restart 2>&1 | logger -t delayed_job &'
     end
   end
 end

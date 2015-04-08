@@ -37,8 +37,6 @@ module Integrity
         app:start
       )){ Builder.queue_builds! }
 
-      #on('diligence_branch:deactivate'){|build_id| DiligenceBranch.deactivate(build_id)}
-
       on('load:changed'){ Integrity.builder.check_load! }
     end
 
