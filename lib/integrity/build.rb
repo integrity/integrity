@@ -265,25 +265,13 @@ module Integrity
     end
 
     def service_options
-      opts = {
+      {
         id: id,
         project: permalink,
         branch: branch_name,
         sha: sha,
         template_name: service_template
       }
-
-      if project.name == 'jarvis' && commit.branch.include?('/integration/')
-        Pancakes::Stack.refresh_tcp_info!
-        pk = Pancakes::Stack.get_with_branches(jarvis: commit.branch, frick: commit.branch, tim: commit.branch, fallback_master: true)
-        opts.merge!(
-          mysql_database_url: pk.service_url(:mysql),
-          jarvis_addr: pk.service_url('jarvis-server').sub('http://', ''),
-          frick_url: pk.service_url('frick-server')
-        )
-      end
-
-      return opts
     end
 
     def app_service_name

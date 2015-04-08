@@ -1,7 +1,7 @@
 <!-- Navigation -->
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
   <div class="navbar-header">
-    <a class="navbar-brand" href="/">
+    <a class="navbar-brand" href="/" style="<%= ENV['RACK_ENV'] != 'production' ? 'background-color: red;' : '' %>">
       <img alt="Grand Rounds CI" src="/gr_mini_white.png" style="margin: -5px 10px 0 0; height: 30px; /* opacity: .5; */;">
       <span class="navbar-brand-name">DEV Honesty CI</span>
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">

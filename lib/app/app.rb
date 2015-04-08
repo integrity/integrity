@@ -60,9 +60,18 @@ module Integrity
       request.env['HTTP_X_FORWARDED_FOR'].to_s
     end
 
+    def restart_pancakes_stacks_after_github_push(push_event_hash)
+      branches = Pancakes.branch_info_from_push_event(push_event_hash)
+      stacks_to_update = Pancakes::Stack.with_branches(**branches)
+      stacks_to_update.each do |stack|
+        logger.info "restarting stack #{stack.name} after github PushEvent for branches #{branches.inspect}"
+        Delayed::Job.enqueue(Pancakes::RestartsJob.new(stack.id_s, :restart_with_branch_heads))
+      end
+    end
+
     not_found do
       status 404
-      show :not_found, title: 'lost, are we?'
+      show :not_found, title: '404'
     end
 
     error do
@@ -126,17 +135,177 @@ module Integrity
 
       log "[HOOK] /hook.json Build: #{build.inspect}"
 
-      event_hash = params.deep_symbolize_keys
-      repo_name = event_hash[:repository][:name].downcase
-      codebase = Pancakes.codebase_name(repo_name)
-      branch_name = event_hash[:ref].sub('refs/heads/', '')
-      pk_to_update = Pancakes::Stack.all_with_unlocked_branches(codebase => branch_name)
-      pk_to_update.each do |pk|
-        pk.restart_async
-      end
+      restart_pancakes_stacks_after_github_push(params)
 
       json build
     end
+
+
+    ######
+    #     #    ##    #    #   ####     ##    #    #  ######   ####
+    #     #   #  #   ##   #  #    #   #  #   #   #   #       #
+    ######   #    #  # #  #  #       #    #  ####    #####    ####
+    #        ######  #  # #  #       ######  #  #    #            #
+    #        #    #  #   ##  #    #  #    #  #   #   #       #    #
+    #        #    #  #    #   ####   #    #  #    #  ######   ####
+    ###############################################################
+
+    get '/pancakes/stacks/:sha' do
+      @stack = Pancakes::Stack.find_by(sha: params[:sha])
+
+      if @stack
+        slim :"pancakes/stacks/show"
+      else
+        flash[:error] = "stack not found"
+        redirect to(:index)
+      end
+    end
+
+    get '/pancakes/stacks/:sha/:codebase/toggle_lock' do
+      @stack = Pancakes::Stack.find_by(sha: params[:sha])
+
+      if @stack
+        @commit = @stack.commits.find_by(repo: Pancakes.repo_name(params[:codebase]))
+
+        if @commit
+          @commit.toggle_lock
+          @commit.save!
+        else
+          flash[:error] = "commit not found"
+        end
+      else
+        flash[:error] = "stack not found"
+      end
+
+      redirect back
+    end
+
+    get '/pancakes/stacks/:sha/restart_with_heads' do
+      @stack = Pancakes::Stack.find_by(sha: params[:sha])
+
+      if @stack
+        Pancakes::Background::RestartsWorker.perform_async(@stack.id_s, :restart_with_branch_heads)
+      else
+        flash[:error] = "stack not found"
+      end
+
+      redirect back
+    end
+
+    get '/pancakes/stacks/:sha/restart_same_commits' do
+      @stack = Pancakes::Stack.find_by(sha: params[:sha])
+
+      if @stack
+        Pancakes::Background::RestartsWorker.perform_async(@stack.id_s, :restart_with_same_commits)
+      else
+        flash[:error] = "stack not found"
+      end
+
+      redirect back
+    end
+
+    get '/pancakes/stacks/:sha/bring_down' do
+      @stack = Pancakes::Stack.find_by(sha: params[:sha])
+
+      if @stack
+        Pancakes::Background::BringDownWorker.perform_async(@stack.id_s)
+      else
+        flash[:error] = "stack not found"
+      end
+
+      redirect back
+    end
+
+    get '/pancakes/stacks/:sha/refresh' do
+      @stack = Pancakes::Stack.find_by(sha: params[:sha])
+
+      if @stack
+        @stack.state_from_cluster!
+      else
+        flash[:error] = "stack not found"
+      end
+
+      redirect back
+    end
+
+    get '/pancakes/stacks/:sha/destroy' do
+      @stack = Pancakes::Stack.find_by(sha: params[:sha])
+      @stack.state_from_cluster!
+
+      if @stack && @stack.state == :off
+        @stack.destroy
+      elsif @stack.state != :off
+        flash[:error] = "bring down the stack before deleting"
+      else
+        flash[:error] = "stack not found"
+      end
+      redirect back
+    end
+
+    post '/pancakes/stacks' do
+      @stack = Pancakes::Stack.new_with_git_strings(
+        default_master: true,
+        pocs: [params[:poc]],
+        branches: params[:branches]
+      )
+
+      if @stack.save
+        flash[:notice] = "Stack created with sha #{@stack.short_sha}. Click 'Refresh state' to refresh the state, if you want."
+        Pancakes::Background::BringUpWorker.perform_async(@stack.id_s)
+      else
+        flash[:error] = 'erroroooooooooooooooooooooo'
+      end
+      redirect back
+    end
+
+    get '/pancakes/api/v1/stacks/search' do
+      branches = params[:branches]
+      data = params[:data]
+      service_name = params[:service_name]
+      update_state = params[:update_state]
+
+      @stack = Pancakes::Stack.with_branches(branches).last
+      if !@stack
+        logger.info 'stack not found'
+        status 404
+        return ''
+      end
+
+      logger.info "stack found: #{@stack.sha}"
+
+      if update_state == 'true'
+        @stack.state_from_cluster!
+      end
+
+      @unit = @stack.units.with_service_name(service_name)
+      if !@unit
+        logger.info 'unit not found'
+        status 404
+        return ''
+      end
+
+      if data == 'tcp_info'
+        tcp_string = @unit.tcp_str
+        if tcp_string.empty?
+          logger.info 'tcp_string not found'
+          status 404
+          return ''
+        else
+          return tcp_string
+        end
+      else
+        status 404
+        return ''
+      end
+    end
+
+    get '/pancakes' do
+      @stacks = Pancakes::Stack.all
+      slim :"pancakes/stacks/index"
+    end
+
+    # end pancakes
+    ###############################################################
 
     get '/utilization.json' do
       json Integrity.instance_manager.utilization_metrics
@@ -219,100 +388,6 @@ module Integrity
         show :home, title: 'project'
       end
     end
-
-    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-    # pancakes # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
-    get '/pancakes' do
-      Pancakes::Stack.refresh_all_pancakes_units!
-      Pancakes::Stack.refresh_tcp_info!
-      @stacks = Pancakes::Stack.all
-      slim :pancakes
-    end
-
-    #get '/pancakes/:branch_id/start_tracking' do |branch_id|
-      #login_required
-
-      #branch = Integrity::Branch.get(branch_id)
-      #branch.start_tracking
-
-      #redirect back
-    #end
-
-    post '/pancakes/create' do
-      branches = {
-        jarvis: params['jarvis-branch'].empty? ? 'master' : params['jarvis-branch'],
-        frick: params['frick-branch'].empty? ? 'master' : params['frick-branch'],
-        tim: params['tim-branch'].empty? ? 'master' : params['tim-branch'],
-      }
-      pk = Pancakes::Stack.get_with_branches(branches)
-      if !pk
-        pk = Pancakes::StackMaker.new_with_branch_names(branches)
-        pk.create_async
-        redirect back
-      else
-        @error = 'stack with those branches already exists'
-        Pancakes::Stack.refresh_all_pancakes_units!
-        Pancakes::Stack.refresh_tcp_info!
-        @stacks = Pancakes::Stack.all
-        slim :pancakes
-      end
-    end
-
-    get '/pancakes/:branch_id/:serialno/destroy' do |branch_id,serialno|
-      login_required
-      pk = Pancakes::Stack.get(branch_id, serialno)
-      pk.destroy_async(rm_frozen: true)
-      redirect back
-    end
-
-    get '/pancakes/:branch_id/:serialno/:codebase/flip_lock' do |branch_id,serialno,codebase|
-      login_required
-
-      pk = Pancakes::Stack.get(branch_id, serialno)
-
-      if pk
-        ci = pk.commit_for(codebase)
-        ci.flip_lock
-      end
-
-      pk.save
-
-      redirect back
-    end
-
-    get '/pancakes/branches/:codebase.json' do |codebase|
-      term = params[:term]
-      cache_key = "#{codebase}_branches"
-
-      if params[:fresh]
-        Pancakes.cache.delete(cache_key)
-      end
-
-      if !Pancakes.cache[cache_key]
-        br = Octokit.branches(Pancakes.repo_name(codebase)).map{|b| b[:name] }
-        if br.delete('master')
-          br.sort!
-          br.unshift('master')
-        end
-        Pancakes.cache[cache_key] = br
-      end
-
-      if term
-        branches = Pancakes.cache[cache_key].select do |name|
-          !!name[term]
-        end
-      else
-        branches = Pancakes.cache[cache_key]
-      end
-
-      JSON.dump(branches)
-    end
-
-    #
-    # End Pancakes
-    #
 
     # List Running Builds (Index)
     get '/running' do
@@ -549,7 +624,5 @@ module Integrity
 
       send_file fs_path, filename: file[:name]
     end
-
   end
-
 end

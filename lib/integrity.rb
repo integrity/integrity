@@ -20,6 +20,7 @@ require 'haml'
 require 'sass'
 require 'slim'
 require 'stathat'
+require 'mongoid'
 require 'ap'
 
 require 'sinatra/base'
@@ -51,10 +52,6 @@ require 'octokit'
 require 'stathat_wrapper'
 
 require 'opts/rconfig'
-require 'opts/github'
-require 'opts/stathat'
-require 'opts/etcd'
-require 'opts/fleet'
 
 require 'commands'
 require 'runnable'
@@ -320,12 +317,6 @@ module Integrity
 
   def self.queue_builds
     Integrity::Event.trigger('build:queue:all')
-  end
-
-  def self.start
-    say 'starting and queuing pending builds'
-    #This was causing an error whenever rake db ran with changes in the build.rb file
-    #Integrity::Event.trigger('app:start')
   end
 end
 

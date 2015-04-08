@@ -1,0 +1,9 @@
+development:
+  sessions:
+    default:
+      database: pancakes
+      hosts:
+        - localhost:27017
+
+  options:
+    use_utc: true

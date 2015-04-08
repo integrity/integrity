@@ -52,64 +52,41 @@
   background: #f5f5f5;
 }
 
-.collapse.navbar-collapse.navbar-ex1-collapse {
-  background-color: darkblue;
-}
-
-.navbar a.navbar-brand {
-  background-color: red !important;
-}
+/*
+ * pancakes styles
+ */
 
 .mono {
   font-family: monospace;
 }
 
-td.actions {
-  text-align: right;
+table.table.commits {
+  background-color: inherit;
 }
 
-td.actions > * {
-  margin-left: 6px;
+.actions {
+  width: 8em;
+}
+.actions a {
+  display: block;
+}
+.actions .btn {
+  margin-top: 4px;
 }
 
-.pancakes-item .fa-lock {
-  color: black !important;
+.table > tbody > tr > td.services {
+  padding-top: 0;
 }
 
-table.urls td {
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-table.urls td:last-child {
-  font-style: italic;
-}
-
-table.urls tr:not(:last-child) {
-  border-bottom: 1px solid #999;
-}
-
-.flip-lock-btn {
-  padding-top: 2px;
-  padding-bottom: 2px;
-  border: 1px solid black;
-  border-radius: 5px;
-  margin-top: 2px;
-  margin-bottom: 2px;
-  padding-right: 8px;
-  padding-left: 6px;
-  font-size: 75%;
-}
-
-#create-pancakes-form label {
-  width: 100px;
-}
-
-#create-pancakes-form .ui-widget {
-  display: inline-block;
-  margin-right: 2em;
-}
-
-.urls .branch-name {
+.branch-name {
   color: darkviolet;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.commit-message {
+  font-style: italic;
+  color: #555;
 }

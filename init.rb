@@ -32,10 +32,12 @@ require 'integrity/notifier/email'      # = Email
 
 app = RConfig.application
 
-ENV['RACK_ENV'] = (app.environment || :production).to_s
+ENV['RACK_ENV'] = (app.environment || :dtest).to_s
 
 if app.environment.to_sym == :production
-  base_url = 'https://honesty-dtest.test.grandrounds.com/'
+  base_url = 'https://integrity.test.grandrounds.com'
+elsif app.environment.to_sym == :dtest
+  base_url = 'https://honesty-dtest.test.grandrounds.com'
 else
   base_url = 'http://' << %x{ hostname }
   base_url << app.rack.to_s unless base_url['.local']
@@ -66,16 +68,12 @@ Integrity.configure do |c|
   c.build_output_interval       = app.builds.interval       # How often to collect build output from running builds (in secs)
   c.status_image_always_public  = false                     # ake status public for all projects? If false, login required to see status for private projects.
   c.logger                      = Logging.logger['honesty']
+  c.fleet_host                  = ENV['FLEETCTL_ENDPOINT'] ? ENV['FLEETCTL_ENDPOINT'].sub(/https?:\/\//, '').split(':')[0] : raise("must set FLEETCTL_ENDPOINT")
   # Use https://github.com/grahamc/git-cachecow to cache repository locally
   # c.checkout_proc             = Proc.new do |runner, repo_uri, branch, sha1, target_directory|
   #   runner.run! "git scclone #{repo_uri} #{target_directory} #{sha1}"
   # end
 end
-
-Pancakes.logger = Logging.logger['pancakes']
-
-# Try to queue pending builds on start
-Integrity.start
 
 if Delayed::Job.where(queue: 'stats').count == 0
   Delayed::Job.enqueue StatsJob.new

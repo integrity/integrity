@@ -23,7 +23,7 @@ if username && password
 end
 
 run Rack::URLMap.new(
-  '/'     => Integrity.app,
+  '/' => Integrity.app,
   '/delayed_jobs' => DelayedJobWeb
 )
 

@@ -49,7 +49,7 @@ module Integrity
       private
 
       def build_url
-        "https://honesty-dtest.test.grandrounds.com/#{@build.url}"
+        "#{Integrity.config.base_url}/#{@build.url}"
       end
 
       def build_output

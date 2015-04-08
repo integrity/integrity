@@ -7,6 +7,7 @@ require 'app/helpers/resources'
 require 'app/helpers/urls'
 require 'app/helpers/partials'
 require 'app/helpers/authentication'
+require 'app/helpers/pancakes_helper'
 
 module Integrity
   module Helpers
@@ -18,6 +19,7 @@ module Integrity
     include Resources
     include Urls
     include Authentication
+    include PancakesHelper
 
     include Sinatra::Partials
     include Rack::Utils

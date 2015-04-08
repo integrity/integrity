@@ -1,0 +1,25 @@
+doctype html
+html
+  head
+    meta charset='utf-8'
+    meta http-equiv='X-UA-Compatible' content='IE=edge'
+    meta name='viewport' content='width=device-width, initial-scale=1'
+    meta name='author' content='grnds'
+    == csrf_meta_tags
+
+    title Pancakes
+
+    == stylesheet_link_tag 'bootstrap.min.css'
+    == stylesheet_link_tag 'bootstrap-theme.min.css'
+    == stylesheet_link_tag 'application'
+
+    /javascript:
+      alert('Slim supports embedded javascript!')
+
+  body
+    .container-fluid
+      == yield
+
+    == javascript_include_tag 'jquery-2.1.3.min.js'
+    == javascript_include_tag 'bootstrap.min.js'
+    == javascript_include_tag 'application.js'
