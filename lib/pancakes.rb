@@ -25,9 +25,9 @@ module Pancakes
   CODEBASES = %i[jarvis frick tim]
   SHA_REGEX = /[0-9a-f]{40}/i
 
-  def self.log_appender
-    @appender ||= Logging.appenders.stdout(layout: ::Logging::Layouts::Pattern.new(pattern: "%.1l %d %h %c: %m\n"))
-  end
+  #def self.log_appender
+    #@appender ||= Logging.appenders.stdout(layout: ::Logging::Layouts::Pattern.new(pattern: "%.1l %d %h %c: %m\n"))
+  #end
 
   def self.log_level
     if ll = ENV['PANCAKES_LOG_LEVEL']
@@ -48,7 +48,7 @@ module Pancakes
   def self.logger
     return @__lgr if @__lgr
 
-    Logging.logger[self].appenders = log_appender
+    #Logging.logger[self].appenders = log_appender
     Logging.logger[self].level = Pancakes.log_level
     @__lgr = Logging.logger[self]
   end

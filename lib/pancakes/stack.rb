@@ -88,31 +88,8 @@ module Pancakes
       criteria
     end
 
-    # @api private
-    def new_sha
-      self.history << { sha: self.sha.to_s, started_at: self.started_at, destroyed_at: self.destroyed_at }
-      self.sha = Digest::SHA1.hexdigest(Time.now.to_i.to_s)
-      refresh_logger
-    end
-
     def id_s
       self.id.to_s
-    end
-
-    # @api private
-    def logger
-      return @__lgr if @__lgr
-      lg_name = "#{self.class}[#{self.name}]"
-      #Logging.logger[lg_name].appenders = Pancakes.log_appender
-      #Logging.logger[lg_name].level = Pancakes.log_level
-      @__lgr = Logging.logger[lg_name]
-    end
-
-    # Use this method when the stack's name changes to get a new logger with the new name.
-    #
-    # @api private
-    def refresh_logger
-      @__lgr = nil
     end
 
     def short_sha
@@ -127,48 +104,9 @@ module Pancakes
       branch_sha[0..6]
     end
 
-    # @api private
-    def set_state(new_state)
-      assign_attributes(state: new_state.to_sym, state_updated_at: Time.now)
-    end
-
     def name
       #format("%s_%s_no%d", Pancakes::NAMESPACE, self.short_sha, self.serialno)
       format("%s_%s", Pancakes::NAMESPACE, self.short_sha)
-    end
-
-    # @api private
-    def is_service_up?(unit)
-      name = unit.service_name
-      raise "service #{name} is not pingable" unless unit.pingable?
-      url = unit.ping_url
-
-      begin
-        if url.start_with?('http')
-          resp = RestClient::Request.execute(method: :get, url: url, timeout: 5, open_timeout: 5)
-
-          if resp.code == 200
-            logger.info "service #{name} reached at #{url}"
-            return true
-          else
-            logger.info "service #{name} at #{url} is unreachable"
-            return false
-          end
-        else
-          logger.warn "service #{name} at #{url} cannot be pinged due to url scheme"
-        end
-      rescue StandardError => e
-        logger.info "service #{name} at #{url} is unreachable due to #{e.class} '#{e.message}'"
-        return false
-      end
-    end
-
-    # @api private
-    def all_services_up?
-      units.pingable.map do |unit|
-        is_service_up?(unit)
-      end
-      .reduce(true){|memo,val| memo && val }
     end
 
     # TODO break this down into smaller pieces. it's also similar in structure to bring_down.
@@ -180,7 +118,7 @@ module Pancakes
 
       dry_run = Pancakes.cluster.dry_run?
       logger.info "bring_up will be a dry run" if dry_run
-      StatHatWrapper.disable if dry_run
+      StatHatWrapper.pause if dry_run
 
       StatHatWrapper.post_count('pancakes stacks bring_up started', 1)
       new_sha
@@ -216,7 +154,7 @@ module Pancakes
         return false
       end
 
-      StatHatWrapper.enable if dry_run
+      StatHatWrapper.unpause if dry_run
       return if dry_run
 
       timeout = 60*4
@@ -239,10 +177,6 @@ module Pancakes
       end
     end
 
-    def bring_down!
-      bring_down(force: true)
-    end
-
     def bring_down(force: false)
       if !force && self.state == :off
         logger.info "bring_down nothing to do for #{self.name}"
@@ -251,7 +185,7 @@ module Pancakes
 
       dry_run = Pancakes.cluster.dry_run?
       logger.info "bring_down will be a dry run" if dry_run
-      StatHatWrapper.disable if dry_run
+      StatHatWrapper.pause if dry_run
 
       logger.info "bring_down #{self.name}"
       start_time = Time.now
@@ -262,7 +196,7 @@ module Pancakes
         Pancakes.cluster.destroy_unit(unit)
       end
 
-      StatHatWrapper.enable if dry_run
+      StatHatWrapper.unpause if dry_run
       return if dry_run
 
       timeout = 60
@@ -287,11 +221,6 @@ module Pancakes
       # - remove_from_freezer(20) if rm_frozen == true
     end
 
-    # @api private
-    def block_until_stack_states(stack:, states:, timeout:)
-      Pancakes.block_until_values(obj: stack, method: :state_from_cluster!, values: states, timeout: timeout)
-    end
-
     def restart_with_branch_heads
       logger.info 'restarting with branch heads'
       bring_down
@@ -308,13 +237,6 @@ module Pancakes
       logger.info 'doing bring_up for restart with same commits'
       bring_up
       logger.info 'done restarting with same commits'
-    end
-
-    # @api private
-    def refresh_commits_to_head
-      self.commits = self.commits.map do |ci|
-        Pancakes::Commit.new_from_git_string(ci.repo, ci.git_string)
-      end
     end
 
     # states
@@ -345,19 +267,6 @@ module Pancakes
       new_state
     end
     alias :state! :state_from_cluster!
-
-    # @api private
-    def self.has_only_states(actual, *allowed)
-      allowed = Array(allowed)
-      actual = actual.map{|s| allowed.include?(s) }.to_set
-      return actual.size == 1 && actual.first == true
-    end
-
-    # @api private
-    def self.has_any_states(states, *query)
-      query = Array(query)
-      !!states.detect{|s| query.include?(s) }
-    end
 
     # states
     # - :nominal    all active
@@ -398,10 +307,6 @@ module Pancakes
 
       logger.debug 'units state is unknown'
       return :unknown
-    end
-
-    def netmaster
-      units.netmaster
     end
 
     def refresh_unit_states
@@ -448,12 +353,111 @@ module Pancakes
       save!
     end
 
+    def set_state(new_state)
+      assign_attributes(state: new_state.to_sym, state_updated_at: Time.now)
+    end
+
+    def netmaster
+      units.netmaster
+    end
+
+    def new_sha
+      self.history << { sha: self.sha.to_s, started_at: self.started_at, destroyed_at: self.destroyed_at }
+      self.sha = Digest::SHA1.hexdigest(Time.now.to_i.to_s)
+      refresh_logger
+    end
+
     def running?
       state == :running
     end
 
     def off?
       state == :off
+    end
+
+
+    ######
+    #     #  #####      #    #    #    ##     #####  ######
+    #     #  #    #     #    #    #   #  #      #    #
+    ######   #    #     #    #    #  #    #     #    #####
+    #        #####      #    #    #  ######     #    #
+    #        #   #      #     #  #   #    #     #    #
+    #        #    #     #      ##    #    #     #    ######
+    private
+
+    # @api private
+    def self.has_only_states(actual, *allowed)
+      allowed = Array(allowed)
+      actual = actual.map{|s| allowed.include?(s) }.to_set
+      return actual.size == 1 && actual.first == true
+    end
+
+    # @api private
+    def self.has_any_states(states, *query)
+      query = Array(query)
+      !!states.detect{|s| query.include?(s) }
+    end
+
+    # @api private
+    def refresh_commits_to_head
+      self.commits = self.commits.map do |ci|
+        Pancakes::Commit.new_from_git_string(ci.repo, ci.git_string)
+      end
+    end
+
+    # @api private
+    def block_until_stack_states(stack:, states:, timeout:)
+      Pancakes.block_until_values(obj: stack, method: :state_from_cluster!, values: states, timeout: timeout)
+    end
+
+    # @api private
+    def is_service_up?(unit)
+      name = unit.service_name
+      raise "service #{name} is not pingable" unless unit.pingable?
+      url = unit.ping_url
+
+      begin
+        if url.start_with?('http')
+          resp = RestClient::Request.execute(method: :get, url: url, timeout: 5, open_timeout: 5)
+
+          if resp.code == 200
+            logger.info "service #{name} reached at #{url}"
+            return true
+          else
+            logger.info "service #{name} at #{url} is unreachable"
+            return false
+          end
+        else
+          logger.warn "service #{name} at #{url} cannot be pinged due to url scheme"
+        end
+      rescue StandardError => e
+        logger.info "service #{name} at #{url} is unreachable due to #{e.class} '#{e.message}'"
+        return false
+      end
+    end
+
+    # @api private
+    def all_services_up?
+      units.pingable.map do |unit|
+        is_service_up?(unit)
+      end
+      .reduce(true){|memo,val| memo && val }
+    end
+
+    # @api private
+    def logger
+      return @__lgr if @__lgr
+      lg_name = "#{self.class}[#{self.name}]"
+      #Logging.logger[lg_name].appenders = Pancakes.log_appender
+      #Logging.logger[lg_name].level = Pancakes.log_level
+      @__lgr = Logging.logger[lg_name]
+    end
+
+    # Use this method when the stack's name changes to get a new logger with the new name.
+    #
+    # @api private
+    def refresh_logger
+      @__lgr = nil
     end
 
     #def starting?
@@ -472,148 +476,10 @@ module Pancakes
       #== :unknown
     #end
 
-    #def as_json(opts={})
-      #{
-        #branch_id:  @branch_id,
-        #serialno:   @serialno,
-        #start_time: @start_time,
-        #commits:    @commits.as_json,
-      #}.stringify_keys
-    #end
-
-    #def self.from_json(json)
-      #json = json.deep_symbolize_keys
-      #json[:commits] = json[:commits].map{|k,v| {k => Pancakes::Commit.from_json(v)} }.reduce(&:merge)
-      #new(json)
-    #end
-
-    #def unit(service)
-      #service = service.to_sym
-      #return @units[service] if @units[service]
-      #@units[service] = Pancakes::Unit.new(stack: self, name: self.class.make_unit_name(service))
-    #end
-
-    #def self.make_unit_name(unit)
-      #"#{unit.stack.stack_id}_#{unit.name}"
-    #end
-
-
-    #def start_time_as_date
-      #Time.parse(@start_time)
-    #end
-
-    #def branch_identifier
-      #format("%s_%s", Pancakes::NAMESPACE, @branch_id)
-    #end
-
-    #def serialno=(value)
-      #@serialno = value
-      #refresh_stack_id
-    #end
-
-
-
-
     #def remove_from_freezer(delay=0)
       #sleep(delay)
       #logger.info "removing #{self.branch_id} from freezer"
       #Pancakes::Freezer.remove(self.branch_identifier)
-    #end
-
-    #def restart_async
-      #destroy_async
-      #pk = StackMaker.new_for_restart(self)
-      #pk.create_async
-      #pk
-    #end
-
-
-    ######
-    #     #  #    #  #####   #          #     ####
-    #     #  #    #  #    #  #          #    #    #
-    ######   #    #  #####   #          #    #
-    #        #    #  #    #  #          #    #
-    #        #    #  #    #  #          #    #    #
-    #         ####   #####   ######     #     ####
-    # public class methods
-
-    #def self.all
-      #Pancakes.cluster.all_pancakes_units.reduce(Set.new) do |uniq,unit|
-        #stack_info = Pancakes::Unit.parse_unit_name(unit[:name])
-        #uniq << {branch_id: stack_info[:branch_id], serialno: stack_info[:serialno]}
-        #uniq
-      #end
-      #.map do |stack_info|
-        #etcd_get_stack(branch_id: stack_info[:branch_id], serialno: stack_info[:serialno])
-      #end
-    #end
-
-    #def self.all_with_unlocked_branches(branches={})
-      #all.select do |pk|
-        #branches.reduce(false) do |memo,br|
-          #codebase, branch_name = br.to_a
-          #ci = pk.commit_for(codebase)
-          #memo || (ci.branch_name == branch_name && !ci.locked?)
-        #end
-      #end
-    #end
-
-    #def self.get(branch_id, serialno)
-      #serialno = serialno.to_s.sub(/^#{SERIALNO_PREFIX}/, '').to_i
-      ## get all units and get etcd data from their unit names, then find the first one
-      ##all.detect { |stack| stack.branch_id == branch_id && stack.serialno == serialno  }
-
-      ## just get stack info from etcd
-      #etcd_get_stack(branch_id: branch_id, serialno: serialno)
-    #end
-
-    #def self.get_with_branches(fallback_master: false, **branches)
-      #if fallback_master
-        #branches = Pancakes::StackMaker.fallback_branch_names_to_master(branches)
-      #end
-      #sha = Pancakes::StackMaker.branch_names_sha(branches)
-      #etcd_get_stack(branch_id: sha)
-    #end
-
-
-    ######
-    #     #  #####      #    #    #    ##     #####  ######
-    #     #  #    #     #    #    #   #  #      #    #
-    ######   #    #     #    #    #  #    #     #    #####
-    #        #####      #    #    #  ######     #    #
-    #        #   #      #     #  #   #    #     #    #
-    #        #    #     #      ##    #    #     #    ######
-    # instance methods
-
-    #
-    # pancakes-related
-    #
-
-    # @api private
-    #def refresh_stack_id
-      #@stack_id = self.class.make_stack_id(@branch_id, @serialno)
-    #end
-
-
-    #
-    # fleet-related
-    #
-
-    # @api private
-    #def my_units
-      #Pancakes.cluster.all_units.select{|u| u.name.start_with?(@stack_id) }
-    #end
-
-    # @api private
-    #def self.unit_states_string(units)
-      #units.map do |unit|
-        #format('%s<active=%s, sub=%s>', unit[:name], unit[:active_state], unit[:sub_state])
-      #end
-        #.join(' ')
-    #end
-
-    #def self.make_stack_id(branch_id, serialno)
-      #format("%s_%s_%s%d", Pancakes::NAMESPACE, branch_id, SERIALNO_PREFIX, serialno)
     #end
   end
 end

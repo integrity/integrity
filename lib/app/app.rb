@@ -65,7 +65,7 @@ module Integrity
       stacks_to_update = Pancakes::Stack.with_branches(**branches)
       stacks_to_update.each do |stack|
         logger.info "restarting stack #{stack.name} after github PushEvent for branches #{branches.inspect}"
-        Delayed::Job.enqueue(Pancakes::RestartsJob.new(stack.id_s, :restart_with_branch_heads))
+        Delayed::Job.enqueue(Pancakes::RestartWithBranchHeadsJob.new(stack.id_s))
       end
     end
 
@@ -150,14 +150,18 @@ module Integrity
     #        #    #  #    #   ####   #    #  #    #  ######   ####
     ###############################################################
 
+    get '/pancakes' do
+      @stacks = Pancakes::Stack.all
+      slim :"pancakes/stacks/index"
+    end
+
     get '/pancakes/stacks/:sha' do
       @stack = Pancakes::Stack.find_by(sha: params[:sha])
 
       if @stack
         slim :"pancakes/stacks/show"
       else
-        flash[:error] = "stack not found"
-        redirect to(:index)
+        redirect to('/pancakes')
       end
     end
 
@@ -170,35 +174,27 @@ module Integrity
         if @commit
           @commit.toggle_lock
           @commit.save!
-        else
-          flash[:error] = "commit not found"
         end
-      else
-        flash[:error] = "stack not found"
       end
 
       redirect back
     end
 
-    get '/pancakes/stacks/:sha/restart_with_heads' do
+    get '/pancakes/stacks/:sha/restart_with_branch_heads' do
       @stack = Pancakes::Stack.find_by(sha: params[:sha])
 
       if @stack
-        Pancakes::Background::RestartsWorker.perform_async(@stack.id_s, :restart_with_branch_heads)
-      else
-        flash[:error] = "stack not found"
+        Delayed::Job.enqueue(Pancakes::Background::RestartWithBranchHeadsJob.new(@stack.id_s))
       end
 
       redirect back
     end
 
-    get '/pancakes/stacks/:sha/restart_same_commits' do
+    get '/pancakes/stacks/:sha/restart_with_same_commits' do
       @stack = Pancakes::Stack.find_by(sha: params[:sha])
 
       if @stack
-        Pancakes::Background::RestartsWorker.perform_async(@stack.id_s, :restart_with_same_commits)
-      else
-        flash[:error] = "stack not found"
+        Delayed::Job.enqueue(Pancakes::Background::RestartWithSameCommitsJob.new(@stack.id_s))
       end
 
       redirect back
@@ -208,9 +204,7 @@ module Integrity
       @stack = Pancakes::Stack.find_by(sha: params[:sha])
 
       if @stack
-        Pancakes::Background::BringDownWorker.perform_async(@stack.id_s)
-      else
-        flash[:error] = "stack not found"
+        Delayed::Job.enqueue(Pancakes::Background::BringDownJob.new(@stack.id_s))
       end
 
       redirect back
@@ -221,8 +215,6 @@ module Integrity
 
       if @stack
         @stack.state_from_cluster!
-      else
-        flash[:error] = "stack not found"
       end
 
       redirect back
@@ -234,10 +226,10 @@ module Integrity
 
       if @stack && @stack.state == :off
         @stack.destroy
-      elsif @stack.state != :off
-        flash[:error] = "bring down the stack before deleting"
-      else
-        flash[:error] = "stack not found"
+      #elsif @stack.state != :off
+        #flash[:error] = "bring down the stack before deleting"
+      #else
+        #flash[:error] = "stack not found"
       end
       redirect back
     end
@@ -250,11 +242,10 @@ module Integrity
       )
 
       if @stack.save
-        flash[:notice] = "Stack created with sha #{@stack.short_sha}. Click 'Refresh state' to refresh the state, if you want."
-        Pancakes::Background::BringUpWorker.perform_async(@stack.id_s)
-      else
-        flash[:error] = 'erroroooooooooooooooooooooo'
+        #flash[:notice] = "Stack created with sha #{@stack.short_sha}. Click 'Refresh state' to refresh the state, if you want."
+        Delayed::Job.enqueue(Pancakes::Background::BringUpJob.new(@stack.id_s))
       end
+
       redirect back
     end
 
@@ -297,11 +288,6 @@ module Integrity
         status 404
         return ''
       end
-    end
-
-    get '/pancakes' do
-      @stacks = Pancakes::Stack.all
-      slim :"pancakes/stacks/index"
     end
 
     # end pancakes

@@ -18,13 +18,13 @@ tr class=stack_state_row_color_class(stack)
       div
         a.btn.btn-sm.btn-warning href="/pancakes/stacks/#{stack.sha}/refresh"  Refresh state
       div
-        a.btn.btn-sm.btn-primary href="/pancakes/stacks/#{stack.sha}/restart_with_heads"
+        a.btn.btn-sm.btn-primary href="/pancakes/stacks/#{stack.sha}/restart_with_branch_heads"
           | Restart
           br
           small
             | (branch heads)
       div
-        a.btn.btn-sm.btn-primary href="/pancakes/stacks/#{stack.sha}/restart_same_commits"
+        a.btn.btn-sm.btn-primary href="/pancakes/stacks/#{stack.sha}/restart_with_same_commits"
           | Restart
           br
           small
@@ -61,7 +61,7 @@ tr class=stack_state_row_color_class(stack)
         - if stack.units.with_service_name(:mailcatcher)
           tr
             td
-            td(colspan='5') = mailcatcher_str(stack.units.with_service_name(:mailcatcher))
+            td(colspan='5') == mailcatcher_str(stack.units.with_service_name(:mailcatcher))
             td
         - if stack.units.with_service_name(:mysql)
           tr

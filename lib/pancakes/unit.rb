@@ -2,18 +2,14 @@ module Pancakes
   class Unit
     include Mongoid::Document
 
-    #UNIT_GROUP_STATES = %i[nominal off starting failed incomplete unknown]
     STATES = %i[off failed active inactive activating deactivating]
 
     field :service_def,      type: Hash
     field :state,            type: Symbol, default: :off
     field :state_updated_at, type: Time
-    #field :desired_state,    type: Symbol
     field :ip,               type: String
     field :port,             type: Integer
     field :info,             type: Hash
-
-    #attr_readonly :service_def
 
     embedded_in :stack, class_name: 'Pancakes::Stack', inverse_of: :units
 
@@ -21,10 +17,6 @@ module Pancakes
     validates :state, inclusion: { in: STATES }, allow_blank: false, allow_nil: false
     validates :port, numericality: { greater_than: 0, only_integer: true }, allow_nil: true
     validate :is_ip_addr?
-
-    def is_ip_addr?
-      self.ip.nil? || IPAddr.new(self.ip).ipv4?
-    end
 
     def active?
       state == :active
@@ -54,23 +46,21 @@ module Pancakes
       end
     end
 
-    #def get_container
-      #if ip
-        #Pancakes.docker.get_container(name, ip)
-      #end
-      #nil
-    #end
-
     def set_state(new_state)
       assign_attributes(state: new_state.to_sym, state_updated_at: Time.now)
     end
 
     def service_def
-      sd = self['service_def']
-      st = self.class.subtype(sd['name'])
+      return @__sd if @__sd
+
+      sd = self[:service_def].deep_symbolize_keys
+
+      st = self.class.subtype(sd[:name])
       sd = sd.merge(subtype: st) if st
-      cb = Pancakes.codebase_name(sd['repo'])
+
+      cb = Pancakes.codebase_name(sd[:repo])
       sd = sd.merge(codebase: cb) if cb
+
       @__sd ||= Hashie::Mash.new(sd)
     end
 
@@ -118,21 +108,11 @@ module Pancakes
       )
     end
 
-    #def self.new_with_service_name(name)
-      #new(
-        #service_def: Services.get(name)
-      #)
-    #end
+    private
 
-    #attr_reader :conf, :stack, :name, :service, :service_type, :branch_id, :serialno, :codebase
-
-    #def initialize(stack:, name:)
-      #@stack = stack
-      ##@name = name.sub(/\.service$/, '')
-      ##@name = name.to_sym
-      #name_info = parse_unit_name(name)
-      #@codebase, @service_type = @service.to_s.split('-').map(&:to_sym)
-      #@conf = Services.service_configuration[name]
-    #end
+    # @api private
+    def is_ip_addr?
+      self.ip.nil? || IPAddr.new(self.ip).ipv4?
+    end
   end
 end

@@ -59,7 +59,6 @@ require 'docker'
 
 require 'app/app'
 
-require 'fleet_helper'
 
 require 'integrity/event'
 require 'integrity/web_utils'
@@ -81,6 +80,7 @@ require 'integrity/checkout'
 require 'integrity/command_runner'
 require 'integrity/builder'
 require 'integrity/instance_manager'
+require 'integrity/fleet_helper'
 require 'integrity/stats_job'
 
 require 'pancakes'
@@ -236,11 +236,6 @@ module Integrity
 
   def self.timestamp
     Time.now.to_i.to_s
-  end
-
-  def self.say(message)
-    STDOUT.puts message
-    logger.info message
   end
 
   def self.start_service service

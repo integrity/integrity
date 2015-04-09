@@ -30,20 +30,29 @@ require 'integrity/notifier/email'      # = Email
 # require 'integrity/notifier/shell'    # = Shell
 # require 'integrity/notifier/coop'     # = Co-op
 
+raise("DATABASE_URL is not set") unless ENV['DATABASE_URL']
 app = RConfig.application
-
-ENV['RACK_ENV'] = (app.environment || :dtest).to_s
+ENV['RACK_ENV'] = (app.environment || 'production').to_s
+DTEST = ENV['HONESTY_DTEST'] == 'true'
 
 if app.environment.to_sym == :production
   base_url = 'https://integrity.test.grandrounds.com'
-elsif app.environment.to_sym == :dtest
-  base_url = 'https://honesty-dtest.test.grandrounds.com'
 else
   base_url = 'http://' << %x{ hostname }
   base_url << app.rack.to_s unless base_url['.local']
+  StatHatWrapper.disable
 end
 
-Logging.logger.root.appenders = Logging.appenders.stdout(layout: ::Logging::Layouts::Pattern.new(pattern: "%.1l [%d] - %h - %c : %m\n"))
+# since there is only one database environment, use the DTEST var to change other environmental configs
+# this is some ghetto ass shit
+if DTEST
+  base_url = 'https://honesty-dtest.test.grandrounds.com'
+  StatHatWrapper.disable
+else
+  StatHatWrapper.enable
+end
+
+Logging.logger.root.appenders = Logging.appenders.stdout(layout: ::Logging::Layouts::Pattern.new(pattern: "%.1l %d %h %c: %m\n"))
 Logging.logger['honesty'].level  = :info
 Logging.logger['pancakes'].level = :debug
 
@@ -76,5 +85,5 @@ Integrity.configure do |c|
 end
 
 if Delayed::Job.where(queue: 'stats').count == 0
-  Delayed::Job.enqueue StatsJob.new
+  Delayed::Job.enqueue(Integrity::StatsJob.new)
 end

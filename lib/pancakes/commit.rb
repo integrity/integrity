@@ -64,12 +64,6 @@ module Pancakes
       end
     end
 
-    # @api private
-    def self.head_sha(repo, branch)
-      ref = Octokit.ref(repo, Pancakes.heads_str(branch))
-      ref[:object][:sha]
-    end
-
     def codebase
       Pancakes.codebase_name(repo)
     end
@@ -92,6 +86,40 @@ module Pancakes
       else
         self.at_head = false
       end
+    end
+
+    def git_string
+      if branch
+        locked_str = locked ? '+' : '-'
+        if locked
+          format('%s:L%s%s', sha, locked_str, branch)
+        else
+          #format('L%s%s', locked_str, branch)
+          branch
+        end
+      else
+        sha
+      end
+    end
+
+    def date_as_date
+      Time.parse(self.date)
+    end
+
+
+    ######
+    #     #  #####      #    #    #    ##     #####  ######
+    #     #  #    #     #    #    #   #  #      #    #
+    ######   #    #     #    #    #  #    #     #    #####
+    #        #####      #    #    #  ######     #    #
+    #        #   #      #     #  #   #    #     #    #
+    #        #    #     #      ##    #    #     #    ######
+    private
+
+    # @api private
+    def self.head_sha(repo, branch)
+      ref = Octokit.ref(repo, Pancakes.heads_str(branch))
+      ref[:object][:sha]
     end
 
     # commit_string formats
@@ -134,24 +162,6 @@ module Pancakes
       end
 
       { sha: sha, branch: branch, locked: locked }
-    end
-
-    def git_string
-      if branch
-        locked_str = locked ? '+' : '-'
-        if locked
-          format('%s:L%s%s', sha, locked_str, branch)
-        else
-          #format('L%s%s', locked_str, branch)
-          branch
-        end
-      else
-        sha
-      end
-    end
-
-    def date_as_date
-      Time.parse(self.date)
     end
 
     #attr_reader :sha, :author_name, :message, :date, :branch_name, :repo
