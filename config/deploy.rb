@@ -1,12 +1,12 @@
 require 'bundler/capistrano'
 require 'erb'
 
-set :env, ENV['RACK_ENV']
+set :deploy_env, ENV['DEPLOY_ENV']
 
-if env == 'production'
+if deploy_env == 'production'
   set :branch, 'master'
   set :server_host, 'integrity-2014-12-02-1b.test.grandrounds.com'
-elsif env == 'dtest'
+elsif deploy_env == 'dtest'
   set :branch, 'dtest'
   set :server_host, 'integrity-2015-02-25-1b.test.grandrounds.com'
 else
