@@ -75,7 +75,7 @@ Integrity.configure do |c|
   c.max_run_time                = app.builds.max_run_time   # Maximum number of minutes a build can run before being orphaned.
   c.project_default_build_count = app.builds.display_count  # How many builds to show by default on project pages
   c.build_output_interval       = app.builds.interval       # How often to collect build output from running builds (in secs)
-  c.status_image_always_public  = false                     # ake status public for all projects? If false, login required to see status for private projects.
+  c.status_image_always_public  = false                     # make status public for all projects? If false, login required to see status for private projects.
   c.logger                      = Logging.logger['honesty']
   c.fleet_host                  = ENV['FLEETCTL_ENDPOINT'] ? ENV['FLEETCTL_ENDPOINT'].sub(/https?:\/\//, '').split(':')[0] : raise("must set FLEETCTL_ENDPOINT")
   c.dtest                       = DTEST
