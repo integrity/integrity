@@ -17,7 +17,7 @@ logs:
 <% uri = ENV['DATABASE_URL'] %>
 
 database:
-  url: <%= ENV['DATABASE_URL'] %>
+  url: <%= uri %>
   adapter: <%= URI.parse(uri).scheme %>
   database: <%= URI.parse(uri).path.gsub(/^\//,'') %>
   username: <%= URI.parse(uri).user %>

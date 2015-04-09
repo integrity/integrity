@@ -1,7 +1,18 @@
 require 'bundler/capistrano'
 require 'erb'
 
-set :branch, 'dtest'
+set :env, ENV['RACK_ENV']
+
+if env == 'production'
+  set :branch, 'master'
+  set :server_host, 'integrity-2014-12-02-1b.test.grandrounds.com'
+elsif env == 'dtest'
+  set :branch, 'dtest'
+  set :server_host, 'integrity-2015-02-25-1b.test.grandrounds.com'
+else
+  puts "i dont know about this...'#{env}' environment."
+  exit 1
+end
 
 set :user, 'ubuntu'
 set :use_sudo, false
@@ -33,4 +44,4 @@ after  'deploy:setup', 'write_upstart_envs'
 after 'deploy:restart', 'dj_restart'
 
 set :rails_env, 'production'
-server 'integrity-2015-02-25-1b.test.grandrounds.com', :rvm, :dj_worker, :webapp, :db
+server server_host, :rvm, :dj_worker, :webapp, :db
