@@ -18,7 +18,10 @@ module Integrity
       :build_output_interval,
       :checkout_proc,
       :status_image_always_public,
-      :logger
+      :logger,
+      :fleet_host,
+      :run_limit,
+      :dtest
 
     def status_image_always_public?
       !!@status_image_always_public
@@ -73,6 +76,16 @@ module Integrity
         when :explicit then Integrity::ExplicitBuilder.new
         else raise ArgumentError, "Unknown builder #{name}"
       end
+    end
+
+    def run_limit=(int)
+      int = int.to_i
+      return if int < 0
+      @run_limit = int
+    end
+
+    def dtest?
+      @dtest
     end
   end
 end

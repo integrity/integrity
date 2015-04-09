@@ -113,6 +113,7 @@ module Integrity
     end
 
     def notify
+      return if Integrity.config.dtest?
       project.enabled_notifiers.each { |n| n.notify(self) }
     end
 
