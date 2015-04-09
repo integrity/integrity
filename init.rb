@@ -34,6 +34,7 @@ raise("DATABASE_URL is not set") unless ENV['DATABASE_URL']
 app = RConfig.application
 ENV['RACK_ENV'] = (app.environment || 'production').to_s
 DTEST = ENV['HONESTY_DTEST'] == 'true'
+puts 'environment has DTEST applied' if DTEST
 
 if app.environment == 'production'
   base_url = 'https://integrity.test.grandrounds.com'
