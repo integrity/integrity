@@ -21,7 +21,7 @@
 
 module Pancakes
 
-  NAMESPACE = 'pancakes'
+  NAMESPACE = 'pancakes2'
   CODEBASES = %i[jarvis frick tim]
   SHA_REGEX = /[0-9a-f]{40}/i
 

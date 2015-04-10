@@ -82,10 +82,11 @@ module Pancakes
     # @param branches [Hash] hash like { jarvis: 'master', frick: 'foobar', codebase: 'branch_name' }
     def self.with_branches(branches)
       criteria = Pancakes::Stack
+      return nil if branches.nil? || branches.empty?
       branches.each_pair do |codebase,branch|
         criteria = criteria.elem_match(commits: { repo: Pancakes.repo_name(codebase), branch: branch })
       end
-      criteria
+      criteria.last
     end
 
     def id_s

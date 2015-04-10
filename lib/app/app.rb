@@ -249,17 +249,17 @@ module Integrity
       redirect back
     end
 
-    get '/pancakes/api/v1/stacks/search' do
+    get '/pancakes/api/vX/stacks/search' do
       branches = params[:branches]
       data = params[:data]
       service_name = params[:service_name]
       update_state = params[:update_state]
 
-      @stack = Pancakes::Stack.with_branches(branches).last
+      @stack = Pancakes::Stack.with_branches(branches)
       if !@stack
         logger.info 'stack not found'
         status 404
-        return ''
+        return 'asdffffffffffffffffffffffffffffffffffffffffffff$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
       end
 
       logger.info "stack found: #{@stack.sha}"
