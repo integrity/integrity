@@ -9,7 +9,7 @@ if deploy_env == 'production'
   set :server_host, 'integrity-2014-12-02-1b.test.grandrounds.com'
 elsif deploy_env == 'dtest'
   set :branch, 'dtest'
-  set :server_host, 'honesty-2015-04-10-1b.test.grandrounds.com'
+  set :server_host, 'honesty-2015-04-13-1b.test.grandrounds.com'
 else
   puts "i dont know about this...'#{deploy_env}' environment."
   exit 1

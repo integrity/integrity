@@ -56,7 +56,6 @@ require 'opts/stathat'
 require 'opts/etcd'
 require 'opts/fleet'
 
-require 'commands'
 require 'runnable'
 require 'docker'
 
