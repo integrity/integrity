@@ -13,4 +13,4 @@ end
 
 # https://gist.github.com/robhurring/732327
 RAILS_ROOT = File.expand_path('..', __FILE__)
-Delayed::Worker.logger.info 'loaded environment'
+puts 'loaded environment'

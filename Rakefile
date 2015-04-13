@@ -59,23 +59,6 @@ namespace :jobs do
     require 'integrity/builders/delayed_builder'
     Delayed::Worker.new.start
   end
-
-  namespace :daemons do
-    desc 'start daemonized worker(s)'
-    task :start do
-      system './script/delayed_job start 2>&1 | logger -t delayed_job &'
-    end
-
-    desc 'stop daemonized worker(s)'
-    task :stop do
-      system './script/delayed_job stop 2>&1 | logger -t delayed_job &'
-    end
-
-    desc 'restart daemonized worker(s)'
-    task :restart do
-      system './script/delayed_job restart 2>&1 | logger -t delayed_job &'
-    end
-  end
 end
 
 begin
@@ -111,7 +94,7 @@ end
 
 doc_dependencies = %w(
   integrity.css
-  screenshot.png  
+  screenshot.png
 )
 
 doc_dependencies.each do |file|
@@ -125,22 +108,5 @@ desc 'Re-generate stylesheet'
 file 'lib/app/public/integrity.css' => 'lib/app/views/integrity.sass' do |f|
   sh "sass lib/app/views/integrity.sass > #{f.name}"
 end
-
-
-namespace :delayed_job do
-  desc 'start delayed_job worker'
-  task :start do
-    system './script/delayed_job start 2>&1 | logger -t delayed_job &'
-  end
-  desc 'stop delayed_job worker'
-  task :stop do
-    system './script/delayed_job stop 2>&1 | logger -t delayed_job &'
-  end
-  desc 'restart delayed_job worker'
-  task :restart do
-    system './script/delayed_job restart 2>&1 | logger -t delayed_job &'
-  end
-end
-
 
 CLOBBER.include('doc/build')

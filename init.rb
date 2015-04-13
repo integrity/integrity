@@ -34,8 +34,9 @@ raise("DATABASE_URL is not set") unless ENV['DATABASE_URL']
 app = RConfig.application
 ENV['RACK_ENV'] = (app.environment || 'production').to_s
 DTEST = ENV['HONESTY_DTEST'] == 'true'
+puts 'environment has DTEST applied' if DTEST
 
-if app.environment.to_sym == :production
+if app.environment == 'production'
   base_url = 'https://integrity.test.grandrounds.com'
 else
   base_url = 'http://' << %x{ hostname }
@@ -52,7 +53,7 @@ else
   StatHatWrapper.enable
 end
 
-Logging.logger.root.appenders = Logging.appenders.stdout(layout: ::Logging::Layouts::Pattern.new(pattern: "%.1l %d %h %c: %m\n"))
+Logging.logger.root.appenders = Logging.appenders.stdout(layout: ::Logging::Layouts::Pattern.new(pattern: "%.1l [%d] - %h - %c : %m\n"))
 Logging.logger['honesty'].level  = :info
 Logging.logger['pancakes'].level = :debug
 
@@ -75,15 +76,22 @@ Integrity.configure do |c|
   c.max_run_time                = app.builds.max_run_time   # Maximum number of minutes a build can run before being orphaned.
   c.project_default_build_count = app.builds.display_count  # How many builds to show by default on project pages
   c.build_output_interval       = app.builds.interval       # How often to collect build output from running builds (in secs)
-  c.status_image_always_public  = false                     # ake status public for all projects? If false, login required to see status for private projects.
+  c.status_image_always_public  = false                     # make status public for all projects? If false, login required to see status for private projects.
   c.logger                      = Logging.logger['honesty']
   c.fleet_host                  = ENV['FLEETCTL_ENDPOINT'] ? ENV['FLEETCTL_ENDPOINT'].sub(/https?:\/\//, '').split(':')[0] : raise("must set FLEETCTL_ENDPOINT")
+  c.dtest                       = DTEST
+  c.run_limit                   = DTEST ? 1 : 4
   # Use https://github.com/grahamc/git-cachecow to cache repository locally
   # c.checkout_proc             = Proc.new do |runner, repo_uri, branch, sha1, target_directory|
   #   runner.run! "git scclone #{repo_uri} #{target_directory} #{sha1}"
   # end
 end
 
+Pancakes.logger = Logging.logger['pancakes']
+
+# Try to queue pending builds on start
+Integrity.start
+
 if Delayed::Job.where(queue: 'stats').count == 0
-  Delayed::Job.enqueue(Integrity::StatsJob.new)
+  Delayed::Job.enqueue StatsJob.new
 end

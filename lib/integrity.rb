@@ -53,7 +53,6 @@ require 'stathat_wrapper'
 
 require 'opts/rconfig'
 
-require 'commands'
 require 'runnable'
 require 'docker'
 
