@@ -53,7 +53,7 @@ else
   StatHatWrapper.enable
 end
 
-Logging.logger.root.appenders = Logging.appenders.stdout(layout: ::Logging::Layouts::Pattern.new(pattern: "%.1l [%d] - %h - %c : %m\n"))
+Logging.logger.root.appenders = Logging.appenders.stdout(layout: ::Logging::Layouts::Pattern.new(pattern: "%.1l %d %h %c: %m\n"))
 Logging.logger['honesty'].level  = :info
 Logging.logger['pancakes'].level = :debug
 
@@ -87,11 +87,6 @@ Integrity.configure do |c|
   # end
 end
 
-Pancakes.logger = Logging.logger['pancakes']
-
-# Try to queue pending builds on start
-Integrity.start
-
 if Delayed::Job.where(queue: 'stats').count == 0
-  Delayed::Job.enqueue StatsJob.new
+  Delayed::Job.enqueue(Integrity::StatsJob.new)
 end
