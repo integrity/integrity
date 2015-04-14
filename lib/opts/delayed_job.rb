@@ -1,15 +1,15 @@
 require 'logging'
 require 'delayed_job'
 
-class PollNotifier < Delayed::Plugin
-  callbacks do |lifecycle|
-    lifecycle.before(:loop) do |worker|
-      worker.say 'Checking for pending jobs'
-    end
-  end
-end
+#class PollNotifier < Delayed::Plugin
+  #callbacks do |lifecycle|
+    #lifecycle.before(:loop) do |worker|
+      #worker.say 'Checking for pending jobs'
+    #end
+  #end
+#end
 
-Delayed::Worker.plugins << PollNotifier
+#Delayed::Worker.plugins << PollNotifier
 
 Delayed::Worker.delay_jobs              = true
 Delayed::Worker.destroy_failed_jobs     = false
