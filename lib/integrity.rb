@@ -53,8 +53,6 @@ require 'stathat_wrapper'
 require 'opts/rconfig'
 require 'opts/github'
 require 'opts/stathat'
-require 'opts/etcd'
-require 'opts/fleet'
 
 require 'runnable'
 require 'docker'
