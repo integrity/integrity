@@ -1,11 +1,12 @@
-div
-  == link_to h('<- Back to all stacks'), '/pancakes', class: 'btn btn-link btn-lg'
+.pancakes
+  div
+    == link_to h('<- Back to all stacks'), '/pancakes', class: 'btn btn-link btn-lg'
 
-table.table.table-striped
-  thead
-    tr
-      th
-      th
-      th
-  tbody
-    == slim :"pancakes/stacks/_stack", locals: { stack: @stack, view: false }, layout: false
+  table.table.pancakes
+    thead
+      tr
+        th
+        th
+        th
+    tbody
+      == slim :"pancakes/stacks/_stack", locals: { stack: @stack, view: false }, layout: false

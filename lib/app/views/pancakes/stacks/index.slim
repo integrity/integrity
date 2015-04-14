@@ -1,30 +1,31 @@
-div
-  - if flash[:error]
-    br
-    .alert.alert-danger.alert-dismissible = flash[:error]
+.pancakes
+  div
+    - if flash[:error]
+      br
+      .alert.alert-danger.alert-dismissible = flash[:error]
 
-  - if flash[:notice]
-    br
-    .alert.alert-info.alert-dismissible = flash[:notice]
+    - if flash[:notice]
+      br
+      .alert.alert-info.alert-dismissible = flash[:notice]
 
-form.form#stacks-form action='/pancakes/stacks' method='post'
-  h3 New Stack
+  form.form#stacks-form action='/pancakes/stacks' method='post'
+    h3 New Stack
 
-  - %w[jarvis frick tim].each do |codebase|
-    .form-group
-      label for="#{codebase}_branch" #{codebase.capitalize} branch
-      input.form-control type='text' name='[branches][#{codebase}]' id="#{codebase}_branch" autocomplete='off' placeholder='master'
-  button.btn.btn-default type='submit' Create stack
+    - %w[jarvis frick tim].each do |codebase|
+      .form-group
+        label for="#{codebase}_branch" #{codebase.capitalize} branch
+        input.form-control type='text' name='[branches][#{codebase}]' id="#{codebase}_branch" autocomplete='off' placeholder='master'
+    button.btn.btn-default type='submit' Create stack
 
-h3 Stacks
-.row
-  .col-xs-12
-    table.table
-      thead
-        tr
-          th
-          th
-          th
-      tbody
-        - @stacks.each do |stack|
-          == slim :"pancakes/stacks/_stack", locals: { stack: stack, view: true }, layout: false
+  h3 Stacks
+  .row
+    .col-xs-12
+      table.table
+        thead
+          tr
+            th
+            th
+            th
+        tbody
+          - @stacks.each do |stack|
+            == slim :"pancakes/stacks/_stack", locals: { stack: stack, view: true }, layout: false
