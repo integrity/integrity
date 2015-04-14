@@ -17,6 +17,6 @@ Delayed::Worker.sleep_delay             = 1
 Delayed::Worker.max_attempts            = 2
 Delayed::Worker.max_run_time            = 1.minute
 Delayed::Worker.read_ahead              = 2
-#Delayed::Worker.default_queue_name      = 'integrity'
+Delayed::Worker.default_queue_name      = 'integrity'
 Delayed::Worker.raise_signal_exceptions = :term
 Delayed::Worker.logger                  = Integrity.sys_logger('delayed_job')
