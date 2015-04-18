@@ -73,7 +73,9 @@ HERE
     units.each do |unit_fname,unit_hash|
       @fleet_client.destroy(unit_fname)
     end
-    nil
+    true
+  rescue Fleet::NotFound
+    false
   end
 
   # @api public
