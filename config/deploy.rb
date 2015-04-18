@@ -3,19 +3,18 @@ require 'erb'
 require 'rvm/capistrano'
 
 set :deploy_env, ENV['DEPLOY_ENV']
+set :branch, 'master'
 
 if deploy_env == 'production'
-  #set :branch, 'master'
   set :server_host, 'honesty-2015-04-13-1b.test.grandrounds.com'
 elsif deploy_env == 'dtest'
-  #set :branch, 'dtest'
+  set :branch, 'develop'
   set :server_host, 'honesty-dtest-2015-04-13-1b.test.grandrounds.com'
 else
   puts "i dont know about this...'#{deploy_env}' environment."
   exit 1
 end
 
-set :branch, 'master'
 set :user, 'ubuntu'
 set :use_sudo, false
 set :application, 'honesty'
