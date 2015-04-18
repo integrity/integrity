@@ -89,9 +89,6 @@ end
 
 Pancakes.logger = Logging.logger['pancakes']
 
-# Try to queue pending builds on start
-Integrity.start
-
 if Delayed::Job.where(queue: 'stats').count == 0
   Delayed::Job.enqueue StatsJob.new
 end

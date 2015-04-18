@@ -1,21 +1,4 @@
 GIT
-  remote: git://github.com/ConsultingMD/crust.git
-  revision: 84dd5c0860857a2cda796f9c6b145641cfba22d9
-  specs:
-    crust (0.0.22)
-
-GIT
-  remote: git://github.com/ConsultingMD/ruby-fleetctl.git
-  revision: 035a22a7045fdb6e2e4780b710eb1c1377384610
-  branch: master
-  specs:
-    fleetctl (0.1.4.4)
-      activesupport
-      hashie (~> 2)
-      net-scp (= 1.2.1)
-      net-ssh (= 2.9.1)
-
-GIT
   remote: git://github.com/datamapper/dm-core
   revision: 03a6425d1616027dd8371ca4f5714c333ba7e789
   branch: release-1.2
@@ -231,6 +214,9 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
+    pry-byebug (3.1.0)
+      byebug (~> 4.0)
+      pry (~> 0.10)
     rack (1.6.0)
     rack-contrib (1.2.0)
       rack (>= 0.9.1)
@@ -316,7 +302,6 @@ DEPENDENCIES
   chronic_duration
   concurrent-ruby
   contest
-  crust (= 0.0.22)!
   daemons
   data_mapper (~> 1.2)
   delayed_job
@@ -329,7 +314,6 @@ DEPENDENCIES
   etcd (~> 0.2.4)
   extlib
   fleet-api
-  fleetctl!
   haml
   hashie
   hpricot
@@ -344,6 +328,7 @@ DEPENDENCIES
   omniauth-github
   pony
   pry
+  pry-byebug
   rack-contrib
   rack-flash3
   rack-test

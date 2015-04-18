@@ -45,13 +45,8 @@ gem 'daemons'
 gem 'pony'                                      # E-mail
 gem 'rest-client'
 
-#gem 'fleetctl', '0.1.4.4', git: 'git://github.com/ConsultingMD/ruby-fleetctl.git'
-gem 'fleetctl', git: 'git://github.com/ConsultingMD/ruby-fleetctl.git', branch: 'master'
 gem 'fleet-api'
-gem 'crust', '0.0.22', git: 'git://github.com/ConsultingMD/crust.git'
 gem 'etcd', '~> 0.2.4'
-# gem 'crust', path: '/Users/rconda/Projects/GrandRounds/crust'
-#gem 'crust', path: '/home/ozzie/crust'
 
 # gem 'aws-ses', '~> 0.4.3', require: 'aws/ses' # SES E-mail
 # gem 'broach', '0.2.1'                         # Campfire
@@ -59,6 +54,7 @@ gem 'etcd', '~> 0.2.4'
 # gem 'bunny', '0.6.0'                          # AMQP
 
 gem 'byebug', require: 'byebug'
+gem 'pry-byebug'
 gem 'awesome_print', require: 'awesome_print'
 gem 'pry', require: 'pry', group: :development
 gem 'sinatra-static-assets'
