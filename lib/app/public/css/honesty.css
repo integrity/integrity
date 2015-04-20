@@ -52,14 +52,6 @@
   background: #f5f5f5;
 }
 
-.collapse.navbar-collapse.navbar-ex1-collapse {
-  background-color: darkblue;
-}
-
-.navbar a.navbar-brand {
-  background-color: red !important;
-}
-
 .mono {
   font-family: monospace;
 }
