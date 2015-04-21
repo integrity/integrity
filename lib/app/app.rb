@@ -225,10 +225,11 @@ module Integrity
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
     get '/pancakes' do
-      Pancakes::Stack.refresh_all_pancakes_units!
-      Pancakes::Stack.refresh_tcp_info!
-      @stacks = Pancakes::Stack.all
-      slim :pancakes
+      #Pancakes::Stack.refresh_all_pancakes_units!
+      #Pancakes::Stack.refresh_tcp_info!
+      #@stacks = Pancakes::Stack.all
+      #slim :pancakes
+      "coming soon"
     end
 
     #get '/pancakes/:branch_id/start_tracking' do |branch_id|
