@@ -8,6 +8,7 @@ After=%{after}.service
 Requires=%{after}.service
 
 [Service]
+TimeoutStartSec=10min
 ExecStartPre=-/usr/bin/docker kill %{service_name}
 ExecStartPre=-/usr/bin/docker rm %{service_name}
 ExecStartPre=/usr/bin/docker pull %{image}
