@@ -109,10 +109,12 @@ HERE
     end
   end
 
+  # converts a flat systemd unit file to ruby data structures
+  # ie, this (https://coreos.com/docs/launching-containers/launching/getting-started-with-systemd/) to this (https://github.com/CenturyLinkLabs/fleet-api#service-definitions)
+  #
   # @api public
   def self.convert_unit_file_to_fleet_hash_yea_baby(unit_file)
     section_header_re = /\[([a-z\-]+)\]/i
-    # oh yea baby
     unit_file
       .lines
       .map(&:chomp)
@@ -123,7 +125,8 @@ HERE
       .map{|section|
         [
           section.first.match(section_header_re)[1],
-          section.drop(1).map{|conf| conf.split('=', 2)}.to_h
+          section.drop(1).map{|conf| conf.split('=', 2)}
+            .reduce({}){|hsh,(k,v)| hsh[k] = hsh[k] ? Array(hsh[k]) << v : v ; hsh }
         ]
       }.to_h
   end
