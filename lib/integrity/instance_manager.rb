@@ -14,7 +14,7 @@ module Integrity
     end
 
     def refresh
-      @machines = Crust.get_machines
+      @machines = Integrity.crust.get_machines
       reset_max_running_builds
       LoadUtilization.log(
         @machines,

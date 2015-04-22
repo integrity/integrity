@@ -30,10 +30,23 @@ gem 'delayed_job_active_record'
 gem 'activerecord-mysql-adapter'
 gem 'delayed_job_web'
 gem 'daemons'
-gem 'pony'
-gem 'fleetctl', git: 'git://github.com/ConsultingMD/ruby-fleetctl.git', branch: 'master'
-gem 'crust', '0.0.22', git: 'git://github.com/ConsultingMD/crust.git'
-gem 'byebug'
+
+# These are dependencies for the various notifiers. Uncomment as appropriate.
+gem 'pony'                                      # E-mail
+gem 'rest-client'
+
+gem 'fleet-api'
+gem 'etcd', '~> 0.2.4'
+
+# gem 'aws-ses', '~> 0.4.3', require: 'aws/ses' # SES E-mail
+# gem 'broach', '0.2.1'                         # Campfire
+# gem 'nap', '0.4'                              # HTTP
+# gem 'bunny', '0.6.0'                          # AMQP
+
+gem 'byebug', require: 'byebug'
+gem 'pry-byebug'
+gem 'awesome_print', require: 'awesome_print'
+gem 'pry', require: 'pry', group: :development
 gem 'sinatra-static-assets'
 gem 'logging', '~> 2.0.0'
 gem 'rest-client', '~> 1.8.0'
@@ -66,6 +79,5 @@ group :test do
   gem 'bunny'
   gem 'shout-bot'
   gem 'webmock'
-  gem 'turn'
   gem 'timecop'
 end

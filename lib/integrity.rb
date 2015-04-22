@@ -237,18 +237,15 @@ module Integrity
     Time.now.to_i.to_s
   end
 
-  def self.start_service service
-    service_file = "#{self.root}/services/#{service}.service"
-    parsed_service_file = ERB.new(File.read(service_file), nil, '-').result(binding)
-    file = File.new("/tmp/#{service}.service", 'w+')
-    path = file.path
-    file.write parsed_service_file
-    file.close
-    Crust.start_service file.path
+  def self.start_service(service)
+    unit_fname = "#{service}.service"
+    unit_file = ERB.new(File.read("#{self.root}/services/#{unit_fname}"), nil, '-').result(binding)
+    hsh = Crust.convert_unit_file_to_fleet_hash_yea_baby(unit_file)
+    self.crust.start(unit_fname, hsh)
   end
 
   def self.start_services
-    ['logspout', 'metrics'].each {|s| self.start_service s}
+    ['logspout', 'metrics'].each {|s| self.start_service(s) }
   end
 
   def self.max_running_builds
@@ -312,6 +309,9 @@ module Integrity
   def self.queue_builds
     Integrity::Event.trigger('build:queue:all')
   end
-end
 
-require 'opts/crust' # Load integrity before loading crust options, because it uses Integrity root and logger.
+  def self.crust
+    return @crust if @crust
+    @crust = Crust.new(logger: self.logger)
+  end
+end

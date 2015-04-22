@@ -12,7 +12,7 @@ require 'delayed_job'
 #Delayed::Worker.plugins << PollNotifier
 
 Delayed::Worker.delay_jobs              = true
-Delayed::Worker.destroy_failed_jobs     = true
+Delayed::Worker.destroy_failed_jobs     = false
 Delayed::Worker.sleep_delay             = 1
 Delayed::Worker.max_attempts            = 2
 Delayed::Worker.max_run_time            = 10.minutes

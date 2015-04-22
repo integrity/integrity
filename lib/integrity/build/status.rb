@@ -36,7 +36,7 @@ module Integrity
         end
 
         def update_fleetctl_status
-          statuses = Crust.get_service_status
+          statuses = Integrity.crust.get_service_status
           statuses.each do |id, status|
             get(id).try(:update_fleetctl_status, status)
           end
@@ -124,7 +124,7 @@ module Integrity
 
       def update_fleetctl_status(status)
         if app_status = status.detect{|s| s[:type] == 'app' }
-          update(fleetctl_status: app_status[:active], machine_ip: app_status[:ip])
+          update(fleetctl_status: app_status[:active_state], machine_ip: app_status[:machine_ip])
         end
         #If the build service file fails, we change its status to 'killed' from 'building'
         consider_mercy_kill
