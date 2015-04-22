@@ -35,6 +35,7 @@ app = RConfig.application
 ENV['RACK_ENV'] = (app.environment || 'production').to_s
 DTEST = ENV['HONESTY_DTEST'] == 'true'
 puts 'environment has DTEST applied' if DTEST
+puts "DOCKYARD_DEBUG=#{ENV['DOCKYARD_DEBUG']}" if ENV['DOCKYARD_DEBUG']
 
 if app.environment == 'production'
   base_url = 'https://integrity.test.grandrounds.com'
