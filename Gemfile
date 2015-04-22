@@ -6,9 +6,7 @@ gem 'mysql2'
 gem 'activerecord', '~> 3.2'
 gem 'data_mapper', '~> 1.2'
 gem 'dm-mysql-adapter'
-# Workaround until https://github.com/datamapper/dm-core/issues/242
-# is fixed in a released version of datamapper.
-gem 'dm-core', git: 'git://github.com/datamapper/dm-core', branch: 'release-1.2'
+gem 'dm-core'
 gem 'haml'
 gem 'sass'
 gem 'slim'
@@ -33,10 +31,8 @@ gem 'daemons'
 
 # These are dependencies for the various notifiers. Uncomment as appropriate.
 gem 'pony'                                      # E-mail
-gem 'rest-client'
 
-gem 'fleet-api'
-gem 'etcd', '~> 0.2.4'
+#gem 'etcd', '~> 0.2.4'
 
 # gem 'aws-ses', '~> 0.4.3', require: 'aws/ses' # SES E-mail
 # gem 'broach', '0.2.1'                         # Campfire
@@ -45,8 +41,6 @@ gem 'etcd', '~> 0.2.4'
 
 gem 'byebug', require: 'byebug'
 gem 'pry-byebug'
-gem 'awesome_print', require: 'awesome_print'
-gem 'pry', require: 'pry', group: :development
 gem 'sinatra-static-assets'
 gem 'logging', '~> 2.0.0'
 gem 'rest-client', '~> 1.8.0'
