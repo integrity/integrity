@@ -347,7 +347,7 @@ module Pancakes
         port = port_map[unit.primary_private_port]
         unit.set_state(cluster_unit[:cluster_unit].active_state)
         unit.assign_attributes(info: cluster_unit, ip: ip, port: port)
-        logger.debug "updating #{unit.name} with cluster unit info"
+        logger.debug "updating #{unit.name} with cluster unit info <#{unit.state}>"
         unit.save!
       end
 
@@ -374,6 +374,13 @@ module Pancakes
 
     def off?
       state == :off
+    end
+
+    def all_services_up?
+      units.pingable.map do |unit|
+        is_service_up?(unit)
+      end
+      .reduce(true){|memo,val| memo && val }
     end
 
 
@@ -435,14 +442,6 @@ module Pancakes
         logger.info "service #{name} at #{url} is unreachable due to #{e.class} '#{e.message}'"
         return false
       end
-    end
-
-    # @api private
-    def all_services_up?
-      units.pingable.map do |unit|
-        is_service_up?(unit)
-      end
-      .reduce(true){|memo,val| memo && val }
     end
 
     # @api private

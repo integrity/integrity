@@ -21,7 +21,7 @@
 
 module Pancakes
 
-  NAMESPACE = 'pancakes2'
+  NAMESPACE = 'pancakes'
   CODEBASES = %i[jarvis frick tim]
   SHA_REGEX = /[0-9a-f]{40}/i
 
@@ -120,10 +120,10 @@ module Pancakes
 
       values.each do |value|
         if value.class == Class && curr.is_a?(value)
-          logger.debug "#{method} value #{curr.class} reached"
+          logger.debug "#{method || '<no_method>'} value #{curr.class} reached"
           return curr
         elsif value == curr
-          logger.debug "#{method} value #{curr} reached"
+          logger.debug "#{method || '<no_method>'} value #{curr} reached"
           return curr
         end
       end

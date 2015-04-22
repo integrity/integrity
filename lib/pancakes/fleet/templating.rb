@@ -3,6 +3,8 @@ module Pancakes
     module Templating
       extend self
 
+      DOCKER = '/usr/bin/docker'
+
       def detect_and_make_template(unit)
         if unit.service_name == 'mysql'
           mysql_template(unit)
@@ -20,8 +22,7 @@ module Pancakes
 
       # @param codebase :jarvis, :frick, :tim, etc. ie, not jarvis-server, tim-orchestra, etc. only the codebase part of the service name.
       # @api private
-      def git_env(unit)
-        commit = unit.stack.commits.for_codebase(unit.service_def.codebase)
+      def git_env(commit)
         {
           'BRANCH' => commit.branch,
           'SHA'    => commit.sha,
@@ -47,7 +48,7 @@ module Pancakes
           debug: !!ENV['DOCKYARD_DEBUG'],
         )
 
-        base_template(unit: unit, cmd: cmd, more_env: git_env(unit))
+        base_template(unit: unit, cmd: cmd, more_env: git_env(commit))
       end
 
       # @api private
@@ -59,7 +60,7 @@ module Pancakes
 
         Pancakes::Fleet::Templating.base_hash(
           cmd: cmd,
-          container_name: unit.name,
+          container: unit.name,
           environment: (service_def.env || {}).merge(more_env),
           image: service_def.image,
           machineof: machine_of_unit,
@@ -75,15 +76,15 @@ module Pancakes
         template = base_template(unit: unit)
         cmd = Pancakes::Fleet::Templating.logging_prefix_pipe(
           unit.name,
-          "-/usr/bin/docker exec #{unit.name} /root/freeze.sh #{unit.stack.branch_sha_short}"
+          "-#{DOCKER} exec #{unit.name} /root/freeze.sh #{unit.stack.branch_sha_short}"
         )
         template['Service']['ExecStop'].unshift(cmd)
         template
       end
 
       # @api private
-      def base_hash(cmd:, container_name:, environment:, image:, machineof:, netmaster_name:, ports:, requires:, oneshot: false)
-        _docker_run_cmd = docker_run(container_name: container_name,
+      def base_hash(cmd:, container:, environment:, image:, machineof:, netmaster_name:, ports:, requires:, oneshot: false)
+        _docker_run_cmd = docker_run(container: container,
                                      netmaster_name: netmaster_name,
                                      environment: environment,
                                      ports: ports,
@@ -107,13 +108,13 @@ module Pancakes
             {}
           end
 
-        #i_am_netmaster = netmaster_name == container_name
+        #i_am_netmaster = netmaster_name == container
         #maybe_pause =
           #if !i_am_netmaster
             #{
               #'ExecStartPost' => [
                 #'/bin/sleep 1',
-                #docker_pause(container_name: container_name)
+                #docker_pause(container: container)
               #]
             #}
           #else
@@ -122,17 +123,29 @@ module Pancakes
 
         {
           'Unit' => {
-            'Description' => pancake_desc(container_name),
+            'Description' => pancake_desc(container),
             'After'       => requires,
             'Requires'    => requires,
           },
+
           'Service' => {
-            'ExecStart' => _docker_run_cmd,
-            'ExecStop'  => [docker_rm(container_name: container_name)],
-          }.merge(maybe_oneshot), # .merge(maybe_pause),
+            'TimeoutStartSec' => '10min',
+            'ExecStartPre' => [
+              systemd_minus(docker_cmd(:kill, container)),
+              systemd_minus(docker_cmd(:rm, container)),
+              docker_cmd(:pull, image),
+            ],
+            'ExecStart'    => _docker_run_cmd,
+            'ExecStop'     => [
+              docker_cmd(:stop, container),
+              docker_cmd(:rm, container),
+            ],
+          }.merge(maybe_oneshot),
+
           'Install' => {
             'WantedBy' => 'local.target',
           },
+
           'X-Fleet' => x_fleet,
         }
       end
@@ -173,13 +186,18 @@ module Pancakes
       end
 
       # @api private
-      def docker_rm(container_name:)
-        %Q|/usr/bin/docker rm -f #{container_name}|
+      def systemd_minus(cmd)
+        "-#{cmd}"
       end
 
       # @api private
-      def docker_run(container_name:, netmaster_name:, environment: {}, ports:, image:, cmd:)
-        i_am_netmaster = netmaster_name == container_name
+      def docker_cmd(cmd, image_or_container)
+        %Q|#{DOCKER} #{cmd} #{image_or_container}|
+      end
+
+      # @api private
+      def docker_run(container:, netmaster_name:, environment: {}, ports:, image:, cmd:)
+        i_am_netmaster = netmaster_name == container
         if !i_am_netmaster
           net_str = "--net=container:#{netmaster_name}"
         else
@@ -187,17 +205,12 @@ module Pancakes
         end
 
         its_a_string = [net_str, env_str(environment), ports_str(ports), image, cmd].compact.map(&:to_s).map(&:strip).join(' ').strip
-        %Q|/usr/bin/docker run --rm -v /var/lib/docker/tmp:/tmp/hosttmp --name=#{container_name} #{its_a_string}|
+        %Q|#{DOCKER} run -v /var/lib/docker/tmp:/tmp/hosttmp --name=#{container} #{its_a_string}|
       end
 
       # @api private
-      #def docker_pause(container_name:)
-        #%Q|/usr/bin/docker pause #{container_name}|
-      #end
-
-      # @api private
-      def pancake_desc(container_name)
-        "pancakes container #{container_name}"
+      def pancake_desc(container)
+        "pancakes container #{container}"
       end
     end
   end
