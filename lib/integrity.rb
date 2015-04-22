@@ -317,5 +317,4 @@ module Integrity
   end
 end
 
-require 'opts/crust' # Load integrity before loading crust options, because it uses Integrity root and logger.
 require 'opts/delayed_job'
