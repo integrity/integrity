@@ -20,8 +20,9 @@ require 'haml'
 require 'sass'
 require 'slim'
 require 'stathat'
-require 'mongoid'
 require 'ap'
+require 'delayed_job'
+require 'active_record'
 
 require 'sinatra/base'
 require 'sinatra/authorization'
@@ -315,3 +316,6 @@ module Integrity
     @crust = Crust.new(logger: self.logger)
   end
 end
+
+require 'opts/crust' # Load integrity before loading crust options, because it uses Integrity root and logger.
+require 'opts/delayed_job'

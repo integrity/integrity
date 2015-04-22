@@ -1,26 +1,26 @@
 module Pancakes
   class Commit
-    include Mongoid::Document
+    #include Mongoid::Document
 
-    field :sha,     type: String
-    field :author,  type: String
-    field :message, type: String
-    field :date,    type: String
-    field :branch,  type: String
-    field :repo,    type: String
-    field :locked,  type: Boolean, default: false
-    field :at_head, type: Boolean, default: false
+    #field :sha,     type: String
+    #field :author,  type: String
+    #field :message, type: String
+    #field :date,    type: String
+    #field :branch,  type: String
+    #field :repo,    type: String
+    #field :locked,  type: Boolean, default: false
+    #field :at_head, type: Boolean, default: false
 
-    embedded_in :stack, class_name: 'Pancakes::Stack', inverse_of: :commits
+    #embedded_in :stack, class_name: 'Pancakes::Stack', inverse_of: :commits
 
-    validates :sha, presence: true
-    validates :sha, length: { minimum: 40, maximum: 40 }
-    validates :author, presence: true
-    validates :message, presence: true
-    validates :date, presence: true
-    validates :repo, presence: true
-    validates :locked, presence: true
-    validates :at_head, presence: true
+    #validates :sha, presence: true
+    #validates :sha, length: { minimum: 40, maximum: 40 }
+    #validates :author, presence: true
+    #validates :message, presence: true
+    #validates :date, presence: true
+    #validates :repo, presence: true
+    #validates :locked, presence: true
+    #validates :at_head, presence: true
 
     # Creating from a sha is always locked.
     def self.new_from_sha(repo:, sha:, branch: nil, locked: true)

@@ -1,12 +1,8 @@
-require 'delayed_job'
-require 'opts/delayed_job'
-require 'active_record'
-
 module Integrity
   class DelayedBuilder
     def initialize(options)
       ActiveRecord::Base.default_timezone = :utc
-      ActiveRecord::Base.establish_connection(options)
+      ActiveRecord::Base.establish_connection(options.to_h)
 
       Delayed::Worker.backend = :active_record
 

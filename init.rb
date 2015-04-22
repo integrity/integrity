@@ -30,6 +30,7 @@ require 'integrity/notifier/email'      # = Email
 # require 'integrity/notifier/shell'    # = Shell
 # require 'integrity/notifier/coop'     # = Co-op
 
+# santiy checks
 raise("DATABASE_URL is not set") unless ENV['DATABASE_URL']
 app = RConfig.application
 ENV['RACK_ENV'] = (app.environment || 'production').to_s

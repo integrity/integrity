@@ -1,53 +1,53 @@
 module Pancakes
   class Stack
-    include Mongoid::Document
-    include Mongoid::Timestamps
+    #include Mongoid::Document
+    #include Mongoid::Timestamps
 
     STATES = %i[off running starting incomplete unknown failed]
 
-    field :sha,              type: String
-    field :started_at,       type: Time
-    field :destroyed_at,     type: Time
-    field :state,            type: Symbol, default: :off
-    field :state_updated_at, type: Time
-    field :desired_state,    type: Symbol
-    field :pocs,             type: Array
-    field :services,         type: Array, default: []
-    field :history,          type: Array, default: []
+    #field :sha,              type: String
+    #field :started_at,       type: Time
+    #field :destroyed_at,     type: Time
+    #field :state,            type: Symbol, default: :off
+    #field :state_updated_at, type: Time
+    #field :desired_state,    type: Symbol
+    #field :pocs,             type: Array
+    #field :services,         type: Array, default: []
+    #field :history,          type: Array, default: []
 
-    embeds_many :commits, class_name: 'Pancakes::Commit', inverse_of: :stack do
-      def for_codebase(cb)
-        where(repo: Pancakes.repo_name(cb)).first
-      end
-    end
+    #embeds_many :commits, class_name: 'Pancakes::Commit', inverse_of: :stack do
+      #def for_codebase(cb)
+        #where(repo: Pancakes.repo_name(cb)).first
+      #end
+    #end
 
-    embeds_many :units, class_name: 'Pancakes::Unit', inverse_of: :stack do
-      def with_service_name(name)
-        where('service_def.name' => name.to_s).first
-      end
+    #embeds_many :units, class_name: 'Pancakes::Unit', inverse_of: :stack do
+      #def with_service_name(name)
+        #where('service_def.name' => name.to_s).first
+      #end
 
-      def pingable
-        exists('service_def.ping_url' => true)
-      end
+      #def pingable
+        #exists('service_def.ping_url' => true)
+      #end
 
-      def netmaster
-        where('service_def.name' => Services.netmaster).first
-      end
+      #def netmaster
+        #where('service_def.name' => Services.netmaster).first
+      #end
 
-      def non_netmaster
-        ne('service_def.name' => Services.netmaster)
-      end
-    end
+      #def non_netmaster
+        #ne('service_def.name' => Services.netmaster)
+      #end
+    #end
 
-    validates :state, inclusion: { in: STATES }, allow_blank: false, allow_nil: false
-    validates :services, length: { minimum: 1 }, allow_blank: false, allow_nil: false
-    validates :commits, associated: true
-    validates :units, associated: true
+    #validates :state, inclusion: { in: STATES }, allow_blank: false, allow_nil: false
+    #validates :services, length: { minimum: 1 }, allow_blank: false, allow_nil: false
+    #validates :commits, associated: true
+    #validates :units, associated: true
 
-    before_create do |doc|
-      self.services = self.services.map(&:to_s)
-      doc.new_sha
-    end
+    #before_create do |doc|
+      #self.services = self.services.map(&:to_s)
+      #doc.new_sha
+    #end
 
     def self.create_with_git_strings(services: Services.all_names, pocs: [], default_master: false, branches: nil, **git_strings)
       me = new_with_git_strings(services: services, pocs: pocs, branches: branches, **git_strings)

@@ -1,22 +1,22 @@
 module Pancakes
   class Unit
-    include Mongoid::Document
+    #include Mongoid::Document
 
     STATES = %i[off failed active inactive activating deactivating]
 
-    field :service_def,      type: Hash
-    field :state,            type: Symbol, default: :off
-    field :state_updated_at, type: Time
-    field :ip,               type: String
-    field :port,             type: Integer
-    field :info,             type: Hash
+    #field :service_def,      type: Hash
+    #field :state,            type: Symbol, default: :off
+    #field :state_updated_at, type: Time
+    #field :ip,               type: String
+    #field :port,             type: Integer
+    #field :info,             type: Hash
 
-    embedded_in :stack, class_name: 'Pancakes::Stack', inverse_of: :units
+    #embedded_in :stack, class_name: 'Pancakes::Stack', inverse_of: :units
 
-    validates :service_def, presence: true
-    validates :state, inclusion: { in: STATES }, allow_blank: false, allow_nil: false
-    validates :port, numericality: { greater_than: 0, only_integer: true }, allow_nil: true
-    validate :is_ip_addr?
+    #validates :service_def, presence: true
+    #validates :state, inclusion: { in: STATES }, allow_blank: false, allow_nil: false
+    #validates :port, numericality: { greater_than: 0, only_integer: true }, allow_nil: true
+    #validate :is_ip_addr?
 
     def active?
       state == :active

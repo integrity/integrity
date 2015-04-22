@@ -54,7 +54,7 @@ module Pancakes
   end
 
   def self.setup
-    Mongoid.load!(File.join("config/mongoid.yml"))
+    #Mongoid.load!(File.join("config/mongoid.yml"))
 
     Octokit.configure do |c|
       c.access_token = ENV['GITHUB_READ_TOKEN']
@@ -142,25 +142,12 @@ module Pancakes
   end
 end
 
-module Pancakes
-  class ClusterError < StandardError
-    attr_accessor :original
-
-    def self.new_with_original(orig_err)
-      me = new
-      me.original = orig_err
-      me
-    end
-
-    def message
-      @original ? @original.message : super
-    end
-  end
-end
-
+require 'active_record'
 require 'digest/sha1'
 
 require 'stathat_wrapper'
+
+require 'pancakes/errors'
 
 require 'pancakes/fleet'
 require 'pancakes/fleet/cluster'
