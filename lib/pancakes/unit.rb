@@ -32,7 +32,7 @@ module Pancakes
     #
 
     def self.create_with_service_def(service_def: nil)
-      me = new(service_def: service_def, ping_url: service_def[:ping_url], service_name: service_def[:name])
+      me = new(service_def: service_def, ping_url: service_def[:ping_url], service_name: service_def[:name], cluster_info: {})
       me.save
       me
     end
@@ -116,7 +116,8 @@ module Pancakes
       return nil unless name
       name = name.to_s
       #match = name.match((/\/?(?:pancakes)_(?<branch_id>[0-9a-f]+)_no(?<serialno>\d+)_(?<service>\w+)/))
-      match = name.match(/\/?(?<stack_name>#{Pancakes::NAMESPACE}_[0-9a-f]+)_(?<service_name>[a-z0-9\-_]+)(?:\.service)?/i)
+      #match = name.match(/\/?(?<stack_name>#{Pancakes::NAMESPACE}_[0-9a-f]+)_(?<service_name>[a-z0-9\-_]+)(?:\.service)?/i)
+      match = name.match(/\/?(?<stack_name>#{Pancakes::NAMESPACE}_[0-9a-f]+_\d+)_(?<service_name>[a-z0-9\-_]+)(?:\.service)?/i)
 
       if !match
         Pancakes.logger.warn "unit name '#{name}' didnt match the expected format"

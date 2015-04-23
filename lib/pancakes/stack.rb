@@ -146,7 +146,7 @@ module Pancakes
 
     def name
       #format("%s_%s_no%d", Pancakes::NAMESPACE, self.short_sha, self.serialno)
-      format("%s_%s", Pancakes::NAMESPACE, self.short_sha)
+      format("%s_%s_%d", Pancakes::NAMESPACE, self.short_sha, self.id)
     end
 
     # TODO break this down into smaller pieces. it's also similar in structure to bring_down.
@@ -174,20 +174,22 @@ module Pancakes
         nm = netmaster_unit
         Pancakes.cluster.start_unit(nm)
 
-        Pancakes.block_until_values(values: true, timeout: 60) do
+        timeout = 60
+
+        Pancakes.block_until_values(values: true, timeout: timeout) do
           refresh_unit_states
-          !nm.ip.nil?
+          !nm.refresh.machine_ip.nil?
         end
 
-        Pancakes.docker.set_machine_ip(nm.ip)
-        if !Pancakes.docker.block_until_container_running(name: nm.name, timeout: 60)
+        Pancakes.docker.set_machine_ip(nm.machine_ip)
+        if !Pancakes.docker.block_until_container_running(name: nm.name, timeout: timeout)
           raise Pancakes::ClusterError.new('timeout waiting for netmaster container run')
         end
 
         non_netmaster_units.each do |unit|
           Pancakes.cluster.start_unit(unit)
         end
-      rescue Pancakes::ClusterError => e
+      rescue Pancakes::ClusterError, Pancakes::TimeoutError => e
         # this will never run during a dry_run, so we dont need to worry about re-enabling StatHatWrapper
         StatHatWrapper.post_count('pancakes stacks bring_up errors', 1)
         logger.error "error during bring_up. some units may have been started successfully. class=#{e.original.class} message='#{e.message}'"
@@ -229,7 +231,7 @@ module Pancakes
 
       logger.info "bring_down #{self.name}"
       start_time = Time.now
-      update_attributes!(desired_state: :off) unless dry_run
+      set_all(desired_state: :off) unless dry_run
       StatHatWrapper.post_count('pancakes stacks bring_down started', 1)
 
       self.units.each do |unit|
@@ -248,7 +250,7 @@ module Pancakes
         logger.info "bring_down took #{format('%.1f', destroy_time)}s"
         StatHatWrapper.post_value('pancakes stacks bring_down duration', destroy_time)
         StatHatWrapper.post_count('pancakes stacks bring_down success', 1)
-        update_attributes!(destroyed_at: now)
+        set_all(destroyed_at: now)
         return true
       else
         logger.info "bring_down timeout after #{timeout}s"
@@ -354,8 +356,7 @@ module Pancakes
         u.name.start_with?(self.name)
       end
       .map do |u|
-        name_info = Unit.parse_unit_name(u.name)
-        { name_info.service_name => { cluster_unit: u, name_info: name_info } }
+        { Unit.parse_unit_name(u.name).service_name => { cluster_unit: u } }
       end
       .reduce(&:merge) || {}
 
@@ -366,18 +367,18 @@ module Pancakes
         if !cluster_unit
           logger.debug "no cluster unit for #{unit.name}"
           unit.set_state(:off)
-          unit.set_all(info: nil, ip: nil, port: nil)
+          unit.set_all(cluster_info: {}, machine_ip: nil, port: nil)
           unit.save
           next
         end
 
         ip = cluster_unit[:cluster_unit].machine_ip
-        container = Pancakes.docker.get_container(units.netmaster.name, ip)
+        container = Pancakes.docker.get_container(netmaster_unit.name, ip)
 
         if !container
           logger.debug "no container for #{unit.name}"
           unit.set_state(:off)
-          unit.set_all(info: nil, ip: nil, port: nil)
+          unit.set_all(cluster_info: {}, machine_ip: nil, port: nil)
           unit.save
           next
         end
@@ -385,8 +386,8 @@ module Pancakes
         port_map = container.port_mapping
         port = port_map[unit.primary_private_port]
         unit.set_state(cluster_unit[:cluster_unit].active_state)
-        unit.set_all(info: cluster_unit, ip: ip, port: port)
-        logger.debug "updating #{unit.name} with cluster unit info <#{unit.state}>"
+        unit.set_all(cluster_info: cluster_unit, machine_ip: ip, port: port)
+        logger.debug "updating #{unit.name} with cluster unit info <#{unit.state.inspect}>"
         unit.save
       end
 

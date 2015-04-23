@@ -64,7 +64,7 @@ module Pancakes
           environment: (service_def.env || {}).merge(more_env),
           image: service_def.image,
           machineof: machine_of_unit,
-          netmaster_name: unit.stack.units.netmaster.name,
+          netmaster_name: unit.stack.netmaster_unit.name,
           ports: ports,
           requires: requires_unit,
           oneshot: service_def.name.include?('orchestra')

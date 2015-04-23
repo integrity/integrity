@@ -98,31 +98,34 @@ module Pancakes
   # @param values [Array] if an instance of Class, class of the result of calling :method will
   #   be compared with the value. Otherwise, == comparison is done.
   # @return the value that was found, or nil of there was a timeout.
-  def self.block_until_values(obj: nil, method: nil, args: [], values:, timeout:)
-    #raise "can't call #{method}" unless obj.respond_to?(method)
+  def self.block_until_values(values:, timeout:, obj: nil, method: nil, args: [], raise_on_timeout: false)
+    raise "must pass a method or block" if !method && !block_given?
+    raise_on_timeout = false if raise_on_timeout.nil?
+
     poll_interval = 1
-    start = Time.now
-    values = Array(values)
-    args = Array(args)
+    start         = Time.now
+    values        = Array(values)
+    args          = Array(args)
+    callee_str    = "#<#{obj.class.name}##{method}(#{args.map(&:to_s).join(', ')})" || "<block>"
+    values_str    = values.inspect
+
     logger.debug "polling timeout=#{timeout}s"
 
     while (remaining = (Time.now - start)) <= timeout do
-      timeout_in = format('%.0fs', timeout - remaining)
+      logger.debug format("polling %s for %s (timeout in %.0fs)", callee_str, values_str, timeout - remaining)
 
-      if block_given?
-        logger.debug "polling block for #{values.inspect} (timeout in #{timeout_in})"
-        curr = yield
+      curr = if block_given?
+        yield
       else
-        logger.debug "polling #<#{obj.class.name}##{method}(#{args.map(&:to_s).join(', ')}) for #{values.inspect} (timeout in #{timeout_in})"
-        curr = obj.send(method, *args)
+        obj.send(method, *args)
       end
 
       values.each do |value|
         if value.class == Class && curr.is_a?(value)
-          logger.debug "#{method || '<no_method>'} value #{curr.class} reached"
+          logger.debug "#{callee_str} value.class #{curr.class} reached"
           return curr
         elsif value == curr
-          logger.debug "#{method || '<no_method>'} value #{curr} reached"
+          logger.debug "#{callee_str} value #{curr} reached"
           return curr
         end
       end
@@ -130,7 +133,9 @@ module Pancakes
       sleep(poll_interval)
     end
 
-    logger.warn "timeout of #{timeout}s reached calling #{method} for values #{values.inspect}"
+    msg = "timeout of #{timeout}s reached calling #{callee_str} for values #{values_str}"
+    logger.warn(msg)
+    raise Pancakes::TimeoutError, msg if raise_on_timeout
     return nil
   end
 
@@ -143,7 +148,8 @@ end
 
 require 'sequel'
 require 'sequel/plugins/serialization'
-Logging.logger['pancakes-db'].level = Pancakes.log_level
+#Logging.logger['pancakes-db'].level = Pancakes.log_level
+Logging.logger['pancakes-db'].level = 2
 Sequel.default_timezone = :utc
 #Sequel.database_timezone = :utc
 #Sequel.application_timezone = :local

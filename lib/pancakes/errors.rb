@@ -1,4 +1,6 @@
 module Pancakes
+  class TimeoutError < StandardError ; end
+
   class ClusterError < StandardError
     attr_accessor :original
 
