@@ -12,30 +12,6 @@ module Pancakes
     STATES         = %i[off running starting incomplete unknown failed]
     DESIRED_STATES = %i[off running]
 
-    #embeds_many :commits, class_name: 'Pancakes::Commit', inverse_of: :stack do
-      #def for_codebase(cb)
-        #where(repo: Pancakes.repo_name(cb)).first
-      #end
-    #end
-
-    #embeds_many :units, class_name: 'Pancakes::Unit', inverse_of: :stack do
-      #def with_service_name(name)
-        #where('service_def.name' => name.to_s).first
-      #end
-
-      #def pingable
-        #exists('service_def.ping_url' => true)
-      #end
-
-      #def netmaster
-        #where('service_def.name' => Services.netmaster).first
-      #end
-
-      #def non_netmaster
-        #ne('service_def.name' => Services.netmaster)
-      #end
-    #end
-
     one_to_many :commits, key: :stack_id, class: :"Pancakes::Commit"
     one_to_many :units,   key: :stack_id, class: :"Pancakes::Unit"
 
@@ -48,26 +24,16 @@ module Pancakes
       validates_min_length 1,              :services,      allow_blank: false, allow_nil: false
     end
 
-    #
-    # hooks
-    #
-
     def before_create
       self.services = self.services.map(&:to_s)
       new_sha
       super
     end
 
+
     #
     # constructors
     #
-
-    #def self.create_with_git_strings(services: Services.all_names, pocs: [], default_master: false, branches: nil, **git_strings)
-      #me = new_with_git_strings(services: services, pocs: pocs, branches: branches, **git_strings)
-      #me.save
-      #me.refresh
-      #me
-    #end
 
     def self.create_with_git_strings(services: Services.all_names, pocs: [], default_master: false, branches: nil, **git_strings)
       self.db.transaction do
@@ -94,16 +60,6 @@ module Pancakes
         me
       end
     end
-
-    # @param branches [Hash] hash like { jarvis: 'master', frick: 'foobar', codebase: 'branch_name' }
-    #def self.with_branches(branches)
-      #criteria = Pancakes::Stack
-      #return nil if branches.nil? || branches.empty?
-      #branches.each_pair do |codebase,branch|
-        #criteria = criteria.elem_match(commits: { repo: Pancakes.repo_name(codebase), branch: branch })
-      #end
-      #criteria.last
-    #end
 
     # @param branches [Hash] hash like { jarvis: 'master', frick: 'foobar', codebase: 'branch_name' }
     def self.with_branches(branches)
@@ -145,7 +101,6 @@ module Pancakes
     end
 
     def name
-      #format("%s_%s_no%d", Pancakes::NAMESPACE, self.short_sha, self.serialno)
       format("%s_%s_%d", Pancakes::NAMESPACE, self.short_sha, self.id)
     end
 
@@ -267,7 +222,7 @@ module Pancakes
       logger.info 'restarting with branch heads'
       bring_down
       logger.info 'doing bring_up for restart with branch heads'
-      refresh_commits_to_head
+      refresh_commits
       save
       bring_up
       logger.info 'done restarting with branch heads'
@@ -398,6 +353,11 @@ module Pancakes
       set_all(state: new_state.to_sym, state_updated_at: Time.now)
     end
 
+    def new_sha
+      update_all(sha: Digest::SHA1.hexdigest(Time.now.to_i.to_s))
+      refresh_logger
+    end
+
 
     #
     # association helpers
@@ -424,12 +384,9 @@ module Pancakes
     end
 
 
-
-
-    def new_sha
-      self.sha = Digest::SHA1.hexdigest(Time.now.to_i.to_s)
-      refresh_logger
-    end
+    #
+    # association helpers
+    #
 
     def running?
       state == :running
@@ -486,7 +443,7 @@ module Pancakes
     end
 
     # @api private
-    def refresh_commits_to_head
+    def refresh_commits
       commits.each do |ci|
         ci.refresh_myself
       end

@@ -33,20 +33,19 @@ module Pancakes
       def dockyard_template(unit)
         codebase = unit.service_def.codebase
         stack = unit.stack
-        binding.pry
         commit = stack.commit_for_codebase(codebase)
 
         cmd = Pancakes::Fleet::Templating.dockyard_cmd(
-          branch: commit.branch,
-          sha: commit.sha,
-          repo: unit.service_def.repo,
-          codebase: codebase,
-          service_type: unit.service_def.subtype,
-          dockyard_source: 'from_github',
+          sha:               commit.sha,
+          repo:              unit.service_def.repo,
+          debug:             !!ENV['DOCKYARD_DEBUG'],
+          branch:            commit.branch,
+          codebase:          codebase,
+          service_type:      unit.service_def.subtype,
+          gh_read_token:     ENV['GITHUB_READ_TOKEN'],
+          logging_prefix:    unit.name,
+          dockyard_source:   'from_github',
           branch_identifier: stack.branch_sha_short,
-          logging_prefix: unit.name,
-          gh_read_token: ENV['GITHUB_READ_TOKEN'],
-          debug: !!ENV['DOCKYARD_DEBUG'],
         )
 
         base_template(unit: unit, cmd: cmd, more_env: git_env(commit))
@@ -60,15 +59,15 @@ module Pancakes
         ports = service_def.netmaster ? Pancakes::Services.all_ports : nil
 
         Pancakes::Fleet::Templating.base_hash(
-          cmd: cmd,
-          container: unit.name,
-          environment: (service_def.env || {}).merge(more_env),
-          image: service_def.image,
-          machineof: machine_of_unit,
+          cmd:            cmd,
+          image:          service_def.image,
+          ports:          ports,
+          oneshot:        service_def.name.include?('orchestra')
+          requires:       requires_unit,
+          machineof:      machine_of_unit,
+          container:      unit.name,
+          environment:    (service_def.env || {}).merge(more_env),
           netmaster_name: unit.stack.netmaster_unit.name,
-          ports: ports,
-          requires: requires_unit,
-          oneshot: service_def.name.include?('orchestra')
         )
       end
 
