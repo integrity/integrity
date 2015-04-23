@@ -33,6 +33,7 @@ module Pancakes
       def dockyard_template(unit)
         codebase = unit.service_def.codebase
         stack = unit.stack
+        binding.pry
         commit = stack.commit_for_codebase(codebase)
 
         cmd = Pancakes::Fleet::Templating.dockyard_cmd(

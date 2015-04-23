@@ -41,7 +41,6 @@ class StatHatWrapper
 
   # @api private
   def self.logger
-    Logging.logger['stathat'].appenders = Logging.appenders.stdout(layout: ::Logging::Layouts::Pattern.new(pattern: "%.1l %d %h %c: %m\n"))
     Logging.logger['stathat'].level = :info
     Logging.logger['stathat']
   end

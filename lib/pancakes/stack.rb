@@ -487,9 +487,8 @@ module Pancakes
 
     # @api private
     def refresh_commits_to_head
-      self.remove_all_commits
-      self.commits.map do |ci|
-        self.add_commit(Pancakes::Commit.new_from_git_string(ci.repo, ci.git_string))
+      commits.each do |ci|
+        ci.refresh_myself
       end
     end
 

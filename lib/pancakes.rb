@@ -106,10 +106,8 @@ module Pancakes
     start         = Time.now
     values        = Array(values)
     args          = Array(args)
-    callee_str    = "#<#{obj.class.name}##{method}(#{args.map(&:to_s).join(', ')})" || "<block>"
+    callee_str    = method ? "#<#{obj.class.name}##{method}(#{args.map(&:to_s).join(', ')})" : "<block>"
     values_str    = values.inspect
-
-    logger.debug "polling timeout=#{timeout}s"
 
     while (remaining = (Time.now - start)) <= timeout do
       logger.debug format("polling %s for %s (timeout in %.0fs)", callee_str, values_str, timeout - remaining)
@@ -148,8 +146,8 @@ end
 
 require 'sequel'
 require 'sequel/plugins/serialization'
-#Logging.logger['pancakes-db'].level = Pancakes.log_level
-Logging.logger['pancakes-db'].level = 2
+Logging.logger['pancakes-db'].level = Pancakes.log_level
+#Logging.logger['pancakes-db'].level = 2
 Sequel.default_timezone = :utc
 #Sequel.database_timezone = :utc
 #Sequel.application_timezone = :local

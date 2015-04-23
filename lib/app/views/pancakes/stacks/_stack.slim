@@ -55,7 +55,7 @@ tr class=stack_state_row_color_class(stack)
               .mono = tcp_string(commit)
             td.mono = commit.short_sha
             td.branch-name.mono.nowrap = commit.branch
-            td.nowrap = time_ago_in_words(commit.date_as_date) + ' ago'
+            td.nowrap = time_ago_in_words(commit.date) + ' ago'
             td.nowrap = commit.author
             td.commit-message = commit.message
         - if stack.unit_with_service_name(:mailcatcher)

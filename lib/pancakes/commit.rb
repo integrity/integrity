@@ -4,6 +4,7 @@ module Pancakes
     plugin :timestamps
     plugin :validation_helpers
 
+    many_to_one :stack, key: :stack_id, class: :"Pancakes::Stack"
 
     def validate
       super
@@ -11,56 +12,58 @@ module Pancakes
       validates_presence %i[sha author message date repo locked at_head]
     end
 
-
-    #embedded_in :stack, class_name: 'Pancakes::Stack', inverse_of: :commits
-    many_to_one :stack, key: :stack_id, class: :"Pancakes::Stack"
-
-    # Creating from a sha is always locked.
-    def self.new_from_sha(repo:, sha:, branch: nil, locked: true)
-      ci = Octokit.commit(repo, sha)
-      sha = ci[:sha]
-      me = new(
-        sha:     sha,
-        author:  ci[:commit][:author][:name],
-        message: ci[:commit][:message].empty? ? nil : ci[:commit][:message].lines.first.chomp,
-        date:    ci[:commit][:author][:date],
-        branch:  branch,
-        repo:    repo,
-        locked:  locked,
-      )
-      me.refresh_at_head
-      me
-    end
-
-    # Creating from a branch may be locked or unlocked.
-    def self.new_from_branch(repo:, branch:, locked: false)
-      new_from_sha(
-        repo: repo,
-        branch: branch,
-        sha: head_sha(repo, branch),
-        locked: locked,
-      )
-    end
-
     def self.new_from_git_string(repo, git_str)
-      parsed = parse_git_string(git_str)
-      br, sha, locked = parsed[:branch], parsed[:sha], parsed[:locked]
-
-      if br && !sha
-        Pancakes::Commit.new_from_branch(repo: repo, branch: br, locked: locked)
-      elsif br && sha
-        Pancakes::Commit.new_from_sha(repo: repo, branch: br, sha: sha, locked: locked)
-      elsif !br && sha
-        Pancakes::Commit.new_from_sha(repo: repo, sha: sha, locked: locked)
-      else
-        raise "new_from_git_string() requires branch and/or sha"
-      end
+      new(get_model_fields_from_git_string(repo, git_str))
     end
 
     def self.create_from_git_string(repo, git_str)
-      me = new_from_git_string(repo, git_str)
-      me.save
-      me
+      new_from_git_string(repo, git_str).save
+    end
+
+    # @api private
+    def self.get_model_fields_from_git_string(repo, git_str)
+      sha, branch, locked = parse_git_string(git_str)
+      get_model_fields_for_sha(
+        repo:   repo,
+        locked: locked,
+        branch: branch,
+        sha:    get_sha(repo, branch, sha),
+      )
+    end
+
+    # @api private
+    def self.get_model_fields_for_sha(repo:, branch:, sha:, locked:)
+      ci = Octokit.commit(repo, sha)
+      {
+        repo:    repo,
+        branch:  branch,
+        sha:     sha,
+        locked:  locked,
+        at_head: is_at_head?(repo, branch, sha),
+        message: ci[:commit][:message],
+        author:  ci[:commit][:author][:name],
+        date:    ci[:commit][:author][:date],
+      }
+    end
+
+    # @api private
+    def self.get_sha(repo, branch, sha)
+      return sha if sha
+      raise "new_from_git_string() requires branch and/or sha" unless repo && branch
+      head_sha(repo, branch)
+    end
+
+    def refresh_myself
+      return if locked?
+      update_all(
+        self.class.get_model_fields_for_sha(
+          repo:   repo,
+          locked: locked,
+          branch: branch,
+          sha:    self.class.get_sha(repo, branch, nil),
+        )
+      )
+      self
     end
 
     def codebase
@@ -77,14 +80,17 @@ module Pancakes
 
     def toggle_lock
       self.locked = !self.locked
+      save
     end
 
     def refresh_at_head
-      if branch
-        self.at_head = sha == self.class.head_sha(repo, branch)
-      else
-        self.at_head = false
-      end
+      self.at_head = self.class.is_at_head?(repo, branch, sha)
+      save
+    end
+
+    def self.is_at_head?(repo, branch, sha)
+      return false unless repo && branch && sha
+      sha == head_sha(repo, branch)
     end
 
     def git_string
@@ -99,10 +105,6 @@ module Pancakes
       else
         sha
       end
-    end
-
-    def date_as_date
-      Time.parse(self.date)
     end
 
 
@@ -132,7 +134,7 @@ module Pancakes
     # - 'L+branch/with:name'
     # - 'L-branch/with:name'
     #
-    # @return [Hash] { sha: '...',  }
+    # @return [Array] returns an array of [sha, branch, locked]
     #
     # @api private
     def self.parse_git_string(str)
@@ -160,71 +162,7 @@ module Pancakes
         locked = true
       end
 
-      { sha: sha, branch: branch, locked: locked }
+      return sha, branch, locked
     end
-
-    #attr_reader :sha, :author_name, :message, :date, :branch_name, :repo
-
-    #def initialize(sha:, author_name:, message:, date:, branch_name:, repo:, locked: false)
-      #@sha, @author_name, @message, @date, @branch_name, @repo, @locked  = sha, author_name, message, date.to_s, branch_name, repo, locked
-    #end
-
-    #def locked?
-      #@locked
-    #end
-
-    #def lock
-      #@locked = true
-    #end
-
-    #def unlock
-      #@locked = false
-    #end
-
-    #def flip_lock
-      #@locked = !@locked
-    #end
-
-    #def as_json(opts={})
-      #{
-        #sha: @sha,
-        #author_name: @author_name,
-        #message: @message,
-        #date: @date.to_s,
-        #branch_name: @branch_name,
-        #repo: @repo,
-        #locked: @locked,
-      #}.stringify_keys
-    #end
-
-    #def self.from_json(json)
-      #new(json.symbolize_keys)
-    #end
-
-    #def self.new_from_github_api_commit(commit_hash, branch_name=nil, locked=false)
-      #repo = commit_hash[:url].sub('https://api.github.com/repos/', '').sub(/\/commits.+/, '')
-      #new(
-        #sha: commit_hash[:sha],
-        #author_name: commit_hash[:commit][:author][:name],
-        #message: commit_hash[:commit][:message].empty? ? '' : commit_hash[:commit][:message].lines.first.chomp,
-        #date: commit_hash[:commit][:author][:date],
-        #branch_name: branch_name,
-        #repo: repo,
-        #locked: locked,
-      #)
-    #end
-
-    #def self.new_from_integrity_commit(commit, locked=false)
-      #repo = commit.branch.project.repo
-      #new(
-        #sha: commit.identifier,
-        #author_name: commit.author.name,
-        #message: commit.message,
-        #date: commit.committed_at,
-        #branch_name: commit.branch,
-        #repo: "#{repo.owner}/#{repo.name}",
-        #locked: locked,
-      #)
-    #end
   end
 end
