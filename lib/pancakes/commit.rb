@@ -1,26 +1,19 @@
 module Pancakes
-  class Commit
-    #include Mongoid::Document
+  class Commit < Sequel::Model
+    set_dataset :pancakes_commits
+    plugin :timestamps
+    plugin :validation_helpers
 
-    #field :sha,     type: String
-    #field :author,  type: String
-    #field :message, type: String
-    #field :date,    type: String
-    #field :branch,  type: String
-    #field :repo,    type: String
-    #field :locked,  type: Boolean, default: false
-    #field :at_head, type: Boolean, default: false
+
+    def validate
+      super
+      validates_exact_length 40, :sha
+      validates_presence %i[sha author message date repo locked at_head]
+    end
+
 
     #embedded_in :stack, class_name: 'Pancakes::Stack', inverse_of: :commits
-
-    #validates :sha, presence: true
-    #validates :sha, length: { minimum: 40, maximum: 40 }
-    #validates :author, presence: true
-    #validates :message, presence: true
-    #validates :date, presence: true
-    #validates :repo, presence: true
-    #validates :locked, presence: true
-    #validates :at_head, presence: true
+    many_to_one :stack, key: :stack_id, class: :"Pancakes::Stack"
 
     # Creating from a sha is always locked.
     def self.new_from_sha(repo:, sha:, branch: nil, locked: true)
@@ -62,6 +55,12 @@ module Pancakes
       else
         raise "new_from_git_string() requires branch and/or sha"
       end
+    end
+
+    def self.create_from_git_string(repo, git_str)
+      me = new_from_git_string(repo, git_str)
+      me.save
+      me
     end
 
     def codebase

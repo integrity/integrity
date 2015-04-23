@@ -2,6 +2,7 @@ $LOAD_PATH.unshift(File.expand_path(File.dirname(".")))
 require 'rake/testtask'
 require 'rake/clean'
 require 'fileutils'
+import './lib/pancakes/tasks/db.rake'
 
 desc 'Default: run all tests'
 task default: :test

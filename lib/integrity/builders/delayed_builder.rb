@@ -2,7 +2,7 @@ module Integrity
   class DelayedBuilder
     def initialize(options)
       ActiveRecord::Base.default_timezone = :utc
-      ActiveRecord::Base.establish_connection(options.to_h)
+      ActiveRecord::Base.establish_connection(options)
 
       Delayed::Worker.backend = :active_record
 

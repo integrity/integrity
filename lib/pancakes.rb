@@ -54,7 +54,6 @@ module Pancakes
   end
 
   def self.setup
-    #Mongoid.load!(File.join("config/mongoid.yml"))
 
     Octokit.configure do |c|
       c.access_token = ENV['GITHUB_READ_TOKEN']
@@ -84,8 +83,8 @@ module Pancakes
   def self.codebase_name(repo)
     return nil unless repo
     repo = repo.split('/').last if repo['/']
-    repo = repo.downcase.to_sym
-    repo == :consultingmd ? :jarvis : repo
+    repo = repo.downcase
+    repo == 'consultingmd' ? 'jarvis' : repo
   end
 
   def self.validate_codebase(codebase)
@@ -142,8 +141,22 @@ module Pancakes
   end
 end
 
-require 'active_record'
+require 'sequel'
+require 'sequel/plugins/serialization'
+Logging.logger['pancakes-db'].level = Pancakes.log_level
+Sequel.default_timezone = :utc
+#Sequel.database_timezone = :utc
+#Sequel.application_timezone = :local
+#Sequel.typecast_timezone = :local
+
+Sequel::Plugins::Serialization.register_format(:symbolize,
+                                                lambda{|v| v.to_s},
+                                                lambda{|v| v.to_sym})
+Sequel.connect(ENV['DATABASE_URL'], logger: Logging.logger['pancakes-db'])
+
+require 'json'
 require 'digest/sha1'
+require 'net/ssh'
 
 require 'stathat_wrapper'
 

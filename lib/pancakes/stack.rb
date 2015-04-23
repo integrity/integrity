@@ -1,19 +1,15 @@
 module Pancakes
-  class Stack
-    #include Mongoid::Document
-    #include Mongoid::Timestamps
+  class Stack < Sequel::Model
+    set_dataset :pancakes_stacks
+    plugin :timestamps
+    plugin :serialization, :json, :pocs, :services
+    plugin :association_dependencies
+    plugin :validation_helpers
 
-    STATES = %i[off running starting incomplete unknown failed]
+    serialize_attributes :symbolize, :state, :desired_state
 
-    #field :sha,              type: String
-    #field :started_at,       type: Time
-    #field :destroyed_at,     type: Time
-    #field :state,            type: Symbol, default: :off
-    #field :state_updated_at, type: Time
-    #field :desired_state,    type: Symbol
-    #field :pocs,             type: Array
-    #field :services,         type: Array, default: []
-    #field :history,          type: Array, default: []
+    STATES         = %i[off running starting incomplete unknown failed]
+    DESIRED_STATES = %i[off running]
 
     #embeds_many :commits, class_name: 'Pancakes::Commit', inverse_of: :stack do
       #def for_codebase(cb)
@@ -39,44 +35,67 @@ module Pancakes
       #end
     #end
 
-    #validates :state, inclusion: { in: STATES }, allow_blank: false, allow_nil: false
-    #validates :services, length: { minimum: 1 }, allow_blank: false, allow_nil: false
-    #validates :commits, associated: true
-    #validates :units, associated: true
+    one_to_many :commits, key: :stack_id, class: :"Pancakes::Commit"
+    one_to_many :units,   key: :stack_id, class: :"Pancakes::Unit"
 
-    #before_create do |doc|
-      #self.services = self.services.map(&:to_s)
-      #doc.new_sha
+    add_association_dependencies commits: :delete, units: :delete
+
+    def validate
+      super
+      validates_includes   STATES,         :state,         allow_blank: false, allow_nil: false
+      validates_includes   DESIRED_STATES, :desired_state, allow_blank: false, allow_nil: false
+      validates_min_length 1,              :services,      allow_blank: false, allow_nil: false
+    end
+
+    #
+    # hooks
+    #
+
+    def before_validation
+      self.desired_state = :off unless self.desired_state
+    end
+
+    def before_create
+      self.services = self.services.map(&:to_s)
+      new_sha
+      super
+    end
+
+    #
+    # constructors
+    #
+
+    #def self.create_with_git_strings(services: Services.all_names, pocs: [], default_master: false, branches: nil, **git_strings)
+      #me = new_with_git_strings(services: services, pocs: pocs, branches: branches, **git_strings)
+      #me.save
+      #me.refresh
+      #me
     #end
 
     def self.create_with_git_strings(services: Services.all_names, pocs: [], default_master: false, branches: nil, **git_strings)
-      me = new_with_git_strings(services: services, pocs: pocs, branches: branches, **git_strings)
-      me.save!
-      me.reload
-      me
-    end
+      self.db.transaction do
+        me = new(services: services.to_set.to_a, pocs: pocs)
+        me.set_state(:off)
+        me.save
+        #me.refresh
 
-    def self.new_with_git_strings(services: Services.all_names, pocs: [], default_master: false, branches: nil, **git_strings)
-      services = services.to_set.to_a
-      me = new(
-        services: services,
-        pocs: pocs,
-      )
-      me.set_state(:off)
+        me.services.each do |name|
+          me.add_unit(Unit.create(service_def: Services.get(name)))
+        end
 
-      services.each do |name|
-        me.units << Unit.new(service_def: Services.get(name))
+        git_strings = (branches || {}) if git_strings.nil? || git_strings.empty?
+        # dont create Commits for codebases we aren't using for this stack.
+        codebases = codebases(me.services)
+        git_strings.select! {|cb| codebases.include?(cb.to_s) }
+
+        git_strings.each do |codebase,git_str|
+          Pancakes.validate_codebase(codebase) || raise("unsupported codebase #{codebase}")
+          git_str = 'master' if default_master && (git_str.nil? || git_str.empty?)
+          me.add_commit(Pancakes::Commit.create_from_git_string(Pancakes.repo_name(codebase), git_str))
+        end
+
+        me
       end
-
-      git_strings = (branches || {}) if git_strings.nil? || git_strings.empty?
-
-      me.commits = git_strings.map do |codebase,git_str|
-        Pancakes.validate_codebase(codebase) || raise("unsupported codebase #{codebase}")
-        git_str = 'master' if default_master && (git_str.nil? || git_str.empty?)
-        Pancakes::Commit.new_from_git_string(Pancakes.repo_name(codebase), git_str)
-      end
-
-      me
     end
 
     # @param branches [Hash] hash like { jarvis: 'master', frick: 'foobar', codebase: 'branch_name' }
@@ -87,6 +106,13 @@ module Pancakes
         criteria = criteria.elem_match(commits: { repo: Pancakes.repo_name(codebase), branch: branch })
       end
       criteria.last
+    end
+
+    def self.codebases(service_names)
+      service_names
+        .map{ |str| Services.parse_service_name(str) }
+        .select{ |str| str.size == 2 }
+        .map(&:first)
     end
 
     def id_s
@@ -123,8 +149,8 @@ module Pancakes
 
       StatHatWrapper.post_count('pancakes stacks bring_up started', 1)
       new_sha
-      assign_attributes(desired_state: :running, started_at: Time.now, destroyed_at: nil)
-      save! unless dry_run
+      set_all(desired_state: :running, started_at: Time.now, destroyed_at: nil)
+      save unless dry_run
       logger.info "bring_up #{self.name}"
 
       # TODO doing this for every worker could be pretty inefficient
@@ -132,7 +158,7 @@ module Pancakes
       sleep 2
 
       begin
-        nm = units.netmaster
+        nm = self.netmaster
         Pancakes.cluster.start_unit(nm)
 
         Pancakes.block_until_values(values: true, timeout: 60) do
@@ -227,7 +253,7 @@ module Pancakes
       bring_down
       logger.info 'doing bring_up for restart with branch heads'
       refresh_commits_to_head
-      save!
+      save
       bring_up
       logger.info 'done restarting with branch heads'
     end
@@ -264,7 +290,7 @@ module Pancakes
         end
 
       set_state(new_state)
-      save!
+      save
       new_state
     end
     alias :state! :state_from_cluster!
@@ -327,8 +353,8 @@ module Pancakes
         if !cluster_unit
           logger.debug "no cluster unit for #{unit.name}"
           unit.set_state(:off)
-          unit.assign_attributes(info: nil, ip: nil, port: nil)
-          unit.save!
+          unit.set_all(info: nil, ip: nil, port: nil)
+          unit.save
           next
         end
 
@@ -338,32 +364,31 @@ module Pancakes
         if !container
           logger.debug "no container for #{unit.name}"
           unit.set_state(:off)
-          unit.assign_attributes(info: nil, ip: nil, port: nil)
-          unit.save!
+          unit.set_all(info: nil, ip: nil, port: nil)
+          unit.save
           next
         end
 
         port_map = container.port_mapping
         port = port_map[unit.primary_private_port]
         unit.set_state(cluster_unit[:cluster_unit].active_state)
-        unit.assign_attributes(info: cluster_unit, ip: ip, port: port)
+        unit.set_all(info: cluster_unit, ip: ip, port: port)
         logger.debug "updating #{unit.name} with cluster unit info <#{unit.state}>"
-        unit.save!
+        unit.save
       end
 
-      save!
+      save
     end
 
     def set_state(new_state)
-      assign_attributes(state: new_state.to_sym, state_updated_at: Time.now)
+      set_all(state: new_state.to_sym, state_updated_at: Time.now)
     end
 
-    def netmaster
+    def netmaster_unit
       units.netmaster
     end
 
     def new_sha
-      self.history << { sha: self.sha.to_s, started_at: self.started_at, destroyed_at: self.destroyed_at }
       self.sha = Digest::SHA1.hexdigest(Time.now.to_i.to_s)
       refresh_logger
     end
@@ -408,8 +433,9 @@ module Pancakes
 
     # @api private
     def refresh_commits_to_head
-      self.commits = self.commits.map do |ci|
-        Pancakes::Commit.new_from_git_string(ci.repo, ci.git_string)
+      self.remove_all_commits
+      self.commits.map do |ci|
+        self.add_commit(Pancakes::Commit.new_from_git_string(ci.repo, ci.git_string))
       end
     end
 

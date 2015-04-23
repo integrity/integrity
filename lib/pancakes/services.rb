@@ -156,5 +156,13 @@ module Pancakes
 
       raise "no netmaster is specified"
     end
+
+    def self.parse_service_name(service_name)
+      if service_name['-']
+        service_name.split('-')
+      else
+        service_name
+      end
+    end
   end
 end
