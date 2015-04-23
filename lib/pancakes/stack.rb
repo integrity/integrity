@@ -5,6 +5,7 @@ module Pancakes
     plugin :serialization, :json, :pocs, :services
     plugin :association_dependencies
     plugin :validation_helpers
+    plugin :json_serializer
 
     serialize_attributes :symbolize, :state, :desired_state
 
@@ -95,13 +96,29 @@ module Pancakes
     end
 
     # @param branches [Hash] hash like { jarvis: 'master', frick: 'foobar', codebase: 'branch_name' }
+    #def self.with_branches(branches)
+      #criteria = Pancakes::Stack
+      #return nil if branches.nil? || branches.empty?
+      #branches.each_pair do |codebase,branch|
+        #criteria = criteria.elem_match(commits: { repo: Pancakes.repo_name(codebase), branch: branch })
+      #end
+      #criteria.last
+    #end
+
+    # @param branches [Hash] hash like { jarvis: 'master', frick: 'foobar', codebase: 'branch_name' }
     def self.with_branches(branches)
-      criteria = Pancakes::Stack
-      return nil if branches.nil? || branches.empty?
-      branches.each_pair do |codebase,branch|
-        criteria = criteria.elem_match(commits: { repo: Pancakes.repo_name(codebase), branch: branch })
+      return nil unless branches && !branches.empty?
+
+      branches = branches.map{|codebase,branch| { repo: Pancakes.repo_name(codebase), branch: branch } }
+      # a call to .where has to come before calls to .or
+      commits_ref = Pancakes::Commit.select(:stack_id).where(branches.take(1))
+
+      branches.drop(1).each do |branch_conditions|
+        commits_ref = commits_ref.or(branch_conditions)
       end
-      criteria.last
+
+      commits_ref = commits_ref.group(:stack_id).having{ count(:stack_id) =~ branches.size }
+      where(id: commits_ref)
     end
 
     def self.codebases(service_names)
@@ -385,11 +402,6 @@ module Pancakes
     # association helpers
     #
 
-    # @api private
-    #def my_units
-      #Unit.where(stack_id: self.id)
-    #end
-
     def netmaster_unit
       units_dataset.where(service_name: Pancakes::Services.netmaster).first
     end
@@ -409,9 +421,8 @@ module Pancakes
     def commit_for_codebase(cb)
       commits_dataset.where(repo: Pancakes.repo_name(cb)).first
     end
-      #def for_codebase(cb)
-        #where(repo: Pancakes.repo_name(cb)).first
-      #end
+
+
 
 
     def new_sha
@@ -425,6 +436,22 @@ module Pancakes
 
     def off?
       state == :off
+    end
+
+    def starting?
+      state == :starting
+    end
+
+    def failed?
+      state == :failed
+    end
+
+    def incomplete?
+      state == :incomplete
+    end
+
+    def unknown?
+      state == :unknown
     end
 
     def all_services_up?
@@ -511,22 +538,6 @@ module Pancakes
     def refresh_logger
       @__lgr = nil
     end
-
-    #def starting?
-      #== :starting
-    #end
-
-    #def failed?
-      #== :failed
-    #end
-
-    #def incomplete?
-      #== :incomplete
-    #end
-
-    #def unknown?
-      #== :unknown
-    #end
 
     #def remove_from_freezer(delay=0)
       #sleep(delay)
