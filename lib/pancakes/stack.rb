@@ -51,10 +51,6 @@ module Pancakes
     # hooks
     #
 
-    def before_validation
-      self.desired_state = :off unless self.desired_state
-    end
-
     def before_create
       self.services = self.services.map(&:to_s)
       new_sha
@@ -74,13 +70,13 @@ module Pancakes
 
     def self.create_with_git_strings(services: Services.all_names, pocs: [], default_master: false, branches: nil, **git_strings)
       self.db.transaction do
-        me = new(services: services.to_set.to_a, pocs: pocs)
+        me = new(services: services.to_set.to_a, pocs: pocs, desired_state: :off)
         me.set_state(:off)
         me.save
         #me.refresh
 
         me.services.each do |name|
-          me.add_unit(Unit.create(service_def: Services.get(name)))
+          me.add_unit(Unit.create_with_service_def(service_def: Services.get(name)))
         end
 
         git_strings = (branches || {}) if git_strings.nil? || git_strings.empty?
@@ -158,12 +154,12 @@ module Pancakes
       sleep 2
 
       begin
-        nm = self.netmaster
+        nm = netmaster_unit
         Pancakes.cluster.start_unit(nm)
 
         Pancakes.block_until_values(values: true, timeout: 60) do
           refresh_unit_states
-          !netmaster.ip.nil?
+          !nm.ip.nil?
         end
 
         Pancakes.docker.set_machine_ip(nm.ip)
@@ -171,7 +167,7 @@ module Pancakes
           raise Pancakes::ClusterError.new('timeout waiting for netmaster container run')
         end
 
-        units.non_netmaster.each do |unit|
+        non_netmaster_units.each do |unit|
           Pancakes.cluster.start_unit(unit)
         end
       rescue Pancakes::ClusterError => e
@@ -384,9 +380,39 @@ module Pancakes
       set_all(state: new_state.to_sym, state_updated_at: Time.now)
     end
 
+
+    #
+    # association helpers
+    #
+
+    # @api private
+    #def my_units
+      #Unit.where(stack_id: self.id)
+    #end
+
     def netmaster_unit
-      units.netmaster
+      units_dataset.where(service_name: Pancakes::Services.netmaster).first
     end
+
+    def non_netmaster_units
+      units_dataset.exclude(service_name: Pancakes::Services.netmaster)
+    end
+
+    def pingable_units
+      units_dataset.exclude(ping_url: nil)
+    end
+
+    def unit_with_service_name(service_name)
+      units_dataset.where(service_name: service_name.to_s).first
+    end
+
+    def commit_for_codebase(cb)
+      commits_dataset.where(repo: Pancakes.repo_name(cb)).first
+    end
+      #def for_codebase(cb)
+        #where(repo: Pancakes.repo_name(cb)).first
+      #end
+
 
     def new_sha
       self.sha = Digest::SHA1.hexdigest(Time.now.to_i.to_s)
@@ -402,7 +428,7 @@ module Pancakes
     end
 
     def all_services_up?
-      units.pingable.map do |unit|
+      pingable_units.map do |unit|
         is_service_up?(unit)
       end
       .reduce(true){|memo,val| memo && val }

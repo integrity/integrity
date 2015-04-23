@@ -268,7 +268,7 @@ module Integrity
         @stack.state_from_cluster!
       end
 
-      @unit = @stack.units.with_service_name(service_name)
+      @unit = @stack.unit_with_service_name(service_name)
       if !@unit
         logger.info 'unit not found'
         status 404

@@ -27,6 +27,17 @@ module Pancakes
       self.state = :off unless self.state
     end
 
+    #
+    # constructors
+    #
+
+    def self.create_with_service_def(service_def: nil)
+      me = new(service_def: service_def, ping_url: service_def[:ping_url], service_name: service_def[:name])
+      me.save
+      me
+    end
+
+
     def active?
       self.state == :active
     end

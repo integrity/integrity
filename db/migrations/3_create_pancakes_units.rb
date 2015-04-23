@@ -6,6 +6,8 @@ Sequel.migration do
       DateTime :created_at
       DateTime :updated_at
 
+      String   :service_name
+      String   :ping_url
       String   :service_def,      text: true, null: false
       String   :state,            null: false
       DateTime :state_updated_at, null: false

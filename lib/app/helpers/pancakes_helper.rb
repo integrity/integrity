@@ -20,7 +20,7 @@ module Integrity
       end
 
       def service_link(commit)
-        unit = commit.stack.units.with_service_name("#{commit.codebase.to_s}-server")
+        unit = commit.stack.unit_with_service_name("#{commit.codebase.to_s}-server")
         cb = commit.codebase
         if unit && !unit.tcp_str.empty?
           link_to cb, "http://#{unit.tcp_str}", target: '_blank'
@@ -30,7 +30,7 @@ module Integrity
       end
 
       def tcp_string(commit)
-        unit = commit.stack.units.with_service_name("#{commit.codebase.to_s}-server")
+        unit = commit.stack.unit_with_service_name("#{commit.codebase.to_s}-server")
         if unit && !unit.tcp_str.empty?
           unit.tcp_str
         else

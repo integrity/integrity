@@ -58,13 +58,13 @@ tr class=stack_state_row_color_class(stack)
             td.nowrap = time_ago_in_words(commit.date_as_date) + ' ago'
             td.nowrap = commit.author
             td.commit-message = commit.message
-        - if stack.units.with_service_name(:mailcatcher)
+        - if stack.unit_with_service_name(:mailcatcher)
           tr
             td
-            td(colspan='5') == mailcatcher_str(stack.units.with_service_name(:mailcatcher))
+            td(colspan='5') == mailcatcher_str(stack.unit_with_service_name(:mailcatcher))
             td
-        - if stack.units.with_service_name(:mysql)
+        - if stack.unit_with_service_name(:mysql)
           tr
             td
-            td.mono(colspan='5') == mysql_str(stack.units.with_service_name(:mysql))
+            td.mono(colspan='5') == mysql_str(stack.unit_with_service_name(:mysql))
             td
