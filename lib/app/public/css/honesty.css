@@ -87,7 +87,7 @@ table.table.commits {
   white-space: nowrap;
 }
 
-.commit-message {
+.pancakes .commit-message {
   font-style: italic;
   color: #555;
 }
