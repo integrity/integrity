@@ -62,7 +62,7 @@ module Pancakes
           cmd:            cmd,
           image:          service_def.image,
           ports:          ports,
-          oneshot:        service_def.name.include?('orchestra')
+          oneshot:        service_def.name.include?('orchestra'),
           requires:       requires_unit,
           machineof:      machine_of_unit,
           container:      unit.name,
