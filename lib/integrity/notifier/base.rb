@@ -49,7 +49,7 @@ module Integrity
       private
 
       def build_url
-        "#{Integrity.config.base_url}/#{@build.url}"
+        File.join(Integrity.config.base_url, @build.url)
       end
 
       def build_output
