@@ -94,11 +94,14 @@ table.table.commits {
 
 .ambulance-cross {
   position: absolute;
-  z-index: -1;
   display: inline-block;
   width: 8px;
   height: 8px;
   background-color: red;
   top: 19px;
   left: 26px;
+}
+
+.ambulance-cross + i {
+  position: relative;
 }
