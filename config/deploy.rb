@@ -33,20 +33,17 @@ server server_host, :rvm, :dj_worker, :webapp, :db
 before 'deploy:setup', 'rvm:install_ruby'
 after  'deploy:setup', 'write_upstart_envs'
 
-#def with_servers(&block)
-  #raise "need to pass a block" unless block_given?
-  #servers = find_servers_for_task(current_task)
-
-  #if servers.any?
-    #yield servers
-  #end
-#end
-
 namespace :db do
   task :setup, roles: :db, except: {no_release: true} do
-    #with_servers do |servers|
     run "cd #{current_path} && bundle exec rake db"
-    #end
+  end
+end
+
+namespace :pancakes do
+  namespace :db do
+    task :migrate, roles: :db, except: {no_release: true} do
+      run "cd #{current_path} && bundle exec rake pancakes:db:migrate"
+    end
   end
 end
 
@@ -60,9 +57,7 @@ end
 
 namespace :deploy do
   task :restart, roles: :webapp, except: {no_release: true} do
-    #with_servers do |servers|
     run "sudo restart #{application} || sudo start #{application}"
-    #end
   end
 
   desc 'Our override to prevent absent directories public/images, public/stylesheets, and public/javascripts from raising No such file or directory'
