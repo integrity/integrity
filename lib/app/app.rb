@@ -111,6 +111,8 @@ module Integrity
       @format = :json
       log "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{params.inspect}"
 
+      halt 200 if File.exists?('/tmp/honesty-ignore-push-event.txt')
+
       payload = Payload.new(params)
       halt 404 unless payload.project
 
