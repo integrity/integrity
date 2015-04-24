@@ -64,18 +64,10 @@ module Integrity
         msg = "Could Not send notification! - ("
         msg << "endpoint: #{github_api}"
         msg << ", payload: #{payload.inspect}"
-        msg << ", credentials: #{credentials.inspect}"
+        msg << ", credentials: <redacted>"
         msg << ")\n#{e.inspect}\n#{e.backtrace}"
         Integrity.say msg
       end
-
-      def self.list_commits(repo)
-        github_api = "https://api.github.com/repos/#{repo.owner}/#{repo.name}/commits"
-        token = Integrity.config.github_read_token
-        credentials = {content_type: :json, accept: :json, params: {access_token: token}}
-        RestClient.get github_api, credentials
-      end
-
     end
 
     register Github
