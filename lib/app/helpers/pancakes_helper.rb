@@ -40,7 +40,7 @@ module Integrity
 
       def mailcatcher_url(unit)
         return nil unless unit && unit.active?
-        format('http://%s:%d', unit.ip, unit.port)
+        format('http://%s:%d', unit.machine_ip, unit.port)
       end
 
       def mailcatcher_str(unit)
@@ -61,7 +61,7 @@ module Integrity
 
       def mysql_connect_str(unit)
         if unit && unit.active?
-          format('mysql -uroot -h%s -P%d', unit.ip, unit.port)
+          format('mysql -uroot -h%s -P%d', unit.machine_ip, unit.port)
         else
           ''
         end
@@ -69,7 +69,7 @@ module Integrity
 
       def mysql_url(unit)
         if unit && unit.active?
-          format('mysql://root@%s:%d', unit.ip, unit.port)
+          format('mysql://root@%s:%d', unit.machine_ip, unit.port)
         else
           ''
         end
