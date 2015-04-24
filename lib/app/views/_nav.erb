@@ -10,40 +10,47 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-
     </a>
   </div>
+
   <!-- Top Menu Items -->
   <ul class="nav navbar-left top-nav hidden-xs" style="padding-left: 250px">
-      <li class="active disabled">
-        <a href="/pancakes">
-          <i class="fa fa-fw fa-database" style="color: #FFBC00;"></i>
-          <span class="text"> Pancakes</span>
-        </a>
-      </li>
+    <li class="active">
+      <a href="/">
+        <i class="fa fa-fw fa-ambulance"></i>
+        <span class="text"> Builds</span>
+      </a>
+    </li>
 
-      <li>
-        <a href="/running">
-          <i class="fa fa-fw fa-users"></i>
-          <span class="text"> Running Builds </span>
-        </a>
-      </li>
+    <li>
+      <a href="/running">
+        <i class="fa fa-fw fa-users"></i>
+        <span class="text"> Running Builds </span>
+      </a>
+    </li>
 
-      <li>
-        <a href="/jobs">
-          <i class="fa fa-fw fa-cogs"></i>
-          <span class="text"> Jobs</span>
-        </a>
-      </li>
+    <li class="active">
+      <a href="/pancakes">
+        <i class="fa fa-fw fa-database" style="color: #FFBC00;"></i>
+        <span class="text"> Pancakes</span>
+      </a>
+    </li>
 
-      <li>
-        <a href="https://www.stathat.com/v/stats" target="_blank">
-          <i class="fa fa-fw fa-bar-chart-o"></i>
-          <span class="text">Stats</span>
-        </a>
-      </li>
+    <li>
+      <a href="/jobs">
+        <i class="fa fa-fw fa-cogs"></i>
+        <span class="text"> Jobs</span>
+      </a>
+    </li>
 
+    <li>
+      <a href="https://www.stathat.com/v/stats" target="_blank">
+        <i class="fa fa-fw fa-bar-chart-o"></i>
+        <span class="text">Stats</span>
+      </a>
+    </li>
   </ul>
+
   <ul class="nav navbar-right top-nav hidden-sm hidden-xs">
     <% if @project.present? %>
       <li><a href="<%= project_path(@project) %>"><span style="color: white;"><strong><%= @project.name.upcase %></strong></a></li>
