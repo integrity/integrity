@@ -42,7 +42,7 @@ module Integrity
       private
 
       def payload
-        logger.info "base_url #{Integrity.config.base_url}"
+        Integrity.logger.info "base_url #{Integrity.config.base_url}"
         pl = {state: status, target_url: build_url, description: desc, context: :default}.to_json
         Integrity.logger.info "github status payload: #{pl}"
         return pl
