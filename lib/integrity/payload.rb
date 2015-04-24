@@ -10,6 +10,7 @@ module Integrity
     def initialize(payload)
       payload  = JSON.parse(payload) if payload.is_a?(String)
       @payload = Hashie::Mash.new(payload)
+      Dir.mkdir('/tmp/payloads') unless File.directory?('/tmp/payloads')
       File.open("/tmp/payloads/#{Time.now.strftime('%Y%m%dT%H:%M:%S')}.json", 'w') {|f| f.write(JSON.dump(@payload)) }
       @builder = PayloadBuilder.new(self)
     end

@@ -249,6 +249,26 @@ module Integrity
       redirect back
     end
 
+    get '/pancakes/branches/:codebase.json' do |codebase|
+      term = params[:term]
+
+      if term
+        branches = Octokit.branches(Pancakes.repo_name(codebase)).map{|branch| branch[:name] }
+        # put master at the top of the list
+        if branches.delete('master')
+          branches.sort!
+          branches.unshift('master')
+        end
+        branches = branches.select do |name|
+          !!name[term]
+        end
+      else
+        branches = []
+      end
+
+      JSON.dump(branches)
+    end
+
     get '/pancakes/api/vX/stacks/search' do
       branches = params[:branches]
       data = params[:data]
