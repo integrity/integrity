@@ -17,7 +17,7 @@ module Pancakes
       },
       {
         name: 'mailcatcher',
-        image: 'simpledrupalcloud/mailcatcher',
+        image: 'grnds/mailcatcher',
         requires: :mysql,
         machineof: :mysql,
         ports: [80,25],
@@ -59,7 +59,7 @@ module Pancakes
         ports: [10001],
         ping_url: 'http://$ip:$port/status',
         env: {
-          'MAILCATCHER_SMTP_PORT' => 25,
+          'MAILCATCHER_SMTP_PORT' => 1025,
           'GITHUB_READ_TOKEN'     => true,
           'AWS_ACCESS_KEY_ID'     => true,
           'AWS_SECRET_ACCESS_KEY' => true,
@@ -73,7 +73,7 @@ module Pancakes
         machineof: :mysql,
         requires: :"jarvis-orchestra",
         env: {
-          'MAILCATCHER_SMTP_PORT' => 25,
+          'MAILCATCHER_SMTP_PORT' => 1025,
           'GITHUB_READ_TOKEN'     => true,
           'AWS_ACCESS_KEY_ID'     => true,
           'AWS_SECRET_ACCESS_KEY' => true,
