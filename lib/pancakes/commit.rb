@@ -78,7 +78,7 @@ module Pancakes
       locked
     end
 
-    def toggle_lock
+    def toggle_lock!
       self.locked = !self.locked
       save
     end

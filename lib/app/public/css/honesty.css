@@ -95,8 +95,8 @@ table.table.commits {
 .ambulance-cross {
   position: absolute;
   display: inline-block;
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   background-color: red;
   top: 19px;
   left: 26px;
@@ -104,4 +104,11 @@ table.table.commits {
 
 .ambulance-cross + i {
   position: relative;
+}
+
+.ui-widget-content .ui-state-focus {
+  background: none;
+  background-color: #ddd;
+  color: inherit;
+  font-weight: normal;
 }

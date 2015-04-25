@@ -157,8 +157,8 @@ module Integrity
       slim :"pancakes/stacks/index"
     end
 
-    get '/pancakes/stacks/:sha' do
-      @stack = Pancakes::Stack.find_by(sha: params[:sha])
+    get '/pancakes/stacks/:id' do
+      @stack = Pancakes::Stack[params[:id]]
 
       if @stack
         slim :"pancakes/stacks/show"
@@ -167,23 +167,22 @@ module Integrity
       end
     end
 
-    get '/pancakes/stacks/:sha/:codebase/toggle_lock' do
-      @stack = Pancakes::Stack.find_by(sha: params[:sha])
+    get '/pancakes/stacks/:id/:codebase/toggle_lock' do
+      @stack = Pancakes::Stack[params[:id]]
 
       if @stack
-        @commit = @stack.commits.find_by(repo: Pancakes.repo_name(params[:codebase]))
+        @commit = @stack.commit_for_codebase(params[:codebase])
 
         if @commit
-          @commit.toggle_lock
-          @commit.save!
+          @commit.toggle_lock!
         end
       end
 
       redirect back
     end
 
-    get '/pancakes/stacks/:sha/restart_with_branch_heads' do
-      @stack = Pancakes::Stack.find_by(sha: params[:sha])
+    get '/pancakes/stacks/:id/restart_with_branch_heads' do
+      @stack = Pancakes::Stack[params[:id]]
 
       if @stack
         Delayed::Job.enqueue(Pancakes::Background::RestartWithBranchHeadsJob.new(@stack.id_s))
@@ -192,8 +191,8 @@ module Integrity
       redirect back
     end
 
-    get '/pancakes/stacks/:sha/restart_with_same_commits' do
-      @stack = Pancakes::Stack.find_by(sha: params[:sha])
+    get '/pancakes/stacks/:id/restart_with_same_commits' do
+      @stack = Pancakes::Stack[params[:id]]
 
       if @stack
         Delayed::Job.enqueue(Pancakes::Background::RestartWithSameCommitsJob.new(@stack.id_s))
@@ -202,8 +201,8 @@ module Integrity
       redirect back
     end
 
-    get '/pancakes/stacks/:sha/bring_down' do
-      @stack = Pancakes::Stack.find_by(sha: params[:sha])
+    get '/pancakes/stacks/:id/bring_down' do
+      @stack = Pancakes::Stack[params[:id]]
 
       if @stack
         Delayed::Job.enqueue(Pancakes::Background::BringDownJob.new(@stack.id_s))
@@ -212,8 +211,8 @@ module Integrity
       redirect back
     end
 
-    get '/pancakes/stacks/:sha/refresh' do
-      @stack = Pancakes::Stack.find_by(sha: params[:sha])
+    get '/pancakes/stacks/:id/refresh' do
+      @stack = Pancakes::Stack[params[:id]]
 
       if @stack
         @stack.state_from_cluster!
@@ -222,8 +221,8 @@ module Integrity
       redirect back
     end
 
-    get '/pancakes/stacks/:sha/destroy' do
-      @stack = Pancakes::Stack.find_by(sha: params[:sha])
+    get '/pancakes/stacks/:id/destroy' do
+      @stack = Pancakes::Stack[params[:id]]
       @stack.state_from_cluster!
 
       if @stack && @stack.state == :off
@@ -237,10 +236,10 @@ module Integrity
     end
 
     post '/pancakes/stacks' do
-      @stack = Pancakes::Stack.new_with_git_strings(
+      @stack = Pancakes::Stack.create_with_git_strings(
+        pocs:           params[:pocs],
+        branches:       params[:branches],
         default_master: true,
-        pocs: [params[:poc]],
-        branches: params[:branches]
       )
 
       if @stack.save

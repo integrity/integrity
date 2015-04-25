@@ -6,25 +6,25 @@ tr class=stack_state_row_color_class(stack)
     .actions
       - if view
         div
-          == link_to 'view', "/pancakes/stacks/#{stack.sha}", class: 'btn btn-link btn-lg'
+          == link_to 'view', "/pancakes/stacks/#{stack.id}", class: 'btn btn-link btn-lg'
       div
-        a.btn.btn-sm.btn-danger href="/pancakes/stacks/#{stack.sha}/bring_down" Bring down
+        a.btn.btn-sm.btn-danger href="/pancakes/stacks/#{stack.id}/bring_down" Bring down
       div
-        a.btn.btn-sm.btn-danger href="/pancakes/stacks/#{stack.sha}/destroy" class=(stack.off? ? '' : 'disabled')
+        a.btn.btn-sm.btn-danger href="/pancakes/stacks/#{stack.id}/destroy" class=(stack.off? ? '' : 'disabled')
           | Delete
           br
           small
             | (must be OFF)
       div
-        a.btn.btn-sm.btn-warning href="/pancakes/stacks/#{stack.sha}/refresh"  Refresh state
+        a.btn.btn-sm.btn-warning href="/pancakes/stacks/#{stack.id}/refresh"  Refresh state
       div
-        a.btn.btn-sm.btn-primary href="/pancakes/stacks/#{stack.sha}/restart_with_branch_heads"
+        a.btn.btn-sm.btn-primary href="/pancakes/stacks/#{stack.id}/restart_with_branch_heads"
           | Restart
           br
           small
             | (branch heads)
       div
-        a.btn.btn-sm.btn-primary href="/pancakes/stacks/#{stack.sha}/restart_with_same_commits"
+        a.btn.btn-sm.btn-primary href="/pancakes/stacks/#{stack.id}/restart_with_same_commits"
           | Restart
           br
           small
@@ -45,7 +45,7 @@ tr class=stack_state_row_color_class(stack)
         - stack.commits.each do |commit|
           tr
             td
-              a.btn.btn-xs.btn-primary.toggle-lock-btn href="/pancakes/stacks/#{stack.sha}/#{commit.codebase}/toggle_lock"
+              a.btn.btn-xs.btn-primary.toggle-lock-btn href="/pancakes/stacks/#{stack.id}/#{commit.codebase}/toggle_lock"
                 - if commit.locked?
                   | unlock
                 - else

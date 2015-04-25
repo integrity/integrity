@@ -9,9 +9,9 @@ module Integrity
         elsif stack.state == :running
           'success'
         elsif stack.state == :starting
-          'info'
+          'warning'
         elsif stack.state == :incomplete
-          'info'
+          'warning'
         elsif stack.state == :failed
           'danger'
         else

@@ -36,11 +36,13 @@ module Pancakes
     #
 
     def self.create_with_git_strings(services: Services.all_names, pocs: [], default_master: false, branches: nil, **git_strings)
+      require 'pry'
       self.db.transaction do
+        pocs = (pocs || "").split(',').map(&:strip)
         me = new(services: services.to_set.to_a, pocs: pocs, desired_state: :off)
+        #binding.pry
         me.set_state(:off)
         me.save
-        #me.refresh
 
         me.services.each do |name|
           me.add_unit(Unit.create_with_service_def(service_def: Services.get(name)))
@@ -353,8 +355,9 @@ module Pancakes
       set_all(state: new_state.to_sym, state_updated_at: Time.now)
     end
 
+    # @api private
     def new_sha
-      update_all(sha: Digest::SHA1.hexdigest(Time.now.to_i.to_s))
+      set_all(sha: Digest::SHA1.hexdigest(Time.now.to_i.to_s))
       refresh_logger
     end
 
@@ -376,13 +379,12 @@ module Pancakes
     end
 
     def unit_with_service_name(service_name)
-      units_dataset.where(service_name: service_name.to_s).first
+      units_dataset.first(service_name: service_name.to_s)
     end
 
-    def commit_for_codebase(cb)
-      commits_dataset.where(repo: Pancakes.repo_name(cb)).first
+    def commit_for_codebase(codebase)
+      commits_dataset.first(repo: Pancakes.repo_name(codebase))
     end
-
 
     #
     # association helpers
