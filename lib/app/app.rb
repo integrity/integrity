@@ -84,9 +84,9 @@ module Integrity
     before do
       halt 403 unless authorized_ip? || web_hook? || status_update?
       halt 404 if request.path_info.include?('favico')
-      if Integrity.base_url.present?
-        Integrity.configure {|c| c.base_url = url_for('/', :full) }
-      end
+      #if Integrity.base_url.present?
+        #Integrity.configure {|c| c.base_url = url_for('/', :full) }
+      #end
       @load_utilization = LoadUtilization.current
       @usage = []
     end
