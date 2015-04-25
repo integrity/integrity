@@ -71,11 +71,12 @@ module Pancakes
       # @api private
       def reset_failed(host)
         if !@dry_run
-          logger.info "calling systemctl reset-failed on #{host}"
-          Net::SSH.start(host, DEFAULT_USER, paranoid: false, verbose: true, keys: '/home/ubuntu/.ssh/id_rsa') do |ssh|
-            ssh.exec!("sudo systemctl reset-failed")
-          end
-          StatHatWrapper.post_count('pancakes fleet cluster reset-failed calls', 1)
+          # TODO
+          #logger.info "calling systemctl reset-failed on #{host}"
+          #Net::SSH.start(host, DEFAULT_USER, paranoid: false, verbose: true, keys: '/home/ubuntu/.ssh/id_rsa') do |ssh|
+            #ssh.exec!("sudo systemctl reset-failed")
+          #end
+          #StatHatWrapper.post_count('pancakes fleet cluster reset-failed calls', 1)
         else
           logger.info "dry_run calling but not really systemctl reset-failed on #{host}"
         end
