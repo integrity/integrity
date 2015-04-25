@@ -20,7 +20,7 @@ module Pancakes
         image: 'grnds/mailcatcher',
         requires: :mysql,
         machineof: :mysql,
-        ports: [80,25],
+        ports: [1080,1025],
       },
       {
         name: 'frick-server',

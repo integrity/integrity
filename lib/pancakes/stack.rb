@@ -9,7 +9,8 @@ module Pancakes
 
     serialize_attributes :symbolize, :state, :desired_state
 
-    STATES         = %i[off running starting incomplete unknown failed]
+    HUMAN_STATES   = %i[off running starting stopping failed]
+    CLUSTER_STATES = %i[off running starting incomplete unknown failed]
     DESIRED_STATES = %i[off running]
 
     one_to_many :commits, key: :stack_id, class: :"Pancakes::Commit"
@@ -19,7 +20,7 @@ module Pancakes
 
     def validate
       super
-      validates_includes   STATES,         :state,         allow_blank: false, allow_nil: false
+      validates_includes   CLUSTER_STATES, :state,         allow_blank: false, allow_nil: false
       validates_includes   DESIRED_STATES, :desired_state, allow_blank: false, allow_nil: false
       validates_min_length 1,              :services,      allow_blank: false, allow_nil: false
     end
@@ -35,11 +36,11 @@ module Pancakes
     # constructors
     #
 
-    def self.create_with_git_strings(services: Services.all_names, pocs: [], default_master: false, branches: nil, **git_strings)
+    def self.create_with_git_strings(services: Services.all_names, pocs: [], default_master: false, desired_state: :off, branches: nil, **git_strings)
       require 'pry'
       self.db.transaction do
         pocs = (pocs || "").split(',').map(&:strip)
-        me = new(services: services.to_set.to_a, pocs: pocs, desired_state: :off)
+        me = new(services: services.to_set.to_a, pocs: pocs, desired_state: desired_state)
         #binding.pry
         me.set_state(:off)
         me.save
@@ -188,7 +189,7 @@ module Pancakes
 
       logger.info "bring_down #{self.name}"
       start_time = Time.now
-      set_all(desired_state: :off) unless dry_run
+      update_all(desired_state: :off) unless dry_run
       StatHatWrapper.post_count('pancakes stacks bring_down started', 1)
 
       self.units.each do |unit|
@@ -237,6 +238,39 @@ module Pancakes
       bring_up
       logger.info 'done restarting with same commits'
     end
+
+
+    #
+    # states
+    #
+
+    # states
+    # - :off
+    # - :running
+    # - :starting
+    # - :stopping
+    # - :failed
+    def human_state!
+      human_state_helper(state_from_cluster!)
+    end
+
+    def human_state
+      human_state_helper(state)
+    end
+
+    # @api private
+    private def human_state_helper(cluster_state)
+      if desired_state == :running && %i[off starting incomplete].include?(cluster_state)
+        :starting
+      elsif desired_state == :off && %i[running incomplete].include?(cluster_state)
+        :stopping
+      elsif cluster_state == :unknown
+        :failed
+      else
+        cluster_state
+      end
+    end
+
 
     # states
     # - :running    units nominal and all pingable
@@ -391,28 +425,32 @@ module Pancakes
     #
 
     def running?
-      state == :running
+      human_state == :running
     end
 
     def off?
-      state == :off
+      human_state == :off
     end
 
     def starting?
-      state == :starting
+      human_state == :starting
+    end
+
+    def stopping?
+      human_state == :stopping
     end
 
     def failed?
-      state == :failed
+      human_state == :failed
     end
 
-    def incomplete?
-      state == :incomplete
-    end
+    #def incomplete?
+      #state == :incomplete
+    #end
 
-    def unknown?
-      state == :unknown
-    end
+    #def unknown?
+      #state == :unknown
+    #end
 
     def all_services_up?
       pingable_units.map do |unit|

@@ -146,8 +146,8 @@ end
 
 require 'sequel'
 require 'sequel/plugins/serialization'
-Logging.logger['pancakes-db'].level = Pancakes.log_level
-#Logging.logger['pancakes-db'].level = 2
+#Logging.logger['pancakes-db'].level = Pancakes.log_level
+Logging.logger['pancakes-db'].level = 2
 Sequel.default_timezone = :utc
 #Sequel.database_timezone = :utc
 #Sequel.application_timezone = :local

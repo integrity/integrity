@@ -1,7 +1,7 @@
-tr class=stack_state_row_color_class(stack)
+tr class=human_state_row_color_class(stack)
   td
     .mono
-      b = stack.state.upcase
+      b = stack.human_state.upcase
       div: small: i = "updated #{time_ago_in_words(stack.state_updated_at)}"
     .actions
       - if view

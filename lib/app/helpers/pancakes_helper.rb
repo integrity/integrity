@@ -3,17 +3,13 @@
 module Integrity
   module Helpers
     module PancakesHelper
-      def stack_state_row_color_class(stack)
-        if stack.state == :off
+      def human_state_row_color_class(stack)
+        if stack.off?
           ''
-        elsif stack.state == :running
+        elsif stack.running?
           'success'
-        elsif stack.state == :starting
+        elsif stack.starting? || stack.stopping?
           'warning'
-        elsif stack.state == :incomplete
-          'warning'
-        elsif stack.state == :failed
-          'danger'
         else
           'danger'
         end
@@ -77,7 +73,7 @@ module Integrity
 
       def uptime(stack)
         if stack && stack.running?
-          time_ago_in_words(stack.started_at)
+          time_ago_in_words(stack.started_at).sub(' ago', '')
         else
           ''
         end

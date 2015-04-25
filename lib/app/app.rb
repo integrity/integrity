@@ -183,6 +183,7 @@ module Integrity
 
     get '/pancakes/stacks/:id/restart_with_branch_heads' do
       @stack = Pancakes::Stack[params[:id]]
+      @stack.update_all(desired_state: :off)
 
       if @stack
         Delayed::Job.enqueue(Pancakes::Background::RestartWithBranchHeadsJob.new(@stack.id_s))
@@ -193,6 +194,7 @@ module Integrity
 
     get '/pancakes/stacks/:id/restart_with_same_commits' do
       @stack = Pancakes::Stack[params[:id]]
+      @stack.update_all(desired_state: :off)
 
       if @stack
         Delayed::Job.enqueue(Pancakes::Background::RestartWithSameCommitsJob.new(@stack.id_s))
@@ -203,6 +205,7 @@ module Integrity
 
     get '/pancakes/stacks/:id/bring_down' do
       @stack = Pancakes::Stack[params[:id]]
+      @stack.update_all(desired_state: :off)
 
       if @stack
         Delayed::Job.enqueue(Pancakes::Background::BringDownJob.new(@stack.id_s))
@@ -240,6 +243,7 @@ module Integrity
         pocs:           params[:pocs],
         branches:       params[:branches],
         default_master: true,
+        desired_state: :running,
       )
 
       if @stack.save

@@ -112,3 +112,7 @@ table.table.commits {
   color: inherit;
   font-weight: normal;
 }
+
+#stacks-form {
+  width: 30em;
+}
