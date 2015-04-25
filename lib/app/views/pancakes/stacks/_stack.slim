@@ -60,12 +60,11 @@ tr class=human_state_row_color_class(stack)
             td.commit-info
               span.mono = commit.short_sha
               span.branch-name.mono.nowrap = commit.branch
-              span.nowrap = time_ago_in_words(commit.date) + ' ago'
-              span.nowrap = commit.author
+              span.nowrap = time_ago_in_words(commit.date) + ' ago by ' + commit.author
               div.commit-message = commit.message
         - if stack.unit_with_service_name(:mailcatcher)
           tr
-            td(colspan='5') == mailcatcher_str(stack.unit_with_service_name(:mailcatcher))
+            td(colspan='4') == mailcatcher_str(stack.unit_with_service_name(:mailcatcher))
         - if stack.unit_with_service_name(:mysql)
           tr
-            td.mono(colspan='5') == mysql_str(stack.unit_with_service_name(:mysql))
+            td.mono(colspan='4') == mysql_str(stack.unit_with_service_name(:mysql))
