@@ -39,6 +39,7 @@ puts 'environment has DTEST applied' if DTEST
 puts "DOCKYARD_DEBUG=#{ENV['DOCKYARD_DEBUG']}" if ENV['DOCKYARD_DEBUG']
 
 if app.environment == 'production'
+  logging_pattern = "%.1l %c: %m\n"
   base_url = 'https://integrity.test.grandrounds.com'
 else
   base_url = 'http://' << %x{ hostname }
@@ -49,13 +50,14 @@ end
 # since there is only one database environment, use the DTEST var to change other environmental configs
 # this is some ghetto ass shit
 if DTEST
+  logging_pattern = "%.1l %d %h %c: %m\n"
   base_url = 'https://honesty-dtest.test.grandrounds.com'
   StatHatWrapper.disable
 else
   StatHatWrapper.enable
 end
 
-Logging.logger.root.appenders = Logging.appenders.stdout(layout: ::Logging::Layouts::Pattern.new(pattern: "%.1l %d %h %c: %m\n"))
+Logging.logger.root.appenders = Logging.appenders.stdout(layout: ::Logging::Layouts::Pattern.new(pattern: logging_pattern))
 Logging.logger['honesty'].level  = :info
 Logging.logger['pancakes'].level = :debug
 
