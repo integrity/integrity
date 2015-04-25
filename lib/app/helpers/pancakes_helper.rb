@@ -17,12 +17,7 @@ module Integrity
 
       def service_link(commit)
         unit = commit.stack.unit_with_service_name("#{commit.codebase.to_s}-server")
-        cb = commit.codebase
-        if unit && !unit.tcp_str.empty?
-          link_to cb, "http://#{unit.tcp_str}", target: '_blank'
-        else
-          cb
-        end
+        link_to "Launch #{commit.codebase.capitalize}", "http://#{unit.tcp_str}", target: '_blank', class: "btn btn-primary#{(unit && !unit.tcp_str.empty?) ? '' : ' disabled'}"
       end
 
       def tcp_string(commit)
@@ -40,11 +35,7 @@ module Integrity
       end
 
       def mailcatcher_str(unit)
-        if unit && unit.active?
-          link_to 'mailcatcher', mailcatcher_url(unit), target: '_blank'
-        else
-          'mailcatcher not running'
-        end
+        link_to 'Launch Mailcatcher', mailcatcher_url(unit), target: '_blank', class: "btn btn-primary #{(unit && unit.active?) ? '' : 'disabled'}"
       end
 
       def mysql_str(unit)

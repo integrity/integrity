@@ -92,6 +92,10 @@ table.table.commits {
   color: #555;
 }
 
+.pancakes .lock-controls {
+  min-width: 6em;
+}
+
 .ambulance-cross {
   position: absolute;
   display: inline-block;
@@ -115,4 +119,10 @@ table.table.commits {
 
 #stacks-form {
   width: 30em;
+}
+
+.pancakes .commit-info span {
+  padding-right: 1em;
+  display: inline-block;
+
 }
