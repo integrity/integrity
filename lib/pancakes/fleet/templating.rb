@@ -55,7 +55,7 @@ module Pancakes
       def base_template(unit:, cmd: nil, more_env: {})
         service_def = unit.service_def
         machine_of_unit = service_def.machineof ? gen_service_file_name(unit.stack.unit_with_service_name(service_def.machineof)) : nil
-        requires_unit = service_def.requires.is_a?(Symbol) ? gen_service_file_name(unit.stack.unit_with_service_name(service_def.requires)) : service_def.requires
+        requires_unit = service_def.requires.end_with?('.service') ? service_def.requires : gen_service_file_name(unit.stack.unit_with_service_name(service_def.requires))
         ports = service_def.netmaster ? Pancakes::Services.all_ports : nil
 
         Pancakes::Fleet::Templating.base_hash(
