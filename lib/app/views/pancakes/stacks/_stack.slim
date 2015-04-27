@@ -41,7 +41,7 @@ tr class=human_state_row_color_class(stack)
       = uptime(stack)
     div
       b> created_at:
-      = time_ago_in_words(stack.created_at)
+      = time_ago_in_words(stack.created_at).sub(' ago', '')
     div
       b> internal state:
       = stack.state

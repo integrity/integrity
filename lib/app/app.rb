@@ -150,7 +150,7 @@ module Integrity
     ###############################################################
 
     get '/pancakes' do
-      @stacks = Pancakes::Stack.all
+      @stacks = Pancakes::Stack.order(:created_at)
       slim :"pancakes/stacks/index"
     end
 
