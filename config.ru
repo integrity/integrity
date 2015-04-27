@@ -3,6 +3,39 @@ require 'rack/urlmap'
 require 'delayed_job_web'
 require './init'
 
+class InspectMiddleware
+  require "yaml"
+
+  def initialize(app)
+    @app = app
+  end
+
+  def call(env)
+    puts
+    puts "-"*80
+    puts "Request Pipeline"
+    print_middleware_class = lambda do |klass|
+      if middleware = klass.instance_variable_get(:@app)
+        print "#{middleware.class} -> "
+        print_middleware_class.call(middleware)
+      else
+        puts
+        puts "#{klass.class} is a rack endpoint"
+        puts
+        puts "Class:"
+        puts klass.inspect
+        puts "-"*80
+        puts
+      end
+    end
+
+    print_middleware_class.call(@app)
+
+    @app.call(env)
+  end
+end
+
+user InspectMiddleware
 use Rack::PostBodyContentTypeParser
 use Rack::Session::Cookie, key: 'rack.session', path: '/', secret: 'secret', expire_after: 1800 # 30mins
 use Rack::Flash
@@ -26,6 +59,3 @@ run Rack::URLMap.new(
   '/' => Integrity.app,
   '/delayed_jobs' => DelayedJobWeb
 )
-
-# run Delayed::Web::Engine, at: '/jobs'
-# run Integrity.app
