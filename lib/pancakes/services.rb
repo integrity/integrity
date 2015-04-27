@@ -10,9 +10,9 @@ module Pancakes
         ports: [3306],
         requires: 'docker.service',
         env: {
-          'AWS_ACCESS_KEY_ID'     => true,
-          'AWS_SECRET_ACCESS_KEY' => true,
-          'AWS_SECRET_KEY'        => true,
+          'AWS_ACCESS_KEY_ID'     => 'DEV_AWS_ACCESS_KEY_ID',
+          'AWS_SECRET_ACCESS_KEY' => 'DEV_AWS_SECRET_ACCESS_KEY',
+          'AWS_SECRET_KEY'        => 'DEV_AWS_SECRET_KEY',
         },
       },
       {
@@ -32,9 +32,9 @@ module Pancakes
         ping_url: 'http://$ip:$port/status',
         env: {
           'GITHUB_READ_TOKEN'     => true,
-          'AWS_ACCESS_KEY_ID'     => true,
-          'AWS_SECRET_ACCESS_KEY' => true,
-          'AWS_SECRET_KEY'        => true,
+          'AWS_ACCESS_KEY_ID'     => 'DEV_AWS_ACCESS_KEY_ID',
+          'AWS_SECRET_ACCESS_KEY' => 'DEV_AWS_SECRET_ACCESS_KEY',
+          'AWS_SECRET_KEY'        => 'DEV_AWS_SECRET_KEY',
         },
       },
       {
@@ -45,9 +45,9 @@ module Pancakes
         requires: :mysql,
         env: {
           'GITHUB_READ_TOKEN'     => true,
-          'AWS_ACCESS_KEY_ID'     => true,
-          'AWS_SECRET_ACCESS_KEY' => true,
-          'AWS_SECRET_KEY'        => true,
+          'AWS_ACCESS_KEY_ID'     => 'DEV_AWS_ACCESS_KEY_ID',
+          'AWS_SECRET_ACCESS_KEY' => 'DEV_AWS_SECRET_ACCESS_KEY',
+          'AWS_SECRET_KEY'        => 'DEV_AWS_SECRET_KEY',
         },
       },
       {
@@ -61,9 +61,9 @@ module Pancakes
         env: {
           'MAILCATCHER_SMTP_PORT' => 1025,
           'GITHUB_READ_TOKEN'     => true,
-          'AWS_ACCESS_KEY_ID'     => true,
-          'AWS_SECRET_ACCESS_KEY' => true,
-          'AWS_SECRET_KEY'        => true,
+          'AWS_ACCESS_KEY_ID'     => 'DEV_AWS_ACCESS_KEY_ID',
+          'AWS_SECRET_ACCESS_KEY' => 'DEV_AWS_SECRET_ACCESS_KEY',
+          'AWS_SECRET_KEY'        => 'DEV_AWS_SECRET_KEY',
         },
       },
       {
@@ -75,9 +75,9 @@ module Pancakes
         env: {
           'MAILCATCHER_SMTP_PORT' => 1025,
           'GITHUB_READ_TOKEN'     => true,
-          'AWS_ACCESS_KEY_ID'     => true,
-          'AWS_SECRET_ACCESS_KEY' => true,
-          'AWS_SECRET_KEY'        => true,
+          'AWS_ACCESS_KEY_ID'     => 'DEV_AWS_ACCESS_KEY_ID',
+          'AWS_SECRET_ACCESS_KEY' => 'DEV_AWS_SECRET_ACCESS_KEY',
+          'AWS_SECRET_KEY'        => 'DEV_AWS_SECRET_KEY',
         },
       },
       {
@@ -88,9 +88,9 @@ module Pancakes
         requires: :mysql,
         env: {
           'GITHUB_READ_TOKEN'     => true,
-          'AWS_ACCESS_KEY_ID'     => true,
-          'AWS_SECRET_ACCESS_KEY' => true,
-          'AWS_SECRET_KEY'        => true,
+          'AWS_ACCESS_KEY_ID'     => 'DEV_AWS_ACCESS_KEY_ID',
+          'AWS_SECRET_ACCESS_KEY' => 'DEV_AWS_SECRET_ACCESS_KEY',
+          'AWS_SECRET_KEY'        => 'DEV_AWS_SECRET_KEY',
         },
       },
       {
@@ -103,9 +103,9 @@ module Pancakes
         ping_url: 'http://$ip:$port/status',
         env: {
           'GITHUB_READ_TOKEN'     => true,
-          'AWS_ACCESS_KEY_ID'     => true,
-          'AWS_SECRET_ACCESS_KEY' => true,
-          'AWS_SECRET_KEY'        => true,
+          'AWS_ACCESS_KEY_ID'     => 'DEV_AWS_ACCESS_KEY_ID',
+          'AWS_SECRET_ACCESS_KEY' => 'DEV_AWS_SECRET_ACCESS_KEY',
+          'AWS_SECRET_KEY'        => 'DEV_AWS_SECRET_KEY',
         },
       },
       {
@@ -116,9 +116,9 @@ module Pancakes
         requires: :"tim-orchestra",
         env: {
           'GITHUB_READ_TOKEN'     => true,
-          'AWS_ACCESS_KEY_ID'     => true,
-          'AWS_SECRET_ACCESS_KEY' => true,
-          'AWS_SECRET_KEY'        => true,
+          'AWS_ACCESS_KEY_ID'     => 'DEV_AWS_ACCESS_KEY_ID',
+          'AWS_SECRET_ACCESS_KEY' => 'DEV_AWS_SECRET_ACCESS_KEY',
+          'AWS_SECRET_KEY'        => 'DEV_AWS_SECRET_KEY',
         },
       },
     ]
