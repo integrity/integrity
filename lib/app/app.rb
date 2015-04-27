@@ -278,37 +278,33 @@ module Integrity
       update_state = params[:update_state]
 
       @stack = Pancakes::Stack.first_with_branches(branches)
+
       if !@stack
         logger.info 'stack not found'
-        status 404
-        return 'asdffffffffffffffffffffffffffffffffffffffffffff$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
-      end
-
-      logger.info "stack found: #{@stack.sha}"
-
-      if update_state == 'true'
-        @stack.state_from_cluster!
-      end
-
-      @unit = @stack.unit_with_service_name(service_name)
-      if !@unit
-        logger.info 'unit not found'
-        status 404
-        return ''
-      end
-
-      if data == 'tcp_info'
-        tcp_string = @unit.tcp_str
-        if tcp_string.empty?
-          logger.info 'tcp_string not found. service may not be running.'
-          status 404
-          return ''
-        else
-          return tcp_string
-        end
+        halt 400, "stack not found\n"
       else
-        status 404
-        return ''
+        logger.info "stack found: #{@stack.sha}"
+
+        if update_state == 'true'
+          @stack.state_from_cluster!
+        end
+
+        @unit = @stack.unit_with_service_name(service_name)
+
+        if !@unit
+          logger.info 'unit not found'
+          halt 400, "unit not found\n"
+        elsif data == 'tcp_info'
+          tcp_string = @unit.tcp_str
+          if tcp_string.empty?
+            logger.info 'tcp_string not found. service may not be running.'
+            halt 400, "tcp_string not found. service may not be running.\n"
+          else
+            tcp_string
+          end
+        else
+          halt 500, 'something was wrong'
+        end
       end
     end
 
