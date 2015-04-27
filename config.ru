@@ -35,7 +35,7 @@ class InspectMiddleware
   end
 end
 
-user InspectMiddleware
+use InspectMiddleware
 use Rack::PostBodyContentTypeParser
 use Rack::Session::Cookie, key: 'rack.session', path: '/', secret: 'secret', expire_after: 1800 # 30mins
 use Rack::Flash
