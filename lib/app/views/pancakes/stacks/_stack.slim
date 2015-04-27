@@ -58,7 +58,7 @@ tr class=human_state_row_color_class(stack)
           tr
             td
               - if commit.codebase == 'jarvis'
-                == service_link(commit)
+                == launch_button(commit, disabled: !stack.running?)
               - else
                 b = commit.codebase
             td.lock-controls
@@ -76,7 +76,7 @@ tr class=human_state_row_color_class(stack)
               div.commit-message = commit.message
         - if stack.unit_with_service_name(:mailcatcher)
           tr
-            td(colspan='4') == mailcatcher_str(stack.unit_with_service_name(:mailcatcher))
+            td(colspan='4') == mailcatcher_button(stack.unit_with_service_name(:mailcatcher), disabled: !stack.running?)
         - if stack.unit_with_service_name(:mysql)
           tr
             td.mono(colspan='4') == mysql_str(stack.unit_with_service_name(:mysql))

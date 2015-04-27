@@ -15,9 +15,13 @@ module Integrity
         end
       end
 
-      def service_link(commit)
+      def launch_button(commit, disabled: false)
         unit = commit.stack.unit_with_service_name("#{commit.codebase.to_s}-server")
-        link_to "Launch #{commit.codebase.capitalize}", "http://#{unit.tcp_str}", target: '_blank', class: "btn btn-primary#{(unit && !unit.tcp_str.empty?) ? '' : ' disabled'}"
+        launch_button_helper(commit.codebase.capitalize, "http://#{unit.tcp_str}", disabled)
+      end
+
+      def launch_button_helper(service_name, url, disabled)
+        link_to "Launch #{service_name}", url, target: '_blank', class: "btn btn-primary#{disabled ? ' disabled' : ''}"
       end
 
       def tcp_string(commit)
@@ -34,8 +38,8 @@ module Integrity
         format('http://%s:%d', unit.machine_ip, unit.port)
       end
 
-      def mailcatcher_str(unit)
-        link_to 'Launch Mailcatcher', mailcatcher_url(unit), target: '_blank', class: "btn btn-primary #{(unit && unit.active?) ? '' : 'disabled'}"
+      def mailcatcher_button(unit, disabled: false)
+        launch_button_helper('Mailcatcher', mailcatcher_url(unit), disabled)
       end
 
       def mysql_str(unit)
