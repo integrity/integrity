@@ -172,14 +172,13 @@ module Pancakes
       def env_str(env_hash)
         return nil unless env_hash
         env_hash.to_a.map do |k,v|
-          if v == :self || v == ':self'
+          v = v.to_s
+          if v == ':self'
             v = ENV[k]
-          elsif v.is_a?(Symbol)
-            v = ENV[v.to_s]
           elsif v.start_with?(':')
             v = ENV[v.sub(/\A:/, '')]
           end
-          format('-e "%s=%s"', k.to_s, v.to_s)
+          format('-e "%s=%s"', k.to_s, v)
         end.join(' ')
       end
 
