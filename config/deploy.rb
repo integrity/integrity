@@ -8,7 +8,7 @@ set :branch, 'master'
 if deploy_env == 'production'
   set :server_host, 'honesty-2015-04-13-1b.test.grandrounds.com'
 elsif deploy_env == 'dtest'
-  set :branch, 'master'
+  set :branch, 'develop'
   set :server_host, 'honesty-dtest-2015-04-13-1b.test.grandrounds.com'
 else
   puts "i dont know about this...'#{deploy_env}' environment."
