@@ -47,7 +47,7 @@ module Pancakes
     end
 
     def tcp_str
-      if machine_ip &&port
+      if machine_ip && port
         format('%s:%d', machine_ip, port)
       else
         ''

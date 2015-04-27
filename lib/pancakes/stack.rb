@@ -37,11 +37,9 @@ module Pancakes
     #
 
     def self.create_with_git_strings(services: Services.all_names, pocs: [], default_master: false, desired_state: :off, branches: nil, **git_strings)
-      require 'pry'
       self.db.transaction do
         pocs = (pocs || "").split(',').map(&:strip)
         me = new(services: services.to_set.to_a, pocs: pocs, desired_state: desired_state)
-        #binding.pry
         me.set_state(:off)
         me.save
 
@@ -56,7 +54,7 @@ module Pancakes
 
         git_strings.each do |codebase,git_str|
           Pancakes.validate_codebase(codebase) || raise("unsupported codebase #{codebase}")
-          git_str = 'master' if default_master && (git_str.nil? || git_str.empty?)
+          git_str = 'L+master' if default_master && (git_str.nil? || git_str.empty?)
           me.add_commit(Pancakes::Commit.create_from_git_string(Pancakes.repo_name(codebase), git_str))
         end
 
@@ -78,6 +76,10 @@ module Pancakes
 
       commits_ref = commits_ref.group(:stack_id).having{ count(:stack_id) =~ branches.size }
       where(id: commits_ref)
+    end
+
+    def self.first_with_branches(branches)
+      with_branches(branches).first
     end
 
     def self.codebases(service_names)

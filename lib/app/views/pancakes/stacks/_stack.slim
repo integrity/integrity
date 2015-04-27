@@ -39,6 +39,18 @@ tr class=human_state_row_color_class(stack)
     div
       b> uptime:
       = uptime(stack)
+    div
+      b> created_at:
+      = time_ago_in_words(stack.created_at)
+    div
+      b> internal state:
+      = stack.state
+    div
+      b> desired state:
+      = stack.desired_state
+    div
+      b> POCs:
+      = stack.pocs.join(', ')
   td.services
     table.table.commits
       tbody

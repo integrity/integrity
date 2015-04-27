@@ -277,7 +277,7 @@ module Integrity
       service_name = params[:service_name]
       update_state = params[:update_state]
 
-      @stack = Pancakes::Stack.with_branches(branches)
+      @stack = Pancakes::Stack.first_with_branches(branches)
       if !@stack
         logger.info 'stack not found'
         status 404
@@ -300,7 +300,7 @@ module Integrity
       if data == 'tcp_info'
         tcp_string = @unit.tcp_str
         if tcp_string.empty?
-          logger.info 'tcp_string not found'
+          logger.info 'tcp_string not found. service may not be running.'
           status 404
           return ''
         else
