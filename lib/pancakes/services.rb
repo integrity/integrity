@@ -127,17 +127,18 @@ module Pancakes
       SERVICE_DEFS.detect{|service_def| service_def[:name] == service_name.to_s } || raise("no service by the name of #{service_name}")
     end
 
-    def self.get_with_env(service_name)
-      service_def = get(service_name)
-      service_def[:env] = service_def[:env].map do |k,v|
-        if v == true
-          [k, ENV[k]]
-        else
-          [k, v]
-        end
-      end.to_h
-      service_def
-    end
+    # @deprecated
+    #def self.get_with_env(service_name)
+      #service_def = get(service_name)
+      #service_def[:env] = service_def[:env].map do |k,v|
+        #if v == true
+          #[k, ENV[k]]
+        #else
+          #[k, v]
+        #end
+      #end.to_h
+      #service_def
+    #end
 
     def self.all_names
       SERVICE_DEFS.map{|s| s[:name] }
