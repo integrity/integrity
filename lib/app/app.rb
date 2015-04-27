@@ -65,7 +65,7 @@ module Integrity
       stacks_to_update = Pancakes::Stack.with_branches(**branches)
       stacks_to_update.each do |stack|
         logger.info "restarting stack #{stack.name} after github PushEvent for branches #{branches.inspect}"
-        Delayed::Job.enqueue(Pancakes::RestartWithBranchHeadsJob.new(stack.id_s))
+        Delayed::Job.enqueue(Pancakes::RestartWithBranchHeadsJob.new(stack.id))
       end
     end
 
@@ -183,7 +183,7 @@ module Integrity
       @stack.update_all(desired_state: (@stack.state == :off ? :running : off))
 
       if @stack
-        Delayed::Job.enqueue(Pancakes::Background::RestartWithBranchHeadsJob.new(@stack.id_s))
+        Delayed::Job.enqueue(Pancakes::Background::RestartWithBranchHeadsJob.new(@stack.id))
       end
 
       redirect back
@@ -194,7 +194,7 @@ module Integrity
       @stack.update_all(desired_state: (@stack.state == :off ? :running : off))
 
       if @stack
-        Delayed::Job.enqueue(Pancakes::Background::RestartWithSameCommitsJob.new(@stack.id_s))
+        Delayed::Job.enqueue(Pancakes::Background::RestartWithSameCommitsJob.new(@stack.id))
       end
 
       redirect back
@@ -205,7 +205,7 @@ module Integrity
       @stack.update_all(desired_state: :off)
 
       if @stack
-        Delayed::Job.enqueue(Pancakes::Background::BringDownJob.new(@stack.id_s))
+        Delayed::Job.enqueue(Pancakes::Background::BringDownJob.new(@stack.id))
       end
 
       redirect back
@@ -245,7 +245,7 @@ module Integrity
 
       if @stack.save
         #flash[:notice] = "Stack created with sha #{@stack.short_sha}. Click 'Refresh state' to refresh the state, if you want."
-        Delayed::Job.enqueue(Pancakes::Background::BringUpJob.new(@stack.id_s))
+        Delayed::Job.enqueue(Pancakes::Background::BringUpJob.new(@stack.id))
       end
 
       redirect back

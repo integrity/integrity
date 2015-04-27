@@ -16,7 +16,7 @@ module Pancakes
       end
 
       def stack
-        @stack ||= Pancakes::Stack.find(@stack_id)
+        @stack ||= Pancakes::Stack[@stack_id]
       end
     end
 

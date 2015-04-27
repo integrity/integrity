@@ -87,10 +87,6 @@ module Pancakes
         .map(&:first)
     end
 
-    def id_s
-      self.id.to_s
-    end
-
     def short_sha
       self.sha[0..6]
     end
