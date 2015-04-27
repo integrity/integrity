@@ -10,6 +10,9 @@
 
   form.form#stacks-form action='/pancakes/stacks' method='post'
     h3 New Stack
+      br
+      small Start typing to autocomplete your branch. master will be used when a field is left blank.
+
 
     - %w[jarvis frick tim].each do |codebase|
       .form-group
