@@ -16,8 +16,9 @@
 # required:
 # - FLEETCTL_ENDPOINT (eg. 'http://1.2.3.4:5678')
 # optional:
-# - PANCAKES_DRY_RUN (eg. true)
+# - PANCAKES_DRY_RUN   (eg. true)
 # - PANCAKES_LOG_LEVEL (eg. debug, 2)
+# - DOCKYARD_BRANCH    (eg. pancakes-develop)
 
 module Pancakes
 
@@ -64,7 +65,7 @@ module Pancakes
     docker()
 
     Pancakes::Fleet::Templating.configure do |c|
-      c.dockyard_branch = 'pancakes-develop'
+      c.dockyard_branch = ENV['DOCKYARD_BRANCH'] || 'pancakes'
     end
   end
 

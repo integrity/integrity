@@ -93,13 +93,13 @@ module Pancakes
       self.sha[0..6]
     end
 
-    def branch_sha
-      @__bs ||= Digest::SHA1.hexdigest(self.commits.map{|j| [j.repo, j.branch].join(':') }.sort.join('|'))
-    end
+    #def branch_sha
+      #@__bs ||= Digest::SHA1.hexdigest(self.commits.map{|j| [j.repo, j.branch].join(':') }.sort.join('|'))
+    #end
 
-    def branch_sha_short
-      branch_sha[0..6]
-    end
+    #def branch_sha_short
+      #branch_sha[0..6]
+    #end
 
     def name
       format("%s_%s_%d", Pancakes::NAMESPACE, self.short_sha, self.id)
@@ -213,10 +213,6 @@ module Pancakes
         StatHatWrapper.post_count('pancakes stacks bring_down timeouts', 1)
         return false
       end
-
-      # TODO
-      # - backend_destroy
-      # - remove_from_freezer(20) if rm_frozen == true
     end
 
     def restart_with_branch_heads
@@ -306,6 +302,7 @@ module Pancakes
     # - :failed     anything failed
     # - :incomplete something is missing
     # - :unknown  fallback
+    # @api private
     def units_state
       refresh_unit_states
       uu = self.units
@@ -340,6 +337,7 @@ module Pancakes
       return :unknown
     end
 
+    # @api private
     def refresh_unit_states
       cluster_units = Pancakes.cluster.all_units.select do |u|
         u.name.start_with?(self.name)
@@ -383,6 +381,7 @@ module Pancakes
       save
     end
 
+    # @api private
     def set_state(new_state)
       set_all(state: new_state.to_sym, state_updated_at: Time.now)
     end
@@ -402,10 +401,12 @@ module Pancakes
       units_dataset.where(service_name: Pancakes::Services.netmaster).first
     end
 
+    # @api private
     def non_netmaster_units
       units_dataset.exclude(service_name: Pancakes::Services.netmaster)
     end
 
+    # @api private
     def pingable_units
       units_dataset.exclude(ping_url: nil)
     end
@@ -417,6 +418,7 @@ module Pancakes
     def commit_for_codebase(codebase)
       commits_dataset.first(repo: Pancakes.repo_name(codebase))
     end
+
 
     #
     # association helpers
@@ -457,14 +459,6 @@ module Pancakes
       .reduce(true){|memo,val| memo && val }
     end
 
-
-    ######
-    #     #  #####      #    #    #    ##     #####  ######
-    #     #  #    #     #    #    #   #  #      #    #
-    ######   #    #     #    #    #  #    #     #    #####
-    #        #####      #    #    #  ######     #    #
-    #        #   #      #     #  #   #    #     #    #
-    #        #    #     #      ##    #    #     #    ######
     private
 
     # @api private
@@ -534,6 +528,7 @@ module Pancakes
       @__lgr = nil
     end
 
+    # @api private
     #def remove_from_freezer(delay=0)
       #sleep(delay)
       #logger.info "removing #{self.branch_id} from freezer"
