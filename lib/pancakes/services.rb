@@ -59,7 +59,6 @@ module Pancakes
         ports: [10001],
         ping_url: 'http://$ip:$port/status',
         env: {
-          'MAILCATCHER_SMTP_PORT' => 1025,
           'GITHUB_READ_TOKEN'     => ':self',
           'AWS_ACCESS_KEY_ID'     => ':DEV_AWS_ACCESS_KEY_ID',
           'AWS_SECRET_ACCESS_KEY' => ':DEV_AWS_SECRET_ACCESS_KEY',
@@ -73,7 +72,6 @@ module Pancakes
         machineof: :mysql,
         requires: :"jarvis-orchestra",
         env: {
-          'MAILCATCHER_SMTP_PORT' => 1025,
           'GITHUB_READ_TOKEN'     => ':self',
           'AWS_ACCESS_KEY_ID'     => ':DEV_AWS_ACCESS_KEY_ID',
           'AWS_SECRET_ACCESS_KEY' => ':DEV_AWS_SECRET_ACCESS_KEY',

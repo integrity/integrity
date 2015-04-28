@@ -5,6 +5,14 @@ module Pancakes
 
       DOCKER = '/usr/bin/docker'
 
+      @@config = Hashie::Mash.new(
+        dockyard_branch: 'pancakes',
+      )
+
+      def configure
+        yield @@config
+      end
+
       def detect_and_make_template(unit)
         if unit.service_name == 'mysql'
           mysql_template(unit)
@@ -20,15 +28,6 @@ module Pancakes
         "#{unit.name}.service"
       end
 
-      # @param codebase :jarvis, :frick, :tim, etc. ie, not jarvis-server, tim-orchestra, etc. only the codebase part of the service name.
-      # @api private
-      def git_env(commit)
-        {
-          'BRANCH' => commit.branch,
-          'SHA'    => commit.sha,
-        }
-      end
-
       # @api private
       def dockyard_template(unit)
         codebase = unit.service_def.codebase
@@ -40,35 +39,14 @@ module Pancakes
           repo:              unit.service_def.repo,
           debug:             !!ENV['DOCKYARD_DEBUG'],
           branch:            commit.branch,
-          codebase:          codebase,
+          setup_db:          true,
           service_type:      unit.service_def.subtype,
           gh_read_token:     ENV['GITHUB_READ_TOKEN'],
           logging_prefix:    unit.name,
-          dockyard_source:   'from_github',
-          branch_identifier: stack.branch_sha_short,
+          dockyard_branch:   config.dockyard_branch,
         )
 
-        base_template(unit: unit, cmd: cmd, more_env: git_env(commit))
-      end
-
-      # @api private
-      def base_template(unit:, cmd: nil, more_env: {})
-        service_def = unit.service_def
-        machine_of_unit = service_def.machineof ? gen_service_file_name(unit.stack.unit_with_service_name(service_def.machineof)) : nil
-        requires_unit = service_def.requires.end_with?('.service') ? service_def.requires : gen_service_file_name(unit.stack.unit_with_service_name(service_def.requires))
-        ports = service_def.netmaster ? Pancakes::Services.all_ports : nil
-
-        Pancakes::Fleet::Templating.base_hash(
-          cmd:            cmd,
-          image:          service_def.image,
-          ports:          ports,
-          oneshot:        service_def.name.include?('orchestra'),
-          requires:       requires_unit,
-          machineof:      machine_of_unit,
-          container:      unit.name,
-          environment:    (service_def.env || {}).merge(more_env),
-          netmaster_name: unit.stack.netmaster_unit.name,
-        )
+        base_template(unit: unit, cmd: cmd)
       end
 
       # @api private
@@ -83,10 +61,30 @@ module Pancakes
       end
 
       # @api private
+      def base_template(unit:, cmd: nil)
+        service_def = unit.service_def
+        machine_of_unit = service_def.machineof ? gen_service_file_name(unit.stack.unit_with_service_name(service_def.machineof)) : nil
+        requires_unit = service_def.requires.end_with?('.service') ? service_def.requires : gen_service_file_name(unit.stack.unit_with_service_name(service_def.requires))
+        ports = service_def.netmaster ? Pancakes::Services.all_ports : nil
+
+        Pancakes::Fleet::Templating.base_hash(
+          cmd:            cmd,
+          image:          service_def.image,
+          ports:          ports,
+          oneshot:        service_def.name.include?('orchestra'),
+          requires:       requires_unit,
+          machineof:      machine_of_unit,
+          container:      unit.name,
+          environment:    (service_def.env || {}),
+          netmaster_name: unit.stack.netmaster_unit.name,
+        )
+      end
+
+      # @api private
       def base_hash(cmd:, container:, environment:, image:, machineof:, netmaster_name:, ports:, requires:, oneshot: false)
         _docker_run_cmd = docker_run(container: container,
                                      netmaster_name: netmaster_name,
-                                     environment: environment,
+                                     environment: environment.merge('PANCAKES' => 'true'),
                                      ports: ports,
                                      image: image,
                                      cmd: cmd)
@@ -151,16 +149,19 @@ module Pancakes
       end
 
       # @api private
-      def dockyard_cmd(branch:, sha:, repo:, codebase:, service_type:, dockyard_source:, branch_identifier:, logging_prefix:, gh_read_token:, debug: false)
-        clone_dir = 'test_subject'
-        debug_arg = debug ? 'DEBUG=true' : ''
+      def dockyard_cmd(logging_prefix:, branch:, sha:, repo:, service_type:, setup_db:, debug:, gh_read_token:, dockyard_branch:)
+        debug = debug ? ' --debug' : ''
+        no_setup_db = setup_db ? '' : ' --no-setup-db'
         cmd = logging_prefix_pipe(
           logging_prefix,
-          #"git clone --depth 1 --branch #{branch} https://#{gh_read_token}@github.com/#{repo} ./#{clone_dir} && ./#{clone_dir}/dockyard-run #{service_type} #{dockyard_source} #{branch_identifier}"
-
-          "git clone --depth 1 --branch pancakes https://#{gh_read_token}@github.com/consultingmd/dockyard dockyard && ./dockyard/build.sh #{branch} #{sha} #{repo} #{codebase} #{clone_dir} #{service_type} #{branch_identifier} #{debug_arg}"
+          "#{dockyard_clone(gh_read_token, dockyard_branch)} && ./dockyard/build.sh -b #{branch} -s #{sha} -r #{repo} --service-type #{service_type}#{no_setup_db}#{debug}"
         )
         "/bin/bash -c '#{cmd}'"
+      end
+
+      # @api private
+      def dockyard_clone(gh_read_token, branch)
+        "git clone --depth 1 --branch #{branch} https://#{gh_read_token}@github.com/consultingmd/dockyard dockyard"
       end
 
       # @api private

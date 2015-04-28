@@ -54,7 +54,6 @@ module Pancakes
   end
 
   def self.setup
-
     Octokit.configure do |c|
       c.access_token = ENV['GITHUB_READ_TOKEN']
       c.auto_paginate = true
@@ -63,6 +62,10 @@ module Pancakes
     logger()
     cluster()
     docker()
+
+    Pancakes::Fleet::Templating.configure do |c|
+      c.dockyard_branch = 'pancakes-develop'
+    end
   end
 
 
