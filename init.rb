@@ -59,7 +59,6 @@ end
 
 Logging.logger.root.appenders = Logging.appenders.stdout(layout: ::Logging::Layouts::Pattern.new(pattern: logging_pattern))
 Logging.logger['honesty'].level  = :info
-Logging.logger['pancakes'].level = :debug
 
 Integrity.configure do |c|
   c.environment                 = app.environment           # Environment to run in (i.e. development, production, etc).
@@ -90,6 +89,8 @@ Integrity.configure do |c|
   #   runner.run! "git scclone #{repo_uri} #{target_directory} #{sha1}"
   # end
 end
+
+Pancakes.setup
 
 if Delayed::Job.where(queue: 'stats').count == 0
   Delayed::Job.enqueue(Integrity::StatsJob.new)

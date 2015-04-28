@@ -37,6 +37,39 @@ module Pancakes
       me
     end
 
+    def requires
+      req = service_def.requires
+      if req.end_with?('.service')
+        req
+      else
+        stack.unit_with_service_name(req).service_file_name
+      end
+    end
+
+    def machine_of
+      mo = service_def.machineof
+      if mo
+        stack.unit_with_service_name(mo).service_file_name
+      else
+        nil
+      end
+    end
+
+    def image
+      service_def.image
+    end
+
+    def env
+      service_def.env || {}
+    end
+
+    def netmaster?
+      service_def.netmaster
+    end
+
+    def ports
+      netmaster? ? Pancakes::Services.all_ports : nil
+    end
 
     def active?
       self.state == :active
@@ -44,6 +77,14 @@ module Pancakes
 
     def name
       "#{self.stack.name}_#{service_name}"
+    end
+
+    def service_file_name
+      "#{name}.service"
+    end
+
+    def repo
+      service_def.repo
     end
 
     def tcp_str
@@ -69,6 +110,10 @@ module Pancakes
     def codebase
       return nil unless service_def
       service_def.codebase
+    end
+
+    def subtype
+      service_def.subtype
     end
 
     def set_state(new_state)

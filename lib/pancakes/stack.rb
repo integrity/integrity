@@ -36,7 +36,7 @@ module Pancakes
     # constructors
     #
 
-    def self.create_with_git_strings(services: Services.all_names, pocs: [], default_master: false, desired_state: :off, branches: nil, **git_strings)
+    def self.create_with_git_strings(services: Services.all_names, pocs: '', default_master: false, desired_state: :off, branches: nil, **git_strings)
       self.db.transaction do
         pocs = (pocs || "").split(',').map(&:strip)
         me = new(services: services.to_set.to_a, pocs: pocs, desired_state: desired_state)
@@ -107,6 +107,7 @@ module Pancakes
 
     # TODO break this down into smaller pieces. it's also similar in structure to bring_down.
     def bring_up
+      # pre
       if running?
         logger.info "#{self.name} is already running"
         return false
@@ -121,6 +122,9 @@ module Pancakes
       set_all(desired_state: :running, started_at: Time.now, destroyed_at: nil)
       save unless dry_run
       logger.info "bring_up #{self.name}"
+
+
+      # body
 
       # TODO doing this for every worker could be pretty inefficient
       Pancakes.cluster.reset_failed_all
@@ -156,8 +160,10 @@ module Pancakes
       return if dry_run
 
       timeout = 60*5
-      state = block_until_stack_states(stack: self, states: %i[running failed], timeout: timeout)
+      state = block_until_stack_states(states: %i[running failed], timeout: timeout)
 
+
+      # post
       if state == :running
         orch_time = Time.now - self.started_at
         logger.info "bring_up took #{format('%.1f', orch_time)}s"
@@ -176,6 +182,7 @@ module Pancakes
     end
 
     def bring_down(force: false)
+      # pre
       if !force && self.state == :off
         logger.info "bring_down nothing to do for #{self.name}"
         return false
@@ -190,16 +197,40 @@ module Pancakes
       update_all(desired_state: :off) unless dry_run
       StatHatWrapper.post_count('pancakes stacks bring_down started', 1)
 
-      self.units.each do |unit|
+
+      # body
+      timeout = 60
+
+      except_units(['mysql']).each do |unit|
+        Pancakes.cluster.destroy_unit(unit)
+      end
+
+      begin
+        Pancakes.block_until_values(values: [['mysql'].to_set], timeout: timeout) do
+          refresh_unit_states
+          running_unit_names
+        end
+      rescue Pancakes::TimeoutError => e
+        # this will never run during a dry_run, so we dont need to worry about re-enabling StatHatWrapper
+        StatHatWrapper.post_count('pancakes stacks bring_down errors', 1)
+        logger.error "error during bring_down. some units may have been started successfully. class=#{e.original.class} message='#{e.message}'"
+        return false
+      end
+
+      # do freeze here
+      freezer_unit = Unit.new
+
+      only_units(['mysql']).each do |unit|
         Pancakes.cluster.destroy_unit(unit)
       end
 
       StatHatWrapper.unpause if dry_run
       return if dry_run
 
-      timeout = 60
-      state = block_until_stack_states(stack: self, states: %i[off], timeout: timeout)
+      state = block_until_stack_states(states: %i[off], timeout: timeout)
 
+
+      # post
       if state == :off
         now = Time.now
         destroy_time = now - start_time
@@ -213,6 +244,21 @@ module Pancakes
         StatHatWrapper.post_count('pancakes stacks bring_down timeouts', 1)
         return false
       end
+    end
+
+    # @api private
+    def only_units(names)
+      self.units.select{|unit| names.include?(unit.service_name) }
+    end
+
+    # @api private
+    def except_units(names)
+      only_units(all_unit_names - names)
+    end
+
+    # @api private
+    def all_unit_names
+      self.units.map(&:service_name)
     end
 
     def restart_with_branch_heads
@@ -377,8 +423,6 @@ module Pancakes
         logger.debug "updating #{unit.name} with cluster unit info <#{unit.state.inspect}>"
         unit.save
       end
-
-      save
     end
 
     # @api private
@@ -409,6 +453,16 @@ module Pancakes
     # @api private
     def pingable_units
       units_dataset.exclude(ping_url: nil)
+    end
+
+    # @api private
+    def running_units
+      units_dataset.where(state: 'active')
+    end
+
+    # @api private
+    def running_unit_names
+      running_units.map(&:service_name).to_set
     end
 
     def unit_with_service_name(service_name)
@@ -482,9 +536,14 @@ module Pancakes
     end
 
     # @api private
-    def block_until_stack_states(stack:, states:, timeout:)
-      Pancakes.block_until_values(obj: stack, method: :state_from_cluster!, values: states, timeout: timeout)
+    def block_until_stack_states(states:, timeout:)
+      Pancakes.block_until_values(obj: self, method: :state_from_cluster!, values: states, timeout: timeout)
     end
+
+    # @api private
+    #def block_until_unit_set(service_names:, timeout:)
+      #Pancakes.block_until_values(obj: self, method: :state_from_cluster!, values: states, timeout: timeout)
+    #end
 
     # @api private
     def is_service_up?(unit)

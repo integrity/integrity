@@ -66,6 +66,7 @@ module Pancakes
 
     Pancakes::Fleet::Templating.configure do |c|
       c.dockyard_branch = ENV['DOCKYARD_BRANCH'] || 'pancakes'
+      Pancakes.logger.info "DOCKYARD_BRANCH=#{c.dockyard_branch}"
     end
   end
 
@@ -172,6 +173,9 @@ require 'pancakes/errors'
 
 require 'pancakes/fleet'
 require 'pancakes/fleet/cluster'
+
+require 'pancakes/fleet/templating/helpers'
+require 'pancakes/fleet/templating/partials'
 require 'pancakes/fleet/templating'
 
 require 'pancakes/commit'
@@ -182,5 +186,3 @@ require 'pancakes/stack'
 require 'pancakes/unit'
 
 require 'pancakes/background'
-
-Pancakes.setup

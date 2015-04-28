@@ -14,10 +14,7 @@ module Pancakes
 
       # @api private
       def logger
-        return @__lgr if @__lgr
-        #Logging.logger[self].appenders = Pancakes.log_appender
-        #Logging.logger[self].level = Pancakes.log_level
-        @__lgr = Logging.logger[self]
+        @__lgr ||= Logging.logger[self]
       end
 
       def dry_run?
@@ -25,7 +22,7 @@ module Pancakes
       end
 
       def start_unit(unit)
-        unit_fname = Templating.gen_service_file_name(unit)
+        unit_fname = unit.service_file_name
         unit_hash  = Templating.detect_and_make_template(unit)
 
         if !@dry_run
@@ -52,7 +49,7 @@ module Pancakes
       end
 
       def destroy_unit(unit)
-        unit_fname = Templating.gen_service_file_name(unit)
+        unit_fname = unit.service_file_name
 
         if !@dry_run
           logger.info "destroying #{unit_fname}"
