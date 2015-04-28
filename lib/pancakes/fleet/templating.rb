@@ -14,9 +14,7 @@ module Pancakes
       end
 
       def detect_and_make_template(unit)
-        if unit.service_name == 'mysql'
-          mysql_template(unit)
-        elsif unit.service_name == 'mailcatcher'
+        if %w[mysql mailcatcher].include?(unit.service_name)
           base_template(unit: unit)
         else
           dockyard_template(unit)
@@ -50,15 +48,15 @@ module Pancakes
       end
 
       # @api private
-      def mysql_template(unit)
-        template = base_template(unit: unit)
-        cmd = Pancakes::Fleet::Templating.logging_prefix_pipe(
-          unit.name,
-          "-#{DOCKER} exec #{unit.name} /root/freeze.sh #{unit.stack.branch_sha_short}"
-        )
-        template['Service']['ExecStop'].unshift(cmd)
-        template
-      end
+      #def mysql_template(unit)
+        #base_template(unit: unit)
+        #cmd = Pancakes::Fleet::Templating.logging_prefix_pipe(
+          #unit.name,
+          #"-#{DOCKER} exec #{unit.name} /root/freeze.sh #{unit.stack.branch_sha_short}"
+        #)
+        #template['Service']['ExecStop'].unshift(cmd)
+        #template
+      #end
 
       # @api private
       def base_template(unit:, cmd: nil)
@@ -82,12 +80,14 @@ module Pancakes
 
       # @api private
       def base_hash(cmd:, container:, environment:, image:, machineof:, netmaster_name:, ports:, requires:, oneshot: false)
-        _docker_run_cmd = docker_run(container: container,
-                                     netmaster_name: netmaster_name,
-                                     environment: environment.merge('PANCAKES' => 'true'),
-                                     ports: ports,
-                                     image: image,
-                                     cmd: cmd)
+        _docker_run_cmd = docker_run(
+          container: container,
+          netmaster_name: netmaster_name,
+          environment: environment.merge('PANCAKES' => 'true'),
+          ports: ports,
+          image: image,
+          cmd: cmd
+        )
 
         x_fleet =
           if machineof
