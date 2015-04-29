@@ -37,6 +37,10 @@ module Pancakes
       me
     end
 
+    def commit
+      stack.commit_for_codebase(codebase)
+    end
+
     def requires
       req = service_def.requires.to_s
       if req.end_with?('.service')

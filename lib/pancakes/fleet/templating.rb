@@ -19,16 +19,34 @@ module Pancakes
         @@config
       end
 
-      def detect_and_make_template(unit)
+      def detect_and_make_template(unit, setup_db: true)
         if %w[mysql mailcatcher].include?(unit.service_name)
-          base_template(unit)
+          docker_template(unit)
         else
-          dockyard_template(unit)
+          docker_template(
+            unit,
+            bash_minus_c(
+              logging_prefix_pipe(
+                unit.name,
+                bash_and(
+                  dockyard_clone(Pancakes.gh_read_token, config.dockyard_branch),
+                  dockyard_build_sh(
+                    sha:               unit.commit.sha,
+                    repo:              unit.repo,
+                    debug:             Pancakes.dockyard_debug?,
+                    branch:            unit.commit.branch,
+                    setup_db:          setup_db,
+                    service_type:      unit.subtype,
+                  )
+                )
+              )
+            )
+          )
         end
       end
 
       def freezer_template(freezer_unit:, mysql_unit:, mysql_dbs:)
-        base_template(
+        docker_template(
           freezer_unit,
           freeze_cmd(
             stack_id:   freezer_unit.stack.id,
@@ -40,7 +58,7 @@ module Pancakes
       end
 
       def thaw_template(freezer_unit:, mysql_unit:)
-        base_template(
+        docker_template(
           freezer_unit,
           thaw_cmd(
             stack_id:   freezer_unit.stack.id,
@@ -51,33 +69,7 @@ module Pancakes
       end
 
       # @api private
-      def dockyard_template(unit)
-        commit = unit.stack.commit_for_codebase(unit.codebase)
-
-        cmd = dockyard_build_sh(
-          sha:               commit.sha,
-          repo:              unit.repo,
-          debug:             !!ENV['DOCKYARD_DEBUG'],
-          branch:            commit.branch,
-          setup_db:          true,
-          service_type:      unit.subtype,
-        )
-
-        cmd = bash_minus_c(
-          logging_prefix_pipe(
-            unit.name,
-            bash_and(
-              dockyard_clone(ENV['GITHUB_READ_TOKEN'], config.dockyard_branch),
-              cmd,
-            )
-          )
-        )
-
-        base_template(unit, cmd)
-      end
-
-      # @api private
-      def base_template(unit, cmd=nil)
+      def docker_template(unit, cmd=nil)
         partials = [
           unit_section(service_name: unit.service_name, requires_service_file: unit.requires),
           timeout_start_sec('10min'),
@@ -98,20 +90,18 @@ module Pancakes
           )
         )
 
-        if unit.machine_of
-          partials << machine_of(unit.machine_of)
-        end
+        partials << machine_of(unit.machine_of) if unit.machine_of
 
         if unit.name.include?('orchestra')
           partials << service_type('oneshot')
           partials << remain_after_exit
         end
 
-        deep_merge(partials)
+        unify(partials)
       end
 
       # @api private
-      def deep_merge(partials_list)
+      def unify(partials_list)
         partials_list.compact.reduce{ |config,partial| config_merge(config, partial) }
       end
 

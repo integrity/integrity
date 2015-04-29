@@ -11,18 +11,17 @@ module Pancakes
     end
 
     def stack_exists?(stack)
-      !!s3.head_object(key: freezer_key(stack.id), bucket: BUCKET)
+      !!s3.head_object(bucket: BUCKET, key: freezer_key(stack.id))
     rescue Aws::S3::Errors::NotFound
       return false
     end
 
-    def freezer_key(stack_id)
-      "freezer/frozen_stack_#{stack_id}.sql.gz"
+    def delete_stack(stack)
+      s3.delete_object(bucket: BUCKET, key: freezer_key(stack.id))
     end
 
-    def remove(branch_identifier)
-      # TODO
-      #system "aws s3 rm --recursive #{FREEZER_S3_URL}/#{branch_identifier}"
+    def freezer_key(stack_id)
+      "freezer/frozen_stack_#{stack_id}.sql.gz"
     end
   end
 end

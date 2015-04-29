@@ -22,14 +22,14 @@ module Pancakes
 
     class BringUpJob < SerialStackJob
       def perform
-        stack.bring_down(force: true)
-        stack.bring_up
+        stack.bring_down(freeze_dbs: false, force: true)
+        stack.bring_up(thaw_dbs: false)
       end
     end
 
     class BringDownJob < SerialStackJob
       def perform
-        stack.bring_down(force: true)
+        stack.bring_down(freeze_dbs: false, force: true)
       end
     end
 

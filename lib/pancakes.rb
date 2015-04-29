@@ -21,16 +21,12 @@
 # - DOCKYARD_BRANCH    (eg. pancakes-develop)
 
 module Pancakes
+  extend self
 
   NAMESPACE = 'pancakes'
-  CODEBASES = %i[jarvis frick tim]
   SHA_REGEX = /[0-9a-f]{40}/i
 
-  #def self.log_appender
-    #@appender ||= Logging.appenders.stdout(layout: ::Logging::Layouts::Pattern.new(pattern: "%.1l %d %h %c: %m\n"))
-  #end
-
-  def self.log_level
+  def log_level
     if ll = ENV['PANCAKES_LOG_LEVEL']
       ll =~ /\A\d+\z/ ? ll.to_i : ll.to_sym
     else
@@ -38,15 +34,15 @@ module Pancakes
     end
   end
 
-  def self.cluster
+  def cluster
     @cluster ||= Pancakes::Fleet::Cluster.new(dry_run: ENV['PANCAKES_DRY_RUN'] || false)
   end
 
-  def self.docker
+  def docker
     @docker ||= Pancakes::Docker.new
   end
 
-  def self.logger
+  def logger
     return @__lgr if @__lgr
 
     #Logging.logger[self].appenders = log_appender
@@ -54,7 +50,7 @@ module Pancakes
     @__lgr = Logging.logger[self]
   end
 
-  def self.setup
+  def setup
     Octokit.configure do |c|
       c.access_token = ENV['GITHUB_READ_TOKEN']
       c.auto_paginate = true
@@ -84,30 +80,29 @@ module Pancakes
   #     #  ######  ######  #       ######  #    #   ####
   #####################################################
 
-  def self.repo_name(codebase)
+  def repo_name(codebase)
     return nil unless codebase
     codebase.to_sym == :jarvis ? 'consultingmd/consultingmd' : "consultingmd/#{codebase}"
   end
 
-  def self.codebase_name(repo)
+  def codebase_name(repo)
     return nil unless repo
     repo = repo.split('/').last if repo['/']
     repo = repo.downcase
     repo == 'consultingmd' ? 'jarvis' : repo
   end
 
-  def self.validate_codebase(codebase)
-    CODEBASES.include?(codebase.to_sym)
-  end
-
-  def self.heads_str(branch_name)
+  def heads_str(branch_name)
     "heads/#{branch_name}"
   end
 
-  # @param values [Array] if an instance of Class, class of the result of calling :method will
-  #   be compared with the value. Otherwise, == comparison is done.
-  # @return the value that was found, or nil of there was a timeout.
-  def self.block_until_values(values:, timeout:, obj: nil, method: nil, args: [], raise_on_timeout: false)
+  # Polls the &block or :obj.:method(:args) for any element of :values. If :values is not an Array
+  # it will be wrapped in one.
+  #
+  # @param values [Array] if an element is an instance of Class, then the class of the return value of :method will
+  #   be compared with :values. Otherwise, == comparison is done.
+  # @return the value that was found, or nil of there was a timeout, or raise a Pancakes::TimeoutError if :raise_on_timeout is true
+  def block_until_values(values:, timeout:, obj: nil, method: nil, args: [], raise_on_timeout: false)
     raise "must pass a method or block" if !method && !block_given?
     raise_on_timeout = false if raise_on_timeout.nil?
 
@@ -146,10 +141,18 @@ module Pancakes
     return nil
   end
 
-  def self.branch_info_from_push_event(push_event_hash)
+  def branch_info_from_push_event(push_event_hash)
     repo_name = push_event_hash['repository']['name'].downcase
     branch_name = push_event_hash['ref'].sub('refs/heads/', '')
     { Pancakes.codebase_name(repo_name) => branch_name }
+  end
+
+  def gh_read_token
+    ENV['GITHUB_READ_TOKEN'] || raise('GITHUB_READ_TOKEN not set')
+  end
+
+  def dockyard_debug?
+    !!ENV['DOCKYARD_DEBUG']
   end
 end
 

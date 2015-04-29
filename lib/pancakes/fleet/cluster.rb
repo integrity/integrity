@@ -45,10 +45,6 @@ module Pancakes
         raise Pancakes::ClusterError.new_with_original(e)
       end
 
-      def start_unit(unit)
-        start_template(unit.service_file_name, Templating.detect_and_make_template(unit))
-      end
-
       def destroy_unit(unit)
         unit_fname = unit.service_file_name
 

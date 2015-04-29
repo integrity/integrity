@@ -31,6 +31,10 @@ module Pancakes
       super
     end
 
+    def before_destroy
+      Pancakes::Freezer.delete_stack(self)
+    end
+
 
     #
     # constructors
@@ -53,7 +57,7 @@ module Pancakes
         git_strings.select! {|cb| codebases.include?(cb.to_s) }
 
         git_strings.each do |codebase,git_str|
-          Pancakes.validate_codebase(codebase) || raise("unsupported codebase #{codebase}")
+          # TODO validate dynamically: Pancakes.validate_codebase(codebase) || raise("unsupported codebase #{codebase}")
           git_str = 'L+master' if default_master && (git_str.nil? || git_str.empty?)
           me.add_commit(Pancakes::Commit.create_from_git_string(Pancakes.repo_name(codebase), git_str))
         end
@@ -98,7 +102,7 @@ module Pancakes
     end
 
     # TODO break this down into smaller pieces. it's also similar in structure to bring_down.
-    def bring_up(thaw: true)
+    def bring_up(thaw_dbs: false)
       # pre
       if running?
         logger.info "#{self.name} is already running"
@@ -124,7 +128,7 @@ module Pancakes
 
       begin
         nm = netmaster_unit
-        Pancakes.cluster.start_unit(nm)
+        Pancakes.cluster.start_template(nm.service_file_name, Pancakes::Fleet::Templating.detect_and_make_template(nm))
 
         timeout = 60
 
@@ -138,18 +142,10 @@ module Pancakes
           raise Pancakes::ClusterError.new('timeout waiting for netmaster container run')
         end
 
-        if thaw && Pancakes::Freezer.stack_exists?(self)
-          run_freezer(
-            Pancakes::Fleet::Templating.thaw_template(
-              freezer_unit: freezer_unit,
-              mysql_unit:   mysql_unit,
-            )
-          )
-        end
+        run_thaw_er if thaw_dbs && Pancakes::Freezer.stack_exists?(self)
 
         non_netmaster_units.each do |unit|
-           #TODO add the --no-setup-db flag
-          Pancakes.cluster.start_unit(unit)
+          Pancakes.cluster.start_template(unit.service_file_name, Pancakes::Fleet::Templating.detect_and_make_template(unit, setup_db: !thaw_dbs))
         end
       rescue Pancakes::ClusterError, Pancakes::TimeoutError => e
         # this will never run during a dry_run, so we dont need to worry about re-enabling StatHatWrapper
@@ -183,7 +179,7 @@ module Pancakes
       end
     end
 
-    def bring_down(freeze: true, force: false)
+    def bring_down(freeze_dbs: false, force: false)
       # pre
       if !force && self.state == :off
         logger.info "bring_down nothing to do for #{self.name}"
@@ -219,15 +215,7 @@ module Pancakes
         return false
       end
 
-      if freeze
-        run_freezer(
-          Pancakes::Fleet::Templating.freezer_template(
-            freezer_unit: freezer_unit,
-            mysql_unit:   mysql_unit,
-            mysql_dbs:    dbs,
-          )
-        )
-      end
+      run_freezer if freeze_dbs
 
       only_units(['mysql']).each do |unit|
         Pancakes.cluster.destroy_unit(unit)
@@ -256,15 +244,37 @@ module Pancakes
     end
 
     # @api private
-    def run_freezer(templ)
+    def run_thaw_er
+      logger.info 'thawing databases'
+      run_freezer_helper(
+        Pancakes::Fleet::Templating.thaw_template(
+          freezer_unit: freezer_unit,
+          mysql_unit:   mysql_unit,
+        )
+      )
+    end
 
+    # @api private
+    def run_freezer
+      logger.info "freezing databases: #{dbs.join(', ')}"
+      run_freezer_helper(
+        Pancakes::Fleet::Templating.freezer_template(
+          freezer_unit: freezer_unit,
+          mysql_unit:   mysql_unit,
+          mysql_dbs:    dbs,
+        )
+      )
+    end
+
+    # @api private
+    def run_freezer_helper(templ)
       Pancakes.cluster.start_template(freezer_unit.service_file_name, templ)
       sleep 10
 
       Pancakes.cluster.destroy_unit(freezer_unit)
       # TODO use etcd watch instead of sleep
       sleep 5
-      remove_freezer_unit
+      destroy_freezer_unit
     end
 
     # @api private
@@ -293,19 +303,19 @@ module Pancakes
 
     def restart_with_branch_heads
       logger.info 'restarting with branch heads'
-      bring_down
+      bring_down(freeze_dbs: true, force: true)
       logger.info 'doing bring_up for restart with branch heads'
       refresh_commits
       save
-      bring_up
+      bring_up(thaw_dbs: true)
       logger.info 'done restarting with branch heads'
     end
 
     def restart_with_same_commits
       logger.info 'restarting with same commits'
-      bring_down
+      bring_down(freeze_dbs: true, force: true)
       logger.info 'doing bring_up for restart with same commits'
-      bring_up
+      bring_up(thaw_dbs: true)
       logger.info 'done restarting with same commits'
     end
 
@@ -514,7 +524,7 @@ module Pancakes
     end
 
     # @api private
-    def remove_freezer_unit
+    def destroy_freezer_unit
       unit_with_service_name('freezer').destroy
       self.refresh
     end
@@ -554,14 +564,6 @@ module Pancakes
       human_state == :failed
     end
 
-    #def incomplete?
-      #state == :incomplete
-    #end
-
-    #def unknown?
-      #state == :unknown
-    #end
-
     def all_services_up?
       pingable_units.map do |unit|
         is_service_up?(unit)
@@ -595,11 +597,6 @@ module Pancakes
     def block_until_stack_states(states:, timeout:)
       Pancakes.block_until_values(obj: self, method: :state_from_cluster!, values: states, timeout: timeout)
     end
-
-    # @api private
-    #def block_until_unit_set(service_names:, timeout:)
-      #Pancakes.block_until_values(obj: self, method: :state_from_cluster!, values: states, timeout: timeout)
-    #end
 
     # @api private
     def is_service_up?(unit)
@@ -642,12 +639,5 @@ module Pancakes
     def refresh_logger
       @__lgr = nil
     end
-
-    # @api private
-    #def remove_from_freezer(delay=0)
-      #sleep(delay)
-      #logger.info "removing #{self.branch_id} from freezer"
-      #Pancakes::Freezer.remove(self.branch_identifier)
-    #end
   end
 end

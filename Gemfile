@@ -32,8 +32,6 @@ gem 'daemons'
 # These are dependencies for the various notifiers. Uncomment as appropriate.
 gem 'pony'                                      # E-mail
 
-#gem 'etcd', '~> 0.2.4'
-
 # gem 'aws-ses', '~> 0.4.3', require: 'aws/ses' # SES E-mail
 # gem 'broach', '0.2.1'                         # Campfire
 # gem 'nap', '0.4'                              # HTTP
