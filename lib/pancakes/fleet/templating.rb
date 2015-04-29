@@ -39,8 +39,15 @@ module Pancakes
         )
       end
 
-      def thaw_template(unit)
-        # TODO
+      def thaw_template(freezer_unit:, mysql_unit:)
+        base_template(
+          freezer_unit,
+          thaw_cmd(
+            stack_id:   freezer_unit.stack.id,
+            mysql_host: mysql_unit.machine_ip,
+            mysql_port: mysql_unit.port,
+          )
+        )
       end
 
       # @api private

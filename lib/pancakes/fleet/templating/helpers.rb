@@ -93,6 +93,16 @@ module Pancakes
             *mysql_dbs.map{|db| ['--mysql-db', db] }.flatten,
           )
         end
+
+        def thaw_cmd(stack_id:, mysql_host:, mysql_port:)
+          join_args(
+            'thaw',
+            '--stack-id', stack_id,
+            '--bucket-name', 'grnds-development-coreos',
+            '--mysql-host', mysql_host,
+            '--mysql-port', mysql_port,
+          )
+        end
       end
     end
   end

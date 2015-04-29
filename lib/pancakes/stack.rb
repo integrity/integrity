@@ -138,6 +138,15 @@ module Pancakes
           raise Pancakes::ClusterError.new('timeout waiting for netmaster container run')
         end
 
+        if Pancakes::Freezer.stack_exists?(self)
+          run_freezer(
+            Pancakes::Fleet::Templating.thaw_template(
+              freezer_unit: freezer_unit,
+              mysql_unit:   mysql_unit,
+            )
+          )
+        end
+
         non_netmaster_units.each do |unit|
           Pancakes.cluster.start_unit(unit)
         end
@@ -209,20 +218,13 @@ module Pancakes
         return false
       end
 
-      # do freeze here
-      templ = Pancakes::Fleet::Templating.freezer_template(
-        freezer_unit: freezer_unit,
-        mysql_unit:   mysql_unit,
-        mysql_dbs:    dbs,
+      run_freezer(
+        Pancakes::Fleet::Templating.freezer_template(
+          freezer_unit: freezer_unit,
+          mysql_unit:   mysql_unit,
+          mysql_dbs:    dbs,
+        )
       )
-
-      Pancakes.cluster.start_template(freezer_unit.service_file_name, templ)
-      sleep 10
-
-      Pancakes.cluster.destroy_unit(freezer_unit)
-      # TODO use etcd watch
-      sleep 5
-      remove_freezer_unit
 
       only_units(['mysql']).each do |unit|
         Pancakes.cluster.destroy_unit(unit)
@@ -248,6 +250,18 @@ module Pancakes
         StatHatWrapper.post_count('pancakes stacks bring_down timeouts', 1)
         return false
       end
+    end
+
+    # @api private
+    def run_freezer(template)
+
+      Pancakes.cluster.start_template(freezer_unit.service_file_name, templ)
+      sleep 10
+
+      Pancakes.cluster.destroy_unit(freezer_unit)
+      # TODO use etcd watch instead of sleep
+      sleep 5
+      remove_freezer_unit
     end
 
     # @api private

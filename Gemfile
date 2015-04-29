@@ -54,6 +54,7 @@ gem 'awesome_print', '~> 1.6.1'
 gem 'net-ssh', '~> 2.9.1'
 gem 'hashie', '~> 2.1.2'
 gem 'sequel', '~> 4.21.0'
+gem 'aws-sdk', '~> 2.0.41'
 
 group :test do
   gem 'aws-ses', '~> 0.4.3', require: 'aws/ses'

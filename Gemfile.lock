@@ -29,6 +29,14 @@ GEM
     amq-protocol (1.9.2)
     arel (3.0.3)
     awesome_print (1.6.1)
+    aws-sdk (2.0.41)
+      aws-sdk-resources (= 2.0.41)
+    aws-sdk-core (2.0.41)
+      builder (~> 3.0)
+      jmespath (~> 1.0)
+      multi_json (~> 1.0)
+    aws-sdk-resources (2.0.41)
+      aws-sdk-core (= 2.0.41)
     aws-ses (0.4.4)
       builder
       mail (> 2.2.5)
@@ -145,6 +153,8 @@ GEM
     http-cookie (1.0.2)
       domain_name (~> 0.5)
     i18n (0.7.0)
+    jmespath (1.0.2)
+      multi_json (~> 1.0)
     json (1.8.2)
     json_pure (1.8.2)
     jwt (1.4.1)
@@ -277,6 +287,7 @@ DEPENDENCIES
   activerecord (~> 3.2)
   activerecord-mysql-adapter
   awesome_print (~> 1.6.1)
+  aws-sdk (~> 2.0.41)
   aws-ses (~> 0.4.3)
   bcat
   broach

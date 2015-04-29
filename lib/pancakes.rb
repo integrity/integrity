@@ -60,6 +60,10 @@ module Pancakes
       c.auto_paginate = true
     end
 
+    Aws.config.update({
+      region: 'us-east-1',
+    })
+
     logger()
     cluster()
     docker()
@@ -166,6 +170,7 @@ Sequel.connect(ENV['DATABASE_URL'], logger: Logging.logger['pancakes-db'])
 require 'json'
 require 'digest/sha1'
 require 'net/ssh'
+require 'aws-sdk'
 
 require 'stathat_wrapper'
 
