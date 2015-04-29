@@ -12,12 +12,6 @@ module Pancakes
         @client = ::Etcd.client(host: URI.parse(ENV['FLEETCTL_ENDPOINT']).host, port: 4001)
       end
 
-      #def get_unit_active_state(service_fname)
-        #resp = get_unit_state(service_fname)
-        #json = JSON.parse(resp.value)
-        #json['activeState']
-      #end
-
       # this seems useful
       #def watch_states
         #loop do
