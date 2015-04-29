@@ -98,7 +98,7 @@ module Pancakes
     end
 
     # TODO break this down into smaller pieces. it's also similar in structure to bring_down.
-    def bring_up
+    def bring_up(thaw: true)
       # pre
       if running?
         logger.info "#{self.name} is already running"
@@ -138,7 +138,7 @@ module Pancakes
           raise Pancakes::ClusterError.new('timeout waiting for netmaster container run')
         end
 
-        if Pancakes::Freezer.stack_exists?(self)
+        if thaw && Pancakes::Freezer.stack_exists?(self)
           run_freezer(
             Pancakes::Fleet::Templating.thaw_template(
               freezer_unit: freezer_unit,
@@ -148,6 +148,7 @@ module Pancakes
         end
 
         non_netmaster_units.each do |unit|
+           #TODO add the --no-setup-db flag
           Pancakes.cluster.start_unit(unit)
         end
       rescue Pancakes::ClusterError, Pancakes::TimeoutError => e
@@ -182,7 +183,7 @@ module Pancakes
       end
     end
 
-    def bring_down(force: false)
+    def bring_down(freeze: true, force: false)
       # pre
       if !force && self.state == :off
         logger.info "bring_down nothing to do for #{self.name}"
@@ -218,13 +219,15 @@ module Pancakes
         return false
       end
 
-      run_freezer(
-        Pancakes::Fleet::Templating.freezer_template(
-          freezer_unit: freezer_unit,
-          mysql_unit:   mysql_unit,
-          mysql_dbs:    dbs,
+      if freeze
+        run_freezer(
+          Pancakes::Fleet::Templating.freezer_template(
+            freezer_unit: freezer_unit,
+            mysql_unit:   mysql_unit,
+            mysql_dbs:    dbs,
+          )
         )
-      )
+      end
 
       only_units(['mysql']).each do |unit|
         Pancakes.cluster.destroy_unit(unit)
@@ -253,7 +256,7 @@ module Pancakes
     end
 
     # @api private
-    def run_freezer(template)
+    def run_freezer(templ)
 
       Pancakes.cluster.start_template(freezer_unit.service_file_name, templ)
       sleep 10
