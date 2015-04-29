@@ -82,6 +82,17 @@ module Pancakes
             cmd,
           )
         end
+
+        def freeze_cmd(stack_id:, mysql_host:, mysql_port:, mysql_dbs:)
+          join_args(
+            'freeze',
+            '--stack-id', stack_id,
+            '--bucket-name', 'grnds-development-coreos',
+            '--mysql-host', mysql_host,
+            '--mysql-port', mysql_port,
+            *mysql_dbs.map{|db| ['--mysql-db', db] }.flatten,
+          )
+        end
       end
     end
   end

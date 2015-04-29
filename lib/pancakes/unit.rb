@@ -38,7 +38,7 @@ module Pancakes
     end
 
     def requires
-      req = service_def.requires
+      req = service_def.requires.to_s
       if req.end_with?('.service')
         req
       else
@@ -68,7 +68,7 @@ module Pancakes
     end
 
     def ports
-      netmaster? ? Pancakes::Services.all_ports : nil
+      service_def.ports
     end
 
     def active?
@@ -133,6 +133,10 @@ module Pancakes
 
     def service_name
       service_def.name
+    end
+
+    def dbs
+      service_def.dbs
     end
 
     def ping_url

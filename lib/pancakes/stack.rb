@@ -93,14 +93,6 @@ module Pancakes
       self.sha[0..6]
     end
 
-    #def branch_sha
-      #@__bs ||= Digest::SHA1.hexdigest(self.commits.map{|j| [j.repo, j.branch].join(':') }.sort.join('|'))
-    #end
-
-    #def branch_sha_short
-      #branch_sha[0..6]
-    #end
-
     def name
       format("%s_%s_%d", Pancakes::NAMESPACE, self.short_sha, self.id)
     end
@@ -201,7 +193,7 @@ module Pancakes
       # body
       timeout = 60
 
-      except_units(['mysql']).each do |unit|
+      except_units(['mysql', 'freezer']).each do |unit|
         Pancakes.cluster.destroy_unit(unit)
       end
 
@@ -218,7 +210,19 @@ module Pancakes
       end
 
       # do freeze here
-      freezer_unit = Unit.new
+      templ = Pancakes::Fleet::Templating.freezer_template(
+        freezer_unit: freezer_unit,
+        mysql_unit:   mysql_unit,
+        mysql_dbs:    dbs,
+      )
+
+      Pancakes.cluster.start_template(freezer_unit.service_file_name, templ)
+      sleep 10
+
+      Pancakes.cluster.destroy_unit(freezer_unit)
+      # TODO use etcd watch
+      sleep 5
+      remove_freezer_unit
 
       only_units(['mysql']).each do |unit|
         Pancakes.cluster.destroy_unit(unit)
@@ -244,6 +248,15 @@ module Pancakes
         StatHatWrapper.post_count('pancakes stacks bring_down timeouts', 1)
         return false
       end
+    end
+
+    # @api private
+    def dbs
+      units.map{|unit| unit.dbs || [] }.reduce(&:+)
+    end
+
+    def ports
+      units.map{|unit| unit.ports || [] }.reduce(&:+)
     end
 
     # @api private
@@ -468,9 +481,35 @@ module Pancakes
     def unit_with_service_name(service_name)
       units_dataset.first(service_name: service_name.to_s)
     end
+    alias :unit_named :unit_with_service_name
+
+    def mysql_unit
+      unit_named('mysql')
+    end
 
     def commit_for_codebase(codebase)
       commits_dataset.first(repo: Pancakes.repo_name(codebase))
+    end
+
+    # @api private
+    def add_freezer_unit
+      add_unit(Unit.create_with_service_def(service_def: Services.get('freezer')))
+    end
+
+    # @api private
+    def remove_freezer_unit
+      unit_with_service_name('freezer').destroy
+      self.refresh
+    end
+
+    # @api private
+    def freezer_unit
+      fu = units_dataset.where(service_name: 'freezer').first
+      if fu.nil?
+        add_freezer_unit
+      else
+        fu
+      end
     end
 
 

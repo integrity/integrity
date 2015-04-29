@@ -21,10 +21,7 @@ module Pancakes
         @dry_run
       end
 
-      def start_unit(unit)
-        unit_fname = unit.service_file_name
-        unit_hash  = Templating.detect_and_make_template(unit)
-
+      def start_template(unit_fname, unit_hash)
         if !@dry_run
           logger.debug "submitting #{unit_fname}"
           @client.submit(unit_fname, unit_hash)
@@ -46,6 +43,10 @@ module Pancakes
         end
       rescue ::Fleet::Conflict => e
         raise Pancakes::ClusterError.new_with_original(e)
+      end
+
+      def start_unit(unit)
+        start_template(unit.service_file_name, Templating.detect_and_make_template(unit))
       end
 
       def destroy_unit(unit)

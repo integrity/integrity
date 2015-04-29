@@ -27,6 +27,14 @@ module Pancakes
         ports: [1080,1025],
       },
       {
+        name: 'freezer',
+        chore: true,
+        image: 'grnds/freezer',
+        requires: :mysql,
+        machineof: :mysql,
+        env: SERVICE_ENV,
+      },
+      {
         name: 'frick-server',
         repo: 'consultingmd/frick',
         image: 'grnds/frick_ci',
@@ -35,6 +43,7 @@ module Pancakes
         ports: [10002],
         ping_url: 'http://$ip:$port/status',
         env: SERVICE_ENV,
+        dbs: %w[frick-development ruote-development],
       },
       {
         name: 'jarvis-orchestra',
@@ -43,6 +52,7 @@ module Pancakes
         machineof: :mysql,
         requires: :mysql,
         env: SERVICE_ENV,
+        dbs: %w[grh-development],
       },
       {
         name: 'jarvis-server',
@@ -69,6 +79,7 @@ module Pancakes
         machineof: :mysql,
         requires: :mysql,
         env: SERVICE_ENV,
+        dbs: %w[tim-development],
       },
       {
         name: 'tim-server',
@@ -95,11 +106,7 @@ module Pancakes
     end
 
     def all_names
-      SERVICE_DEFS.map{|s| s[:name] }
-    end
-
-    def all_ports
-      SERVICE_DEFS.map{|s| s[:ports] || [] }.reduce(&:+)
+      SERVICE_DEFS.select{|s| !s[:chore] }.map{|s| s[:name] }
     end
 
     def netmaster

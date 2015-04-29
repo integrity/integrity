@@ -21,16 +21,31 @@ module Pancakes
 
       def detect_and_make_template(unit)
         if %w[mysql mailcatcher].include?(unit.service_name)
-          base_template(unit: unit)
+          base_template(unit)
         else
           dockyard_template(unit)
         end
       end
 
+      def freezer_template(freezer_unit:, mysql_unit:, mysql_dbs:)
+        base_template(
+          freezer_unit,
+          freeze_cmd(
+            stack_id:   freezer_unit.stack.id,
+            mysql_host: mysql_unit.machine_ip,
+            mysql_port: mysql_unit.port,
+            mysql_dbs:  mysql_dbs,
+          )
+        )
+      end
+
+      def thaw_template(unit)
+        # TODO
+      end
+
       # @api private
       def dockyard_template(unit)
-        stack = unit.stack
-        commit = stack.commit_for_codebase(unit.codebase)
+        commit = unit.stack.commit_for_codebase(unit.codebase)
 
         cmd = dockyard_build_sh(
           sha:               commit.sha,
@@ -51,11 +66,11 @@ module Pancakes
           )
         )
 
-        base_template(unit: unit, cmd: cmd)
+        base_template(unit, cmd)
       end
 
       # @api private
-      def base_template(unit:, cmd: nil)
+      def base_template(unit, cmd=nil)
         partials = [
           unit_section(service_name: unit.service_name, requires_service_file: unit.requires),
           timeout_start_sec('10min'),
@@ -70,7 +85,7 @@ module Pancakes
             container_name: unit.name,
             netmaster_name: unit.stack.netmaster_unit.name,
             environment: { 'PANCAKES' => 'true' }.merge(unit.env),
-            ports: unit.ports,
+            ports: unit.netmaster? ? unit.stack.ports : nil,
             image: unit.image,
             cmd: cmd,
           )
