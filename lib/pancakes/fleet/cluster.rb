@@ -1,7 +1,9 @@
 module Pancakes
   module Fleet
     class Cluster
-      attr_reader :client
+      include Pancakes::ClassLogger
+
+      attr_reader :client, :etcd
       attr_writer :dry_run
 
       def initialize(dry_run: false)
@@ -9,12 +11,8 @@ module Pancakes
         if @dry_run
           logger.warn "fleet cluster dry_run=true"
         end
-        @client ||= ::Fleet.new(read_timeout: 10, open_timeout: 10)
-      end
-
-      # @api private
-      def logger
-        @__lgr ||= Logging.logger[self]
+        @client = ::Fleet.new(read_timeout: 10, open_timeout: 10)
+        @etcd   = Pancakes::Fleet::Etcd.new
       end
 
       def dry_run?

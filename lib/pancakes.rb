@@ -96,6 +96,16 @@ module Pancakes
     "heads/#{branch_name}"
   end
 
+  # this will not kill blocks which do their own sleeping
+  def loop_with_timeout(timeout:, sleep_for: nil)
+    start = Time.now
+    while (elapsed = (Time.now - start)) < timeout do
+      yield(timeout - elapsed)
+      sleep(sleep_for) if sleep_for
+    end
+    raise Pancakes::TimeoutError, "timeout of #{timeout}s reached after #{Time.now - start}s"
+  end
+
   # Polls the &block or :obj.:method(:args) for any element of :values. If :values is not an Array
   # it will be wrapped in one.
   #
@@ -113,8 +123,8 @@ module Pancakes
     callee_str    = method ? "#<#{obj.class.name}##{method}(#{args.map(&:to_s).join(', ')})" : "<block>"
     values_str    = values.inspect
 
-    while (remaining = (Time.now - start)) <= timeout do
-      logger.debug format("polling %s for %s (timeout in %.0fs)", callee_str, values_str, timeout - remaining)
+    loop_with_timeout(timeout: timeout, sleep_for: poll_interval) do |remaining|
+      logger.debug format("polling %s for %s (timeout in %.0fs)", callee_str, values_str, remaining)
 
       curr = if block_given?
         yield
@@ -131,11 +141,9 @@ module Pancakes
           return curr
         end
       end
-
-      sleep(poll_interval)
     end
-
-    msg = "timeout of #{timeout}s reached calling #{callee_str} for values #{values_str}"
+  rescue Pancakes::TimeoutError => e
+    msg = "#{e.message} calling #{callee_str} for values #{values_str}"
     logger.warn(msg)
     raise Pancakes::TimeoutError, msg if raise_on_timeout
     return nil
@@ -153,6 +161,26 @@ module Pancakes
 
   def dockyard_debug?
     !!ENV['DOCKYARD_DEBUG']
+  end
+end
+
+module Pancakes
+  module ClassLogger
+    def logger_name
+      self
+    end
+
+    def logger
+      return @__lgr if @__lgr
+      #Logging.logger[lg_name].appenders = Pancakes.log_appender
+      #Logging.logger[lg_name].level = Pancakes.log_level
+      @__lgr = Logging.logger[logger_name]
+    end
+
+    # Use this method when the stack's name changes to get a new logger with the new name.
+    def refresh_logger
+      @__lgr = nil
+    end
   end
 end
 
@@ -180,6 +208,7 @@ require 'stathat_wrapper'
 require 'pancakes/errors'
 
 require 'pancakes/fleet'
+require 'pancakes/fleet/etcd'
 require 'pancakes/fleet/cluster'
 
 require 'pancakes/fleet/templating/helpers'

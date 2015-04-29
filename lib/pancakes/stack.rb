@@ -1,5 +1,7 @@
 module Pancakes
   class Stack < Sequel::Model
+    include Pancakes::ClassLogger
+
     set_dataset :pancakes_stacks
     plugin :timestamps
     plugin :serialization, :json, :pocs, :services
@@ -269,7 +271,7 @@ module Pancakes
     # @api private
     def run_freezer_helper(templ)
       Pancakes.cluster.start_template(freezer_unit.service_file_name, templ)
-      sleep 10
+      Pancakes.cluster.etcd.watch_unit_for_active_state(freezer_unit.service_file_name, 'inactive', timeout: 30)
 
       Pancakes.cluster.destroy_unit(freezer_unit)
       # TODO use etcd watch instead of sleep
@@ -624,20 +626,8 @@ module Pancakes
       end
     end
 
-    # @api private
-    def logger
-      return @__lgr if @__lgr
-      lg_name = "#{self.class}[#{self.name}]"
-      #Logging.logger[lg_name].appenders = Pancakes.log_appender
-      #Logging.logger[lg_name].level = Pancakes.log_level
-      @__lgr = Logging.logger[lg_name]
-    end
-
-    # Use this method when the stack's name changes to get a new logger with the new name.
-    #
-    # @api private
-    def refresh_logger
-      @__lgr = nil
+    def logger_name
+      "#{self.class}[#{self.name}]"
     end
   end
 end

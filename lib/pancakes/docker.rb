@@ -8,20 +8,14 @@ end
 
 module Pancakes
   class Docker
+    include Pancakes::ClassLogger
+
     API_PORT = 2375
 
     def initialize
       @machine_ip = '127.0.0.1'
       @last_containers = nil
       @last_containers_timestamp = nil
-    end
-
-    # @api private
-    def logger
-      return @__lgr if @__lgr
-      #Logging.logger[self.class].appenders = Pancakes.log_appender
-      #Logging.logger[self.class].level = Pancakes.log_level
-      @__lgr = Logging.logger[self.class]
     end
 
     # @api private

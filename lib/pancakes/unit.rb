@@ -86,6 +86,7 @@ module Pancakes
     def service_file_name
       "#{name}.service"
     end
+    alias :service_fname :service_file_name
 
     def repo
       service_def.repo
