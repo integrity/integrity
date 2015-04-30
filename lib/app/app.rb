@@ -180,9 +180,9 @@ module Integrity
 
     get '/pancakes/stacks/:id/restart_with_branch_heads' do
       @stack = Pancakes::Stack[params[:id]]
-      @stack.update_all(desired_state: (@stack.state == :off ? :running : :off))
 
       if @stack
+        @stack.update_all(desired_state: (@stack.state == :off ? :running : :off))
         Delayed::Job.enqueue(Pancakes::Background::RestartWithBranchHeadsJob.new(@stack.id))
       end
 
@@ -191,9 +191,9 @@ module Integrity
 
     get '/pancakes/stacks/:id/restart_with_same_commits' do
       @stack = Pancakes::Stack[params[:id]]
-      @stack.update_all(desired_state: (@stack.state == :off ? :running : :off))
 
       if @stack
+        @stack.update_all(desired_state: (@stack.state == :off ? :running : :off))
         Delayed::Job.enqueue(Pancakes::Background::RestartWithSameCommitsJob.new(@stack.id))
       end
 
@@ -202,9 +202,9 @@ module Integrity
 
     get '/pancakes/stacks/:id/bring_down' do
       @stack = Pancakes::Stack[params[:id]]
-      @stack.update_all(desired_state: :off)
 
       if @stack
+        @stack.update_all(desired_state: :off)
         Delayed::Job.enqueue(Pancakes::Background::BringDownJob.new(@stack.id))
       end
 
@@ -223,7 +223,7 @@ module Integrity
 
     get '/pancakes/stacks/:id/destroy' do
       @stack = Pancakes::Stack[params[:id]]
-      @stack.state_from_cluster!
+      @stack.state_from_cluster! if @stack
 
       if @stack && @stack.state == :off
         @stack.destroy
@@ -239,14 +239,11 @@ module Integrity
       @stack = Pancakes::Stack.create_with_git_strings(
         pocs:           params[:pocs],
         branches:       params[:branches],
-        default_master: true,
         desired_state: :running,
       )
 
-      if @stack.save
-        #flash[:notice] = "Stack created with sha #{@stack.short_sha}. Click 'Refresh state' to refresh the state, if you want."
-        Delayed::Job.enqueue(Pancakes::Background::BringUpJob.new(@stack.id))
-      end
+      #flash[:notice] = "Stack created with sha #{@stack.short_sha}. Click 'Refresh state' to refresh the state, if you want."
+      Delayed::Job.enqueue(Pancakes::Background::BringUpJob.new(@stack.id))
 
       redirect back
     end
@@ -305,6 +302,44 @@ module Integrity
         else
           halt 500, 'something was wrong'
         end
+      end
+    end
+
+    post '/pancakes/api/vX/stacks' do
+      @stack = Pancakes::Stack.create_with_git_strings(
+        pocs:           params[:pocs],
+        branches:       params[:branches],
+        desired_state: :running,
+      )
+
+      @stack.save
+      Delayed::Job.enqueue(Pancakes::Background::BringUpJob.new(@stack.id))
+      response['X-Pancakes-Stack-Id'] = @stack.id.to_s
+      response['X-Pancakes-Stack-State-Path'] = "/pancakes/api/vX/stacks/#{@stack.id}/state"
+      response['X-Pancakes-Stack-BringDown-Path'] = "/pancakes/api/vX/stacks/#{@stack.id}/bring_down"
+      halt 200
+    end
+
+    delete '/pancakes/api/vX/stacks/:id/bring_down' do
+      @stack = Pancakes::Stack[params[:id]]
+
+      if @stack
+        @stack.update_all(desired_state: :off)
+        Delayed::Job.enqueue(Pancakes::Background::BringDownJob.new(@stack.id, destroy: true))
+        halt 200
+      else
+        halt 400, "stack(#{params[:id]}) could not be found for destroy\n"
+      end
+    end
+
+    get '/pancakes/api/vX/stacks/:id/state' do
+      @stack = Pancakes::Stack[params[:id]]
+      @stack.state_from_cluster!
+
+      if @stack
+        halt 200, "#{@stack.state}"
+      else
+        halt 400, "stack(#{params[:id]}) could not be found\n"
       end
     end
 

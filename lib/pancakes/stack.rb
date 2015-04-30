@@ -42,7 +42,7 @@ module Pancakes
     # constructors
     #
 
-    def self.create_with_git_strings(services: Services.all_names, pocs: '', default_master: false, desired_state: :off, branches: nil, **git_strings)
+    def self.create_with_git_strings(services: Services.all_names, pocs: '', desired_state: :off, branches: nil, **git_strings)
       self.db.transaction do
         pocs = (pocs || "").split(',').map(&:strip)
         me = new(services: services.to_set.to_a, pocs: pocs, desired_state: desired_state)
@@ -58,9 +58,16 @@ module Pancakes
         codebases = codebases(me.services)
         git_strings.select! {|cb| codebases.include?(cb.to_s) }
 
+        # figure out which codebases dont have git strings and add nil ones
+        required_codebases = services.map{|x| x.split('-') }.select{|x| x.size == 2 }.map(&:first).map(&:to_sym).to_set
+        missing_codebases = required_codebases - git_strings.keys.map(&:to_sym)
+        missing_codebases.each do |k|
+          git_strings[k] = nil
+        end
+
         git_strings.each do |codebase,git_str|
           # TODO validate dynamically: Pancakes.validate_codebase(codebase) || raise("unsupported codebase #{codebase}")
-          git_str = 'L+master' if default_master && (git_str.nil? || git_str.empty?)
+          git_str = 'L+master' if git_str.nil? || git_str.empty?
           me.add_commit(Pancakes::Commit.create_from_git_string(Pancakes.repo_name(codebase), git_str))
         end
 

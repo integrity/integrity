@@ -3,8 +3,9 @@ module Pancakes
 
     # Be sure to run this with separate dj process which has 1 worker and only runs off this queue
     class SerialStackJob
-      def initialize(stack_id)
+      def initialize(stack_id, opts={})
         @stack_id = stack_id
+        @opts     = opts
       end
 
       def queue_name
@@ -18,6 +19,11 @@ module Pancakes
       def stack
         @stack ||= Pancakes::Stack[@stack_id]
       end
+
+      def error(job, exception)
+        Pancakes.logger.error "job failed with #{exception.to_s}"
+        Pancakes.logger.error "backtrace:\n\n#{exception.backtrace.map{|l| ' '*4 + l }.join("\n")}\n"
+      end
     end
 
     class BringUpJob < SerialStackJob
@@ -30,6 +36,10 @@ module Pancakes
     class BringDownJob < SerialStackJob
       def perform
         stack.bring_down(freeze_dbs: false)
+
+        if @opts[:destroy] == true
+          stack.destroy
+        end
       end
     end
 
