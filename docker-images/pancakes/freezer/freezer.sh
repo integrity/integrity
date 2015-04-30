@@ -17,7 +17,7 @@ FNAME=
 BUCKET_NAME=
 MYSQL_HOST=
 MYSQL_PORT=
-MYSQL_DATABASES=()
+MYSQL_DATABASES=''
 
 while [[ $# > 0 ]]; do
    key="$1"
@@ -42,11 +42,10 @@ while [[ $# > 0 ]]; do
 	 shift
 	 ;;
       --mysql-db)
-	 db="$2"
-	 MYSQL_DATABASES=(${MYSQL_DATABASES[@]} ${db})
+	 MYSQL_DATABASES="${MYSQL_DATABASES} ${2}"
 	 shift
 	 ;;
-      --help)
+      -h|--help)
 	 usage
 	 ;;
       *)
@@ -58,17 +57,21 @@ done
 
 echo "won't you step into the freezer"
 
+# strip whitespace just to be pretty
+MYSQL_DATABASES="${MYSQL_DATABASES# }"
 FROZEN_FILE="s3://${BUCKET_NAME}/${FNAME}"
 
 if [[ $COMMAND == 'freeze' ]]; then
 
   echo "freezing mysql dbs '${MYSQL_DATABASES}' to ${FROZEN_FILE}"
-  mysqldump -h${MYSQL_HOST} -P${MYSQL_PORT} --databases ${MYSQL_DATABASES} | gzip --fast | aws s3 cp - ${FROZEN_FILE}
+  #mysqldump -h${MYSQL_HOST} -P${MYSQL_PORT} --databases ${MYSQL_DATABASES} | gzip --fast | aws s3 cp - ${FROZEN_FILE}
+  echo "mysqldump -h${MYSQL_HOST} -P${MYSQL_PORT} --databases ${MYSQL_DATABASES} | gzip --fast | aws s3 cp - ${FROZEN_FILE}"
 
 elif [[ $COMMAND == 'thaw' ]]; then
 
   echo "thawing mysql dbs from ${FROZEN_FILE}"
-  aws s3 cp ${FROZEN_FILE} - | gunzip | mysql -h${MYSQL_HOST} -P${MYSQL_PORT}
+  #aws s3 cp ${FROZEN_FILE} - | gunzip | mysql -h${MYSQL_HOST} -P${MYSQL_PORT}
+  echo "aws s3 cp ${FROZEN_FILE} - | gunzip | mysql -h${MYSQL_HOST} -P${MYSQL_PORT}"
 
 else
   echo "unknown command: ${COMMAND}"
