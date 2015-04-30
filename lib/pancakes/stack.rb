@@ -181,9 +181,9 @@ module Pancakes
       end
     end
 
-    def bring_down(freeze_dbs: false, force: false)
+    def bring_down(freeze_dbs: false)
       # pre
-      if !force && self.state == :off
+      if self.state! == :off
         logger.info "bring_down nothing to do for #{self.name}"
         return false
       end
@@ -206,7 +206,7 @@ module Pancakes
       end
 
       begin
-        Pancakes.block_until_values(values: [['mysql'].to_set], timeout: timeout) do
+        Pancakes.block_until_values(values: [['mysql'].to_set, Set.new], timeout: timeout) do
           refresh_unit_states
           running_unit_names
         end
@@ -309,7 +309,7 @@ module Pancakes
 
     def restart_with_branch_heads
       logger.info 'restarting with branch heads'
-      bring_down(freeze_dbs: true, force: true)
+      bring_down(freeze_dbs: true)
       logger.info 'doing bring_up for restart with branch heads'
       refresh_commits
       save
@@ -319,7 +319,7 @@ module Pancakes
 
     def restart_with_same_commits
       logger.info 'restarting with same commits'
-      bring_down(freeze_dbs: true, force: true)
+      bring_down(freeze_dbs: true)
       logger.info 'doing bring_up for restart with same commits'
       bring_up(thaw_dbs: true)
       logger.info 'done restarting with same commits'
