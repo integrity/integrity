@@ -531,6 +531,7 @@ module Pancakes
     def destroy_freezer_unit
       unit_with_service_name('freezer').destroy
       self.refresh
+      nil
     end
 
     # @api private

@@ -18,7 +18,6 @@ module Pancakes
           #resp = @client.watch(STATES_KEY, recursive: true, timeout: 60)
           #puts resp.key
         #end
-        #binding.pry
       #end
 
       def watch_unit_for_active_state(service_fname, state, timeout:)

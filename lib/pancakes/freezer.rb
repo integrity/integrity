@@ -21,7 +21,6 @@ module Pancakes
     end
 
     def stack_fname(stack_id)
-      binding.pry
       "freezer/#{Pancakes.config.freezer.namespace}/frozen_stack_#{stack_id}.sql.gz"
     end
   end
