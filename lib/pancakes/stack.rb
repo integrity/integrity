@@ -473,7 +473,9 @@ module Pancakes
 
     # @api private
     def set_state(new_state)
-      set_all(state: new_state.to_sym, state_updated_at: Time.now)
+      new_state = new_state.to_sym
+      return if state == new_state
+      set_all(state: new_state, state_updated_at: Time.now)
     end
 
     # @api private
