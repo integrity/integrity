@@ -26,6 +26,16 @@ module Pancakes
   NAMESPACE = 'pancakes'
   SHA_REGEX = /[0-9a-f]{40}/i
 
+  @@config =
+    Hashie::Mash.new(
+      freezer: Hashie::Mash.new(
+        namespace: nil,
+      ),
+      templating: Hashie::Mash.new(
+        dockyard_branch: 'pancakes',
+      ),
+    )
+
   def log_level
     if ll = ENV['PANCAKES_LOG_LEVEL']
       ll =~ /\A\d+\z/ ? ll.to_i : ll.to_sym
@@ -44,13 +54,25 @@ module Pancakes
 
   def logger
     return @__lgr if @__lgr
-
     #Logging.logger[self].appenders = log_appender
     Logging.logger[self].level = Pancakes.log_level
     @__lgr = Logging.logger[self]
   end
 
-  def setup
+  def config
+    @@config
+  end
+
+  def configure
+    yield @@config
+
+    # validate pancakes config
+    [
+      %w[freezer namespace],
+      %w[templating dockyard_branch],
+    ].each{|keys| !keys.reduce(@@config){|memo,key| memo && memo[key] }.nil? || raise("Pancakes.config.#{keys.join('.')} is required") }
+
+
     Octokit.configure do |c|
       c.access_token = ENV['GITHUB_READ_TOKEN']
       c.auto_paginate = true
@@ -60,13 +82,9 @@ module Pancakes
       region: 'us-east-1',
     })
 
-    logger()
-    cluster()
-    docker()
-
     Pancakes::Fleet::Templating.configure do |c|
-      c.dockyard_branch = ENV['DOCKYARD_BRANCH'] || 'pancakes'
-      Pancakes.logger.info "DOCKYARD_BRANCH=#{c.dockyard_branch}"
+      c.dockyard_branch = @@config.templating.dockyard_branch
+      Pancakes.logger.info "DOCKYARD_BRANCH=#{@@config.templating.dockyard_branch}"
     end
   end
 

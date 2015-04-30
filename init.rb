@@ -90,7 +90,10 @@ Integrity.configure do |c|
   # end
 end
 
-Pancakes.setup
+Pancakes.configure do |c|
+  c.freezer.namespace          = DTEST ? 'dtest' : 'production'
+  c.templating.dockyard_branch = ENV['DOCKYARD_BRANCH'] || 'pancakes'
+end
 
 if Delayed::Job.where(queue: 'stats').count == 0
   Delayed::Job.enqueue(Integrity::StatsJob.new)

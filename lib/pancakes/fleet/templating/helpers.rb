@@ -83,10 +83,10 @@ module Pancakes
           )
         end
 
-        def freeze_cmd(stack_id:, mysql_host:, mysql_port:, mysql_dbs:)
+        def freeze_cmd(fname:, mysql_host:, mysql_port:, mysql_dbs:)
           join_args(
             'freeze',
-            '--stack-id', stack_id,
+            '--fname', fname,
             '--bucket-name', 'grnds-development-coreos',
             '--mysql-host', mysql_host,
             '--mysql-port', mysql_port,
@@ -94,10 +94,10 @@ module Pancakes
           )
         end
 
-        def thaw_cmd(stack_id:, mysql_host:, mysql_port:)
+        def thaw_cmd(fname:, mysql_host:, mysql_port:)
           join_args(
             'thaw',
-            '--stack-id', stack_id,
+            '--fname', fname,
             '--bucket-name', 'grnds-development-coreos',
             '--mysql-host', mysql_host,
             '--mysql-port', mysql_port,

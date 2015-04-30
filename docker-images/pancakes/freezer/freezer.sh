@@ -3,7 +3,7 @@
 usage() {
    echo "$0 [options...]"
    echo ""
-   echo "    -s,--stack-id"
+   echo "    -f,--fname"
    echo "    -b,--bucket-name"
    echo "    --mysql-host"
    echo "    --mysql-port"
@@ -13,7 +13,7 @@ usage() {
 }
 
 COMMAND=
-STACK_ID=
+FNAME=
 BUCKET_NAME=
 MYSQL_HOST=
 MYSQL_PORT=
@@ -25,8 +25,8 @@ while [[ $# > 0 ]]; do
       freeze|thaw)
 	 COMMAND="$key"
 	 ;;
-      -s|--stack-id)
-	 STACK_ID="$2"
+      -f|--fname)
+	 FNAME="$2"
 	 shift
 	 ;;
       -b|--bucket-name)
@@ -58,7 +58,7 @@ done
 
 echo "won't you step into the freezer"
 
-FROZEN_FILE="s3://${BUCKET_NAME}/freezer/frozen_stack_${STACK_ID}.sql.gz"
+FROZEN_FILE="s3://${BUCKET_NAME}/${FNAME}"
 
 if [[ $COMMAND == 'freeze' ]]; then
 

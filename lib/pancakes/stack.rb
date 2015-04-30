@@ -34,7 +34,7 @@ module Pancakes
     end
 
     def before_destroy
-      Pancakes::Freezer.delete_stack(self)
+      Pancakes::Freezer.delete_stack(self.id)
     end
 
 
@@ -144,7 +144,7 @@ module Pancakes
           raise Pancakes::ClusterError.new('timeout waiting for netmaster container run')
         end
 
-        run_thaw_er if thaw_dbs && Pancakes::Freezer.stack_exists?(self)
+        run_thaw_er if thaw_dbs && Pancakes::Freezer.stack_exists?(self.id)
 
         non_netmaster_units.each do |unit|
           Pancakes.cluster.start_template(unit.service_file_name, Pancakes::Fleet::Templating.detect_and_make_template(unit, setup_db: !thaw_dbs))
@@ -250,6 +250,7 @@ module Pancakes
       logger.info 'thawing databases'
       run_freezer_helper(
         Pancakes::Fleet::Templating.thaw_template(
+          fname:        Pancakes::Freezer.stack_fname(self.id),
           freezer_unit: freezer_unit,
           mysql_unit:   mysql_unit,
         )
@@ -261,6 +262,7 @@ module Pancakes
       logger.info "freezing databases: #{dbs.join(', ')}"
       run_freezer_helper(
         Pancakes::Fleet::Templating.freezer_template(
+          fname:        Pancakes::Freezer.stack_fname(self.id),
           freezer_unit: freezer_unit,
           mysql_unit:   mysql_unit,
           mysql_dbs:    dbs,

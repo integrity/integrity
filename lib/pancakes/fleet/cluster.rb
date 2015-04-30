@@ -8,9 +8,6 @@ module Pancakes
 
       def initialize(dry_run: false)
         @dry_run = dry_run
-        if @dry_run
-          logger.warn "fleet cluster dry_run=true"
-        end
         @client = ::Fleet.new(read_timeout: 10, open_timeout: 10)
         @etcd   = Pancakes::Fleet::Etcd.new
       end
