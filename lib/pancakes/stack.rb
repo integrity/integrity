@@ -250,9 +250,10 @@ module Pancakes
       logger.info 'thawing databases'
       run_freezer_helper(
         Pancakes::Fleet::Templating.thaw_template(
-          fname:        Pancakes::Freezer.stack_fname(self.id),
           freezer_unit: freezer_unit,
-          mysql_unit:   mysql_unit,
+          fname:        Pancakes::Freezer.stack_fname(self.id),
+          mysql_host:   mysql_unit.machine_ip,
+          mysql_port:   mysql_unit.port,
         )
       )
     end
@@ -262,9 +263,10 @@ module Pancakes
       logger.info "freezing databases: #{dbs.join(', ')}"
       run_freezer_helper(
         Pancakes::Fleet::Templating.freezer_template(
-          fname:        Pancakes::Freezer.stack_fname(self.id),
           freezer_unit: freezer_unit,
-          mysql_unit:   mysql_unit,
+          fname:        Pancakes::Freezer.stack_fname(self.id),
+          mysql_host:   mysql_unit.machine_ip,
+          mysql_port:   mysql_unit.port,
           mysql_dbs:    dbs,
         )
       )
