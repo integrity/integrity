@@ -85,6 +85,7 @@ module Pancakes
 
         def freeze_cmd(fname:, mysql_host:, mysql_port:, mysql_dbs:)
           join_args(
+            './freezer.sh',
             'freeze',
             '--fname', fname,
             '--bucket-name', 'grnds-development-coreos',
@@ -96,6 +97,7 @@ module Pancakes
 
         def thaw_cmd(fname:, mysql_host:, mysql_port:)
           join_args(
+            './freezer.sh',
             'thaw',
             '--fname', fname,
             '--bucket-name', 'grnds-development-coreos',

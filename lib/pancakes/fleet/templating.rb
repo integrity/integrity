@@ -48,11 +48,16 @@ module Pancakes
       def freezer_template(freezer_unit:, fname:, mysql_host:, mysql_port:, mysql_dbs:)
         docker_template(
           freezer_unit,
-          freeze_cmd(
-            fname:      fname,
-            mysql_host: mysql_host,
-            mysql_port: mysql_port,
-            mysql_dbs:  mysql_dbs,
+          bash_minus_c(
+            logging_prefix_pipe(
+              freezer_unit.name,
+              freeze_cmd(
+                fname:      fname,
+                mysql_host: mysql_host,
+                mysql_port: mysql_port,
+                mysql_dbs:  mysql_dbs,
+              )
+            )
           )
         )
       end
@@ -60,10 +65,15 @@ module Pancakes
       def thaw_template(freezer_unit:, fname:, mysql_host:, mysql_port:)
         docker_template(
           freezer_unit,
-          thaw_cmd(
-            fname:      fname,
-            mysql_host: mysql_host,
-            mysql_port: mysql_port,
+          bash_minus_c(
+            logging_prefix_pipe(
+              freezer_unit.name,
+              thaw_cmd(
+                fname:      fname,
+                mysql_host: mysql_host,
+                mysql_port: mysql_port,
+              )
+            )
           )
         )
       end

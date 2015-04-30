@@ -68,7 +68,7 @@ module Integrity
 
       def uptime(stack)
         if stack && stack.running?
-          time_ago_in_words(stack.started_at).sub(' ago', '')
+          time_ago_in_words(stack.state_updated_at).sub(' ago', '')
         else
           ''
         end

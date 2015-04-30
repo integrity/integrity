@@ -7,4 +7,4 @@ RUN pip install awscli
 WORKDIR /root
 COPY ./freezer.sh ./
 
-ENTRYPOINT ["/root/freezer.sh"]
+CMD ./freezer.sh -h

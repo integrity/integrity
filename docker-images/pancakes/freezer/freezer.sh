@@ -75,3 +75,5 @@ else
   echo "unknown command: ${COMMAND}"
   exit 11
 fi
+
+echo "exiting"
