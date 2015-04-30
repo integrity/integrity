@@ -92,7 +92,7 @@ end
 
 Pancakes.configure do |c|
   c.freezer.namespace          = DTEST ? 'dtest' : 'production'
-  c.templating.dockyard_branch = ENV['DOCKYARD_BRANCH'] || 'pancakes'
+  c.templating.dockyard_branch = ENV['DOCKYARD_BRANCH'] || 'pancakes-develop'
 end
 
 if Delayed::Job.where(queue: 'stats').count == 0
