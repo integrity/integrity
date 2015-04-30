@@ -155,7 +155,7 @@ module Pancakes
           logger.debug "#{callee_str} value.class #{curr.class} reached"
           return curr
         elsif value == curr
-          logger.debug "#{callee_str} value #{curr} reached"
+          logger.debug "#{callee_str} value #{curr.inspect} reached"
           return curr
         end
       end
