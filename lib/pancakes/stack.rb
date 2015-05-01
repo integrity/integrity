@@ -151,10 +151,11 @@ module Pancakes
           raise Pancakes::ClusterError.new('timeout waiting for netmaster container run')
         end
 
-        run_thaw_er if thaw_dbs && Pancakes::Freezer.stack_exists?(self.id)
+        should_thaw = thaw_dbs && Pancakes::Freezer.stack_exists?(self.id)
+        run_thaw_er if should_thaw
 
         non_netmaster_units.each do |unit|
-          Pancakes.cluster.start_template(unit.service_file_name, Pancakes::Fleet::Templating.detect_and_make_template(unit, setup_db: !thaw_dbs))
+          Pancakes.cluster.start_template(unit.service_file_name, Pancakes::Fleet::Templating.detect_and_make_template(unit, setup_db: !should_thaw))
         end
       rescue Pancakes::ClusterError, Pancakes::TimeoutError => e
         # this will never run during a dry_run, so we dont need to worry about re-enabling StatHatWrapper
