@@ -349,6 +349,7 @@ module Integrity
 
       @stack = Pancakes::Stack[params[:id]]
       update_state = params[:update_state]
+      service_name = params[:service_name]
 
       if !@stack
         logger.info 'stack not found'
