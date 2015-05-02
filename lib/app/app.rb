@@ -268,42 +268,42 @@ module Integrity
       JSON.dump(branches)
     end
 
-    get '/pancakes/api/vX/stacks/search' do
-      branches = params[:branches]
-      data = params[:data]
-      service_name = params[:service_name]
-      update_state = params[:update_state]
+    #get '/pancakes/api/vX/stacks/search' do
+      #branches = params[:branches]
+      #data = params[:data]
+      #service_name = params[:service_name]
+      #update_state = params[:update_state]
 
-      @stack = Pancakes::Stack.first_with_branches(branches)
+      #@stack = Pancakes::Stack.first_with_branches(branches)
 
-      if !@stack
-        logger.info 'stack not found'
-        halt 400, "stack not found\n"
-      else
-        logger.info "stack found: #{@stack.sha}"
+      #if !@stack
+        #logger.info 'stack not found'
+        #halt 400, "stack not found\n"
+      #else
+        #logger.info "stack found: #{@stack.sha}"
 
-        if update_state == 'true'
-          @stack.state_from_cluster!
-        end
+        #if update_state == 'true'
+          #@stack.state_from_cluster!
+        #end
 
-        @unit = @stack.unit_with_service_name(service_name)
+        #@unit = @stack.unit_with_service_name(service_name)
 
-        if !@unit
-          logger.info 'unit not found'
-          halt 400, "unit not found\n"
-        elsif data == 'tcp_info'
-          tcp_string = @unit.tcp_str
-          if tcp_string.empty?
-            logger.info 'tcp_string not found. service may not be running.'
-            halt 400, "tcp_string not found. service may not be running.\n"
-          else
-            tcp_string
-          end
-        else
-          halt 500, 'something was wrong'
-        end
-      end
-    end
+        #if !@unit
+          #logger.info 'unit not found'
+          #halt 400, "unit not found\n"
+        #elsif data == 'tcp_info'
+          #tcp_string = @unit.tcp_str
+          #if tcp_string.empty?
+            #logger.info 'tcp_string not found. service may not be running.'
+            #halt 400, "tcp_string not found. service may not be running.\n"
+          #else
+            #tcp_string
+          #end
+        #else
+          #halt 500, 'something was wrong'
+        #end
+      #end
+    #end
 
     post '/pancakes/api/vX/stacks' do
       if !params[:dry_run]
@@ -341,6 +341,48 @@ module Integrity
         halt 200
       else
         halt 400, "stack(#{params[:id]}) could not be found for destroy\n"
+      end
+    end
+
+    get '/pancakes/api/vX/stacks/:id/tcp_info' do
+      halt 200, '1.2.3.4:5678' if params[:dry_run]
+
+      @stack = Pancakes::Stack[params[:id]]
+      update_state = params[:update_state]
+
+      #@stack.state_from_cluster!
+
+      #if @stack
+        #halt 200, "#{@stack.state}"
+      #else
+        #halt 400, "stack(#{params[:id]}) could not be found\n"
+      #end
+
+
+      if !@stack
+        logger.info 'stack not found'
+        halt 400, "stack not found\n"
+      end
+
+      logger.info "stack found id=#{@stack.id}"
+
+      if update_state == 'true'
+        @stack.state_from_cluster!
+      end
+
+      @unit = @stack.unit_with_service_name(service_name)
+
+      if @unit
+        tcp_string = @unit.tcp_str
+        if tcp_string.empty?
+          logger.info 'tcp_string not found. service may not be running.'
+          halt 400, "tcp_string not found. service may not be running.\n"
+        else
+          halt 200, tcp_string
+        end
+      else
+        logger.info 'unit not found'
+        halt 400, "unit not found\n"
       end
     end
 
