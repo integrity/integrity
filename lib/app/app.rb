@@ -350,15 +350,6 @@ module Integrity
       @stack = Pancakes::Stack[params[:id]]
       update_state = params[:update_state]
 
-      #@stack.state_from_cluster!
-
-      #if @stack
-        #halt 200, "#{@stack.state}"
-      #else
-        #halt 400, "stack(#{params[:id]}) could not be found\n"
-      #end
-
-
       if !@stack
         logger.info 'stack not found'
         halt 400, "stack not found\n"
