@@ -306,21 +306,33 @@ module Integrity
     end
 
     post '/pancakes/api/vX/stacks' do
-      @stack = Pancakes::Stack.create_with_git_strings(
-        pocs:           params[:pocs],
-        branches:       params[:branches],
-        desired_state: :running,
-      )
+      if !params[:dry_run]
+        @stack = Pancakes::Stack.create_with_git_strings(
+          pocs:           params[:pocs],
+          branches:       params[:branches],
+          desired_state: :running,
+        )
 
-      @stack.save
-      Delayed::Job.enqueue(Pancakes::Background::BringUpJob.new(@stack.id))
-      response['X-Pancakes-Stack-Id'] = @stack.id.to_s
-      response['X-Pancakes-Stack-State-Path'] = "/pancakes/api/vX/stacks/#{@stack.id}/state"
-      response['X-Pancakes-Stack-BringDown-Path'] = "/pancakes/api/vX/stacks/#{@stack.id}/bring_down"
-      halt 200
+        @stack.save
+        Delayed::Job.enqueue(Pancakes::Background::BringUpJob.new(@stack.id))
+
+        response['X-Pancakes-Stack-Id'] = @stack.id.to_s
+        response['X-Pancakes-Stack-State-Path'] = "/pancakes/api/vX/stacks/#{@stack.id}/state"
+        response['X-Pancakes-Stack-BringDown-Path'] = "/pancakes/api/vX/stacks/#{@stack.id}/bring_down"
+
+        halt 200
+      else
+        id = '42'
+        response['X-Pancakes-Stack-Id'] = id
+        response['X-Pancakes-Stack-State-Path'] = "/pancakes/api/vX/stacks/#{id}/state"
+        response['X-Pancakes-Stack-BringDown-Path'] = "/pancakes/api/vX/stacks/#{id}/bring_down"
+        halt 200, id
+      end
     end
 
     delete '/pancakes/api/vX/stacks/:id/bring_down' do
+      halt 200 if params[:dry_run]
+
       @stack = Pancakes::Stack[params[:id]]
 
       if @stack
@@ -333,6 +345,8 @@ module Integrity
     end
 
     get '/pancakes/api/vX/stacks/:id/state' do
+      halt 200, 'running' if params[:dry_run]
+
       @stack = Pancakes::Stack[params[:id]]
       @stack.state_from_cluster!
 
