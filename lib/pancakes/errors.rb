@@ -10,6 +10,10 @@ module Pancakes
       me
     end
 
+    def class
+      @original ? @original.class : super
+    end
+
     def message
       @original ? @original.message : super
     end

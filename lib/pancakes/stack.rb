@@ -160,7 +160,7 @@ module Pancakes
       rescue Pancakes::ClusterError, Pancakes::TimeoutError => e
         # this will never run during a dry_run, so we dont need to worry about re-enabling StatHatWrapper
         StatHatWrapper.post_count('pancakes stacks bring_up errors', 1)
-        logger.error "error during bring_up. some units may have been started successfully. class=#{e.original.class} message='#{e.message}'"
+        logger.error "error during bring_up. some units may have been started successfully. class=#{e.class} message='#{e.message}'"
         return false
       end
 
