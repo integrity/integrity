@@ -23,11 +23,15 @@ module Integrity
       Integrity.logger.info "sending pancakes stats for state=#{state}"
       stacks = Pancakes::Stack.where(state: state)
 
-      # count number of stacks per ip
-      stacks.map{|ss| ss.netmaster_unit.machine_ip }.reduce(Hash.new(0)){|memo,ip| memo[ip] += 1 ; memo } do |ip,count|
+      stack_count_by_ip(stacks).each do |ip,count|
         StatHatWrapper.post_value("pancakes #{state} stacks #{ip}", count)
       end
+
       StatHatWrapper.post_value("pancakes #{state} stacks total", stacks.count)
+    end
+
+    def stack_count_by_ip(stacks)
+      stacks.map{|stack| stack.netmaster_unit.machine_ip }.reduce(Hash.new(0)){|memo,ip| memo[ip] += 1 ; memo }
     end
 
     def max_attempts
