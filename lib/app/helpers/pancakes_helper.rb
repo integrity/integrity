@@ -78,19 +78,19 @@ module Integrity
         [
           [
             'jarvis',
-            { placeholder: 'master' },
+            { help_text: 'if blank, locked master will be used' },
           ],
           [
             'frick',
-            { placeholder: 'master' },
+            { help_text: 'if blank, locked master will be used' },
           ],
           [
             'tim',
-            { placeholder: 'master' },
+            { help_text: 'if blank, locked master will be used' },
           ],
           [
             'tp',
-            { placeholder: 'if blank, no tp will be created' },
+            { help_text: 'if blank, no tp will be created' },
           ],
         ]
       end
