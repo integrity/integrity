@@ -236,7 +236,9 @@ module Integrity
     end
 
     post '/pancakes/stacks' do
+      services = params[:branches][:tp].empty? ? Pancakes::Services.jarvis_services : Pancakes::Services.tp_services
       @stack = Pancakes::Stack.create_with_git_strings(
+        services:       services,
         pocs:           params[:pocs],
         branches:       params[:branches],
         desired_state: :running,
@@ -308,6 +310,7 @@ module Integrity
     post '/pancakes/api/vX/stacks' do
       if !params[:dry_run]
         @stack = Pancakes::Stack.create_with_git_strings(
+          services:       Pancakes::Services.tp_services,
           pocs:           params[:pocs],
           branches:       params[:branches],
           desired_state: :running,

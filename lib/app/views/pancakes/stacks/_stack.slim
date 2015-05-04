@@ -62,6 +62,8 @@ tr class=human_state_row_color_class(stack)
             td
               - if commit.codebase == 'jarvis'
                 == launch_button(commit, disabled: !stack.running?)
+              - elsif commit.codebase == 'tp'
+                == launch_button(commit, disabled: !stack.running?)
               - else
                 b = commit.codebase
             td.lock-controls

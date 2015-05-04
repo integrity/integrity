@@ -99,14 +99,30 @@ module Pancakes
         requires: :"tim-orchestra",
         env: SERVICE_ENV,
       },
+      {
+        name: 'tp-server',
+        image: 'grnds/tp_ci',
+        repo: 'consultingmd/tp',
+        machineof: :mysql,
+        requires: :mysql,
+        env: SERVICE_ENV,
+        ports: [10003],
+        ping_url: 'http://$ip:$port/status',
+        dbs: %w[tp_dev],
+      },
     ]
 
     def get(service_name)
       SERVICE_DEFS.detect{|service_def| service_def[:name] == service_name.to_s } || raise("no service by the name of #{service_name}")
     end
 
-    def all_names
-      SERVICE_DEFS.select{|s| !s[:chore] }.map{|s| s[:name] }
+    def jarvis_services
+      #SERVICE_DEFS.select{|s| !s[:chore] }.map{|s| s[:name] }
+      %w[mysql mailcatcher jarvis-server jarvis-orchestra jarvis-delayed_job tim-server tim-orchestra tim-delayed_job frick-server]
+    end
+
+    def tp_services
+      jarvis_services + %w[tp-server]
     end
 
     def netmaster

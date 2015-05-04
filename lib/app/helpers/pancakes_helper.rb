@@ -73,6 +73,27 @@ module Integrity
           ''
         end
       end
+
+      def services_for_form
+        [
+          [
+            'jarvis',
+            { placeholder: 'master' },
+          ],
+          [
+            'frick',
+            { placeholder: 'master' },
+          ],
+          [
+            'tim',
+            { placeholder: 'master' },
+          ],
+          [
+            'tp',
+            { placeholder: 'if blank, no tp will be created' },
+          ],
+        ]
+      end
     end
   end
 end

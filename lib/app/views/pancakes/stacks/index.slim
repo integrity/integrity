@@ -14,10 +14,10 @@
       br
       small Start typing to autocomplete your branch. master will be used when a field is left blank.
 
-    - %w[jarvis frick tim].each do |codebase|
+    - services_for_form.each do |codebase,opts|
       .form-group
-        label for="#{codebase}_branch" #{codebase.capitalize} branch
-        input.form-control type='text' name='[branches][#{codebase}]' id="#{codebase}_branch" autocomplete='off' placeholder='master'
+        label for="#{codebase}_branch" #{codebase} branch
+        input.form-control type='text' name='[branches][#{codebase}]' id="#{codebase}_branch" autocomplete='off' placeholder=(opts[:placeholder])
     /.form-group
       label for="pocs" Points Of Contact
       input.form-control type='text' name='pocs' id="pocs" autocomplete='off' placeholder='kato usernames or emails, comma separated'
