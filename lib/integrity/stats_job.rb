@@ -3,7 +3,7 @@ module Integrity
     def perform
       send_honesty_stats
       Pancakes::Stack::CLUSTER_STATES.each do |state|
-        send_pancakes_stats(state: state)
+        send_pancakes_stats(state: state.to_s)
       end
       Delayed::Job.enqueue(self, run_at: (Time.now + 30.seconds))
     end
