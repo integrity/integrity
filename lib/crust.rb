@@ -149,7 +149,7 @@ HERE
 
     image   = service_def[:image]
     command = service_def[:command].present? ? "/bin/bash -c '#{service_def[:command]}'" : ''
-    ports   = (service_def[:ports]       || []).map{|port| "-p #{port}"}
+    ports   = ((service_def[:ports] || []) + [12000]).map{|port| "-p #{port}"}
     volumes = (service_def[:volumes]     || []).map{|volume| "-v #{volume}"}
 
     #This assumes that the container names end with their app name
