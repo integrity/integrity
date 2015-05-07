@@ -5,15 +5,17 @@ module Pancakes
         extend self
 
         def dockyard_build_sh(branch:, sha:, repo:, service_type:, setup_db:, debug:)
-          join_args(
+          args = [
             './dockyard/build.sh',
-            '-b', branch,
             '-s', sha,
             '-r', repo,
             '--service-type', service_type,
             !setup_db ? ' --no-setup-db' : nil,
             debug ? ' --debug' : nil,
-          )
+          ]
+
+          args << "-b #{branch}" if branch && !branch.empty?
+          join_args(*args)
         end
 
         def dockyard_clone(gh_read_token, branch)
