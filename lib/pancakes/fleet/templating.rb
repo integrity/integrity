@@ -20,7 +20,7 @@ module Pancakes
       end
 
       def detect_and_make_template(unit, setup_db: true)
-        if %w[mysql mailcatcher].include?(unit.service_name)
+        if %w[mysql mailcatcher postgres].include?(unit.service_name)
           docker_template(unit)
         elsif unit.commit
           docker_template(
