@@ -62,7 +62,7 @@ module Integrity
 
     def restart_pancakes_stacks_after_github_push(push_event_hash)
       branches = Pancakes.branch_info_from_push_event(push_event_hash)
-      stacks_to_update = Pancakes::Stack.with_branches(**branches)
+      stacks_to_update = Pancakes::Stack.with_branches(branches)
       stacks_to_update.each do |stack|
         logger.info "restarting stack #{stack.name} after github PushEvent for branches #{branches.inspect}"
         Delayed::Job.enqueue(Pancakes::RestartWithBranchHeadsJob.new(stack.id))
