@@ -22,7 +22,7 @@ module Pancakes
       def detect_and_make_template(unit, setup_db: true)
         if %w[mysql mailcatcher].include?(unit.service_name)
           docker_template(unit)
-        else
+        elsif unit.commit
           docker_template(
             unit,
             bash_minus_c(
@@ -42,6 +42,8 @@ module Pancakes
               )
             )
           )
+        else
+          raise "expected unit #{unit.name} to have a commit"
         end
       end
 

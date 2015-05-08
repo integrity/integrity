@@ -1,7 +1,7 @@
 # SERVICE_TEMPLATE
 
 app:
-  image: grnds/<%= project %>_ci
+  image: grnds/<%= project %>_ci:latest
   environment:
     BRANCH: <%= branch %>
     SHA: <%= sha %>
@@ -22,6 +22,6 @@ app:
     machineof: mysql
 
 mysql:
-  image: grnds/mysql
+  image: grnds/mysql:latest
   ports:
     - :3306

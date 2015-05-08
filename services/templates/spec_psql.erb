@@ -1,5 +1,5 @@
 app:
-  image: grnds/<%= project %>_ci
+  image: grnds/<%= project %>_ci:latest
   environment:
     BRANCH: <%= branch %>
     SHA: <%= sha %>
@@ -19,6 +19,6 @@ app:
     machineof: db
 
 db:
-  image: postgres:9.3
+  image: grnds/postgres:latest
   ports:
     - "5432"

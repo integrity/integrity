@@ -14,14 +14,20 @@ module Pancakes
     SERVICE_DEFS = [
       {
         name: 'mysql',
-        image: 'grnds/mysql',
+        image: 'grnds/mysql:latest',
         netmaster: true,
         ports: [3306],
         requires: 'docker.service',
       },
       {
+        name: 'postgres',
+        image: 'grnds/postgres:latest',
+        ports: [5432],
+        requires: 'docker.service',
+      },
+      {
         name: 'mailcatcher',
-        image: 'grnds/mailcatcher',
+        image: 'grnds/mailcatcher:latest',
         requires: :mysql,
         machineof: :mysql,
         ports: [1080,1025],
@@ -29,7 +35,7 @@ module Pancakes
       {
         name: 'freezer',
         chore: true,
-        image: 'grnds/freezer',
+        image: 'grnds/freezer:latest',
         requires: :mysql,
         machineof: :mysql,
         env: SERVICE_ENV,
@@ -37,7 +43,7 @@ module Pancakes
       {
         name: 'frick-server',
         repo: 'consultingmd/frick',
-        image: 'grnds/frick_ci',
+        image: 'grnds/frick_ci:latest',
         machineof: :mysql,
         requires: :mysql,
         ports: [10002],
@@ -47,7 +53,7 @@ module Pancakes
       },
       {
         name: 'jarvis-orchestra',
-        image: 'grnds/jarvis_ci',
+        image: 'grnds/jarvis_ci:latest',
         repo: 'consultingmd/consultingmd',
         machineof: :mysql,
         requires: :mysql,
@@ -56,7 +62,7 @@ module Pancakes
       },
       {
         name: 'jarvis-server',
-        image: 'grnds/jarvis_ci',
+        image: 'grnds/jarvis_ci:latest',
         repo: 'consultingmd/consultingmd',
         machineof: :mysql,
         requires: :"jarvis-orchestra",
@@ -66,7 +72,7 @@ module Pancakes
       },
       {
         name: 'jarvis-delayed_job',
-        image: 'grnds/jarvis_ci',
+        image: 'grnds/jarvis_ci:latest',
         repo: 'consultingmd/consultingmd',
         machineof: :mysql,
         requires: :"jarvis-orchestra",
@@ -74,7 +80,7 @@ module Pancakes
       },
       {
         name: 'tim-orchestra',
-        image: 'grnds/tim_ci',
+        image: 'grnds/tim_ci:latest',
         repo: 'consultingmd/tim',
         machineof: :mysql,
         requires: :mysql,
@@ -83,7 +89,7 @@ module Pancakes
       },
       {
         name: 'tim-server',
-        image: 'grnds/tim_ci',
+        image: 'grnds/tim_ci:latest',
         repo: 'consultingmd/tim',
         machineof: :mysql,
         requires: :"tim-orchestra",
@@ -93,7 +99,7 @@ module Pancakes
       },
       {
         name: 'tim-delayed_job',
-        image: 'grnds/tim_ci',
+        image: 'grnds/tim_ci:latest',
         repo: 'consultingmd/tim',
         machineof: :mysql,
         requires: :"tim-orchestra",
@@ -101,7 +107,7 @@ module Pancakes
       },
       {
         name: 'tp-server',
-        image: 'grnds/tp_ci',
+        image: 'grnds/tp_ci:latest',
         repo: 'consultingmd/tp',
         machineof: :mysql,
         requires: :mysql,
@@ -109,6 +115,17 @@ module Pancakes
         ports: [10003],
         ping_url: 'http://$ip:$port/status',
         dbs: %w[tp_dev],
+      },
+      {
+        name: 'banyan-server',
+        image: 'grnds/banyan_ci:latest',
+        repo: 'consultingmd/banyan',
+        machineof: :mysql,
+        requires: :mysql,
+        env: SERVICE_ENV,
+        ports: [10010],
+        ping_url: 'http://$ip:$port/status',
+        dbs: %w[pg-cache-development],
       },
     ]
 
@@ -125,6 +142,10 @@ module Pancakes
       jarvis_services + %w[tp-server]
     end
 
+    def banyan_services
+      jarvis_services + %w[banyan-server postgres]
+    end
+
     def netmaster
       SERVICE_DEFS.each do |service_def|
         if service_def[:netmaster] == true
@@ -132,7 +153,7 @@ module Pancakes
         end
       end
 
-      raise "no netmaster is specified"
+      raise 'no netmaster is specified'
     end
 
     def parse_service_name(service_name)

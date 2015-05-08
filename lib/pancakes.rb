@@ -5,10 +5,10 @@
 #        ######  #  # #  #       ######  #  #    #            #
 #        #    #  #   ##  #    #  #    #  #   #   #       #    #
 #        #    #  #    #   ####   #    #  #    #  ######   ####
-###############################################################
 #
-# @author Alex Bird <bird@grandrounds.com>
-# @date   2015-02-18
+#
+# author Alex Bird <bird@grandrounds.com>
+# date   2015-02-18
 #
 # Environment vars
 # ================
@@ -19,6 +19,7 @@
 # - PANCAKES_DRY_RUN   (eg. true)
 # - PANCAKES_LOG_LEVEL (eg. debug, 2)
 # - DOCKYARD_BRANCH    (eg. pancakes-develop)
+# - DOCKYARD_DEBUG     (eg. true)
 
 module Pancakes
   extend self

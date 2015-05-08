@@ -53,8 +53,8 @@ module Pancakes
       head_sha(repo, branch)
     end
 
-    def refresh_myself
-      return if locked?
+    def refresh_myself(force: false)
+      return if !force && locked?
       update_all(
         self.class.get_model_fields_for_sha(
           repo:   repo,

@@ -6,6 +6,7 @@ Requires=docker.service
 [Service]
 TimeoutStartSec=10min
 Restart=always
+KillSignal=SIGKILL
 ExecStartPre=-/usr/bin/docker kill metrics
 ExecStartPre=-/usr/bin/docker rm metrics
 ExecStartPre=/usr/bin/docker pull grnds/metrics:latest

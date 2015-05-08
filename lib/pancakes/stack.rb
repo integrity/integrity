@@ -333,6 +333,12 @@ module Pancakes
       logger.info 'done restarting with same commits'
     end
 
+    def refresh_commits(force: false)
+      commits.each do |ci|
+        ci.refresh_myself(force: force)
+      end
+    end
+
 
     #
     # states
@@ -601,13 +607,6 @@ module Pancakes
     def self.has_any_states(states, *query)
       query = Array(query)
       !!states.detect{|s| query.include?(s) }
-    end
-
-    # @api private
-    def refresh_commits
-      commits.each do |ci|
-        ci.refresh_myself
-      end
     end
 
     # @api private
