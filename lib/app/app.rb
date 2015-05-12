@@ -237,6 +237,7 @@ module Integrity
 
     post '/pancakes/stacks' do
       services = params[:branches][:tp].empty? ? Pancakes::Services.jarvis_services : Pancakes::Services.tp_services
+      services = params[:branches][:banyan].empty? ? Pancakes::Services.jarvis_services : Pancakes::Services.banyan_services
       @stack = Pancakes::Stack.create_with_git_strings(
         services:       services,
         pocs:           params[:pocs],

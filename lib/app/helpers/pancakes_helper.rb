@@ -92,6 +92,10 @@ module Integrity
             'tp',
             { help_text: 'if blank, no tp will be created' },
           ],
+          [
+            'banyan',
+            { help_text: 'if blank, no banyan will be created' },
+          ],
         ]
       end
     end

@@ -66,6 +66,10 @@ tr class=human_state_row_color_class(stack)
                 == launch_button(commit, disabled: !stack.running?)
                 br
                 small stark session is required to access tp
+              - elsif commit.codebase == 'banyan'
+                == launch_button(commit, disabled: !stack.running?)
+                br
+                small stark session is required to access banyan
               - else
                 b = commit.codebase
             td.lock-controls

@@ -23,6 +23,7 @@ module Pancakes
         name: 'postgres',
         image: 'grnds/postgres:latest',
         ports: [5432],
+        machineof: :mysql,
         requires: 'docker.service',
       },
       {
