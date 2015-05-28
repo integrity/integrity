@@ -14,7 +14,7 @@ ExecStartPre=-/usr/bin/docker rm %{service_name}
 ExecStartPre=/usr/bin/docker pull %{image}
 ExecStart=/usr/bin/docker run -v /var/lib/docker/tmp:/tmp/hosttmp --name %{service_name} %{volumes} %{links} %{envs} %{ports} %{image} %{command}
 ExecStop=/usr/bin/docker stop %{service_name}
-ExecStop=/usr/bin/docker rm %{service_name}
+ExecStopPost=/usr/bin/docker rm -f %{service_name}
 
 [Install]
 WantedBy=local.target
