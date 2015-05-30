@@ -99,7 +99,7 @@ module Integrity
     post '/status.json', provides: :json do
       params.symbolize_keys!
       @format = :json
-      log("[Build:#{params[:build_id]}][fi] POST /status.json - completing current project with params #{params.slice(:success, :sha, :build_id)} Project is #{current_project.inspect}")
+      Integrity.logger.info "[Build:#{params[:build_id]}][fi] POST /status.json - completing current project with params #{params.slice(:success, :sha, :build_id)} Project is #{current_project.inspect}"
       current_project.build_complete!(params.slice(:success, :sha, :build_id))
       json current_project
     end
