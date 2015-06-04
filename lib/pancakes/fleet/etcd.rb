@@ -5,6 +5,7 @@ module Pancakes
 
       DEFAULT_WATCH_TIMEOUT = 30
       STATES_KEY = '/_coreos.com/fleet/state'
+      URL_SCHEME = 'etcd://'
 
       attr_reader :client
 
@@ -19,6 +20,13 @@ module Pancakes
           #puts resp.key
         #end
       #end
+
+      def get(key)
+        key = key.sub(URL_SCHEME, '') if key.start_with?(URL_SCHEME)
+        @client.get(key).value
+      rescue ::Etcd::KeyNotFound
+        nil
+      end
 
       def watch_unit_for_active_state(service_fname, state, timeout:)
         Pancakes.loop_with_timeout(timeout: timeout) do |remaining|

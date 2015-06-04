@@ -40,6 +40,8 @@ module Pancakes
               v = ENV[k]
             elsif v.start_with?(':')
               v = ENV[v.sub(/\A:/, '')]
+            elsif v.start_with?(Pancakes::Fleet::Etcd::URL_SCHEME)
+              v = Pancakes.cluster.etcd.get(v)
             end
             format('-e "%s=%s"', k.to_s, v)
           end.join(' ')
