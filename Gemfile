@@ -28,6 +28,7 @@ gem 'delayed_job_active_record'
 gem 'activerecord-mysql-adapter'
 gem 'delayed_job_web'
 gem 'daemons'
+gem 'pivotal-tracker'
 
 # These are dependencies for the various notifiers. Uncomment as appropriate.
 gem 'pony'                                      # E-mail

@@ -13,6 +13,7 @@ module Integrity
     has n, :builds
     belongs_to :project
     belongs_to :last_build, 'Build'
+    belongs_to :story, 'Tracker::Story'
 
     before :save, :set_permalink
 
