@@ -12,7 +12,7 @@ TimeoutStartSec=10min
 ExecStartPre=-/usr/bin/docker kill %{service_name}
 ExecStartPre=-/usr/bin/docker rm %{service_name}
 ExecStartPre=/usr/bin/docker pull %{image}
-ExecStart=/usr/bin/docker run -v /var/lib/docker/tmp:/tmp/hosttmp --name %{service_name} %{volumes} %{links} %{envs} %{ports} %{image} %{command}
+ExecStart=/usr/bin/docker run --rm -v /var/lib/docker/tmp:/tmp/hosttmp --name %{service_name} %{volumes} %{links} %{envs} %{ports} %{image} %{command}
 ExecStop=/usr/bin/docker stop %{service_name}
 ExecStopPost=/usr/bin/docker rm -f %{service_name}
 
