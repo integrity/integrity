@@ -23,6 +23,7 @@ require 'stathat'
 require 'ap'
 require 'delayed_job'
 require 'active_record'
+require 'pivotal-tracker'
 require 'sendgrid-ruby'
 
 require 'sinatra/base'
@@ -52,6 +53,7 @@ require 'fleet'
 require 'etcd'
 require 'octokit'
 require 'stathat_wrapper'
+require 'tracker_wrapper'
 require 'sendgrid_wrapper'
 
 require 'opts/rconfig'
@@ -86,6 +88,7 @@ require 'integrity/fleet_helper'
 require 'integrity/stats_job'
 
 require 'pancakes'
+require 'tracker'
 
 DataMapper.finalize
 

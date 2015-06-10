@@ -16,5 +16,9 @@ module Integrity
 
     belongs_to :project
     belongs_to :build
+
+    def finishes?
+      ['FINISH', 'finish'].any? { |w| self.message =~ /#{w}/}
+    end
   end
 end
