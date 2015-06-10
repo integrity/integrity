@@ -23,6 +23,7 @@ require 'stathat'
 require 'ap'
 require 'delayed_job'
 require 'active_record'
+require 'sendgrid-ruby'
 
 require 'sinatra/base'
 require 'sinatra/authorization'
@@ -51,6 +52,7 @@ require 'fleet'
 require 'etcd'
 require 'octokit'
 require 'stathat_wrapper'
+require 'sendgrid_wrapper'
 
 require 'opts/rconfig'
 
