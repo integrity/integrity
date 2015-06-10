@@ -1,9 +1,6 @@
 module Tracker
-  class Story < Sequel::Model
+  class Story
     include DataMapper::Resource
-
-    set_dataset :tracker_stories
-    plugin :timestamps
 
     property :id,            Serial
     property :url,           String
@@ -12,6 +9,8 @@ module Tracker
     property :type,          String
     property :current_state, String
     property :commit_state,  String
+
+    timestamps :at
 
     has n, :branches, 'Integrity::Branch'
     has n, :users, :through => Resource

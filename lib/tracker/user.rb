@@ -1,8 +1,6 @@
 module Tracker
-  class User < Sequel::Model
+  class User
     include DataMapper::Resource
-    set_dataset :tracker_users
-    plugin :timestamps
 
     property :id,       Serial
     property :name,     String
