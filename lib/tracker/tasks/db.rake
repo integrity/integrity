@@ -30,28 +30,9 @@ namespace :tracker do
 
       Integrity::Branch.each do |branch|
         story_id = branch.name.try(:match, /\d{6,}/).try(:[],0)
-
         if story_id
-          tracker_story = project.stories.find(story_id)
-          if tracker_story
-
-            user_names = []
-            user_names << tracker_story.requested_by << tracker_story.owned_by
-            user_names = user_names.uniq
-
-            story = Tracker::Story.get(story_id) || Tracker::Story.create(tracker_story)
-
-            user_names.each do |name|
-              user = Tracker::User.first(:name => name)
-              if user
-                story.users << user unless story.users.include?(user)
-                story.save
-              end
-            end
-
-            branch.story = story
-            branch.save
-          end
+          branch.story = Tracker::Story.get(story_id) || Tracker::Story.create(story_id)
+          branch.save
         end
       end
     end

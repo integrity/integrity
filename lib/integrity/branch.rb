@@ -24,6 +24,14 @@ module Integrity
     delegate :repo, to: :project
     delegate :status, :human_status, :human_duration, :successful?, :failed?, :pending?, :building?, to: :last_build, allow_nil: true
 
+    def create(params={})
+      byebug
+      story_id = self.name.try(:match, /\d{6,}/).try(:[],0)
+      return unless story_id
+      self.story = Tracker::Story.first(id: story_id) || Tracker::Story.create(story_id)
+      super(params)
+    end
+
     def blank?
       last_build.nil?
     end
