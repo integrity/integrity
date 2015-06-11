@@ -1,3 +1,5 @@
+require 'erb'
+
 module Tracker
   class Story
     include DataMapper::Resource
@@ -41,9 +43,38 @@ module Tracker
       story
     end
 
-    def finish
+    def finish(build)
       self.commit_state = 'finished'
       TrackerWrapper.finish_story(id)
+      send_pr_email(build)
+    end
+
+    private
+
+    def send_pr_email(build)
+      SendGridWrapper.send_mail(self.users.map(&:email),
+        'ops+honesty_robot@grnds.com',
+        email_subject,
+        email_body(build))
+    end
+
+    def email_subject
+      'Story ' + self.id.to_s + ' is ready to PR'
+    end
+
+    def email_body(build)
+      pr_link = generate_pr_url(build)
+      template = ERB.new(File.read("./lib/app/views/github_pr_email.erb"))
+      html_content = template.result(binding)
+    end
+
+    def generate_pr_url(build)
+      github_pr_link = build.branch.project.uri.to_s.gsub('git://', 'http://')
+      github_pr_link += '/compare/master...' + build.branch.name
+      github_pr_link += '?title=' + URI.escape(self.name)
+      body = build.commit.message + "\n\n"
+      body += '[Tracker #' + self.id.to_s + '](' + self.url + ')'
+      github_pr_link += '&body=' + URI.escape(body)
     end
   end
 end

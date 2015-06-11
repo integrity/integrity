@@ -4,12 +4,12 @@ class SendGridWrapper
     c.api_key = ENV['SENDGRID_PASSWORD']
   end
 
-  def self.send_mail(to, from, subject, text)
+  def self.send_mail(to, from, subject, html)
     mail = SendGrid::Mail.new do |m|
       m.to = to
       m.from = from
       m.subject = subject
-      m.text = text
+      m.html = html
     end
 
     @client.send(mail)
