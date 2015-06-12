@@ -388,7 +388,7 @@ module Integrity
       @stack = Pancakes::Stack[params[:id]]
       @stack.state_from_cluster!
 
-      if @stack && @stack.running?
+      if @stack && !@stack.service_addrs.empty?
         halt 200, JSON.dump(@stack.service_addrs)
       else
         halt 400, "stack(#{params[:id]}) could not be found or is not running\n"
