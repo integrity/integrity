@@ -1,12 +1,28 @@
 require 'rconfig'
-
-class Configuration
-  attr_accessor :api_user,
-                :api_key,
-                :sender_email_address
-end
+require 'hashie'
 
 class SendGridWrapper
+  @@config =
+    Hashie::Mash.new(
+      api_user: nil,
+      api_key: nil,
+      sender_email_address: nil,
+    )
+
+  def self.config
+    @@config
+  end
+
+  def self.configure
+    yield @@config
+
+    [
+      %w[api_user],
+      %w[api_key],
+      %w[sender_email_address],
+    ].each{|keys| !keys.reduce(@@config){|memo,key| memo && memo[key] }.nil? || raise("SendGridWrapper.config.#{keys.join('.')} is required") }
+  end
+
   def self.send_mail(to, subject, html)
     mail = SendGrid::Mail.new do |m|
       m.to = to
@@ -19,14 +35,6 @@ class SendGridWrapper
   end
 
   private
-
-  def self.config
-    @config ||= Configuration.new
-  end
-
-  def self.configure
-    yield(config)
-  end
 
   def self.client
     client = SendGrid::Client.new do |c|

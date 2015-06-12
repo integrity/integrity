@@ -1,12 +1,27 @@
-require 'rconfig'
-
-class Configuration
-  attr_accessor :api_token,
-                :project_id,
-                :client_timeout
-end
+require 'hashie'
 
 class TrackerWrapper
+  @@config =
+    Hashie::Mash.new(
+      api_token: nil,
+      project_id: nil,
+      client_timeout: nil,
+    )
+
+  def self.config
+    @@config
+  end
+
+  def self.configure
+    yield @@config
+
+    [
+      %w[api_token],
+      %w[project_id],
+      %w[client_timeout],
+    ].each{|keys| !keys.reduce(@@config){|memo,key| memo && memo[key] }.nil? || raise("TrackerWrapper.config.#{keys.join('.')} is required") }
+  end
+
   def self.tracker_story(story_id)
     project.stories.find(story_id)
   end
@@ -17,14 +32,6 @@ class TrackerWrapper
   end
 
   private
-
-  def self.config
-    @config ||= Configuration.new
-  end
-
-  def self.configure
-    yield(config)
-  end
 
   def self.project
     PivotalTracker::Client.token = config.api_token
