@@ -153,6 +153,17 @@ module Pancakes
       !!(service_def.ping_url && machine_ip && port)
     end
 
+    def service_addr
+      tc = tcp_str
+      if codebase && !tc.empty?
+        {
+          codebase => tcp_str
+        }
+      else
+        {}
+      end
+    end
+
     def self.subtype(service_name)
       srv_name = Services.parse_service_name(service_name)
       if srv_name.size == 2

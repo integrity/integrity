@@ -339,6 +339,10 @@ module Pancakes
       end
     end
 
+    def service_addrs
+      units.map(&:service_addr).reduce(&:merge)
+    end
+
 
     #
     # states

@@ -95,7 +95,7 @@ module Pancakes
           docker_run(
             container_name: unit.name,
             netmaster_name: unit.stack.netmaster_unit.name,
-            environment: { 'PANCAKES' => 'true' }.merge(unit.env),
+            environment: { 'PANCAKES' => 'true', 'PANCAKES_ID' => unit.stack.id }.merge(unit.env),
             ports: unit.netmaster? ? unit.stack.ports : nil,
             image: unit.image,
             cmd: cmd,
