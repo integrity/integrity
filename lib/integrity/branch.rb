@@ -32,6 +32,10 @@ module Integrity
       self.story = Tracker::Story.first(id: story_id) || Tracker::Story.create(story_id)
     end
 
+    def finish
+      self.story.try(:finish, self.last_build)
+    end
+
     def blank?
       last_build.nil?
     end

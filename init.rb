@@ -95,6 +95,18 @@ Pancakes.configure do |c|
   c.templating.dockyard_branch = ENV['DOCKYARD_BRANCH'] || 'pancakes'
 end
 
+TrackerWrapper.configure do |c|
+  c.api_token                  = app.tracker.api_token
+  c.project_id                 = app.tracker.project_id
+  c.client_timeout             = app.tracker.client_timeout
+end
+
+SendGridWrapper.configure do |c|
+  c.api_user                   = app.sendgrid.api_user
+  c.api_key                    = app.sendgrid.api_key
+  c.sender_email_address       = app.sendgrid.sender_email
+end
+
 if Delayed::Job.where(queue: 'stats').count == 0
   Delayed::Job.enqueue(Integrity::StatsJob.new)
 end

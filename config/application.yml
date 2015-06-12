@@ -34,3 +34,13 @@ github:
     read:   <%= ENV['GITHUB_READ_TOKEN']  %>
     write:  <%= ENV['GITHUB_WRITE_TOKEN'] %>
     secret: <%= ENV['GITHUB_HOOK_SECRET'] %>
+
+tracker:
+  api_token: <%= ENV['PIVOTAL_TRACKER_TOKEN'] %>
+  project_id: <%= ENV['PIVOTAL_TRACKER_PROJECT_ID'] %>
+  client_timeout: 50
+
+sendgrid:
+  api_user: <%= ENV['SENDGRID_USERNAME'] %>
+  api_key: <%= ENV['SENDGRID_PASSWORD'] %>
+  sender_email: 'honesty_robot@do_not_reply.grnds.com'

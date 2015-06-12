@@ -14,6 +14,10 @@ export QUEUE="integrity"
 export GITHUB_ACCOUNT="ConsultingMD"
 export GITHUB_READ_TOKEN="..."   # Get tokens from Engineering Repo
 export GITHUB_WRITE_TOKEN="..."
+export PIVOTAL_TRACKER_TOKEN="..."   # Get tokens from Engineering Repo
+export PIVOTAL_TRACKER_PROJECT_ID="..."
+export SENDGRID_USERNAME="..."   # Get tokens from Engineering Repo
+export SENDGRID_PASSWORD="..."
 ```
 
 **Console:**
@@ -99,7 +103,7 @@ SSH into integrity server
  $> stsj
 ```
 - Restarting Web Service
-```Bash 
+```Bash
  $> sudo restart integrity
  $> rst
 ```
