@@ -1,4 +1,5 @@
 require 'erb'
+require 'i18n'
 
 module Tracker
   class Story
@@ -53,28 +54,27 @@ module Tracker
 
     def send_pr_email(build)
       SendGridWrapper.send_mail(self.users.map(&:email),
-        'ops+honesty_robot@grnds.com',
         email_subject,
         email_body(build))
     end
 
     def email_subject
-      'Story ' + self.id.to_s + ' is ready to PR'
+      I18n.t('story.email_subject', story_id: self.id)
     end
 
     def email_body(build)
-      pr_link = generate_pr_url(build)
+      pr_body = I18n.t('story.pr_body', commit_message: build.commit.message,
+                                              story_id: self.id,
+                                             story_url: self.url)
+
+      pr_link = I18n.t('story.github_pr_link', github_project_url: build.branch.project.uri.to_s.gsub('git://', 'http://'),
+                                                      branch_name: build.branch.name,
+                                                       story_name: self.name,
+                                                          pr_body: pr_body)
+
+      pr_link = URI.escape(pr_link)
       template = ERB.new(File.read("./lib/app/views/github_pr_email.erb"))
       html_content = template.result(binding)
-    end
-
-    def generate_pr_url(build)
-      github_pr_link = build.branch.project.uri.to_s.gsub('git://', 'http://')
-      github_pr_link += '/compare/master...' + build.branch.name
-      github_pr_link += '?title=' + URI.escape(self.name)
-      body = build.commit.message + "\n\n"
-      body += '[Tracker #' + self.id.to_s + '](' + self.url + ')'
-      github_pr_link += '&body=' + URI.escape(body)
     end
   end
 end
