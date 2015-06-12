@@ -98,7 +98,7 @@ module Pancakes
             environment: {
               'PANCAKES' => 'true',
               'PANCAKES_ID' => unit.stack.id,
-              'HONESTY_BASE_URL' Integrity.base_url,
+              'HONESTY_BASE_URL' => Integrity.base_url,
             }.merge(unit.env),
             ports: unit.netmaster? ? unit.stack.ports : nil,
             image: unit.image,
