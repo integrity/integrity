@@ -18,8 +18,8 @@ module Tracker
     has n, :branches, 'Integrity::Branch'
     has n, :users, :through => Resource
 
-    def self.create(tracker_story_id)
-      tracker_story = TrackerWrapper.tracker_story(tracker_story_id)
+    def self.create(tracker_story_id, tracker_story = nil)
+      tracker_story = tracker_story || TrackerWrapper.tracker_story(tracker_story_id)
       return unless tracker_story
 
       story = Story.new

@@ -10,6 +10,7 @@ namespace :tracker do
       PivotalTracker::Client.token = ENV['PIVOTAL_TRACKER_TOKEN']
       PivotalTracker::Client.timeout = 50
       project = PivotalTracker::Project.find(ENV['TRACKER_PROJECT_ID']).first
+      stories = project.stories.all(offset: 6000)
 
       memberships = project.memberships
       memberships.all.map{|u| Tracker::User.create(u)}
@@ -17,7 +18,8 @@ namespace :tracker do
       Integrity::Branch.each do |branch|
         story_id = branch.name.try(:match, /\d{6,}/).try(:[],0)
         if story_id
-          branch.story = Tracker::Story.get(story_id) || Tracker::Story.create(story_id)
+          tracker_story = stories.select{|s| s.id = story_id}.first
+          branch.story = Tracker::Story.get(story_id) || Tracker::Story.create(story_id, tracker_story)
           branch.save
         end
       end
