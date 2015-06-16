@@ -9,7 +9,7 @@ namespace :tracker do
 
       PivotalTracker::Client.token = ENV['PIVOTAL_TRACKER_TOKEN']
       PivotalTracker::Client.timeout = 50
-      project = PivotalTracker::Project.find(ENV['TRACKER_PROJECT_ID'])
+      project = PivotalTracker::Project.find(ENV['TRACKER_PROJECT_ID']).first
 
       memberships = project.memberships
       memberships.all.map{|u| Tracker::User.create(u)}
