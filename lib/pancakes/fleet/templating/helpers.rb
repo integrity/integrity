@@ -77,6 +77,7 @@ module Pancakes
         def docker_run(container_name:, netmaster_name:, environment:, ports:, image:, cmd:)
           docker_cmd(
             :run,
+            '--rm',
             '-v', '/var/lib/docker/tmp:/tmp/hosttmp',
             '--name', container_name,
             (netmaster_name != container_name) ? "--net=container:#{netmaster_name}" : nil,

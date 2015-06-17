@@ -5,95 +5,86 @@ module Pancakes
         extend self
         extend Templating::Helpers
 
+        def in_section(sec, hsh)
+          { sec => hsh }
+        end
+
         def unit_section(service_name:, requires_service_file:)
-          {
-            'Unit' => {
+          in_section(
+            'Unit',
+            {
               'Description' => "pancakes container #{service_name}",
               'After'       => requires_service_file,
               'Requires'    => requires_service_file,
             }
-          }
+          )
+        end
+
+        def in_service_section(hsh)
+          in_section('Service', hsh)
         end
 
         def timeout_start_sec(timeout)
-          {
-            'Service' => {
-              'TimeoutStartSec' => timeout
-            }
-          }
+          in_service_section('TimeoutStartSec' => timeout)
         end
 
         def execstart(cmd)
-          {
-            'Service' => {
-              'ExecStart' => cmd
-            }
-          }
+           in_service_section('ExecStart' => cmd)
         end
 
         def docker_execstartpre(container_name:, image_name:)
-          {
-            'Service' => {
-              'ExecStartPre' => [
-                systemd_minus(docker_cmd(:kill, container_name)),
-                systemd_minus(docker_cmd(:rm, container_name)),
-                docker_cmd(:pull, image_name),
-              ]
-            }
-          }
+          in_service_section(
+            'ExecStartPre' => [
+              systemd_minus(docker_cmd(:kill, container_name)),
+              systemd_minus(docker_cmd(:rm, container_name)),
+              docker_cmd(:pull, image_name),
+            ]
+          )
         end
 
         def docker_execstop(container_name:)
-          {
-            'Service' => {
-              'ExecStop' => [
-                docker_cmd(:stop, container_name),
-                docker_cmd(:rm, container_name),
-              ]
-            }
-          }
+          in_service_section(
+            'ExecStop' => [
+              docker_cmd(:stop, container_name),
+            ]
+          )
+        end
+
+        def docker_execstop_post(container_name:)
+          in_service_section(
+            'ExecStopPost' => [
+              docker_cmd(:rm, '-f', container_name),
+            ]
+          )
         end
 
         def install_section
-          {
-            'Install' => {
-              'WantedBy' => 'local.target'
-            }
-          }
+          in_section(
+            'Install',
+            'WantedBy' => 'local.target',
+          )
         end
 
         def machine_of(machineof)
-          {
-            'X-Fleet' => {
-              'MachineOf' => machineof
-            }
-          }
+          in_section(
+            'X-Fleet',
+            'MachineOf' => machineof,
+          )
         end
 
         def machine_metadata(metadata)
-          {
-            'X-Fleet' => {
-              'MachineMetadata' => metadata
-            }
-          }
+          in_section(
+            'X-Fleet',
+            'MachineMetadata' => metadata,
+          )
         end
 
         def service_type(type)
-          {
-            'Service' => {
-              'Type' => type
-            }
-          }
+          in_service_section('Type' => type)
         end
 
         def remain_after_exit
-          {
-            'Service' => {
-              'RemainAfterExit' => 'true'
-            }
-          }
+          in_service_section('RemainAfterExit' => 'true')
         end
       end
     end
-  end
-end
