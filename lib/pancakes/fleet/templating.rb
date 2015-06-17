@@ -96,7 +96,6 @@ module Pancakes
             container_name: unit.name,
             netmaster_name: unit.stack.netmaster_unit.name,
             environment: {
-              'PANCAKES' => 'true',
               'PANCAKES_ID' => unit.stack.id,
               'PANCAKES_SHA' => unit.stack.short_sha,
               'HONESTY_BASE_URL' => Integrity.base_url,
