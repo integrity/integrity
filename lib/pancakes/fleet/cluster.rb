@@ -80,7 +80,7 @@ module Pancakes
           @fleet_client.destroy(unit_fname)
         end
         true
-      rescue Fleet::NotFound
+      rescue ::Fleet::NotFound
         false
       end
 
