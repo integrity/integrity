@@ -179,9 +179,9 @@ module Pancakes
 
       def detect_and_make_template(unit, setup_db: true)
         if %w[mysql mailcatcher postgres].include?(unit.service_name)
-          pancakes_docker_template(unit)
+          docker_template(unit)
         elsif unit.commit
-          pancakes_docker_template(
+          docker_template(
             unit,
             bash_minus_c(
               logging_prefix_pipe(
@@ -206,7 +206,7 @@ module Pancakes
       end
 
       def freezer_template(freezer_unit:, fname:, mysql_host:, mysql_port:, mysql_dbs:)
-        pancakes_docker_template(
+        docker_template(
           freezer_unit,
           bash_minus_c(
             logging_prefix_pipe(
@@ -223,7 +223,7 @@ module Pancakes
       end
 
       def thaw_template(freezer_unit:, fname:, mysql_host:, mysql_port:)
-        pancakes_docker_template(
+        docker_template(
           freezer_unit,
           bash_minus_c(
             logging_prefix_pipe(
@@ -239,7 +239,7 @@ module Pancakes
       end
 
       # @api private
-      def pancakes_docker_template(unit, cmd=nil)
+      def docker_template(unit, cmd=nil)
         partials = [
           unit_section(desc: "pancakes container #{unit.service_name}", requires_service_fname: unit.requires),
           timeout_start_sec('10min'),
