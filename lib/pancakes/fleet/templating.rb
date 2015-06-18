@@ -62,6 +62,46 @@ module Pancakes
           ]
         end
 
+        def service_def_for_spec_psql_build(build_hsh)
+          [
+            {
+              name:  'postgres',
+              image: 'grnds/postgres:latest',
+              ports: [5432],
+              requires: 'docker.service',
+              volumes: [
+                '/var/lib/docker/tmp:/tmp/hosttmp',
+              ],
+            },
+            {
+              name: 'app',
+              image: "grnds/#{build_hsh[:project]}_ci:latest",
+              env: {
+                'BRANCH' => build_hsh[:branch],
+                'SHA' => build_hsh[:sha],
+                'BUILD_ID' => build_hsh[:id],
+                'GITHUB_READ_TOKEN' => ':self',
+                'AWS_ACCESS_KEY_ID' => ':self',
+                'AWS_SECRET_ACCESS_KEY' => ':self',
+                'AWS_SECRET_KEY' => ':self',
+                'SAUCE_USERNAME' => ':self',
+                'SAUCE_ACCESS_KEY' => ':self',
+                'CALLBACK_URL' => "https://#{ENV['CALLBACK_HOST']}/status.json",
+              },
+              volumes: [
+                '/etc/profile:/mnt/etc/profile',
+                '/var/lib/docker/tmp:/tmp/hosttmp',
+              ],
+              links: [
+                'postgres',
+              ],
+              ports: [12000],
+              requires: :postgres,
+              machineof: :postgres,
+            },
+          ]
+        end
+
         # @api private
         def service_name(service_type, build_hsh)
           "#{build_name(build_hsh)}_#{service_type}"
@@ -78,7 +118,14 @@ module Pancakes
         end
 
         def spec_build_template(build_hsh)
-          services = service_def_for_spec_build(build_hsh)
+          services =
+            if build_hsh[:template].to_s == 'spec'
+              service_def_for_spec_build(build_hsh)
+            elsif build_hsh[:template].to_s == 'spec_psql'
+              service_def_for_spec_psql_build(build_hsh)
+            else
+              raise "unknown template type '#{build_hsh[:template]}'"
+            end
 
           services.map do |service_def|
             service_type = service_def[:name]
@@ -87,10 +134,8 @@ module Pancakes
             service_fname = service_file(service_type, build_hsh)
 
             template_hash =
-              if service_def[:name] == 'mysql'
-                spec_mysql_template(service_name, requires_service_name, service_def)
-              elsif service_def[:name] == 'postgres'
-                # TODO
+              if service_def[:name] == 'mysql' && service_def[:name] == 'postgres'
+                spec_db_template(service_name, requires_service_name, service_def)
               else
                 spec_docker_template(
                   service_name,
@@ -149,7 +194,7 @@ module Pancakes
           unify(partials)
         end
 
-        def spec_mysql_template(service_name, requires_service_name, service_def)
+        def spec_db_template(service_name, requires_service_name, service_def)
           partials = [
             unit_section(desc: "honesty build #{service_name}", requires_service_fname: requires_service_name),
             timeout_start_sec('10min'),
