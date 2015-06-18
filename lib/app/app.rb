@@ -69,6 +69,16 @@ module Integrity
       end
     end
 
+    # each line of this file should contain a substring to match against a branch.
+    # if the line starts with a bang, it means 'dont ignore', otherwise if the branch
+    # contains the line, it will be ignored. a blank line ignore everything. like a gitignore.
+    def ignore_branch?(branch)
+      return !!File.readlines('/tmp/honesty-ignore.txt').map{|l| [!l['!'], l.sub('!', '').chomp] } # [negated, line]
+        .select{ |line| branch.include?(line[1]) }                                                 # ignore non-matching lines
+        .map(&:first)                                                                              # only care about whether the match is positive or negative
+        .last                                                                                      # only the last positive/negative matters
+    end
+
     not_found do
       status 404
       show :not_found, title: '404'
@@ -107,11 +117,9 @@ module Integrity
     post '/hook.json', provides: :json do
       @format = :json
       log "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{params.inspect}"
-
-      halt 200 if File.exists?('/tmp/honesty-ignore-push-event.txt')
-
       payload = Payload.new(params)
       halt 404 unless payload.project
+      halt 200 if ignore_branch?(payload.branch_name)
 
       if payload.deleted?
         log "[HOOK] /hook.json Received branch delete notice for: #{payload.branch_name}"
