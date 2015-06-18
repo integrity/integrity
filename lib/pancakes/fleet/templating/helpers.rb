@@ -54,6 +54,13 @@ module Pancakes
           end.join(' ')
         end
 
+        def volumes_str(volumes)
+          return nil if !volumes || volumes.empty?
+          volumes.map do |v|
+            format('-v %s', v)
+          end.join(' ')
+        end
+
         def systemd_minus(cmd)
           "-#{cmd}"
         end

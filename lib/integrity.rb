@@ -46,7 +46,6 @@ require 'bcat/ansi'
 require 'rconfig'
 require 'i18n'
 require 'rest_client'
-require 'crust'
 require 'fleet'
 require 'etcd'
 require 'octokit'
@@ -241,8 +240,8 @@ module Integrity
   def self.start_service(service)
     unit_fname = "#{service}.service"
     unit_file = ERB.new(File.read("#{self.root}/services/#{unit_fname}"), nil, '-').result(binding)
-    hsh = Crust.convert_unit_file_to_fleet_hash_yea_baby(unit_file)
-    self.crust.start(unit_fname, hsh)
+    hsh = Pancakes::Fleet::Cluster.convert_unit_file_to_fleet_hash_yea_baby(unit_file)
+    self.cluster.start(unit_fname, hsh)
   end
 
   def self.start_services
@@ -311,9 +310,8 @@ module Integrity
     Integrity::Event.trigger('build:queue:all')
   end
 
-  def self.crust
-    return @crust if @crust
-    @crust = Crust.new(logger: self.logger)
+  def self.cluster
+    Pancakes.cluster
   end
 end
 

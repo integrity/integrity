@@ -36,7 +36,7 @@ module Integrity
         end
 
         def update_fleetctl_status
-          statuses = Integrity.crust.get_service_status
+          statuses = Integrity.cluster.get_service_status
           statuses.each do |id, status|
             get(id).try(:update_fleetctl_status, status)
           end

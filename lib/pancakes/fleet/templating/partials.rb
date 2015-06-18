@@ -9,13 +9,13 @@ module Pancakes
           { sec => hsh }
         end
 
-        def unit_section(service_name:, requires_service_file:)
+        def unit_section(desc:, requires_service_fname:)
           in_section(
             'Unit',
             {
-              'Description' => "pancakes container #{service_name}",
-              'After'       => requires_service_file,
-              'Requires'    => requires_service_file,
+              'Description' => desc,
+              'After'       => requires_service_fname,
+              'Requires'    => requires_service_fname,
             }
           )
         end
