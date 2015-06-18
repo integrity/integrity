@@ -46,7 +46,7 @@ module Pancakes
                 'AWS_SECRET_KEY' => ':self',
                 'SAUCE_USERNAME' => ':self',
                 'SAUCE_ACCESS_KEY' => ':self',
-                'CALLBACK_URL' => ':self',
+                'CALLBACK_URL' => "https://#{ENV['CALLBACK_HOST']}/status.json",
               },
               volumes: [
                 '/etc/profile:/mnt/etc/profile',
