@@ -77,7 +77,7 @@ module Pancakes
       def destroy_build(service_opts)
         units = Pancakes::Fleet::Templating.spec_build_template(service_opts)
         units.each do |unit_fname,_|
-          @fleet_client.destroy(unit_fname)
+          @client.destroy(unit_fname)
         end
         true
       rescue ::Fleet::NotFound
@@ -132,7 +132,7 @@ module Pancakes
 
       # @api public
       def get_service_status
-        services = @fleet_client.list.select{|s| s[:name].scan(/_/).count == 3}
+        services = @client.list.select{|s| s[:name].scan(/_/).count == 3}
         services.each do|service|
           app, sha, id, type = service[:name].split("_")
           type = type.split(".").first
