@@ -119,9 +119,9 @@ module Pancakes
 
         def spec_build_template(build_hsh)
           services =
-            if build_hsh[:template].to_s == 'spec'
+            if build_hsh[:template_name] == 'spec'
               service_def_for_spec_build(build_hsh)
-            elsif build_hsh[:template].to_s == 'spec_psql'
+            elsif build_hsh[:template_name] == 'spec_psql'
               service_def_for_spec_psql_build(build_hsh)
             else
               raise "unknown template type '#{build_hsh[:template]}'"
