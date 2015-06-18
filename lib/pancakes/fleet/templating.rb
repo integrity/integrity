@@ -65,7 +65,7 @@ module Pancakes
         def service_def_for_spec_psql_build(build_hsh)
           [
             {
-              name:  'postgres',
+              name:  'db',
               image: 'grnds/postgres:latest',
               ports: [5432],
               requires: 'docker.service',
@@ -93,11 +93,11 @@ module Pancakes
                 '/var/lib/docker/tmp:/tmp/hosttmp',
               ],
               links: [
-                'postgres',
+                'db',
               ],
               ports: [12000],
-              requires: :postgres,
-              machineof: :postgres,
+              requires: :db,
+              machineof: :db,
             },
           ]
         end
@@ -134,7 +134,7 @@ module Pancakes
             service_fname = service_file(service_type, build_hsh)
 
             template_hash =
-              if %w(mysql postgres).include?(service_def[:name])
+              if %w(mysql db).include?(service_def[:name])
                 spec_db_template(service_name, requires_service_name, service_def)
               else
                 spec_docker_template(
