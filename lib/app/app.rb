@@ -73,10 +73,12 @@ module Integrity
     # if the line starts with a bang, it means 'dont ignore', otherwise if the branch
     # contains the line, it will be ignored. a blank line ignore everything. like a gitignore.
     def ignore_branch?(branch)
-      return !!File.readlines('/tmp/honesty-ignore.txt').map{|l| [!l['!'], l.sub('!', '').chomp] } # [negated, line]
-        .select{ |line| branch.include?(line[1]) }                                                 # ignore non-matching lines
-        .map(&:first)                                                                              # only care about whether the match is positive or negative
-        .last                                                                                      # only the last positive/negative matters
+      fname = '/tmp/honesty-ignore.txt'
+      return false unless File.exists?(fname)
+      return !!File.readlines(fname).map{|l| [!l['!'], l.sub('!', '').chomp] } # [negated, line]
+        .select{ |line| branch.include?(line[1]) }                             # ignore non-matching lines
+        .map(&:first)                                                          # only care about whether the match is positive or negative
+        .last                                                                  # only the last positive/negative matters
     end
 
     not_found do
