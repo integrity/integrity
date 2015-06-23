@@ -1,0 +1,10 @@
+<% if story.latest_build %>
+<% build = story.latest_build %>
+  <tr class="<%= build.bootstrap_class %>">
+    <td><a href="<%= story.url %>"><%= story.id %></td>
+    <td><a href="<%= build_path(build)%>"><%= build.sha1_short %></td>
+    <td><%= story.name %></td>
+    <td><%= story.followers %></td>
+    <td><%= story.age %></td>
+  </tr>
+  <% end %>
