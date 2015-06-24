@@ -50,6 +50,20 @@ module Tracker
       send_pr_email(build)
     end
 
+    def followers
+      users.map(&:name).join(', ')
+    end
+
+    def latest_build
+      builds = []
+      branches.each{|branch| builds << branch.last_build}
+      builds.sort{|a,b| b.created_at <=> a.created_at}.last
+    end
+
+    def age
+      ((Time.now - created_at) / 86400).to_i
+    end
+
     private
 
     def send_pr_email(build)
