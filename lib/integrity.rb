@@ -239,9 +239,8 @@ module Integrity
 
   def self.start_service(service)
     unit_fname = "#{service}.service"
-    unit_file = ERB.new(File.read("#{self.root}/services/#{unit_fname}"), nil, '-').result(binding)
-    hsh = Pancakes::Fleet::Cluster.convert_unit_file_to_fleet_hash_yea_baby(unit_file)
-    self.cluster.start(unit_fname, hsh)
+    hsh = Pancakes::Fleet::Templating.send(service.to_sym)
+    self.cluster.start_template(unit_fname, hsh)
   end
 
   def self.start_services

@@ -28,6 +28,10 @@ module Pancakes
           in_service_section('TimeoutStartSec' => timeout)
         end
 
+        def restart_always
+          in_service_section('Restart' => 'always')
+        end
+
         def execstart(cmd)
            in_service_section('ExecStart' => cmd)
         end
@@ -76,6 +80,13 @@ module Pancakes
           in_section(
             'X-Fleet',
             'MachineMetadata' => metadata,
+          )
+        end
+
+        def global
+          in_section(
+            'X-Fleet',
+            'Global' => 'true',
           )
         end
 

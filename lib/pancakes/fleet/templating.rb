@@ -283,6 +283,66 @@ module Pancakes
         )
       end
 
+      def logspout
+        unit_name = 'logspout'
+        image_name = 'gliderlabs/logspout:latest'
+
+        unify(
+          [
+            unit_section(desc: "log log log log log log log log log log", requires_service_fname: 'docker.service'),
+            timeout_start_sec('10min'),
+            restart_always,
+            docker_execstartpre(container_name: unit_name, image_name: image_name),
+            # /usr/bin/docker run --rm -v=/var/run/docker.sock:/tmp/docker.sock --hostname="%H" --name=logspout gliderlabs/logspout:latest syslog://173.247.105.172:49166
+            execstart(
+              docker_cmd(
+                :run,
+                '--rm',
+                '-v', '/var/run/docker.sock:/tmp/docker.sock',
+                '--hostname', '"%H"',
+                '--name', unit_name,
+                image_name,
+                'syslog://173.247.105.172:49166',
+              )
+            ),
+            docker_execstop(container_name: unit_name),
+            docker_execstop_post(container_name: unit_name),
+            global,
+          ]
+        )
+      end
+
+      def metrics
+        unit_name = 'metrics'
+        image_name = 'grnds/metrics:latest'
+
+        unify(
+          [
+            unit_section(desc: "Metrics v04", requires_service_fname: 'docker.service'),
+            timeout_start_sec('10min'),
+            restart_always,
+            in_service_section('KillSignal' => 'SIGKILL'),
+            docker_execstartpre(container_name: unit_name, image_name: image_name),
+            execstart(
+              docker_cmd(
+                :run,
+                '--rm',
+                env_str(
+                  'METRICS_HOSTNAME' => '%H',
+                  'STATHAT_EZ_KEY' => ':self',
+                ),
+                '--name', unit_name,
+                image_name,
+              )
+            ),
+            docker_execstop(container_name: unit_name),
+            docker_execstop_post(container_name: unit_name),
+            global,
+            machine_metadata('role=worker'),
+          ]
+        )
+      end
+
       # @api private
       def docker_template(unit, cmd=nil)
         partials = [
