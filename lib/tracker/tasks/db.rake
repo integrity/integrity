@@ -7,19 +7,27 @@ namespace :tracker do
       db.run('truncate tracker_stories')
       db.run('truncate tracker_story_users')
 
-      PivotalTracker::Client.token = ENV['PIVOTAL_TRACKER_TOKEN']
-      PivotalTracker::Client.timeout = 50
-      project = PivotalTracker::Project.find(ENV['TRACKER_PROJECT_ID']).first
-      stories = project.stories.all(offset: 6000)
+      client = TrackerApi::Client.new(token: ENV['PIVOTAL_TRACKER_TOKEN'])
+      project = client.project(ENV['PIVOTAL_TRACKER_PROJECT_ID'])
+      stories = project.stories
 
-      memberships = project.memberships
-      memberships.all.map{|u| Tracker::User.create(u)}
+      memberships = project.memberships.map(&:person)
+      memberships.map{|u| Tracker::User.create(u)}
 
-      Integrity::Branch.each do |branch|
+      branches = Integrity::Branch.select{|branch| branch.name.try(:match, /\d{6,}/).try(:[],0)}
+
+      branches.each do |branch|
         story_id = branch.name.try(:match, /\d{6,}/).try(:[],0)
         if story_id
-          tracker_story = stories.select{|s| s.id = story_id}.first
-          branch.story = Tracker::Story.get(story_id) || Tracker::Story.create(story_id, tracker_story)
+          tracker_story = stories.select{|s| s.id == story_id}.first
+
+          if Tracker::Story.get(story_id)
+            story = Tracker::Story.get(story_id)
+          else
+            story = Tracker::Story.create(story_id, tracker_story)
+          end
+
+          branch.story = story
           branch.save
         end
       end

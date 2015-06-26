@@ -23,19 +23,19 @@ class TrackerWrapper
   end
 
   def self.tracker_story(story_id)
-    project.stories.find(story_id)
+    project.story(story_id)
   end
 
   def self.finish_story(story_id)
-    tracker_story = project.stories.find(story_id)
-    tracker_story.story_type == 'chore' ? tracker_story.update({current_state: 'accepted'}) : tracker_story.update({current_state: 'finished'})
+    tracker_story = project.story(story_id)
+    tracker_story.current_state = tracker_story.story_type == 'chore' ?  'accepted' : 'finished'
+    tracker_story.save
   end
 
   private
 
   def self.project
-    PivotalTracker::Client.token = config.api_token
-    PivotalTracker::Client.timeout = config.client_timeout
-    project = PivotalTracker::Project.find(config.project_id)
+    client = TrackerApi::Client.new(token: config.api_token)
+    project = client.project(config.project_id)
   end
 end

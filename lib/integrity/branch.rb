@@ -29,7 +29,7 @@ module Integrity
     def set_story
       story_id = self.name.try(:match, /\d{6,}/).try(:[],0)
       return unless story_id
-      self.story = Tracker::Story.first(id: story_id) || Tracker::Story.create(story_id)
+      self.story = Tracker::Story.first_or_create(id: story_id)
     end
 
     def finish

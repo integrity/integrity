@@ -19,20 +19,16 @@ module Tracker
     has n, :users, :through => Resource
 
     def self.create(tracker_story_id, tracker_story = nil)
-      tracker_story = tracker_story || TrackerWrapper.tracker_story(tracker_story_id)
+      unless tracker_story
+        tracker_story = TrackerWrapper.tracker_story(tracker_story_id)
+      end
       return unless tracker_story
 
       story = Story.new
 
-      user_names = []
-      user_names << tracker_story.requested_by << tracker_story.owned_by
-      user_names = user_names.uniq
-      user_names.each do |name|
-        user = Tracker::User.first(name: name)
-        if user
-          story.users << user unless story.users.include?(user)
-        end
-      end
+      users = []
+      users << tracker_story.requested_by << tracker_story.owners
+      story.users = users.flatten.uniq
 
       story.id            = tracker_story.id
       story.url           = tracker_story.url

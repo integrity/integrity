@@ -23,7 +23,7 @@ require 'stathat'
 require 'ap'
 require 'delayed_job'
 require 'active_record'
-require 'pivotal-tracker'
+require 'tracker_api'
 require 'sendgrid-ruby'
 
 require 'sinatra/base'
