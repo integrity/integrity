@@ -59,7 +59,9 @@ module Tracker
     def latest_build
       builds = []
       branches.each{|branch| builds << branch.last_build}
-      builds.sort{|a,b| b.created_at <=> a.created_at}.last
+      unless builds.empty?
+        builds.sort{|a,b| b.created_at <=> a.created_at}.last
+      end
     end
 
     def age
