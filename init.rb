@@ -98,7 +98,6 @@ end
 TrackerWrapper.configure do |c|
   c.api_token                  = app.tracker.api_token
   c.project_id                 = app.tracker.project_id
-  c.client_timeout             = app.tracker.client_timeout
 end
 
 SendGridWrapper.configure do |c|

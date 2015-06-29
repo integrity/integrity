@@ -5,7 +5,6 @@ class TrackerWrapper
     Hashie::Mash.new(
       api_token: nil,
       project_id: nil,
-      client_timeout: nil,
     )
 
   def self.config
@@ -18,7 +17,6 @@ class TrackerWrapper
     [
       %w[api_token],
       %w[project_id],
-      %w[client_timeout],
     ].each{|keys| !keys.reduce(@@config){|memo,key| memo && memo[key] }.nil? || raise("TrackerWrapper.config.#{keys.join('.')} is required") }
   end
 

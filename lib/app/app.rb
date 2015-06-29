@@ -147,6 +147,10 @@ module Integrity
         params[:primary_resources].each do |primary_resource|
           Tracker::Story.create(primary_resource.id)
         end
+      when 'finished'
+        story = Tracker::Story.first(id: primary_resource.id)
+        story.current_state = 'finished'
+        story.save
       when 'accepted'
         params[:primary_resources].each do |primary_resource|
           story = Tracker::Story.first(id: primary_resource.id)

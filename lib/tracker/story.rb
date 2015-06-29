@@ -26,9 +26,15 @@ module Tracker
 
       story = Story.new
 
-      users = []
-      users << tracker_story.requested_by << tracker_story.owners
-      story.users = users.flatten.uniq
+      user_ids = []
+      user_ids << tracker_story.follower_ids << tracker_story.owner_ids << tracker_story.requested_by_id
+      user_ids = user_ids.flatten.uniq
+
+      user_ids.each do |id|
+        if user = Tracker::User.first(id: id)
+          story.users << user
+        end
+      end
 
       story.id            = tracker_story.id
       story.url           = tracker_story.url

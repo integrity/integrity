@@ -38,7 +38,6 @@ github:
 tracker:
   api_token: <%= ENV['PIVOTAL_TRACKER_TOKEN'] %>
   project_id: <%= ENV['PIVOTAL_TRACKER_PROJECT_ID'] %>
-  client_timeout: 50
 
 sendgrid:
   api_user: <%= ENV['SENDGRID_USERNAME'] %>
