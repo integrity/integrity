@@ -35,6 +35,7 @@ module Integrity
       else
         self.story = Tracker::Story.create(story_id)
       end
+      self.story.start
     end
 
     def finish

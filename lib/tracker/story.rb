@@ -46,6 +46,13 @@ module Tracker
       story
     end
 
+    def start
+      self.commit_state = 'started'
+      self.current_state  = 'started'
+      TrackerWrapper.start_story(id)
+      self.save
+    end
+
     def finish(build)
       self.commit_state = 'finished'
       self.current_state  = 'finished'
