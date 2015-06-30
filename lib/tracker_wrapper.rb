@@ -24,6 +24,12 @@ class TrackerWrapper
     project.story(story_id)
   end
 
+  def self.start_story(story_id)
+    tracker_story = project.story(story_id)
+    tracker_story.current_state = 'started'
+    tracker_story.save
+  end
+
   def self.finish_story(story_id)
     tracker_story = project.story(story_id)
     tracker_story.current_state = tracker_story.story_type == 'chore' ?  'accepted' : 'finished'
