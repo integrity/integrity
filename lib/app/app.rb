@@ -140,24 +140,27 @@ module Integrity
     end
 
     post '/tracker.json', provides: :json do
+      params.symbolize_keys!
       @format = :json
 
-      case params[:highlight]
-      when 'started'
-        params[:primary_resources].each do |primary_resource|
-          Tracker::Story.create(primary_resource.id)
+      params[:primary_resources].each do |primary_resource|
+        case params[:highlight]
+        when 'started'
+          Tracker::Story.create(primary_resource[:id]) unless Tracker::Story.get(primary_resource[:id])
+        when 'finished'
+          if story = Tracker::Story.first(id: primary_resource[:id])
+            story.current_state = 'finished'
+            story.save
+          end
+        when 'accepted'
+          if story = Tracker::Story.first(id: primary_resource[:id])
+            story.destroy
+          end
+        else
         end
-      when 'finished'
-        story = Tracker::Story.first(id: primary_resource.id)
-        story.current_state = 'finished'
-        story.save
-      when 'accepted'
-        params[:primary_resources].each do |primary_resource|
-          story = Tracker::Story.first(id: primary_resource.id)
-          story.destroy
-        end
-      else
       end
+
+      'Successful Post'
     end
 
 
