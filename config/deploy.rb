@@ -47,6 +47,18 @@ namespace :pancakes do
   end
 end
 
+namespace :tracker do
+  namespace :db do
+    task :seed_users, roles: :db, except: {no_release: true} do
+      run "cd #{current_path} && bundle exec rake tracker:db:seed_users"
+    end
+
+    task :seed_stories, roles: :db, except: {no_release: true} do
+      run "cd #{current_path} && bundle exec rake tracker:db:seed_stories"
+    end
+  end
+end
+
 desc 'Write upstart environment file'
 task :write_upstart_envs do
   ruby_gemset  = File.read('.ruby-gemset').strip

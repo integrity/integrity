@@ -91,7 +91,7 @@ module Integrity
       branch
     end
 
-    #This is a temporary solution for psql apps to use the psql spec helper. It would be better if 
+    #This is a temporary solution for psql apps to use the psql spec helper. It would be better if
     #the correct file were checked out of github.
     #
     def choose_service_template(service)

@@ -149,6 +149,27 @@ module Integrity
       json build
     end
 
+    post '/tracker.json', provides: :json do
+      @format = :json
+
+      case params[:highlight]
+      when 'started'
+        params[:primary_resources].each do |primary_resource|
+          Tracker::Story.create(primary_resource.id)
+        end
+      when 'finished'
+        story = Tracker::Story.first(id: primary_resource.id)
+        story.current_state = 'finished'
+        story.save
+      when 'accepted'
+        params[:primary_resources].each do |primary_resource|
+          story = Tracker::Story.first(id: primary_resource.id)
+          story.destroy
+        end
+      else
+      end
+    end
+
 
     ######
     #     #    ##    #    #   ####     ##    #    #  ######   ####
@@ -499,6 +520,7 @@ module Integrity
         @pending = @builds.pending.all(order: :created_at.desc)
         @running = @builds.running.all(order: :started_at.desc)
         @completed = @builds.completed.all(order: :completed_at.desc)
+        @stories_in_flight = Tracker::Story.all(:current_state => ['started', 'finished'], :order => :created_at.desc)
         show :home, title: 'project'
       end
     end

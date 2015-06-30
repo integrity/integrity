@@ -20,3 +20,8 @@ notifier:
       Commit Author: %{author}
 
       %{build_output}
+
+story:
+  email_subject: Story %{story_id} is ready for you to PR
+  pr_body: "%{commit_message}\n\n[Tracker #%{story_id}](%{story_url})"
+  github_pr_link: "%{github_project_url}/compare/master...%{branch_name}?title=%{story_name}&body=%{pr_body}"

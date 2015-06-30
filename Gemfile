@@ -28,6 +28,8 @@ gem 'delayed_job_active_record'
 gem 'activerecord-mysql-adapter'
 gem 'delayed_job_web'
 gem 'daemons'
+gem 'tracker_api'
+gem 'sendgrid-ruby'
 
 # These are dependencies for the various notifiers. Uncomment as appropriate.
 gem 'pony'                                      # E-mail
