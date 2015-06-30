@@ -48,8 +48,10 @@ module Tracker
 
     def finish(build)
       self.commit_state = 'finished'
+      self.current_state  = 'finished'
       TrackerWrapper.finish_story(id)
       send_pr_email(build)
+      self.save
     end
 
     def followers
