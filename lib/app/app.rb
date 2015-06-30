@@ -160,7 +160,7 @@ module Integrity
         end
       end
 
-      'Successful Post'
+      'Post Successful'
     end
 
 
