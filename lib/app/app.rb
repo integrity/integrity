@@ -49,7 +49,7 @@ module Integrity
     end
 
     def web_hook?
-      request.path_info.include?('hook')
+      ['hook', 'tracker'].include?(request.path_info)
     end
 
     def status_update?
