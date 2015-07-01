@@ -153,13 +153,15 @@ module Integrity
       params.symbolize_keys!
       @format = :json
 
+      Integrity.logger.info "[TRACKER EVENT] #{params[:highlight]}"
+
       params[:primary_resources].each do |primary_resource|
         case params[:highlight]
         when 'started'
           Tracker::Story.create(primary_resource[:id]) unless Tracker::Story.get(primary_resource[:id])
-        when 'finished'
+        when 'finished', 'delivered'
           if story = Tracker::Story.first(id: primary_resource[:id])
-            story.current_state = 'finished'
+            story.current_state = params[:highlight]
             story.save
           end
         when 'accepted'
