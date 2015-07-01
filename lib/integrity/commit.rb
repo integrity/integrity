@@ -18,7 +18,7 @@ module Integrity
     belongs_to :build
 
     def finishes?
-      ['FINISH', 'finish'].any? { |w| self.message =~ /#{w}/}
+      ['finish'].any? { |w| self.message.downcase =~ /#{w}/}
     end
   end
 end
