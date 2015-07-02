@@ -157,14 +157,10 @@ module Integrity
         case params[:highlight]
         when 'started'
           Tracker::Story.create(primary_resource[:id]) unless Tracker::Story.get(primary_resource[:id])
-        when 'finished', 'delivered'
+        when 'finished', 'delivered', 'accepted'
           if story = Tracker::Story.first(id: primary_resource[:id])
             story.current_state = params[:highlight]
             story.save
-          end
-        when 'accepted'
-          if story = Tracker::Story.first(id: primary_resource[:id])
-            story.destroy
           end
         else
         end
