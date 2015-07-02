@@ -44,6 +44,9 @@ module Tracker
       story.current_state = tracker_story.current_state
       self.commit_state   = 'started'
       story.save
+
+      send_start_email
+
       story
     end
 
@@ -79,22 +82,30 @@ module Tracker
 
     private
 
+    def send_start_email
+      SendGridWrapper.send_mail(self.users.map(&:email),
+        I18n.t('story.start_email_subject', story_id: self.id),
+        start_email_body)
+    end
+
     def send_pr_email(build)
       SendGridWrapper.send_mail(self.users.map(&:email),
-        email_subject,
-        email_body(build))
+        I18n.t('story.pr_email_subject', story_id: self.id),
+        pr_email_body(build))
     end
 
-    def email_subject
-      I18n.t('story.email_subject', story_id: self.id)
+    def start_email_body
+      story_link = URI.escape(self.url)
+      template = ERB.new(File.read("./lib/app/views/tracker_story_start_email.erb"))
+      html_content = template.result(binding)
     end
 
-    def email_body(build)
+    def pr_email_body(build)
       pr_body = I18n.t('story.pr_body', commit_message: build.commit.message,
                                               story_id: self.id,
                                              story_url: self.url)
 
-      pr_link = I18n.t('story.github_pr_link', github_project_url: build.branch.project.uri.to_s.gsub('git://', 'http://'),
+      pr_link = I18n.t('story.pr_github_link', github_project_url: build.branch.project.uri.to_s.gsub('git://', 'http://'),
                                                       branch_name: build.branch.name,
                                                        story_name: self.name,
                                                           pr_body: pr_body)
