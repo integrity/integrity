@@ -42,6 +42,7 @@ module Tracker
       story.name          = tracker_story.name
       story.type          = tracker_story.story_type
       story.current_state = tracker_story.current_state
+      self.commit_state   = 'started'
       story.save
       story
     end
