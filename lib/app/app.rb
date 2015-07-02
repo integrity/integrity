@@ -153,8 +153,6 @@ module Integrity
       params.symbolize_keys!
       @format = :json
 
-      Integrity.logger.info "[TRACKER EVENT] #{params[:highlight]}"
-
       params[:primary_resources].each do |primary_resource|
         case params[:highlight]
         when 'started'
