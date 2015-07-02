@@ -26,6 +26,7 @@ class TrackerWrapper
 
   def self.start_story(story_id)
     tracker_story = project.story(story_id)
+    tracker_story.accepted_at   = nil
     tracker_story.current_state = 'started'
     tracker_story.save
   end
