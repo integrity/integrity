@@ -49,7 +49,7 @@ module Integrity
     end
 
     def web_hook?
-      ['hook', '/tracker.json'].include?(request.path_info)
+      ['hook', 'tracker'].any? { |w| request.path_info =~ /#{w}/}
     end
 
     def status_update?
