@@ -55,7 +55,7 @@ module Tracker
 
     def finish(build)
       self.commit_state = 'finished'
-      self.current_state  = 'finished'
+      self.current_state  = self.story_type == 'chore' ?  'accepted' : 'finished'
       TrackerWrapper.finish_story(id)
       send_pr_email(build)
       self.save
