@@ -49,6 +49,7 @@ module Integrity
     end
 
     def web_hook?
+      Integrity.logger.debug request.path_info
       ['hook', 'tracker'].include?(request.path_info)
     end
 
