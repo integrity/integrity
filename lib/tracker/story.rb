@@ -18,13 +18,11 @@ module Tracker
     has n, :branches, 'Integrity::Branch'
     has n, :users, :through => Resource
 
-    def self.create(tracker_story_id, tracker_story = nil)
+    def initialize(tracker_story_id, tracker_story = nil)
       unless tracker_story
         tracker_story = TrackerWrapper.tracker_story(tracker_story_id)
       end
       return unless tracker_story
-
-      story = Story.new
 
       user_ids = []
       user_ids << tracker_story.follower_ids << tracker_story.owner_ids << tracker_story.requested_by_id
@@ -32,21 +30,20 @@ module Tracker
 
       user_ids.each do |id|
         if user = Tracker::User.first(id: id)
-          story.users << user
+          users << user
         end
       end
 
-      story.id            = tracker_story.id
-      story.url           = tracker_story.url
-      story.project_id    = tracker_story.project_id
-      story.name          = tracker_story.name
-      story.type          = tracker_story.story_type
-      story.current_state = tracker_story.current_state
-      story.commit_state  = 'started'
-      story.save
+      id            = tracker_story.id
+      url           = tracker_story.url
+      project_id    = tracker_story.project_id
+      name          = tracker_story.name
+      type          = tracker_story.story_type
+      current_state = tracker_story.current_state
+      commit_state  = 'started'
+      save
 
       send_start_email
-      story
     end
 
     def start

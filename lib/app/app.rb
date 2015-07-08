@@ -156,7 +156,7 @@ module Integrity
       params[:primary_resources].each do |primary_resource|
         case params[:highlight]
         when 'started'
-          Tracker::Story.create(primary_resource[:id]) unless Tracker::Story.get(primary_resource[:id])
+          Tracker::Story.new(primary_resource[:id]) unless Tracker::Story.get(primary_resource[:id])
         when 'finished', 'delivered', 'accepted'
           if story = Tracker::Story.first(id: primary_resource[:id])
             story.set_state(params[:highlight])

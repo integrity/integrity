@@ -35,7 +35,7 @@ namespace :tracker do
           if Tracker::Story.get(story_id)
             story = Tracker::Story.get(story_id)
           else
-            story = Tracker::Story.create(story_id, tracker_story)
+            story = Tracker::Story.new(story_id, tracker_story)
           end
 
           branch.story = story
@@ -46,7 +46,7 @@ namespace :tracker do
       current_stories = stories.select{|s| ["started", "finished"].include?(s.current_state)}
       current_stories.each do |story|
         unless Tracker::Story.get(story.id)
-          Tracker::Story.create(story.id, story)
+          Tracker::Story.new(story.id, story)
         end
       end
     end
