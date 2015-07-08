@@ -34,13 +34,15 @@ module Tracker
         end
       end
 
-      id            = tracker_story.id
-      url           = tracker_story.url
-      project_id    = tracker_story.project_id
-      name          = tracker_story.name
-      type          = tracker_story.story_type
-      current_state = tracker_story.current_state
-      commit_state  = 'started'
+      update(
+        :id            => tracker_story.id,
+        :url           => tracker_story.url,
+        :project_id    => tracker_story.project_id,
+        :name          => tracker_story.name,
+        :type          => tracker_story.story_type,
+        :current_state => tracker_story.current_state,
+        :commit_state  => 'started',
+      )
       save
 
       send_start_email
