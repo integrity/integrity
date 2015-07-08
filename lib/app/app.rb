@@ -159,8 +159,7 @@ module Integrity
           Tracker::Story.create(primary_resource[:id]) unless Tracker::Story.get(primary_resource[:id])
         when 'finished', 'delivered', 'accepted'
           if story = Tracker::Story.first(id: primary_resource[:id])
-            story.current_state = params[:highlight]
-            story.save
+            story.set_state(params[:highlight])
           end
         else
         end

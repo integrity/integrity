@@ -42,11 +42,10 @@ module Tracker
       story.name          = tracker_story.name
       story.type          = tracker_story.story_type
       story.current_state = tracker_story.current_state
-      self.commit_state   = 'started'
+      story.commit_state  = 'started'
       story.save
 
       send_start_email
-
       story
     end
 
@@ -54,7 +53,6 @@ module Tracker
       self.commit_state = 'started'
       self.current_state  = 'started'
       TrackerWrapper.start_story(id)
-      self.save
     end
 
     def finish(build)
@@ -62,7 +60,10 @@ module Tracker
       self.current_state  = self.story_type == 'chore' ?  'accepted' : 'finished'
       TrackerWrapper.finish_story(id)
       send_pr_email(build)
-      self.save
+    end
+
+    def set_state(state)
+      self.current_state = state
     end
 
     def followers
