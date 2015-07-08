@@ -28,24 +28,25 @@ module Tracker
       user_ids << tracker_story.follower_ids << tracker_story.owner_ids << tracker_story.requested_by_id
       user_ids = user_ids.flatten.uniq
 
+      story = Story.new
+
       user_ids.each do |id|
         if user = Tracker::User.first(id: id)
-          users << user
+          story.users << user
         end
       end
 
-      update(
-        :id            => tracker_story.id,
-        :url           => tracker_story.url,
-        :project_id    => tracker_story.project_id,
-        :name          => tracker_story.name,
-        :type          => tracker_story.story_type,
-        :current_state => tracker_story.current_state,
-        :commit_state  => 'started',
-      )
-      save
+      story.id            = tracker_story.id
+      story.url           = tracker_story.url
+      story.project_id    = tracker_story.project_id
+      story.name          = tracker_story.name
+      story.type          = tracker_story.story_type
+      story.current_state = tracker_story.current_state
+      story.commit_state  = 'started'
+      story.save
+      story.send(:send_start_email)
 
-      send_start_email
+      story
     end
 
     def start

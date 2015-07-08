@@ -33,7 +33,7 @@ module Integrity
       if Tracker::Story.get(story_id)
         self.story = Tracker::Story.get(story_id)
       else
-        self.story = Tracker::Story.new(story_id)
+        self.story = Tracker::Story.create(story_id)
       end
       self.story.start
     end
