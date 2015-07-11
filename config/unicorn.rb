@@ -13,4 +13,9 @@ GC.copy_on_write_friendly = true
 
 before_exec do |server|
   ENV['BUNDLE_GEMFILE'] = '/home/ubuntu/app/honesty/current/Gemfile'
+  Pancakes.disconnect
+end
+
+after_exec do |server|
+  Pancakes.connect
 end
