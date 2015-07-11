@@ -15,10 +15,10 @@ before_exec do |server|
   ENV['BUNDLE_GEMFILE'] = '/home/ubuntu/app/honesty/current/Gemfile'
 end
 
-before_fork do |server|
+before_fork do |server,worker|
   Pancakes.disconnect
 end
 
-after_fork do |server|
+after_fork do |server,worker|
   Pancakes.connect
 end
