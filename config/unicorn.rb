@@ -1,5 +1,9 @@
 # http://kavassalis.com/2013/04/unicorn-hot-restarts-my-definitive-guide/
+require 'logger'
 worker_processes 2
+lgr = Logger.new('/tmp/fuck.log')
+lgr.level = Logger::DEBUG
+logger lgr
 timeout 30
 pid 'tmp/pids/unicorn.pid'
 listen '/tmp/honesty.sock', backlog: 64
