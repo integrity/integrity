@@ -131,7 +131,7 @@ module Pancakes
         env: SERVICE_ENV,
         ports: [10010],
         ping_url: 'http://$ip:$port/',
-        http_status: 302,
+        http_status: 200,
         dbs: %w[pg-cache-development],
       },
     ]

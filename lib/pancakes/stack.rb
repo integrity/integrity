@@ -18,7 +18,7 @@ module Pancakes
     one_to_many :commits, key: :stack_id, class: :"Pancakes::Commit"
     one_to_many :units,   key: :stack_id, class: :"Pancakes::Unit"
 
-    add_association_dependencies commits: :delete, units: :delete
+    add_association_dependencies commits: :destroy, units: :destroy
 
     def validate
       super
@@ -35,6 +35,7 @@ module Pancakes
 
     def before_destroy
       Pancakes::Freezer.delete_stack(self.id)
+      super
     end
 
 
