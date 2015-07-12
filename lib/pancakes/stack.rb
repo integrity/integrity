@@ -632,14 +632,14 @@ module Pancakes
           resp = RestClient::Request.execute(method: :get, url: url, timeout: 5, open_timeout: 5)
 
           if resp.code == http_status
-            logger.info "service #{name} reached at #{url} (#{resp.code})"
+            logger.info "service #{name}(#{http_status}) reached at #{url} (#{resp.code})"
             return true
           else
-            logger.info "service #{name} at #{url} is unreachable with #{resp.code}"
+            logger.info "service #{name}(#{http_status}) at #{url} is unreachable with #{resp.code}"
             return false
           end
         else
-          logger.warn "service #{name} at #{url} cannot be pinged due to url scheme"
+          logger.warn "service #{name} at #{url} cannot be pinged due to url scheme #{url}"
         end
       rescue StandardError => e
         logger.info "service #{name} at #{url} is unreachable due to #{e.class} '#{e.message}'"
