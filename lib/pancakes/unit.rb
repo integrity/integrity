@@ -149,6 +149,11 @@ module Pancakes
       service_def.ping_url.sub('$ip', machine_ip).sub('$port', port.to_s)
     end
 
+    def ping_http_status
+      return nil unless pingable?
+      service_def.http_status
+    end
+
     def pingable?
       !!(service_def.ping_url && machine_ip && port)
     end

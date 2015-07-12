@@ -50,6 +50,7 @@ module Pancakes
         requires: :mysql,
         ports: [10002],
         ping_url: 'http://$ip:$port/status',
+        http_status: 200,
         env: SERVICE_ENV,
         dbs: %w[frick-development ruote-development],
       },
@@ -70,6 +71,7 @@ module Pancakes
         requires: :"jarvis-orchestra",
         ports: [10001],
         ping_url: 'http://$ip:$port/status',
+        http_status: 200,
         env: SERVICE_ENV,
       },
       {
@@ -97,6 +99,7 @@ module Pancakes
         requires: :"tim-orchestra",
         ports: [10004],
         ping_url: 'http://$ip:$port/status',
+        http_status: 200,
         env: SERVICE_ENV,
       },
       {
@@ -116,6 +119,7 @@ module Pancakes
         env: SERVICE_ENV,
         ports: [10003],
         ping_url: 'http://$ip:$port/status',
+        http_status: 200,
         dbs: %w[tp_dev],
       },
       {
@@ -126,7 +130,8 @@ module Pancakes
         requires: :mysql,
         env: SERVICE_ENV,
         ports: [10010],
-        ping_url: 'http://$ip:$port/status',
+        ping_url: 'http://$ip:$port/',
+        http_status: 302,
         dbs: %w[pg-cache-development],
       },
     ]
