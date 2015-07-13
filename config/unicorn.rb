@@ -13,9 +13,9 @@ before_exec do |server|
 end
 
 #before_fork do |server,worker|
-  #Pancakes.disconnect
+  #Pancakes.db_disconnect
 #end
 
 #after_fork do |server,worker|
-  #Pancakes.connect
+  #Pancakes.db_connect
 #end

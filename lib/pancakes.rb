@@ -190,11 +190,11 @@ module Pancakes
     @db = foo
   end
 
-  def disconnect
+  def db_disconnect
     Pancakes.db && Pancakes.db.disconnect
   end
 
-  def connect
+  def db_connect
     Pancakes.db = Sequel.connect(ENV['DATABASE_URL'], logger: Logging.logger['pancakes-db'])
   end
 end
