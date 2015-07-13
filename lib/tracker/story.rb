@@ -44,7 +44,8 @@ module Tracker
       story.current_state = tracker_story.current_state
       story.commit_state  = 'started'
       story.save
-      story.send(:send_start_email)
+
+      story.send(:send_start_email) unless Integrity.config.dtest?
 
       story
     end
