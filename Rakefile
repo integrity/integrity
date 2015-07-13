@@ -3,6 +3,7 @@ require 'rake/testtask'
 require 'rake/clean'
 require 'fileutils'
 import './lib/pancakes/tasks/db.rake'
+import './lib/pancakes/tasks/stacks.rake'
 import './lib/tracker/tasks/db.rake'
 
 desc 'Default: run all tests'

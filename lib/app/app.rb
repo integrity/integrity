@@ -233,7 +233,6 @@ module Integrity
       @stack = Pancakes::Stack[params[:id]]
 
       if @stack
-        @stack.update_all(desired_state: :off)
         Delayed::Job.enqueue(Pancakes::Background::BringDownJob.new(@stack.id))
       end
 
@@ -371,7 +370,6 @@ module Integrity
       @stack = Pancakes::Stack[params[:id]]
 
       if @stack
-        @stack.update_all(desired_state: :off)
         Delayed::Job.enqueue(Pancakes::Background::BringDownJob.new(@stack.id, destroy: true))
         halt 200
       else
