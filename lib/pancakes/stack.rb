@@ -626,17 +626,23 @@ module Pancakes
       name = unit.service_name
       raise "service #{name} is not pingable" unless unit.pingable?
       url = unit.ping_url
-      http_status = unit.ping_http_status
+      desired_status = unit.ping_http_status
 
       begin
         if url.start_with?('http')
-          resp = RestClient::Request.execute(method: :get, url: url, timeout: 5, open_timeout: 5)
+          resp = if desired_status == 302
+            Net::HTTP.get_response(URI(url))
+          else
+            RestClient::Request.execute(method: :get, url: url, timeout: 5, open_timeout: 5)
+          end
 
-          if resp.code == http_status
-            logger.info "service #{name}(#{http_status}) reached at #{url} (#{resp.code})"
+          code = resp.code.to_i
+
+          if code == desired_status
+            logger.info "service #{name}(#{desired_status}) reached at #{url} (#{code})"
             return true
           else
-            logger.info "service #{name}(#{http_status}) at #{url} is unreachable with #{resp.code}"
+            logger.info "service #{name}(#{desired_status}) at #{url} is unreachable with #{code}"
             return false
           end
         else
