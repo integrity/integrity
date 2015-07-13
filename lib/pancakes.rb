@@ -231,7 +231,7 @@ Sequel.default_timezone = :utc
 Sequel::Plugins::Serialization.register_format(:symbolize,
                                                 lambda{|v| v.to_s},
                                                 lambda{|v| v.to_sym})
-Pancakes.connect
+Pancakes.db_connect
 
 require 'json'
 require 'digest/sha1'
