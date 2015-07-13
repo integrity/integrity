@@ -13,6 +13,11 @@ end
 
 before_fork do |server,worker|
   Pancakes.db_disconnect
+
+  # datamapper
+  DataObjects::Pooling.pools.each do |pool|
+    pool.dispose
+  end
 end
 
 after_fork do |server,worker|
