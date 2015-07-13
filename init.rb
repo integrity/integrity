@@ -51,11 +51,13 @@ end
 # this is some ghetto ass shit
 if DTEST
   logging_pattern = "%.1l %d %h %c: %m\n"
-  base_url = 'https://honesty-dtest.test.grandrounds.com'
+  base_url = ENV['HONESTY_BASE_URL'] || 'https://honesty-dtest.test.grandrounds.com'
   StatHatWrapper.disable
 else
   StatHatWrapper.enable
 end
+
+puts "HONESTY_BASE_URL=#{base_url}"
 
 Logging.logger.root.appenders = Logging.appenders.stdout(layout: ::Logging::Layouts::Pattern.new(pattern: logging_pattern))
 Logging.logger['honesty'].level  = :info

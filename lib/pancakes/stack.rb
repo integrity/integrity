@@ -103,8 +103,9 @@ module Pancakes
         .map(&:first)
     end
 
+    # we use a sha so that unit names are never reused, which was causing problems.
     def short_sha
-      self.sha[0..6]
+      self.sha ? self.sha[0..6] : (raise "where is the damned sha")
     end
 
     def name
@@ -152,8 +153,9 @@ module Pancakes
           raise Pancakes::ClusterError.new('timeout waiting for netmaster container run')
         end
 
-        should_thaw = thaw_dbs && Pancakes::Freezer.stack_exists?(self.id)
-        run_thaw_er if should_thaw
+        #should_thaw = thaw_dbs && Pancakes::Freezer.stack_exists?(self.id)
+        should_thaw = false
+        #run_thaw_er if should_thaw
 
         non_netmaster_units.each do |unit|
           Pancakes.cluster.start_template(unit.service_file_name, Pancakes::Fleet::Templating.detect_and_make_template(unit, setup_db: !should_thaw))
@@ -226,7 +228,7 @@ module Pancakes
         return false
       end
 
-      run_freezer if freeze_dbs
+      #run_freezer if freeze_dbs
 
       only_units(['mysql']).each do |unit|
         Pancakes.cluster.destroy_unit(unit)
@@ -269,14 +271,14 @@ module Pancakes
 
     # @api private
     def run_freezer
-      logger.info "freezing databases: #{dbs.join(', ')}"
+      logger.info "freezing databases: #{mysql_dbs.join(', ')}"
       run_freezer_helper(
         Pancakes::Fleet::Templating.freezer_template(
           freezer_unit: freezer_unit,
           fname:        Pancakes::Freezer.stack_fname(self.id),
           mysql_host:   mysql_unit.machine_ip,
           mysql_port:   mysql_unit.port,
-          mysql_dbs:    dbs,
+          mysql_dbs:    mysql_dbs,
         )
       )
     end
@@ -293,8 +295,8 @@ module Pancakes
     end
 
     # @api private
-    def dbs
-      units.map{|unit| unit.dbs || [] }.reduce(&:+)
+    def mysql_dbs
+      units.map{|unit| unit.dbs || [] }.reduce(&:+).delete_if{|x| x =~ /\Apg-/ }
     end
 
     def ports
@@ -341,7 +343,28 @@ module Pancakes
     end
 
     def service_addrs
-      units.map(&:service_addr).reduce(&:merge)
+      cont = netmaster_unit.container
+
+      if cont
+        cont.port_mapping.map do |k,v|
+          [
+            Pancakes::Services.get_by_port(k)[:name].split('-')[0],
+            "#{netmaster_unit.machine_ip}:#{v}",
+          ]
+        end.to_h
+      else
+        logger.debug "netmaster_unit.container is nil"
+        nil
+      end
+    end
+
+    def jarvis_env
+      if unit_named('banyan-server')
+        _port = netmaster_unit.container.port_mapping[unit_named('postgres').primary_private_port]
+        { 'BANYAN_DATABASE_URL' => format("postgres://root@%s:%d/pg-cache-development", netmaster_unit.machine_ip, _port) }
+      else
+        {}
+      end
     end
 
 

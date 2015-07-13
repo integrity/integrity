@@ -82,6 +82,7 @@ module Integrity
     end
 
     not_found do
+      Integrity.logger.info "404 in not_found block"
       status 404
       show :not_found, title: '404'
     end
@@ -106,6 +107,10 @@ module Integrity
         @error = 'Sorry guacamole, you need to be logged in to visit ' + request.path
         halt erb(:login_form)
       end
+    end
+
+    get '/status', provides: :json do
+      json({ 'gitsha' => (`git rev-parse HEAD`).chomp })
     end
 
     post '/status.json', provides: :json do
@@ -399,7 +404,7 @@ module Integrity
 
       if @unit
         tcp_string = @unit.tcp_str
-        if tcp_string.empty?
+        if !tcp_string
           logger.info 'tcp_string not found. service may not be running.'
           halt 400, "tcp_string not found. service may not be running.\n"
         else
@@ -412,14 +417,27 @@ module Integrity
     end
 
     get '/pancakes/api/vX/stacks/:id/addrs.json' do
+      logger.info "looking for stack with id=#{params[:id]}"
       @stack = Pancakes::Stack[params[:id]]
-      @stack.state_from_cluster!
+      #@stack.state_from_cluster!
 
-      if @stack && !@stack.service_addrs.empty?
-        halt 200, JSON.dump(@stack.service_addrs)
+      if @stack
+        logger.info "stack found id=#{@stack.id}"
+
+        if @stack.service_addrs
+          sa = @stack.service_addrs
+          raise "service_addrs is empty" if sa.empty?
+          sa = JSON.dump(sa)
+          logger.info "service_addr JSON='#{sa}'"
+          halt 200, sa
+        else
+          logger.info "stack service_addrs NOT found id=#{@stack.id}"
+          halt 400, "not found: service_addrs for stack id=#{params[:id]}\n"
+        end
       else
-        halt 400, "stack(#{params[:id]}) could not be found or is not running\n"
-      end
+        logger.info "stack NOT found id=#{@stack.id}"
+        halt 400, "not found: stack id=#{params[:id]}\n"
+       end
     end
 
     get '/pancakes/api/vX/stacks/:id/state' do

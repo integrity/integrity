@@ -64,7 +64,27 @@ module Pancakes
     end
 
     def env
-      service_def.env || {}
+      (service_def.env || {}).merge(
+        if codebase == 'jarvis'
+          self.stack.jarvis_env
+        else
+          {}
+        end
+      )
+    end
+
+    def container
+      if machine_ip
+        Pancakes.docker.set_machine_ip(machine_ip)
+        cc = Pancakes.docker.get_container(name)
+        if !cc
+          Pancakes.logger.warn "unit(service_name=#{service_name}) has no container, but does have a machine_ip(#{machine_ip})"
+        end
+        cc
+      else
+        Pancakes.logger.warn "unit(service_name=#{service_name}) has no machine_ip, but one was likely expected"
+        nil
+      end
     end
 
     def netmaster?
@@ -80,7 +100,11 @@ module Pancakes
     end
 
     def name
-      "#{self.stack.name}_#{service_name}"
+      if self.stack
+        "#{self.stack.name}_#{service_name}"
+      else
+        raise "stack is nil for unit #{service_name}"
+      end
     end
 
     def service_file_name
@@ -93,11 +117,7 @@ module Pancakes
     end
 
     def tcp_str
-      if machine_ip && port
-        format('%s:%d', machine_ip, port)
-      else
-        ''
-      end
+      machine_ip && port ? format('%s:%d', machine_ip, port) : nil
     end
 
     def to_s
@@ -156,17 +176,6 @@ module Pancakes
 
     def pingable?
       !!(service_def.ping_url && machine_ip && port)
-    end
-
-    def service_addr
-      tc = tcp_str
-      if codebase && !tc.empty?
-        {
-          codebase => tcp_str
-        }
-      else
-        {}
-      end
     end
 
     def self.subtype(service_name)

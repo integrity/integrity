@@ -26,7 +26,7 @@ module Integrity
 
       def tcp_string(commit)
         unit = commit.stack.unit_with_service_name("#{commit.codebase.to_s}-server")
-        if unit && !unit.tcp_str.empty?
+        if unit && unit.tcp_str
           unit.tcp_str
         else
           ''
@@ -52,7 +52,7 @@ module Integrity
 
       def mysql_connect_str(unit)
         if unit && unit.active?
-          format('mysql -uroot -h%s -P%d', unit.machine_ip, unit.port)
+          format('mysql -uroot -h%s -P%d -Dgrh-development', unit.machine_ip, unit.port)
         else
           ''
         end
@@ -61,6 +61,30 @@ module Integrity
       def mysql_url(unit)
         if unit && unit.active?
           format('mysql://root@%s:%d', unit.machine_ip, unit.port)
+        else
+          ''
+        end
+      end
+
+      def postgres_str(unit)
+        if unit && unit.active?
+          postgres_connect_str(unit) + '<br>' + postgres_url(unit)
+        else
+          'postgres not running'
+        end
+      end
+
+      def postgres_connect_str(unit)
+        if unit && unit.active?
+          format('psql -Upostgres -h%s -p%d -dpg-cache-development', unit.machine_ip, unit.port)
+        else
+          ''
+        end
+      end
+
+      def postgres_url(unit)
+        if unit && unit.active?
+          format('postgres://root@%s:%d/pg-cache-development', unit.machine_ip, unit.port)
         else
           ''
         end

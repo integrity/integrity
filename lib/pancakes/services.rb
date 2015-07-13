@@ -140,6 +140,11 @@ module Pancakes
       SERVICE_DEFS.detect{|service_def| service_def[:name] == service_name.to_s } || raise("no service by the name of #{service_name}")
     end
 
+    def get_by_port(port)
+      port = port.to_i
+      SERVICE_DEFS.detect{|service_def| service_def[:ports] && service_def[:ports].include?(port) } || raise("no service with the port #{port}")
+    end
+
     def jarvis_services
       #SERVICE_DEFS.select{|s| !s[:chore] }.map{|s| s[:name] }
       %w[mysql mailcatcher jarvis-server jarvis-orchestra jarvis-delayed_job tim-server tim-orchestra tim-delayed_job frick-server]
