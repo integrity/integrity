@@ -168,7 +168,7 @@ module Pancakes
       StatHatWrapper.unpause if dry_run
       return if dry_run
 
-      timeout = 60*3
+      timeout = 60*4
       state = block_until_stack_states(states: %i[running failed], timeout: timeout)
 
 
