@@ -14,6 +14,7 @@ namespace :pancakes do
         )
         Delayed::Job.enqueue(Pancakes::Background::BringUpJob.new(stack.id))
         Delayed::Job.enqueue(Pancakes::Background::BringDownJob.new(stack.id, destroy: false))
+        sleep 1
       end
     end
   end
