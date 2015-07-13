@@ -18,7 +18,7 @@ module Pancakes
     one_to_many :commits, key: :stack_id, class: :"Pancakes::Commit"
     one_to_many :units,   key: :stack_id, class: :"Pancakes::Unit"
 
-    add_association_dependencies commits: :delete, units: :delete
+    add_association_dependencies commits: :destroy, units: :destroy
 
     def validate
       super
@@ -35,6 +35,7 @@ module Pancakes
 
     def before_destroy
       Pancakes::Freezer.delete_stack(self.id)
+      super
     end
 
 
@@ -102,8 +103,9 @@ module Pancakes
         .map(&:first)
     end
 
+    # we use a sha so that unit names are never reused, which was causing problems.
     def short_sha
-      self.sha[0..6]
+      self.sha ? self.sha[0..6] : (raise "where is the sha???")
     end
 
     def name
@@ -151,8 +153,9 @@ module Pancakes
           raise Pancakes::ClusterError.new('timeout waiting for netmaster container run')
         end
 
-        should_thaw = thaw_dbs && Pancakes::Freezer.stack_exists?(self.id)
-        run_thaw_er if should_thaw
+        #should_thaw = thaw_dbs && Pancakes::Freezer.stack_exists?(self.id)
+        should_thaw = false
+        #run_thaw_er if should_thaw
 
         non_netmaster_units.each do |unit|
           Pancakes.cluster.start_template(unit.service_file_name, Pancakes::Fleet::Templating.detect_and_make_template(unit, setup_db: !should_thaw))
@@ -167,7 +170,7 @@ module Pancakes
       StatHatWrapper.unpause if dry_run
       return if dry_run
 
-      timeout = 60*5
+      timeout = 60*7
       state = block_until_stack_states(states: %i[running failed], timeout: timeout)
 
 
@@ -225,7 +228,7 @@ module Pancakes
         return false
       end
 
-      run_freezer if freeze_dbs
+      #run_freezer if freeze_dbs
 
       only_units(['mysql']).each do |unit|
         Pancakes.cluster.destroy_unit(unit)
@@ -268,14 +271,14 @@ module Pancakes
 
     # @api private
     def run_freezer
-      logger.info "freezing databases: #{dbs.join(', ')}"
+      logger.info "freezing databases: #{mysql_dbs.join(', ')}"
       run_freezer_helper(
         Pancakes::Fleet::Templating.freezer_template(
           freezer_unit: freezer_unit,
           fname:        Pancakes::Freezer.stack_fname(self.id),
           mysql_host:   mysql_unit.machine_ip,
           mysql_port:   mysql_unit.port,
-          mysql_dbs:    dbs,
+          mysql_dbs:    mysql_dbs,
         )
       )
     end
@@ -292,8 +295,8 @@ module Pancakes
     end
 
     # @api private
-    def dbs
-      units.map{|unit| unit.dbs || [] }.reduce(&:+)
+    def mysql_dbs
+      units.map{|unit| unit.dbs || [] }.reduce(&:+).delete_if{|x| x =~ /\Apg-/ }
     end
 
     def ports
@@ -340,7 +343,28 @@ module Pancakes
     end
 
     def service_addrs
-      units.map(&:service_addr).reduce(&:merge)
+      cont = netmaster_unit.container
+
+      if cont
+        cont.port_mapping.map do |k,v|
+          [
+            Pancakes::Services.get_by_port(k)[:name].split('-')[0],
+            "#{netmaster_unit.machine_ip}:#{v}",
+          ]
+        end.to_h
+      else
+        logger.debug "netmaster_unit.container is nil"
+        nil
+      end
+    end
+
+    def jarvis_env
+      if unit_named('banyan-server')
+        _port = netmaster_unit.container.port_mapping[unit_named('postgres').primary_private_port]
+        { 'BANYAN_DATABASE_URL' => format("postgres://root@%s:%d/pg-cache-development", netmaster_unit.machine_ip, _port) }
+      else
+        {}
+      end
     end
 
 
@@ -513,7 +537,9 @@ module Pancakes
 
     # @api private
     def non_netmaster_units
-      units_dataset.exclude(service_name: Pancakes::Services.netmaster)
+      # sort orchestra units to the top
+      units_dataset.exclude(service_name: Pancakes::Services.netmaster).to_a
+        .sort { |a,b| (a.name['orchestra'] && -1) || (b.name['orchestra'] && 1) || 0 }
     end
 
     # @api private
@@ -623,20 +649,27 @@ module Pancakes
       name = unit.service_name
       raise "service #{name} is not pingable" unless unit.pingable?
       url = unit.ping_url
+      desired_status = unit.ping_http_status
 
       begin
         if url.start_with?('http')
-          resp = RestClient::Request.execute(method: :get, url: url, timeout: 5, open_timeout: 5)
+          resp = if desired_status == 302
+            Net::HTTP.get_response(URI(url))
+          else
+            RestClient::Request.execute(method: :get, url: url, timeout: 5, open_timeout: 5)
+          end
 
-          if resp.code == 200
-            logger.info "service #{name} reached at #{url}"
+          code = resp.code.to_i
+
+          if code == desired_status
+            logger.info "service #{name}(#{desired_status}) reached at #{url} (#{code})"
             return true
           else
-            logger.info "service #{name} at #{url} is unreachable"
+            logger.info "service #{name}(#{desired_status}) at #{url} is unreachable with #{code}"
             return false
           end
         else
-          logger.warn "service #{name} at #{url} cannot be pinged due to url scheme"
+          logger.warn "service #{name} at #{url} cannot be pinged due to url scheme #{url}"
         end
       rescue StandardError => e
         logger.info "service #{name} at #{url} is unreachable due to #{e.class} '#{e.message}'"

@@ -14,8 +14,6 @@ module Pancakes
 
     def initialize
       @machine_ip = '127.0.0.1'
-      @last_containers = nil
-      @last_containers_timestamp = nil
     end
 
     # @api private
@@ -27,17 +25,13 @@ module Pancakes
       raise("machine ip can't be nil") unless new_machine_ip
       @machine_ip = new_machine_ip
       ::Docker.url = "tcp://#{@machine_ip}:#{API_PORT}"
+      logger.info "setting Docker.url to #{::Docker.url}"
       ::Docker.validate_version!
     end
 
     def all_containers
-      if @last_containers.nil? || (Time.now - @last_containers_timestamp) > 1.0
-        logger.info with_ip 'getting all containers'
-        @last_containers_timestamp = Time.now
-        @last_containers = ::Docker::Container.all
-      else
-        @last_containers
-      end
+      logger.info with_ip 'getting all containers'
+      ::Docker::Container.all
     end
 
     # @param pattern [String, Regexp] pattern to match

@@ -50,6 +50,7 @@ module Pancakes
         requires: :mysql,
         ports: [10002],
         ping_url: 'http://$ip:$port/status',
+        http_status: 200,
         env: SERVICE_ENV,
         dbs: %w[frick-development ruote-development],
       },
@@ -70,6 +71,7 @@ module Pancakes
         requires: :"jarvis-orchestra",
         ports: [10001],
         ping_url: 'http://$ip:$port/status',
+        http_status: 200,
         env: SERVICE_ENV,
       },
       {
@@ -97,6 +99,7 @@ module Pancakes
         requires: :"tim-orchestra",
         ports: [10004],
         ping_url: 'http://$ip:$port/status',
+        http_status: 200,
         env: SERVICE_ENV,
       },
       {
@@ -116,6 +119,7 @@ module Pancakes
         env: SERVICE_ENV,
         ports: [10003],
         ping_url: 'http://$ip:$port/status',
+        http_status: 200,
         dbs: %w[tp_dev],
       },
       {
@@ -126,13 +130,19 @@ module Pancakes
         requires: :mysql,
         env: SERVICE_ENV,
         ports: [10010],
-        ping_url: 'http://$ip:$port/status',
+        ping_url: 'http://$ip:$port/',
+        http_status: 302,
         dbs: %w[pg-cache-development],
       },
     ]
 
     def get(service_name)
       SERVICE_DEFS.detect{|service_def| service_def[:name] == service_name.to_s } || raise("no service by the name of #{service_name}")
+    end
+
+    def get_by_port(port)
+      port = port.to_i
+      SERVICE_DEFS.detect{|service_def| service_def[:ports] && service_def[:ports].include?(port) } || raise("no service with the port #{port}")
     end
 
     def jarvis_services

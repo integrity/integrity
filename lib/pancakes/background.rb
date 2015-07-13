@@ -28,13 +28,19 @@ module Pancakes
 
     class BringUpJob < SerialStackJob
       def perform
+        ff = File.open('/tmp/pk-test.log', 'a')
+        ff.puts "stack[%s] bring_up starting" % [stack.name]
+        ff.flush
         stack.bring_down(freeze_dbs: false)
         stack.bring_up(thaw_dbs: false)
+        ff.puts "stack[%s] bring_up done with state=%s" % [stack.name, stack.state]
+        ff.close
       end
     end
 
     class BringDownJob < SerialStackJob
       def perform
+        stack.update_all(desired_state: :off)
         stack.bring_down(freeze_dbs: false)
 
         if @opts[:destroy] == true

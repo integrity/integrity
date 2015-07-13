@@ -10,3 +10,16 @@ GC.copy_on_write_friendly = true
 before_exec do |server|
   ENV['BUNDLE_GEMFILE'] = '/home/ubuntu/app/honesty/current/Gemfile'
 end
+
+before_fork do |server,worker|
+  Pancakes.db_disconnect
+
+  # datamapper
+  DataObjects::Pooling.pools.each do |pool|
+    pool.dispose
+  end
+end
+
+after_fork do |server,worker|
+  Pancakes.db_connect
+end

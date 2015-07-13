@@ -181,6 +181,22 @@ module Pancakes
   def dockyard_debug?
     !!ENV['DOCKYARD_DEBUG']
   end
+
+  def db
+    @db
+  end
+
+  def db=(foo)
+    @db = foo
+  end
+
+  def db_disconnect
+    Pancakes.db && Pancakes.db.disconnect
+  end
+
+  def db_connect
+    Pancakes.db = Sequel.connect(ENV['DATABASE_URL'], logger: Logging.logger['pancakes-db'])
+  end
 end
 
 module Pancakes
@@ -215,7 +231,7 @@ Sequel.default_timezone = :utc
 Sequel::Plugins::Serialization.register_format(:symbolize,
                                                 lambda{|v| v.to_s},
                                                 lambda{|v| v.to_sym})
-Sequel.connect(ENV['DATABASE_URL'], logger: Logging.logger['pancakes-db'])
+Pancakes.db_connect
 
 require 'json'
 require 'digest/sha1'
