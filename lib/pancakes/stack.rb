@@ -105,7 +105,7 @@ module Pancakes
 
     # we use a sha so that unit names are never reused, which was causing problems.
     def short_sha
-      self.sha ? self.sha[0..6] : (raise "where is the damned sha")
+      self.sha ? self.sha[0..6] : (raise "where is the sha???")
     end
 
     def name
