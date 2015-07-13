@@ -13,9 +13,9 @@ namespace :pancakes do
           services: Pancakes::Services.banyan_services,
         )
         Delayed::Job.enqueue(Pancakes::Background::BringUpJob.new(stack.id))
-        sleep 1
+        sleep 2
         Delayed::Job.enqueue(Pancakes::Background::BringDownJob.new(stack.id, destroy: true))
-        sleep 1
+        sleep 2
       end
     end
   end
