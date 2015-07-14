@@ -22,7 +22,7 @@ notifier:
       %{build_output}
 
 story:
-  start_email_subject: Story %{story_id} has been started
+  start_email_subject: "Alert! Story #%{story_id} Started"
   pr_email_subject: Story %{story_id} is ready for you to PR
   pr_body: "%{commit_message}\n\n[Tracker #%{story_id}](%{story_url})"
   pr_github_link: "%{github_project_url}/compare/master...%{branch_name}?title=%{story_name}&body=%{pr_body}"
