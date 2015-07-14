@@ -45,8 +45,6 @@ module Tracker
       story.commit_state  = 'started'
       story.save
 
-      story.send(:send_start_email) unless Integrity.config.dtest?
-
       story
     end
 
@@ -83,13 +81,13 @@ module Tracker
       ((Time.now - created_at) / 86400).to_i
     end
 
-    private
-
-    def send_start_email
+    def send_start_email(starter_name)
       SendGridWrapper.send_mail(self.users.map(&:email),
         I18n.t('story.start_email_subject', story_id: self.id),
-        start_email_body)
+        start_email_body(starter_name))
     end
+
+    private
 
     def send_pr_email(build)
       SendGridWrapper.send_mail(self.users.map(&:email),
@@ -97,7 +95,8 @@ module Tracker
         pr_email_body(build))
     end
 
-    def start_email_body
+    def start_email_body(starter_name)
+      story_name = self.name
       story_link = URI.escape(self.url)
       template = ERB.new(File.read("./lib/app/views/tracker_story_start_email.erb"))
       html_content = template.result(binding)
