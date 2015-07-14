@@ -65,6 +65,7 @@ module Tracker
 
     def set_state(state)
       self.current_state = state
+      self.save
     end
 
     def followers
