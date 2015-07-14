@@ -166,6 +166,10 @@ module Integrity
           if story = Tracker::Story.first(id: primary_resource[:id])
             story.set_state(params[:highlight])
           end
+        when 'deleted'
+          if story = Tracker::Story.first(id: primary_resource[:id])
+            story.destroy!
+          end
         else
         end
       end
