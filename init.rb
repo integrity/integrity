@@ -12,7 +12,7 @@ require 'i18n'
 I18n.load_path << "#{ROOT_DIR}/config/locale/dates.en.yml"
 require 'integrity'
 
-logger = DataMapper::Logger.new(STDOUT, :info)
+DataMapper::Logger.new(STDOUT, :debug)
 
 # I18n Translations
 translations = YAML.load_file(File.join(File.dirname(__FILE__), 'config', 'locale', 'en.yml'))
