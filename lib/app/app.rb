@@ -125,8 +125,12 @@ module Integrity
       @format = :json
       log "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{params.inspect}"
       payload = Payload.new(params)
-      halt 404 unless payload.project
       halt 200 if ignore_branch?(payload.branch_name)
+
+      if !payload.project
+        log "[HOOK] /hook.json params: #{params.inspect} hook.json called without project"
+        halt 404
+      end
 
       if payload.deleted?
         log "[HOOK] /hook.json Received branch delete notice for: #{payload.branch_name}"
@@ -137,20 +141,14 @@ module Integrity
         end
       end
 
-      if not payload.project
-        log "[HOOK] /hook.json params: #{params.inspect} hook.json called without project"
-        halt 404
-      elsif not payload.commit
-        halt 404
+      if !payload.commit
         log "[HOOK] /hook.json params: #{params.inspect} hook.json called without commit"
+        halt 404
       end
 
       build = payload.build!
-
       log "[HOOK] /hook.json Build: #{build.inspect}"
-
       restart_pancakes_stacks_after_github_push(params)
-
       json build
     end
 
