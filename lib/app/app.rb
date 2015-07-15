@@ -148,7 +148,7 @@ module Integrity
 
       build = payload.build!
       log "[HOOK] /hook.json Build: #{build.inspect}"
-      restart_pancakes_stacks_after_github_push(params)
+      #restart_pancakes_stacks_after_github_push(params)
       json build
     end
 
