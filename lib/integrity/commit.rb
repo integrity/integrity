@@ -17,6 +17,21 @@ module Integrity
     belongs_to :project
     belongs_to :build
 
+    before :save do |me|
+      Integrity.logger.debug "[fml] commit before :save id=#{self.id}"
+      true
+    end
+
+    before :create do |me|
+      Integrity.logger.debug "[fml] commit before :create id=#{self.id}"
+      true
+    end
+
+    before :destroy do |me|
+      Integrity.logger.debug "[fml] commit before :destroy id=#{self.id}"
+      true
+    end
+
     def finishes?
       ['finish'].any? { |w| self.message.downcase =~ /#{w}/}
     end
