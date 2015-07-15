@@ -41,6 +41,9 @@ module Integrity
     alias_method :head, :commit
 
     def commits
+      Integrity.logger.debug "[fml] @payload[:commits] is nil" if @payload[:commits].nil?
+      Integrity.logger.debug "[fml] @payload[:commits] is empty" if @payload[:commits].empty?
+
       @commits ||= @payload[:commits].map do |commit|
         Hashie::Mash.new(
           identifier:   commit.id,
