@@ -36,7 +36,11 @@ module Integrity
     end
 
     def commit
-      commits.detect {|c| c.identifier == @payload.after }
+      cc = commits.detect {|c| c.identifier == @payload.after }
+      if !cc
+        Integrity.logger.debug "[fml] commits.detect is nil c.identifiers=#{commits.map(&:identifier).join(',')} @payload.after=#{@payload.after}"
+      end
+      cc
     end
     alias_method :head, :commit
 
