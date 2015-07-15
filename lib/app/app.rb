@@ -123,7 +123,8 @@ module Integrity
 
     post '/hook.json', provides: :json do
       @format = :json
-      log "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{params.inspect}"
+      #log "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{JSON.dump(params)}"
+      Integrity.logger.debug "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{JSON.dump(params)}"
       payload = Payload.new(params)
       halt 200 if ignore_branch?(payload.branch_name)
 

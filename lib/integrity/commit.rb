@@ -18,17 +18,17 @@ module Integrity
     belongs_to :build
 
     before :save do |me|
-      Integrity.logger.debug "[fml] commit before :save id=#{self.id}"
+      Integrity.logger.debug "[fml] commit before :save id=#{self.id} identifier=#{self.identifier}"
       true
     end
 
     before :create do |me|
-      Integrity.logger.debug "[fml] commit before :create id=#{self.id}"
+      Integrity.logger.debug "[fml] commit before :create id=#{self.id} identifier=#{self.identifier}"
       true
     end
 
     before :destroy do |me|
-      Integrity.logger.debug "[fml] commit before :destroy id=#{self.id}"
+      Integrity.logger.debug "[fml] commit before :destroy id=#{self.id} identifier=#{self.identifier}"
       true
     end
 
