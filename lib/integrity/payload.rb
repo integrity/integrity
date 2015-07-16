@@ -36,18 +36,11 @@ module Integrity
     end
 
     def commit
-      cc = commits.detect {|c| c.identifier == @payload.after }
-      if !cc
-        Integrity.logger.debug "[fml] commits.detect is nil c.identifiers=#{commits.map(&:identifier).join(',')} @payload.after=#{@payload.after}"
-      end
-      cc
+      commits.detect {|c| c.identifier == @payload.after }
     end
     alias_method :head, :commit
 
     def commits
-      Integrity.logger.debug "[fml] @payload[:commits] is nil" if @payload[:commits].nil?
-      Integrity.logger.debug "[fml] @payload[:commits] is empty" if @payload[:commits].empty?
-
       @commits ||= @payload[:commits].map do |commit|
         Hashie::Mash.new(
           identifier:   commit.id,
