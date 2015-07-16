@@ -118,17 +118,16 @@ module Integrity
       commit = Hashie::Mash.new(commit)
       branch = get_branch(commit)
       if commit.identifier.present?
-        commit = Integrity::Commit.create(commit)
         build = builds.create(
           branch: branch,
           service_template: choose_service_template(service),
           rebuild: rebuild
         )
-        commit.bulid = build
-        commit.save
+        commit = commit.merge(build_id: build.id)
+        Integrity::Commit.create(commit)
 
         if build.invalid_sha?
-          log("[method:build] Invalid sha for @{commit.inspec} - [Start-complete] invalid_sha")
+          log("[method:build] Invalid sha for #{commit.inspect} - [Start-complete] invalid_sha")
           build.destroy if build.saved?
           return
         end
