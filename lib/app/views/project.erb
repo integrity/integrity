@@ -1,11 +1,4 @@
 
-<div class="row" id="projects">
-  <% @branches.each do |branch|
-    status = branch_status(branch)
-    build = branch.last_build %>
-    <%= partial(:branch, locals: {project: @project, build: build, branch: branch, status: status}) %>
-  <% end %>
-</div>
 
 <% if @project.blank? %>
   <form action="<%= project_path(@project, :builds) %>" class="blank_slate" method="<%= :post %>">

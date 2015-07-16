@@ -16,6 +16,7 @@ module Integrity
     property :public,     Boolean, default: true
     property :last_build_id, Integer, required: false
     property :weight, Integer, required: true, default: 1
+    property :pushes, Integer, default: 0
 
     timestamps :at
 
@@ -108,6 +109,10 @@ module Integrity
       psql_apps.include?(name)
     end
 
+    def inc_pushes
+      self.pushes += 1
+    end
+
     def build(commit, rebuild=false, service=nil)
       if commit.is_a?(Hash)
         commit = commit.merge(project_id: id)
@@ -137,6 +142,11 @@ module Integrity
         build.reload
         if !build.commit
           Integrity.logger.debug "[fml] where is the commit for build id=#{build.id}"
+        end
+
+        if !rebuild
+          inc_pushes
+          save
         end
 
         build.run
