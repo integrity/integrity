@@ -16,12 +16,14 @@
   </div>
 <% else %>
   <div class="row" id="projects">
-    <% @masters.each do |branch|
-      project = branch.project
-      status  = branch_status(branch)
-      build   = branch.last_build %>
-      <%= partial(:project, locals: {project: project, build: build, status: status}) %>
-    <% end %>
+    <div class="col-xs-12">
+      <% @masters.each do |branch|
+        project = branch.project
+        status  = branch_status(branch)
+        build   = branch.last_build %>
+          <%= partial(:project, locals: {project: project, build: build, status: status}) %>
+      <% end %>
+    </div>
   </div>
   <div class="row" id="builds">
     <% if @running.any? %>

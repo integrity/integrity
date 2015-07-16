@@ -535,7 +535,7 @@ module Integrity
     ['/?', '/projects'].each do |path|
       get path, provides: 'html' do
         load_projects
-        @masters = Integrity::Branch.all(name: 'master')
+        @masters = Integrity::Branch.all(name: 'master').sort{|a,b| b.project.pushes <=> a.project.pushes }
         @builds  = Integrity::Build.all(limit: 30, order: :created_at.desc)
         @pending = @builds.pending.all(order: :created_at.desc)
         @running = @builds.running.all(order: :started_at.desc)

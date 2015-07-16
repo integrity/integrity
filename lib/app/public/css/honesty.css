@@ -126,3 +126,36 @@ table.table.commits {
   display: inline-block;
 
 }
+
+.pill {
+  font-size: 2em;
+  margin-right: 0.25em;
+  margin-left: 0.25em;
+  display: inline-block;
+  margin-bottom: 0.5em;
+}
+
+.pill > span {
+  font-size: 0.5em;
+}
+
+#projects > div {
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
+.label-green {
+  background-color: rgb(26, 255, 0);
+}
+.label-red {
+  background-color: rgb(255, 0, 77);
+}
+.label-yellow {
+  background-color: rgb(225, 231, 0);
+}
+.label-blue {
+  background-color: rgb(0, 197, 255);
+}
+.label-grey {
+  background-color: grey;
+}

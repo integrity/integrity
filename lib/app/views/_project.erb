@@ -1,30 +1,11 @@
-<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-  <div class="panel branch panel-<%= status.color %>">
-    <div class="panel-heading">
-      <div class="row">
-        <div class="col-xs-1 col-md-2 col-lg-1">
-          <i class="fa fa-<%= status.icon %> fa-3x"></i>
-        </div>
-        <div class="col-xs-11 col-md-10 col-lg-11 text-right">
-          <div class="huge"><%= project.name %></div>
-          <% if build %>
-            <div>
-              <%= build.author %>
-              <i class="fa fa-circle"></i>
-              <a class="git-link" href="<%= github_commit_url(build) %>"><%= build.try(:sha1_short) %></a>
-              <i class="fa fa-circle"></i>
-              <%= status_time(project) %>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    </div>
-    <a href="<%= project_path(project) %>">
-      <div class="panel-footer">
-        <span class="pull-left" style="width: 89%"><%= message(build) %></span>
-        <span class="pull-right"><i class="fa fa-arrow-circle-right fa-2x"></i></span>
-        <div class="clearfix"></div>
-      </div>
-    </a>
-  </div>
-</div>
+<a class="pill label label-<%= status.color %>" href="<%= project_path(project) %>">
+  <% if build && [:failed].include?(build.status) %>
+    <i class="fa fa-fire-extinguisher fa-3x"></i>
+  <% end %>
+  <%= project.name %>
+  <% if build && [:failed].include?(build.status) %>
+    <span>
+      <%= build.author %>
+    </span>
+  <% end %>
+</a>
