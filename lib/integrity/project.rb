@@ -109,13 +109,8 @@ module Integrity
     end
 
     def build(commit, rebuild=false, service=nil)
-      log("[method:build] building commit #{commit.inspect}")
-      log("[method:build] commit is a #{commit.class}")
       if commit.is_a?(Hash)
         commit = commit.merge(project_id: id)
-      elsif commit.nil?
-        log("[method:build] commit is nil")
-        return
       else
         commit = commit.attributes.except(:id, :build_id, :created_at, :updated_at)
       end
@@ -137,10 +132,15 @@ module Integrity
         end
 
         build.save
+
+        build.reload
+
+        if !build.commit
+          Integrity.logger.debug "[fml] where is the commit for build id=#{build.id}"
+        end
+
         build.run
         build
-      else
-        log("[method:build] commit(id=#{commit.id}) identifier is not present")
       end
     end
 

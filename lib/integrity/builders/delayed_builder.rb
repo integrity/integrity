@@ -51,7 +51,7 @@ module Integrity
 
       def perform
         Build.get!(@build).run!
-        Integrity::Event.trigger('load:changed')
+        #Integrity::Event.trigger('load:changed')
       end
     end
 
