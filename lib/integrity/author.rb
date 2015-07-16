@@ -21,7 +21,7 @@ module Integrity
     lazy   false
 
     def self.unknown
-      AuthorStruct.parse("author not loaded")
+      AuthorStruct.parse("author not loaded and please dont delete this build so it can be troubleshot")
     end
 
     def load(value)
