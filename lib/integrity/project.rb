@@ -118,12 +118,14 @@ module Integrity
       commit = Hashie::Mash.new(commit)
       branch = get_branch(commit)
       if commit.identifier.present?
+        commit = Integrity::Commit.create(commit)
         build = builds.create(
-          commit: commit,
           branch: branch,
           service_template: choose_service_template(service),
           rebuild: rebuild
         )
+        commit.bulid = build
+        commit.save
 
         if build.invalid_sha?
           log("[method:build] Invalid sha for @{commit.inspec} - [Start-complete] invalid_sha")
@@ -134,7 +136,6 @@ module Integrity
         build.save
 
         build.reload
-
         if !build.commit
           Integrity.logger.debug "[fml] where is the commit for build id=#{build.id}"
         end
