@@ -159,11 +159,13 @@ module Integrity
       params[:primary_resources].each do |primary_resource|
         case params[:highlight]
         when 'started'
-          unless Tracker::Story.get(primary_resource[:id])
+          if story = Tracker::Story.get(primary_resource[:id])
+            story.set_state(params[:highlight])
+          else
             story = Tracker::Story.create(primary_resource[:id])
             story.send_start_email(params[:performed_by][:name]) unless Integrity.config.dtest?
           end
-        when 'finished', 'delivered', 'accepted'
+        when 'finished', 'delivered', 'accepted', 'unstarted'
           if story = Tracker::Story.first(id: primary_resource[:id])
             story.set_state(params[:highlight])
           end
