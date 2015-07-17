@@ -181,6 +181,7 @@ module Pancakes
             docker_cmd(
               :run,
               '--rm',
+              grnds_dns,
               volumes_str(service_def[:volumes]),
               '--name', service_name,
               '--link', [requires_service_name, service_def[:requires]].join(':'),
@@ -209,6 +210,7 @@ module Pancakes
             docker_cmd(
               :run,
               '--rm',
+              grnds_dns,
               volumes_str(service_def[:volumes]),
               '--name', service_name,
               ports_str(service_def[:ports]),
