@@ -27,7 +27,7 @@ module Integrity
     delegate :status, :human_status, :human_duration, :successful?, :failed?, :pending?, :building?, to: :last_build, allow_nil: true
 
     def set_story
-      story_id = self.name.try(:match, /\d{6,}/).try(:[],0)
+      story_id = self.name.scan(/\d{6,}/).last
       return unless story_id
 
       if Tracker::Story.get(story_id)

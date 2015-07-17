@@ -104,7 +104,7 @@ module Integrity
       end
 
       def link_to_tracker(build)
-        tracker_id = build.branch.try(:name).try(:match, /\d{6,}/).try(:[],0)
+        tracker_id = build.branch.try(:name).scan(/\d{6,}/).last
         TRACKER_URL + tracker_id if tracker_id
       end
 
