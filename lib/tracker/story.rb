@@ -87,6 +87,21 @@ module Tracker
         start_email_body(starter_name))
     end
 
+    def pr_url
+      return unless latest_build && self.current_state == 'finished'
+
+      pr_body = I18n.t('story.pr_body', commit_message: latest_build.commit.message,
+                                              story_id: self.id,
+                                             story_url: self.url)
+
+      pr_link = I18n.t('story.pr_github_link', github_project_url: latest_build.branch.project.uri.to_s.gsub('git://', 'http://'),
+                                                      branch_name: latest_build.branch.name,
+                                                       story_name: self.name,
+                                                          pr_body: pr_body)
+
+      pr_link = URI.escape(pr_link)
+    end
+
     private
 
     def send_pr_email(build)
