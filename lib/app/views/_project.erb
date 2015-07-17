@@ -2,10 +2,12 @@
   <% if build && [:failed].include?(build.status) %>
     <i class="fa fa-fire-extinguisher fa-3x"></i>
   <% end %>
-  <%= project.name %>
+  <span>
+    <%= project.name %>
+  </span>
   <% if build && [:failed].include?(build.status) %>
-    <span>
+    <small>
       <%= build.author %>
-    </span>
+    </small>
   <% end %>
 </a>
