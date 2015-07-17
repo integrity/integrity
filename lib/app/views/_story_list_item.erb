@@ -13,6 +13,6 @@
     <td><%= story.current_state %></td>
     <td><%= story.commit_state %></td>
     <td><%= story.age %></td>
-    <td><%= story.pr_url %></td>
+    <td><a href="<%= story.pr_url %>" target="_blank">Make Request</td>
   </tr>
   <% end %>
