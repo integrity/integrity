@@ -28,7 +28,7 @@ namespace :tracker do
 
       branches = Integrity::Branch.select{|branch| branch.name.try(:match, /\d{6,}/).try(:[],0)}
       branches.each do |branch|
-        story_id = branch.name.try(:match, /\d{6,}/).try(:[],0).to_i
+        story_id = branch.name.scan(/\d{6,}/).last.to_i
         if story_ids.include?(story_id)
           tracker_story = stories.select{|s| s.id == story_id}.first
 
