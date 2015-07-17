@@ -82,7 +82,7 @@ module Pancakes
         end
 
         def grnds_dns
-          '--dns=NS-290.AWSDNS-36.COM,NS-1478.AWSDNS-56.ORG,NS-1573.AWSDNS-04.CO.UK,NS-749.AWSDNS-29.NET'
+          '--dns=8.8.8.8'
         end
 
         def docker_run(container_name:, netmaster_name:, environment:, ports:, image:, cmd:)
