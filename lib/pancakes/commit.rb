@@ -129,7 +129,7 @@ module Pancakes
     #   - only the first colon is used in parsing
     # - 'branch/with:name'
     #
-    # for any branch name, includeing those with a sha before it, if it starts with a L+, it will be locked.
+    # for any branch name, including those with a sha before it, if it starts with a L+, it will be locked.
     # if it starts with L-, it will be unlocked, which is the default.
     # - 'L+branch/with:name'
     # - 'L-branch/with:name'

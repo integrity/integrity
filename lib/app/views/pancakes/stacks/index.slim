@@ -13,26 +13,28 @@
       | New Stack
       br
       small Start typing to autocomplete your branch
+      br
+      small.mono branch/commit formats: SHA | SHA:L(+|-)BRANCH | L(+|-)BRANCH branches are locked if left empty
 
-    - services_for_form.each do |codebase,opts|
-      .form-group
-        label for="#{codebase}_branch" #{codebase} branch
-        span.help-block = opts[:help_text]
-        input.form-control type='text' name='[branches][#{codebase}]' id="#{codebase}_branch" autocomplete='off'
-    /.form-group
-      label for="pocs" Points Of Contact
-      input.form-control type='text' name='pocs' id="pocs" autocomplete='off' placeholder='kato usernames or emails, comma separated'
-    button.btn.btn-primary type='submit' Create stack
+    .branch-inputs
+      - services_for_form.each do |codebase|
+        .form-group
+          label for="#{codebase}_branch" #{codebase} branch
+          input.form-control type='text' name='[branches][#{codebase}]' id="#{codebase}_branch" placeholder='master' autocomplete='off'
+      /.form-group
+        label for="pocs" Points Of Contact
+        input.form-control type='text' name='pocs' id="pocs" autocomplete='off' placeholder='kato usernames or emails, comma separated'
+      button.btn.btn-primary type='submit' Create stack
 
   h3 Stacks
   .row
     .col-xs-12
-      table.table
-        thead
-          tr
-            th
-            th
-            th
-        tbody
-          - @stacks.each do |stack|
+      - @stacks.each do |stack|
+        table.table.stack
+          thead
+            tr
+              th
+              th
+              th
+          tbody
             == slim :"pancakes/stacks/_stack", locals: { stack: stack, view: true }, layout: false

@@ -21,7 +21,7 @@ module Integrity
       end
 
       def launch_button_helper(service_name, url, disabled)
-        link_to "Launch #{service_name}", url, target: '_blank', class: "btn btn-primary#{disabled ? ' disabled' : ''}"
+        link_to "Launch #{service_name}", url, target: '_blank', class: "btn btn-primary#{disabled ? ' disabled' : ''} launch-btn"
       end
 
       def tcp_string(commit)
@@ -99,28 +99,7 @@ module Integrity
       end
 
       def services_for_form
-        [
-          [
-            'jarvis',
-            { help_text: 'if blank, locked master will be used' },
-          ],
-          [
-            'frick',
-            { help_text: 'if blank, locked master will be used' },
-          ],
-          [
-            'tim',
-            { help_text: 'if blank, locked master will be used' },
-          ],
-          [
-            'tp',
-            { help_text: 'if blank, no tp will be created' },
-          ],
-          [
-            'banyan',
-            { help_text: 'if blank, no banyan will be created' },
-          ],
-        ]
+        %w[jarvis frick tim tp banyan]
       end
     end
   end
