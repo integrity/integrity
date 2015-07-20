@@ -12,7 +12,7 @@ module Pancakes
     serialize_attributes :symbolize, :state, :desired_state
 
     HUMAN_STATES   = %i[off running starting stopping failed]
-    CLUSTER_STATES = %i[off running starting incomplete unknown failed]
+    CLUSTER_STATES = %i[off running pinging incomplete unknown failed]
     DESIRED_STATES = %i[off running]
 
     one_to_many :commits, key: :stack_id, class: :"Pancakes::Commit"
@@ -388,9 +388,13 @@ module Pancakes
 
     # @api private
     private def human_state_helper(cluster_state)
-      if desired_state == :running && %i[off starting incomplete].include?(cluster_state)
-        :starting
-      elsif desired_state == :off && %i[running incomplete].include?(cluster_state)
+      if desired_state == :running
+        if %i[off].include?(cluster_state)
+          :off
+        elsif %i[pinging changing].include?(cluster_state)
+          :starting
+        end
+      elsif desired_state == :off && %i[running changing].include?(cluster_state)
         :stopping
       elsif cluster_state == :unknown
         :failed
@@ -402,10 +406,11 @@ module Pancakes
 
     # states
     # - :running    units nominal and all pingable
-    # - :starting   units nominal and any unpingable, or units starting
+    # - :pinging    units nominal and any unpingable
+    # - :changing   units state is :changing
     # - :off        no units
     # - :failed     any unit failed
-    # - :incomplete something is missing
+    # - (deprecated) :incomplete something is missing
     # - :unknown    fallback
     def state_from_cluster!
       _units_state = units_state
@@ -416,8 +421,8 @@ module Pancakes
             logger.info 'pancakes state is running'
             :running
           else
-            logger.info 'pancakes state is starting'
-            :starting
+            logger.info 'pancakes state is pinging'
+            :pinging
           end
         else
           _units_state
@@ -432,10 +437,10 @@ module Pancakes
     # states
     # - :nominal    all active
     # - :off        no units
-    # - :starting   active | inactive
+    # - :changing active | changing | inactive | unit missing
     # - :failed     anything failed
-    # - :incomplete something is missing
-    # - :unknown  fallback
+    # - (deprecated) :incomplete something is missing
+    # - :unknown    fallback
     # @api private
     def units_state
       refresh_unit_states
@@ -453,8 +458,8 @@ module Pancakes
       end
 
       if self.class.has_any_states(states, :off)
-        logger.debug 'units state is incomplete'
-        return :incomplete
+        logger.debug 'units state is changing'
+        return :changing
       end
 
       if self.class.has_only_states(states, :active)
@@ -463,8 +468,8 @@ module Pancakes
       end
 
       if self.class.has_only_states(states, :active, :inactive, :activating)
-        logger.debug 'units state is starting'
-        return :starting
+        logger.debug 'units state is changing'
+        return :changing
       end
 
       logger.debug 'units state is unknown'
