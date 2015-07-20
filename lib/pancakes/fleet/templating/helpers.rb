@@ -81,16 +81,16 @@ module Pancakes
           "#{DOCKER} #{cmd} #{join_args(*args)}"
         end
 
-        def grnds_dns
-          '--dns=8.8.8.8'
-        end
+        #def grnds_dns
+          #'--dns=8.8.8.8'
+        #end
 
         def docker_run(container_name:, netmaster_name:, environment:, ports:, image:, cmd:)
           docker_cmd(
             :run,
             '--rm',
             '-v', '/var/lib/docker/tmp:/tmp/hosttmp',
-            grnds_dns,
+            #grnds_dns,
             '--name', container_name,
             (netmaster_name != container_name) ? "--net=container:#{netmaster_name}" : nil,
             env_str(environment),
