@@ -81,12 +81,18 @@ module Tracker
       ((Time.now - created_at) / 86400).to_i
     end
 
+    def project
+      if latest_branch = self.branches.last
+        latest_branch.project
+      end
+    end
+
     def project_name
-      self.branches.last.project.name
+      project.try(:name)
     end
 
     def is_non_ci?
-      self.branches.last.project.command == 'rake'
+      project.try(:command) == 'rake'
     end
 
     def send_start_email(starter_name)
