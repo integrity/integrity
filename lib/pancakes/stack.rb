@@ -393,6 +393,8 @@ module Pancakes
           :off
         elsif %i[pinging changing].include?(cluster_state)
           :starting
+        else
+          cluster_state
         end
       elsif desired_state == :off && %i[running changing].include?(cluster_state)
         :stopping
