@@ -277,8 +277,8 @@ module Integrity
     end
 
     post '/pancakes/stacks' do
-      services = params[:branches][:tp].empty? ? Pancakes::Services.jarvis_services : Pancakes::Services.tp_services
-      services = params[:branches][:banyan].empty? ? Pancakes::Services.jarvis_services : Pancakes::Services.banyan_services
+      services = Pancakes::Services.full_services
+
       @stack = Pancakes::Stack.create_with_git_strings(
         services:       services,
         pocs:           params[:pocs],
@@ -543,6 +543,7 @@ module Integrity
         @running = @builds.running.all(order: :started_at.desc)
         @completed = @builds.completed.all(order: :completed_at.desc)
         @stories_in_flight = Tracker::Story.all(:current_state => ['started', 'finished'], :order => :created_at.asc)
+        @delivered_stories = Tracker::Story.all(:current_state => ['delivered'], :order => :created_at.asc)
         show :home, title: 'project'
       end
     end

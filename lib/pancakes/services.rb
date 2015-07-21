@@ -146,7 +146,6 @@ module Pancakes
     end
 
     def jarvis_services
-      #SERVICE_DEFS.select{|s| !s[:chore] }.map{|s| s[:name] }
       %w[mysql mailcatcher jarvis-server jarvis-orchestra jarvis-delayed_job tim-server tim-orchestra tim-delayed_job frick-server]
     end
 
@@ -156,6 +155,10 @@ module Pancakes
 
     def banyan_services
       jarvis_services + %w[banyan-server postgres]
+    end
+
+    def full_services
+      jarvis_services + %w[tp-server banyan-server postgres]
     end
 
     def netmaster
