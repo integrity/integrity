@@ -12,7 +12,7 @@ module Pancakes
     serialize_attributes :symbolize, :state, :desired_state
 
     HUMAN_STATES   = %i[off running starting stopping failed]
-    CLUSTER_STATES = %i[off running pinging incomplete unknown failed]
+    CLUSTER_STATES = %i[off running pinging changing incomplete unknown failed]
     DESIRED_STATES = %i[off running]
 
     one_to_many :commits, key: :stack_id, class: :"Pancakes::Commit"
