@@ -81,6 +81,14 @@ module Tracker
       ((Time.now - created_at) / 86400).to_i
     end
 
+    def project_name
+      self.branches.last.project.name
+    end
+
+    def is_non_ci?
+      self.branches.last.project.command == 'rake'
+    end
+
     def send_start_email(starter_name)
       SendGridWrapper.send_mail(self.users.map(&:email),
         I18n.t('story.start_email_subject', story_id: self.id),
@@ -88,7 +96,7 @@ module Tracker
     end
 
     def pr_url
-      return unless latest_build && self.current_state == 'finished'
+      return unless latest_build && (is_non_ci? || self.current_state == 'finished')
 
       pr_body = I18n.t('story.pr_body', commit_message: latest_build.commit.message,
                                               story_id: self.id,
