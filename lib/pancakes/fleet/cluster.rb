@@ -76,10 +76,12 @@ module Pancakes
       def destroy_build(service_opts)
         units = Pancakes::Fleet::Templating.spec_build_template(service_opts)
         units.each do |unit_fname,_|
+          logger.info "method=destroy_build #{unit_fname}"
           @client.destroy(unit_fname)
         end
         true
-      rescue ::Fleet::NotFound
+      rescue ::Fleet::NotFound =>
+        logger.info "method=destroy_build #{e.class}"
         false
       end
 
