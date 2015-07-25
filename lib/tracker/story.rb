@@ -17,6 +17,7 @@ module Tracker
 
     has n, :branches, 'Integrity::Branch'
     has n, :users, :through => Resource
+    has n, :epics, :through => Resource
 
     def self.create(tracker_story_id, tracker_story = nil)
       unless tracker_story
@@ -36,6 +37,12 @@ module Tracker
         end
       end
 
+      tracker_story.labels.map(&:id).each do |id|
+        if epic = Tracker::Epic.first(label_id: id)
+          story.epics << epic
+        end
+      end
+
       story.id            = tracker_story.id
       story.url           = tracker_story.url
       story.project_id    = tracker_story.project_id
@@ -46,6 +53,34 @@ module Tracker
       story.save
 
       story
+    end
+
+    def update
+      tracker_story = TrackerWrapper.tracker_story(self.id)
+
+      self.name          = tracker_story.name
+      self.type          = tracker_story.story_type
+      self.current_state = tracker_story.current_state
+
+      user_ids = []
+      user_ids << tracker_story.follower_ids << tracker_story.owner_ids << tracker_story.requested_by_id
+      user_ids = user_ids.flatten.uniq
+
+      self.users = []
+      user_ids.each do |id|
+        if user = Tracker::User.first(id: id)
+          self.users << user
+        end
+      end
+
+      self.epics = []
+      tracker_story.labels.map(&:id).each do |id|
+        if epic = Tracker::Epic.first(label_id: id)
+          self.epics << epic
+        end
+      end
+
+      self.save
     end
 
     def start

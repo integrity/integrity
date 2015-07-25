@@ -157,6 +157,8 @@ module Integrity
       params.symbolize_keys!
       @format = :json
 
+      Integrity.logger.debug "[HOOK][RECEIVED_TRACKER_PAYLOAD] /tracker.json params: #{JSON.dump(params)}"
+      
       params[:primary_resources].each do |primary_resource|
         case params[:highlight]
         when 'started'
@@ -170,6 +172,14 @@ module Integrity
           if story = Tracker::Story.first(id: primary_resource[:id])
             story.set_state(params[:highlight])
           end
+        when 'edited'
+          if params[:changes].first[:kind] == 'epic'
+            Tracker::Epic.update_from_hook params[:primary_resources].first
+          end
+        when 'added'
+          if params[:changes].first[:kind] == 'epic'
+            Tracker::Epic.create_from_hook params[:primary_resources].first.merge({ label_id: params[:changes].first[:new_values][:label_id] })
+          end          
         when 'deleted'
           if story = Tracker::Story.first(id: primary_resource[:id])
             story.destroy!

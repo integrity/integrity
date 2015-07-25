@@ -24,6 +24,11 @@ class TrackerWrapper
     project.story(story_id)
   end
 
+  def self.tracker_epic(epic_id)
+    data = client.get("/projects/#{config.project_id}/epics/#{epic_id}").body
+    TrackerApi::Resources::Epic.new({ project_id: config.project_id }.merge(data))
+  end
+
   def self.start_story(story_id)
     tracker_story = project.story(story_id)
     tracker_story.accepted_at   = nil
@@ -37,10 +42,11 @@ class TrackerWrapper
     tracker_story.save
   end
 
-  private
-
   def self.project
-    client = TrackerApi::Client.new(token: config.api_token)
-    project = client.project(config.project_id)
+    client.project(config.project_id)
+  end
+
+  def self.client
+    TrackerApi::Client.new(token: config.api_token)
   end
 end
