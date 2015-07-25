@@ -38,6 +38,7 @@ module Tracker
       end
 
       tracker_story.labels.map(&:id).each do |id|
+        Integrity.logger.debug "MAPPING label id #{id}"
         if epic = Tracker::Epic.first(label_id: id)
           story.epics << epic
         end
