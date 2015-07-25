@@ -17,6 +17,7 @@ module Tracker
 
     has n, :branches, 'Integrity::Branch'
     has n, :users, :through => Resource
+    belongs_to :epic, :required => false
 
     def self.create(tracker_story_id, tracker_story = nil)
       unless tracker_story

@@ -24,6 +24,10 @@ class TrackerWrapper
     project.story(story_id)
   end
 
+  def self.tracker_epic(epic_id)
+    project.epics.find(id: epic_id).first
+  end
+
   def self.start_story(story_id)
     tracker_story = project.story(story_id)
     tracker_story.accepted_at   = nil
