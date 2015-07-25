@@ -84,6 +84,10 @@ module Tracker
       self.save
     end
 
+    def self.update_from_hook(id, new_values)
+      Integrity.logger.debug "self.update_from_hook #{id}, #{new_values.inspect}"
+    end
+
     def start
       self.commit_state = 'started'
       self.current_state  = 'started'
