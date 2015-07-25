@@ -11,7 +11,7 @@ module Tracker
 
     timestamps :at
 
-    has n, :stories
+    has n, :stories, :through => Resource
 
     def self.create(tracker_epic_id, tracker_epic = nil)
       unless tracker_epic
@@ -20,9 +20,11 @@ module Tracker
       return unless tracker_epic
 
       epic = Epic.new
-      epic.id = tracker_epic.id
-      epic.name = tracker_epic.name
-      epic.label_id = tracker_epic.foobar
+
+      epic.id       = tracker_epic.id
+      epic.name     = tracker_epic.name
+      epic.label_id = tracker_epic.label[:id]
+
       epic.save
     end
 
@@ -38,6 +40,14 @@ module Tracker
       epic = Epic.first_or_create(id: params[:id])
       epic.name  = params[:name]
       epic.save
+    end
+
+    def team
+      team = []
+      stories.each do |story|
+        team << story.users
+      end
+      team = team.flatten.uniq
     end
 
   end

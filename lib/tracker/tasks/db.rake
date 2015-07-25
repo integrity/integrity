@@ -12,6 +12,18 @@ namespace :tracker do
       memberships.map{|u| Tracker::User.create(u)}
     end
 
+    desc 'Seed epics'
+    task :seed_epics do
+      db = Sequel.connect(ENV.fetch('DATABASE_URL'))
+      db.run('truncate tracker_epics')
+
+      client = TrackerApi::Client.new(token: ENV['PIVOTAL_TRACKER_TOKEN'])
+      project = client.project(ENV['PIVOTAL_TRACKER_PROJECT_ID'])
+
+      epics = project.epics
+      epics.map{|e| Tracker::Epic.create(e.id, e)}
+    end
+
     desc 'Seed stories table from existing integrity branches'
     task :seed_stories do
       db = Sequel.connect(ENV.fetch('DATABASE_URL'))

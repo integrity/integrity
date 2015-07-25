@@ -53,6 +53,10 @@ namespace :tracker do
       run "cd #{current_path} && bundle exec rake tracker:db:seed_users"
     end
 
+    task :seed_epics, roles: :db, except: {no_release: true} do
+      run "cd #{current_path} && bundle exec rake tracker:db:seed_epics"
+    end
+
     task :seed_stories, roles: :db, except: {no_release: true} do
       run "cd #{current_path} && bundle exec rake tracker:db:seed_stories"
     end
