@@ -1,0 +1,15 @@
+<div class="table-responsive">
+  <table class="table table-hover table-condensed" id="active_epics">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Developers</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% active_epics.each do |epic| %>
+        <%= partial(:epic_list_item, locals: {epic: epic}) %>
+      <% end %>
+    </tbody>
+  </table>
+</div>

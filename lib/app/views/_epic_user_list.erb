@@ -1,0 +1,19 @@
+<table>
+  <tbody>
+    <% epic.team.each do |user| %>
+      <% stories = epic.stories.select{|s| s.users.include?(user)}%>
+      <tr>
+        <td><%= user.name %></td>
+        <td>
+          <table>
+            <tbody>
+              <% stories.each do |story| %>
+                <tr><%= story.name %><tr>
+              <% end %>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
