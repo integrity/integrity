@@ -4,11 +4,11 @@ require 'i18n'
 module Tracker
   class Report
 
-    def test
+    def self.developer_report
       epics = Hash.new {|h,k| h[k] = Hash.new {|p,q| p[q]=[]}}
       epics[:off_da_ranch] = []
 
-      Tracker::User.all.each do |user|
+      Tracker::User.all(developer: true).each do |user|
         on_ranch = false
         user.stories.each do |story|
           if ['started', 'finished', 'delivered'].include?(story.current_state)

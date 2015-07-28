@@ -560,6 +560,7 @@ module Integrity
 
     get '/epics' do
       login_required
+      @report = Tracker::Report.developer_report
       show :epics, title: 'epics'
     end
 
