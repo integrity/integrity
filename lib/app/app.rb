@@ -158,7 +158,7 @@ module Integrity
       @format = :json
 
       Integrity.logger.debug "[HOOK][RECEIVED_TRACKER_PAYLOAD] /tracker.json params: #{JSON.dump(params)}"
-      
+
       params[:primary_resources].each do |primary_resource|
         case params[:highlight]
         when 'started'
@@ -179,7 +179,7 @@ module Integrity
         when 'added'
           if params[:changes].first[:kind] == 'epic'
             Tracker::Epic.create_from_hook params[:primary_resources].first.merge({ label_id: params[:changes].first[:new_values][:label_id] })
-          end          
+          end
         when 'deleted'
           if story = Tracker::Story.first(id: primary_resource[:id])
             story.destroy!
@@ -556,6 +556,11 @@ module Integrity
         @delivered_stories = Tracker::Story.all(:current_state => ['delivered'], :order => :created_at.asc)
         show :home, title: 'project'
       end
+    end
+
+    get '/epics' do
+      login_required
+      show :epics, title: 'epics'
     end
 
     # List Running Builds (Index)
