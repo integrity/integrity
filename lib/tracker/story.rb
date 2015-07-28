@@ -38,6 +38,7 @@ module Tracker
       end
 
       tracker_story.labels.map(&:id).each do |id|
+        Integrity.logger.debug "MAPPING label id #{id}"
         if epic = Tracker::Epic.first(label_id: id)
           story.epics << epic
         end
@@ -81,6 +82,21 @@ module Tracker
       end
 
       self.save
+    end
+
+    def self.update_from_hook(id, changes)
+      Integrity.logger.debug "self.update_from_hook #{id}, #{changes.inspect}"
+      if changes[:label_ids]
+        tracker_story = TrackerWrapper.tracker_story(id)
+        story = Tracker::Story.first(id: id)
+        story.epics = []
+        tracker_story.labels.map(&:id).each do |label_id|
+          if epic = Tracker::Epic.first(label_id: label_id)
+            story.epics << epic
+          end
+        end
+        story.save
+      end
     end
 
     def start

@@ -42,4 +42,4 @@ tracker:
 sendgrid:
   api_user: <%= ENV['SENDGRID_USERNAME'] %>
   api_key: <%= ENV['SENDGRID_PASSWORD'] %>
-  sender_email: 'honesty_robot@do_not_reply.grnds.com'
+  sender_email: 'Honesty Robot <no_reply@grandrounds.com>'

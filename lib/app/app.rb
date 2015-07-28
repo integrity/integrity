@@ -176,6 +176,13 @@ module Integrity
           if params[:changes].first[:kind] == 'epic'
             Tracker::Epic.update_from_hook params[:primary_resources].first
           end
+# params: {"kind":"story_update_activity","guid":"422567_141430","project_version":141430,"message":"Ken Berland edited this feature","highlight":"edited","changes":[{"kind":"label","change_type":"update","id":12316046,"original_values":{"counts":{"number_of_zero_point_stories_by_state":{"accepted":0,"started":1,"finished":0,"unstarted":0,"planned":0,"delivered":0,"unscheduled":0,"rejected":0,"kind":"counts_by_story_state"},"sum_of_story_estimates_by_state":{"accepted":0,"started":0,"finished":0,"unstarted":0,"planned":0,"delivered":0,"unscheduled":0,"rejected":0,"kind":"counts_by_story_state"},"number_of_stories_by_state":{"accepted":0,"started":1,"finished":0,"unstarted":0,"planned":0,"delivered":0,"unscheduled":0,"rejected":0,"kind":"counts_by_story_state"},"kind":"story_counts"}},"new_values":{"counts":{"number_of_zero_point_stories_by_state":{"accepted":0,"started":0,"finished":0,"unstarted":0,"planned":0,"delivered":0,"unscheduled":0,"rejected":0,"kind":"counts_by_story_state"},"sum_of_story_estimates_by_state":{"accepted":0,"started":0,"finished":0,"unstarted":0,"planned":0,"delivered":0,"unscheduled":0,"rejected":0,"kind":"counts_by_story_state"},"number_of_stories_by_state":{"accepted":0,"started":0,"finished":0,"unstarted":0,"planned":0,"delivered":0,"unscheduled":0,"rejected":0,"kind":"counts_by_story_state"},"kind":"story_counts"}},"name":"baz"},{"kind":"story","change_type":"update","id":99846558,"original_values":{"label_ids":[12316046,12315958,12266016],"updated_at":1437842544000,"labels":["baz","foo","honesty 3"]},"new_values":{"label_ids":[12315958,12266016],"updated_at":1437842562000,"labels":["foo","honesty 3"]},"name":"Update epics when stories are updated","story_type":"feature"}],"primary_resources":[{"kind":"story","id":99846558,"name":"Update epics when stories are updated","story_type":"feature","url":"https://www.pivotaltracker.com/story/show/99846558"}],"project":{"kind":"project","id":422567,"name":"Grand Rounds"},"performed_by": :{"kind":"person","id":998335,"name":"Ken Berland","initials":"KB"},"occurred_at":1437842562000}
+          if params[:kind] == 'story_update_activity'
+            id = params[:primary_resources].first[:id]
+            params[:changes].each do |c|
+              Tracker::Story.update_from_hook(id, c['new_values'])
+            end
+          end
         when 'added'
           if params[:changes].first[:kind] == 'epic'
             Tracker::Epic.create_from_hook params[:primary_resources].first.merge({ label_id: params[:changes].first[:new_values][:label_id] })
