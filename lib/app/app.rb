@@ -560,10 +560,6 @@ module Integrity
 
     get '/epics' do
       login_required
-
-      active_stories = Tracker::Story.all(:current_state => ['started', 'finished', 'delivered'])
-      @active_epics = active_stories.map(&:epics).flatten.uniq
-
       show :epics, title: 'epics'
     end
 
