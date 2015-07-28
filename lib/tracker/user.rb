@@ -6,6 +6,7 @@ module Tracker
     property :name,     String
     property :email,    String
     property :initials, String
+    property :developer, Boolean
 
     has n, :stories, :through => Resource
 

@@ -232,3 +232,49 @@ table.table.commits {
 .label-grey {
   background-color: grey;
 }
+
+.epic {
+    color: darkred;
+    font-size: large;
+    text-overflow: ellipsis;
+    width: 9em;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.user {
+    color: darkblue;
+    font-size: medium;
+    margin-left: 2em;
+}
+
+.story {
+    list-style-type: disc;
+    text-overflow: ellipsis;
+    width: 9em;
+    margin-left: 4em;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.off-da-ranch {
+    font-style: italic;
+}
+
+.epic-block {
+    float: left;
+    background-color: lightgrey;
+    margin: .5em;
+}
+
+.finished {
+    background-color: #999;
+}
+
+.started {
+    background-color: #CD1205;
+}
+
+.delivered {
+    background-color: #449110;
+}

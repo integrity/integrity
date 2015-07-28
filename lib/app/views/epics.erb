@@ -1,4 +1,29 @@
 <div class="row" id="epics">
-  <h3 class="text-center short">Current Epics</h3>
-  <%= Tracker::Report.test %>
+  <h2 class="text-center short">Off da Ranch</h3>
+  <% off_da_ranch = @report.delete(:off_da_ranch) %>
+  <ul class="off-da-ranch">
+  <% off_da_ranch.each do |user| %>
+    <li><%= user %></li>
+  <% end %>
+  </ul>
+
+  <h2 class="text-center short">Epics</h3>
+  <ul class="epics">
+  <% @report.keys.each do |epic| %>
+    <div class="epic-block">
+    <li class="epic"><%= epic %></li>
+    <ul class="users">
+      <% @report[epic].keys.each do |user| %>
+          <li class="user"><%= user %></li>
+	  <ul class="stories" >
+          <% @report[epic][user].each do |story| %>
+	    <li class="story <%= story.current_state %>"><%= story.name %></li>
+	  <% end %>
+	  </ul>
+      <% end %>
+      </ul>
+     </div>
+  <% end %>
+  </ul>
+
 </div>
