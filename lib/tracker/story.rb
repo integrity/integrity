@@ -21,7 +21,7 @@ module Tracker
     has n, :story_owners
     has n, :owners, 'Tracker::User', :through => :story_owners, :via => :user
 
-    belongs_to :requestor, 'Tracker::User', :via => :user
+    belongs_to :requestor, 'Tracker::User'
 
     def self.create(tracker_story_id, tracker_story = nil)
       unless tracker_story
@@ -141,7 +141,7 @@ module Tracker
     end
 
     def send_start_email(starter_name)
-      SendGridWrapper.send_mail(self.requestor.email),
+      SendGridWrapper.send_mail(self.requestor.email,
         I18n.t('story.start_email_subject', story_id: self.id),
         start_email_body(starter_name))
     end
@@ -159,6 +159,10 @@ module Tracker
                                                           pr_body: pr_body)
 
       pr_link = URI.escape(pr_link)
+    end
+
+    def followers
+      (owners << requestor).uniq.map(&:name).join(', ')
     end
 
     private
