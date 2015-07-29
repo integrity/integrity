@@ -8,7 +8,9 @@ module Tracker
     property :initials, String
     property :developer, Boolean
 
-    has n, :stories, :through => Resource
+    has n, :story_owners
+    has n, :owned_stories, 'Tracker::Story', :through => :story_owners, :via => :story
+    has n, :requested_stories, :model => 'Tracker::Story', :child_key => [ :requestor_id ]
 
     def self.create(membership)
       user = User.new

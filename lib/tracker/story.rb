@@ -16,8 +16,12 @@ module Tracker
     timestamps :at
 
     has n, :branches, 'Integrity::Branch'
-    has n, :users, :through => Resource
     has n, :epics, :through => Resource
+
+    has n, :story_owners
+    has n, :owners, 'Tracker::User', :through => :story_owners, :via => :user
+
+    belongs_to :requestor, 'Tracker::User', :via => :user
 
     def self.create(tracker_story_id, tracker_story = nil)
       unless tracker_story
@@ -26,14 +30,11 @@ module Tracker
       return unless tracker_story
 
       story = Story.new
+      story.requestor = Tracker::User.first id: tracker_story.requested_by_id
 
-      user_ids = []
-      user_ids << tracker_story.follower_ids << tracker_story.owner_ids << tracker_story.requested_by_id
-      user_ids = user_ids.flatten.uniq
-
-      user_ids.each do |id|
+      tracker_story.owner_ids.each do |id|
         if user = Tracker::User.first(id: id)
-          story.users << user
+          story.owners << user
         end
       end
 
@@ -62,15 +63,12 @@ module Tracker
       self.name          = tracker_story.name
       self.type          = tracker_story.story_type
       self.current_state = tracker_story.current_state
+      self.requestor = Tracker::User.first id: tracker_story.requested_by_id
 
-      user_ids = []
-      user_ids << tracker_story.follower_ids << tracker_story.owner_ids << tracker_story.requested_by_id
-      user_ids = user_ids.flatten.uniq
-
-      self.users = []
-      user_ids.each do |id|
+      self.owners = []
+      tracker_story.owner_ids.each do |id|
         if user = Tracker::User.first(id: id)
-          self.users << user
+          self.owners << user
         end
       end
 
@@ -117,10 +115,6 @@ module Tracker
       self.save
     end
 
-    def followers
-      users.map(&:name).join(', ')
-    end
-
     def latest_build
       builds = []
       branches.each{|branch| builds << branch.last_build}
@@ -147,7 +141,7 @@ module Tracker
     end
 
     def send_start_email(starter_name)
-      SendGridWrapper.send_mail(self.users.map(&:email),
+      SendGridWrapper.send_mail(self.requestor.email),
         I18n.t('story.start_email_subject', story_id: self.id),
         start_email_body(starter_name))
     end
@@ -170,7 +164,7 @@ module Tracker
     private
 
     def send_pr_email(build)
-      SendGridWrapper.send_mail(self.users.map(&:email),
+      SendGridWrapper.send_mail(self.owners.map(&:email),
         I18n.t('story.pr_email_subject', story_id: self.id),
         pr_email_body(build))
     end
