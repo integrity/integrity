@@ -8,6 +8,14 @@ module Tracker
       epics = Hash.new {|h,k| h[k] = Hash.new {|p,q| p[q]=[]}}
       epics[:off_da_ranch] = []
 
+      stories_in_flight = Tracker::Story.all(:current_state => ['started', 'finished', 'delivered'])
+
+      epics[:story_counts] = {
+        started: stories_in_flight.all(:current_state => 'started').count,
+        finished: stories_in_flight.all(:current_state => 'finished').count,
+        delivered: stories_in_flight.all(:current_state => 'delivered').count,
+      }
+
       Tracker::User.all(developer: true).each do |user|
         on_ranch = false
         user.owned_stories.each do |story|
