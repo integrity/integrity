@@ -243,18 +243,13 @@ table.table.commits {
 }
 
 .user {
+    text-align: center;
     color: darkblue;
     font-size: medium;
-    margin-left: 2em;
 }
 
-.story {
-    list-style-type: disc;
-    text-overflow: ellipsis;
-    width: 9em;
-    margin-left: 4em;
-    white-space: nowrap;
-    overflow: hidden;
+.stories {
+    text-align: center;
 }
 
 .off-da-ranch {
@@ -265,12 +260,5 @@ table.table.commits {
     float: left;
     background-color: lightgrey;
     margin: .5em;
-}
-
-.finished {
-    background-color: #f39300;
-}
-
-.delivered {
-    background-color: #dff0d8;
+    padding: .5em;
 }

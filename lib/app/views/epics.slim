@@ -1,0 +1,20 @@
+.row#epics
+  h2.text-center.short Off da Ranch
+  - off_da_ranch = @report.delete(:off_da_ranch)
+  ul.off-da-ranch
+  - off_da_ranch.each do |user|
+    li = user
+  h2.text-center.short Epics
+  ul.epics
+    - @report.keys.each do |epic|
+      .epic-block
+        li.epic = epic.to_s
+        li.user-list
+          ul.users
+            - @report[epic.to_sym].keys.each do |user|
+              li.user = user.to_s
+              li.stories_list
+                ul.stories
+                  - @report[epic.to_sym][user.to_sym].each do |story|
+                    a href="#{story.url}" title="#{story.name}" target="_blank"
+                      i class="#{story.display_class}"
