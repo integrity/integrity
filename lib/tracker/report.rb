@@ -10,7 +10,7 @@ module Tracker
 
       Tracker::User.all(developer: true).each do |user|
         on_ranch = false
-        user.stories.each do |story|
+        user.owned_stories.each do |story|
           if ['started', 'finished', 'delivered'].include?(story.current_state)
             on_ranch = true
             if story.epics.present?

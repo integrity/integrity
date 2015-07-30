@@ -268,13 +268,9 @@ table.table.commits {
 }
 
 .finished {
-    background-color: #999;
-}
-
-.started {
-    background-color: #CD1205;
+    background-color: #f39300;
 }
 
 .delivered {
-    background-color: #449110;
+    background-color: #dff0d8;
 }
