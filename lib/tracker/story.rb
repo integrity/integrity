@@ -165,6 +165,18 @@ module Tracker
       (owners << requestor).uniq.map(&:name).join(', ')
     end
 
+    def display_class
+      case current_state
+      when 'started'
+        'fa fa-cogs'
+      when 'finished'
+        'fa fa-code-fork'
+      when 'delivered'
+        'fa fa-gavel'
+      else
+      end
+    end
+
     private
 
     def send_pr_email(build)
