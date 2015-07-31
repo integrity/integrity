@@ -126,6 +126,10 @@ module Tracker
       ((Time.now - created_at) / 86400).to_i
     end
 
+    def age_seconds
+      (Time.now - created_at).to_i
+    end
+
     def project
       if latest_branch = self.branches.last
         latest_branch.project
@@ -172,7 +176,7 @@ module Tracker
       when 'finished'
         'fa fa-code-fork'
       when 'delivered'
-        'fa fa-gavel'
+        'fa fa-balance-scale'
       else
       end
     end
