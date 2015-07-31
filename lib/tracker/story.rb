@@ -150,6 +150,12 @@ module Tracker
         start_email_body(starter_name))
     end
 
+    def send_failure_email
+      SendGridWrapper.send_mail(self.owners.map(&:email),
+        I18n.t('story.failure_email_subject', story_id: self.id),
+        failure_email_body)
+    end
+
     def pr_url
       return unless latest_build && (is_non_ci? || self.current_state == 'finished')
 
@@ -193,6 +199,14 @@ module Tracker
       story_name = self.name
       story_link = URI.escape(self.url)
       template = ERB.new(File.read("./lib/app/views/tracker_story_start_email.erb"))
+      html_content = template.result(binding)
+    end
+
+    def failure_email_body
+      story_owner_name = owners.join(', ')
+      story_branch_name = latest_build.branch.name
+      story_link = URI.escape(self.url)
+      template = ERB.new(File.read("./lib/app/views/build_failure_email.erb"))
       html_content = template.result(binding)
     end
 
