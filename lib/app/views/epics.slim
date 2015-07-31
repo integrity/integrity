@@ -1,9 +1,15 @@
 .row#epics
   h2.text-center.short Unassigned Engineers
   - off_da_ranch = @report.delete(:off_da_ranch)
+  - story_counts = @report.delete(:story_counts)
   ul.off-da-ranch
   - off_da_ranch.each do |user|
     li = user
+  h2.text-center.short Stories
+  ul.stories
+    li Started #{story_counts[:started]}
+    li Finished #{story_counts[:finished]}
+    li Delivered #{story_counts[:delivered]}
   h2.text-center.short Epics
   ul.epics
     - @report.keys.each do |epic|
