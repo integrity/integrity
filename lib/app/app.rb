@@ -381,6 +381,7 @@ module Integrity
         Delayed::Job.enqueue(Pancakes::Background::BringUpJob.new(@stack.id))
 
         response['Pancakes-Stack-Id'] = @stack.id.to_s
+        response['Pancakes-Stack-SHA'] = @stack.sha
         response['Pancakes-Stack-State-Path'] = "/pancakes/api/vX/stacks/#{@stack.id}/state"
         response['Pancakes-Stack-BringDown-Path'] = "/pancakes/api/vX/stacks/#{@stack.id}/bring_down"
 
@@ -388,6 +389,7 @@ module Integrity
       else
         id = '42'
         response['Pancakes-Stack-Id'] = id
+        response['Pancakes-Stack-SHA'] = 'beeff00d'
         response['Pancakes-Stack-State-Path'] = "/pancakes/api/vX/stacks/#{id}/state"
         response['Pancakes-Stack-BringDown-Path'] = "/pancakes/api/vX/stacks/#{id}/bring_down"
         halt 200, id
