@@ -176,7 +176,7 @@ module Tracker
       when 'finished'
         'fa fa-code-fork'
       when 'delivered'
-        'fa fa-balance-scale'
+        'fa fa-gavel'
       else
       end
     end
