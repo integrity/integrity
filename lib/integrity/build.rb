@@ -185,7 +185,11 @@ module Integrity
       self.raise_on_save_failure = true
       update(completed_at: Time.now, successful: success)
       notify
-      branch.finish if success && commit.finishes?
+
+      if commit.finishes?
+        success ? branch.finish : branch.failed_on_finishing_commit
+      end
+
       StatHatWrapper.post_value("honesty completed build duration~#{project.name},all", run_time / 60.0)
       StatHatWrapper.post_count("honesty #{success ? 'green' : 'red'} builds~#{project.name},all", 1)
     end

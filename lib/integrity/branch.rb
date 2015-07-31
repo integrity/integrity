@@ -42,6 +42,10 @@ module Integrity
       self.story.try(:finish, self.last_build)
     end
 
+    def failed_on_finishing_commit
+      self.story.try(:send_failure_email)
+    end
+
     def blank?
       last_build.nil?
     end
