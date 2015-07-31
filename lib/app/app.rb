@@ -380,16 +380,16 @@ module Integrity
         @stack.save
         Delayed::Job.enqueue(Pancakes::Background::BringUpJob.new(@stack.id))
 
-        response['X-Pancakes-Stack-Id'] = @stack.id.to_s
-        response['X-Pancakes-Stack-State-Path'] = "/pancakes/api/vX/stacks/#{@stack.id}/state"
-        response['X-Pancakes-Stack-BringDown-Path'] = "/pancakes/api/vX/stacks/#{@stack.id}/bring_down"
+        response['Pancakes-Stack-Id'] = @stack.id.to_s
+        response['Pancakes-Stack-State-Path'] = "/pancakes/api/vX/stacks/#{@stack.id}/state"
+        response['Pancakes-Stack-BringDown-Path'] = "/pancakes/api/vX/stacks/#{@stack.id}/bring_down"
 
         halt 200
       else
         id = '42'
-        response['X-Pancakes-Stack-Id'] = id
-        response['X-Pancakes-Stack-State-Path'] = "/pancakes/api/vX/stacks/#{id}/state"
-        response['X-Pancakes-Stack-BringDown-Path'] = "/pancakes/api/vX/stacks/#{id}/bring_down"
+        response['Pancakes-Stack-Id'] = id
+        response['Pancakes-Stack-State-Path'] = "/pancakes/api/vX/stacks/#{id}/state"
+        response['Pancakes-Stack-BringDown-Path'] = "/pancakes/api/vX/stacks/#{id}/bring_down"
         halt 200, id
       end
     end
