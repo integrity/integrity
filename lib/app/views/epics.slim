@@ -22,5 +22,5 @@
               li.stories_list
                 ul.stories
                   - @report[epic.to_sym][user.to_sym].each do |story|
-                    a href="#{story.url}" title="#{story.name}" target="_blank"
+                    a.age-anchor href="#{story.url}" title="#{story.name}" target="_blank" data-age="#{story.age_seconds}"
                       i class="#{story.display_class}"

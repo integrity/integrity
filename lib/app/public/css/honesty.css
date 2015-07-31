@@ -258,7 +258,10 @@ table.table.commits {
 
 .epic-block {
     float: left;
-    background-color: lightgrey;
+    background-color: #fff7bc;
     margin: .5em;
     padding: .5em;
+    border-color: #7148B2;
+    border-style: solid;
+    border-width: 0.1em;
 }
