@@ -5,7 +5,7 @@ module Tracker
   class Report
 
     def self.developer_report
-      epics = Hash.new {|h,k| h[k] = Hash.new {|p,q| p[q]=[]}}
+      epics = Hash.new {|h,k| h[k] = Hash.new {|p,q| p[q]= Hash.new {|m,n| m[n]=[]}}}
       epics[:off_da_ranch] = []
 
       stories_in_flight = Tracker::Story.all(:current_state => ['started', 'finished', 'delivered'])
@@ -23,10 +23,13 @@ module Tracker
             on_ranch = true
             if story.epics.present?
               story.epics.each do |epic|
-                epics[epic.name.to_sym][user.name.to_sym] << story
+                epics[epic.name.to_sym][:requestors] = [] if epics[epic.name.to_sym][:requestors].blank?
+                epics[epic.name.to_sym][:requestors] << story.requestor.name unless story.requestor.developer
+                epics[epic.name.to_sym][:requestors].uniq!
+                epics[epic.name.to_sym][:developers][user.name.to_sym] << story
               end
             else
-              epics[:non_epic][user.name.to_sym] << story
+              epics[:non_epic][:developers][user.name.to_sym] << story
             end
           else
 

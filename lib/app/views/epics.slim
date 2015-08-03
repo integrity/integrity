@@ -7,13 +7,14 @@
     - @report.keys.each do |epic|
       .epic-block
         li.epic = epic.to_s
+        li.requestors = @report[epic.to_sym][:requestors].join(', ') if @report[epic.to_sym][:requestors].kind_of?(Array)
         li.user-list
           ul.users
-            - @report[epic.to_sym].keys.each do |user|
+            - @report[epic.to_sym][:developers].keys.each do |user|
               li.user = user.to_s
               li.stories_list
                 ul.stories
-                  - @report[epic.to_sym][user.to_sym].each do |story|
+                  - @report[epic.to_sym][:developers][user.to_sym].each do |story|
                     a.age-anchor href="#{story.url}" title="#{story.name}" target="_blank" data-age="#{story.age_seconds}"
                       i class="#{story.display_class}"
 .row
