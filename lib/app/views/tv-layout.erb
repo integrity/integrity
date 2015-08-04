@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title><%= DTEST ? 'DEV ' : '' %>Honesty CI</title>
+
+    <link href="favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+
+    <!--jquery ui-->
+    <link href="/jquery-ui-1.11.4.custom/jquery-ui.min.css" rel="stylesheet">
+    <link href="/jquery-ui-1.11.4.custom/jquery-ui.structure.min.css" rel="stylesheet">
+    <!--<link href="/jquery-ui-1.11.4.custom/jquery-ui.theme.min.css" rel="stylesheet">-->
+
+    <!-- Bootstrap Core CSS -->
+    <link href="/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <!--<link href="css/reset.css" rel="stylesheet">-->
+    <!--<link href="css/buttons.css" rel="stylesheet">-->
+    <link href="/css/layout.css" rel="stylesheet">
+    <link href="/css/honesty.css" rel="stylesheet">
+    <link href="/css/morris.css" rel="stylesheet">
+
+
+    <!-- Custom Fonts -->
+    <link href="/css/font-awesome-4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Orbitron" rel="stylesheet">
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link href="http://fonts.googleapis.com/css?family=Droid+Sans+Mono" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="time">
+	<%= Time.now.strftime('%l:%M:%S %p') %>
+      </div>
+      <div id="page-wrapper">
+        <div class="container-fluid">
+          <%= partial :notice %>
+          <%= yield %>
+        </div><!-- /.container-fluid -->
+      </div><!-- /#page-wrapper -->
+    </div><!-- /#wrapper -->
+
+    <script src="/js/jquery-1.11.0.js"></script>
+    <script src="/jquery-ui-1.11.4.custom/jquery-ui.js"></script>
+    <script src="/js/bootstrap.js"></script>
+    <!-- Morris Charts JavaScript -->
+    <script src="/js/morris/raphael.min.js"></script>
+    <script src="/js/morris/morris.js"></script>
+    <script src="/js/color.js"></script>
+    <script src="/js/honesty.js"></script>
+    <script>
+      if ($('#builds-donut').length != 0) {
+        Morris.Donut({
+          element: 'builds-donut',
+          data: [
+            {label: "Running", value: <%= @load_utilization.running_builds if @load_utilization %> },
+            {label: "Pending", value: <%= @load_utilization.pending_builds if @load_utilization %> }
+          ],
+          resize: true
+        });
+        Morris.Area({
+          element: 'load-area',
+          data: <%= @usage.to_json %>,
+          xkey: 'period',
+          ykeys: ['running', 'pending', 'machines'],
+          labels: ['Running', 'Pending', 'Machines'],
+          pointSize: 2,
+          hideHover: 'auto',
+          resize: true
+        });
+      }
+    </script>
+  </body>
+</html>

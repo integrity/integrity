@@ -570,7 +570,7 @@ module Integrity
     get '/epics' do
       login_required
       @report = Tracker::Report.developer_report
-      slim :'epics'
+      slim :'epics', layout: 'tv-layout.erb'
     end
 
     # List Running Builds (Index)
