@@ -185,20 +185,48 @@ table.table.commits {
   100% { opacity: 1.0; }
 }
 
+@-moz-keyframes pause-shake {
+  0%, 50%, 100% { transform: translate3d(0, 0, 0); }
+
+  55%, 65%, 75%, 85%, 95% { transform: translate3d(-10px, 0, 0); }
+
+  60%, 70%, 80%, 90% { transform: translate3d(10px, 0, 0); }
+}
+
+@-webkit-keyframes pause-shake {
+  0%, 50%, 100% { transform: translate3d(0, 0, 0); }
+
+  55%, 65%, 75%, 85%, 95% { transform: translate3d(-10px, 0, 0); }
+
+  60%, 70%, 80%, 90% { transform: translate3d(10px, 0, 0); }
+}
+
+
+@keyframes pause-shake {
+  0%, 50%, 100% { transform: translate3d(0, 0, 0); }
+
+  55%, 65%, 75%, 85%, 95% { transform: translate3d(-10px, 0, 0); }
+
+  60%, 70%, 80%, 90% { transform: translate3d(10px, 0, 0); }
+}
+
 .label-red {
   background-color: rgb(255, 0, 77);
-  -webkit-animation-name: blinker;
-  -webkit-animation-duration: .2s;
+  -webkit-animation-name: pause-shake;
+  -webkit-animation-duration: 1.5s;
+  -webkit-animation-delay: 2s;
   -webkit-animation-timing-function: linear;
   -webkit-animation-iteration-count: infinite;
 
-  -moz-animation-name: blinker;
-  -moz-animation-duration: .2s;
+  -moz-animation-name: pause-shake;
+  -moz-animation-duration: 1.5s;
+  -moz-animation-delay: 2s;
   -moz-animation-timing-function: linear;
   -moz-animation-iteration-count: infinite;
 
-  animation-name: blinker;
-  animation-duration: .2s;
+  animation-name: pause-shake;
+  animation-duration: 1.5s;
+  animation-delay: 2s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
 }
