@@ -140,6 +140,10 @@ module Tracker
       project.try(:name)
     end
 
+    def branch_name
+      latest_build.branch.name || Tracker::Helper.generate_branch_name_from_story(self)
+    end
+
     def is_non_ci?
       project.try(:command) == 'rake'
     end

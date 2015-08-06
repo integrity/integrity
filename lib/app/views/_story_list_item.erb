@@ -15,6 +15,11 @@
     <td><%= story.commit_state %></td>
     <td><%= story.age %></td>
     <td>
+      <% if story.branch_name %>
+        <a class='copy-branch-name' data-branch-name="<%= story.branch_name %>">Copy!</a>
+      <% end %>
+    </tp>
+    <td>
       <% if story.pr_url %>
         <a href="<%= story.pr_url %>" target="_blank">Make Request
       <% end %>
