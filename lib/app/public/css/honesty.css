@@ -262,34 +262,47 @@ table.table.commits {
 }
 
 .epic {
-    color: darkred;
-    font-size: large;
-    text-overflow: ellipsis;
-    width: 9em;
-    white-space: nowrap;
-    overflow: hidden;
+  color: darkred;
+  font-size: large;
+  text-overflow: ellipsis;
+  width: 9em;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .user {
-    text-align: center;
-    color: darkblue;
-    font-size: medium;
+  text-align: center;
+  color: darkblue;
+  font-size: medium;
 }
 
 .stories {
-    text-align: center;
+  text-align: center;
 }
 
 .off-da-ranch {
-    font-style: italic;
+  font-style: italic;
 }
 
 .epic-block {
-    float: left;
-    background-color: #fff7bc;
-    margin: .5em;
-    padding: .5em;
-    border-color: #7148B2;
-    border-style: solid;
-    border-width: 0.1em;
+  float: left;
+  background-color: #fff7bc;
+  margin: .5em;
+  padding: .5em;
+  border-color: #7148B2;
+  border-style: solid;
+  border-width: 0.1em;
+}
+
+.hidden-textarea {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 2em;
+  height: 2em;
+  padding: 0;
+  border: none;
+  outline: none;
+  boxShadow: none;
+  background: transparent;
 }
