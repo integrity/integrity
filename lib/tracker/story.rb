@@ -141,7 +141,7 @@ module Tracker
     end
 
     def branch_name
-      latest_build.branch.name || Tracker::Helper.generate_branch_name_from_story(self)
+      branch.last.try(:name) || Tracker::Helper.generate_branch_name_from_story(self)
     end
 
     def is_non_ci?
