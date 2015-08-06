@@ -1,7 +1,7 @@
 module Tracker
   class Helper
 
-    STOP_WORDS = %w/as grnds a i the and to from my for/
+    STOP_WORDS = %w/due so as grnds a i am the and to from my for/
 
     class BranchName
       attr_accessor :story_name, :good_words
@@ -12,8 +12,8 @@ module Tracker
       end
 
       def process_story_name name
-        words = name.gsub(/[\.,]/,'').gsub(/\s+/,' ').split(/[\s]/)
-        words.reject{|w| STOP_WORDS.include? w.downcase}
+        words = name.downcase.gsub(/[^a-z0-9\s]/i, '')
+        words.reject{|w| STOP_WORDS.include? w}
       end
 
       def first_two_words
