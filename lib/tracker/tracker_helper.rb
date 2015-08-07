@@ -13,7 +13,7 @@ module Tracker
 
       def process_story_name name
         words = name.downcase.gsub(/[^a-z\s]/i, '').split(/[\s]/).reject! { |c| c.empty? }
-        words.reject{|w| STOP_WORDS.include? w} unless words.empty?
+        words.reject{|w| STOP_WORDS.include? w} if words
       end
 
       def first_two_words
