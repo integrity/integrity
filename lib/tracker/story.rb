@@ -6,7 +6,7 @@ module Tracker
     include DataMapper::Resource
 
     property :id,            Serial
-    property :url,           String
+    property :url,           String, :length => 255
     property :project_id,    Integer
     property :name,          Text, :lazy => false
     property :type,          String
