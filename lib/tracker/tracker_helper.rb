@@ -12,7 +12,7 @@ module Tracker
       end
 
       def process_story_name name
-        words = name.downcase.gsub(/[^a-z0-9\s]/i, '')
+        words = name.downcase.gsub(/[^a-z\s]/i, '').split(/[\s]/)
         words.reject{|w| STOP_WORDS.include? w}
       end
 
