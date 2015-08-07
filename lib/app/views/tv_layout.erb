@@ -43,7 +43,7 @@
   <body>
     <div id="wrapper">
       <div id="time">
-	<%= Time.now.strftime('%l:%M:%S %p') %>
+	<%= Time.now.in_time_zone("America/Los_Angeles").strftime('%l:%M:%S %p') %>
       </div>
       <div id="page-wrapper">
         <div class="container-fluid">
