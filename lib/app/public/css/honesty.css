@@ -292,4 +292,5 @@ table.table.commits {
     border-color: #7148B2;
     border-style: solid;
     border-width: 0.1em;
+    max-width: 13em;
 }
