@@ -43,7 +43,7 @@ module Tracker
 
     def self.generate_branch_name_from_story(story)
       branch = BranchName.new story.name
-      epic_path = story.epics.first ? '' : "#{story.epics.first.id}/"
+      epic_path = story.epics.first ? "#{story.epics.first.id}/" : ''
       "#{story.type}/#{epic_path}#{story.id}/#{branch.name}"
     end
   end
