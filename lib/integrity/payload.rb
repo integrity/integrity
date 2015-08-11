@@ -35,6 +35,10 @@ module Integrity
       Integrity::Repository.new(uri, branch_name)
     end
 
+    def initial_commit
+
+    end
+
     def commit
       commits.detect {|c| c.identifier == @payload.after }
     end
@@ -58,6 +62,10 @@ module Integrity
 
     def private?
       @payload[:repository][:private] rescue true
+    end
+
+    def is_branch_master?
+      branch_name.eql? 'master'
     end
 
     def uri
