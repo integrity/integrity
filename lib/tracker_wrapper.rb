@@ -29,16 +29,10 @@ class TrackerWrapper
     TrackerApi::Resources::Epic.new({ project_id: config.project_id }.merge(data))
   end
 
-  def self.start_story(story_id)
+  def self.set_state(story_id, state)
     tracker_story = project.story(story_id)
     tracker_story.accepted_at   = nil
-    tracker_story.current_state = 'started'
-    tracker_story.save
-  end
-
-  def self.finish_story(story_id)
-    tracker_story = project.story(story_id)
-    tracker_story.current_state = tracker_story.story_type == 'chore' ?  'accepted' : 'finished'
+    tracker_story.current_state = state
     tracker_story.save
   end
 

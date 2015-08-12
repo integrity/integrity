@@ -147,6 +147,13 @@ module Integrity
         halt 404
       end
 
+      if payload.merge_to_master?
+        Integrity.logger.debug "[GITHUB_MERGE_TO_MASTER] #{payload.merged_story}"
+        if story = Tracker::Story.first(id: payload.merged_story)
+          story.deliver
+        end
+      end
+
       build = payload.build!
       log "[HOOK] /hook.json Build: #{build.inspect}"
       #restart_pancakes_stacks_after_github_push(params)

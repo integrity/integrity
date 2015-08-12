@@ -100,14 +100,20 @@ module Tracker
     def start
       self.commit_state = 'started'
       self.current_state  = 'started'
-      TrackerWrapper.start_story(id)
+      TrackerWrapper.set_state(id, current_state)
     end
 
     def finish(build)
       self.commit_state = 'finished'
       self.current_state  = self.type == 'chore' ?  'accepted' : 'finished'
-      TrackerWrapper.finish_story(id)
+      TrackerWrapper.set_state(id, current_state)
       send_pr_email(build)
+    end
+
+    def deliver
+      self.current_state = self.type == 'chore' ?  'accepted' : 'delivered'
+      TrackerWrapper.set_state(id, current_state)
+      send_delivered_email
     end
 
     def set_state(state)
@@ -199,10 +205,16 @@ module Tracker
         pr_email_body(build))
     end
 
+    def send_delivered_email
+      SendGridWrapper.send_mail(self.requestor.email,
+        I18n.t('story.delivered_email_subject', story_id: self.id),
+        delivered_email_body)
+    end
+
     def start_email_body(starter_name)
       story_name = self.name
       story_link = URI.escape(self.url)
-      template = ERB.new(File.read("./lib/app/views/tracker_story_start_email.erb"))
+      template = ERB.new(File.read("./lib/app/views/tracker_emails/story_start_email.erb"))
       html_content = template.result(binding)
     end
 
@@ -210,7 +222,7 @@ module Tracker
       story_owner_name = owners.join(', ')
       story_branch_name = latest_build.branch.name
       story_link = URI.escape(self.url)
-      template = ERB.new(File.read("./lib/app/views/build_failure_email.erb"))
+      template = ERB.new(File.read("./lib/app/views/tracker_emails/build_failure_email.erb"))
       html_content = template.result(binding)
     end
 
@@ -225,7 +237,15 @@ module Tracker
                                                           pr_body: pr_body)
 
       pr_link = URI.escape(pr_link)
-      template = ERB.new(File.read("./lib/app/views/github_pr_email.erb"))
+      template = ERB.new(File.read("./lib/app/views/tracker_emails/github_pr_email.erb"))
+      html_content = template.result(binding)
+    end
+
+    def delivered_email_body
+      story_name = self.name
+      story_owners = owners.map(&:name).join(', ')
+      story_link = URI.escape(self.url)
+      template = ERB.new(File.read("./lib/app/views/tracker_emails/story_delivered_email.erb"))
       html_content = template.result(binding)
     end
   end
