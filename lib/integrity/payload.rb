@@ -89,12 +89,12 @@ module Integrity
       end
     end
 
-    def is_pull_request?
-      @payload[:pull_request].present?
+    def is_new_pull_request?
+      @payload[:pull_request].present? && @payload[:action].eql?('opened')
     end
 
     def pull_request
-      if is_pull_request?
+      if is_new_pull_request?
         pull_request = @payload[:pull_request]
         story_id = story_id_from_message pull_request[:head][:label]
 

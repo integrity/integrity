@@ -128,7 +128,7 @@ module Integrity
       payload = Payload.new(params)
       halt 200 if ignore_branch?(payload.branch_name)
 
-      if payload.is_pull_request?
+      if payload.is_new_pull_request?
         pull_request = payload.pull_request
         Integrity.logger.debug "[GITHUB_TRACKER_EVENT] PULL REQUEST FOR TRACKER STORY: #{pull_request[:story_id]}"
         if story = Tracker::Story.first(id: pull_request[:story_id])
