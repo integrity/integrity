@@ -35,10 +35,6 @@ module Integrity
       Integrity::Repository.new(uri, branch_name)
     end
 
-    def initial_commit
-
-    end
-
     def commit
       commits.detect {|c| c.identifier == @payload.after }
     end
