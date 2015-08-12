@@ -126,7 +126,6 @@ module Integrity
       #log "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{JSON.dump(params)}"
       Integrity.logger.debug "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{JSON.dump(params)}"
       payload = Payload.new(params)
-      halt 200 if ignore_branch?(payload.branch_name)
 
       if payload.is_new_pull_request?
         pull_request = payload.pull_request
@@ -135,7 +134,10 @@ module Integrity
           story.pr_url = pull_request[:pr_url]
           story.finish
         end
+        halt 200
       end
+
+      halt 200 if ignore_branch?(payload.branch_name)
 
       if !payload.project
         log "[HOOK] /hook.json params: #{params.inspect} hook.json called without project"
