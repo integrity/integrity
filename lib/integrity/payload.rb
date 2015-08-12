@@ -66,8 +66,7 @@ module Integrity
 
     def merged_story
       return unless merge_to_master?
-      message = head_commit[:message]
-      message.scan(/(?=\/(\d{6,})\/)/).flatten.last
+      story_id_from_message head_commit[:message]
     end
 
     def private?
@@ -90,12 +89,32 @@ module Integrity
       end
     end
 
+    def is_pull_request?
+      @payload[:pull_request].present?
+    end
+
+    def pull_request
+      if is_pull_request?
+        pull_request = @payload[:pull_request]
+        story_id = story_id_from_message pull_request[:head][:label]
+
+        {
+          pr_url: pull_request[:url],
+          story_id: story_id,
+        }
+      end
+    end
+
     private
 
     def normalize_author(author)
       return 'unknown' unless author
       author = Hashie::Mash.new(author) unless author.is_a?(Hashie::Mash)
       "#{author.name} <#{author.email}>"
+    end
+
+    def story_id_from_message(message)
+      message.scan(/(?=\/(\d{6,})\/)/).flatten.last
     end
   end
 end

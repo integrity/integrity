@@ -7,6 +7,7 @@ module Tracker
 
     property :id,            Serial
     property :url,           String, :length => 255
+    property :pr_url,        String, :length => 255
     property :project_id,    Integer
     property :name,          Text, :lazy => false
     property :type,          String
@@ -103,11 +104,9 @@ module Tracker
       TrackerWrapper.set_state(id, current_state)
     end
 
-    def finish(build)
-      self.commit_state = 'finished'
-      self.current_state  = self.type == 'chore' ?  'accepted' : 'finished'
+    def finish
+      self.current_state  = self.type == 'chore' ?  'started' : 'finished'
       TrackerWrapper.set_state(id, current_state)
-      send_pr_email(build)
     end
 
     def deliver
@@ -166,7 +165,7 @@ module Tracker
         failure_email_body)
     end
 
-    def pr_url
+    def create_pr_url
       return unless latest_build && (is_non_ci? || self.current_state == 'finished')
 
       pr_body = I18n.t('story.pr_body', commit_message: latest_build.commit.message,
@@ -178,7 +177,7 @@ module Tracker
                                                        story_name: self.name,
                                                           pr_body: pr_body)
 
-      pr_link = URI.escape(pr_link)
+      URI.escape(pr_link)
     end
 
     def followers
@@ -199,23 +198,11 @@ module Tracker
 
     private
 
-    def send_pr_email(build)
-      SendGridWrapper.send_mail(self.owners.map(&:email),
-        I18n.t('story.pr_email_subject', story_id: self.id),
-        pr_email_body(build))
-    end
-
-    def send_delivered_email
-      SendGridWrapper.send_mail(self.requestor.email,
-        I18n.t('story.delivered_email_subject', story_id: self.id),
-        delivered_email_body)
-    end
-
     def start_email_body(starter_name)
       story_name = self.name
       story_link = URI.escape(self.url)
       template = ERB.new(File.read("./lib/app/views/tracker_emails/story_start_email.erb"))
-      html_content = template.result(binding)
+      template.result(binding)
     end
 
     def failure_email_body
@@ -223,22 +210,19 @@ module Tracker
       story_branch_name = latest_build.branch.name
       story_link = URI.escape(self.url)
       template = ERB.new(File.read("./lib/app/views/tracker_emails/build_failure_email.erb"))
-      html_content = template.result(binding)
+      template.result(binding)
     end
 
-    def pr_email_body(build)
-      pr_body = I18n.t('story.pr_body', commit_message: build.commit.message,
-                                              story_id: self.id,
-                                             story_url: self.url)
-
-      pr_link = I18n.t('story.pr_github_link', github_project_url: build.branch.project.uri.to_s.gsub('git://', 'http://'),
-                                                      branch_name: build.branch.name,
-                                                       story_name: self.name,
-                                                          pr_body: pr_body)
-
-      pr_link = URI.escape(pr_link)
+    def pr_email_body
+      pr_link = create_pr_url
       template = ERB.new(File.read("./lib/app/views/tracker_emails/github_pr_email.erb"))
-      html_content = template.result(binding)
+      template.result(binding)
+    end
+
+    def send_pr_email
+      SendGridWrapper.send_mail(self.owners.map(&:email),
+        I18n.t('story.pr_email_subject', story_id: self.id),
+        pr_email_body)
     end
 
     def delivered_email_body
@@ -246,7 +230,13 @@ module Tracker
       story_owners = owners.map(&:name).join(', ')
       story_link = URI.escape(self.url)
       template = ERB.new(File.read("./lib/app/views/tracker_emails/story_delivered_email.erb"))
-      html_content = template.result(binding)
+      template.result(binding)
+    end
+
+    def send_delivered_email
+      SendGridWrapper.send_mail(self.requestor.email,
+        I18n.t('story.delivered_email_subject', story_id: self.id),
+        delivered_email_body)
     end
   end
 end
