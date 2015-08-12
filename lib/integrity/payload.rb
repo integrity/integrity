@@ -60,6 +60,20 @@ module Integrity
       @payload[:deleted]
     end
 
+    def merge_to_master?
+      branch_name.eql? 'master'
+    end
+
+    def head_commit
+      @payload[:head_commit]
+    end
+
+    def merged_story
+      return unless merge_to_master?
+      message = head_commit[:message]
+      message.scan(/(?=\/(\d{6,})\/)/).flatten.last
+    end
+
     def private?
       @payload[:repository][:private] rescue true
     end
