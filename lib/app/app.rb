@@ -126,6 +126,17 @@ module Integrity
       #log "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{JSON.dump(params)}"
       Integrity.logger.debug "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{JSON.dump(params)}"
       payload = Payload.new(params)
+
+      if payload.is_new_pull_request?
+        pull_request = payload.pull_request
+        Integrity.logger.debug "[GITHUB_TRACKER_EVENT] PULL REQUEST FOR TRACKER STORY: #{pull_request[:story_id]}"
+        if story = Tracker::Story.first(id: pull_request[:story_id])
+          story.pr_url = pull_request[:pr_url]
+          story.finish
+        end
+        halt 200
+      end
+
       halt 200 if ignore_branch?(payload.branch_name)
 
       if !payload.project
@@ -148,7 +159,7 @@ module Integrity
       end
 
       if payload.merge_to_master?
-        Integrity.logger.debug "[GITHUB_MERGE_TO_MASTER] #{payload.merged_story}"
+        Integrity.logger.debug "[GITHUB_TRACKER_EVENT] MERGE TO MASTER FOR TRACKER STORY: #{payload.merged_story}"
         if story = Tracker::Story.first(id: payload.merged_story)
           story.deliver
         end

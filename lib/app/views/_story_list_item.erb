@@ -19,8 +19,13 @@
       <% end %>
     </tp>
     <td>
+      <% if story.create_pr_url %>
+        <a href="<%= story.create_pr_url %>" target="_blank">Make Request
+      <% end %>
+    </td>
+    <td>
       <% if story.pr_url %>
-        <a href="<%= story.pr_url %>" target="_blank">Make Request
+        <a href="<%= story.pr_url %>" target="_blank">View Request
       <% end %>
     </td>
   </tr>
