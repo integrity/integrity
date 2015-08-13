@@ -1,20 +1,22 @@
 - off_da_ranch = @report.delete(:off_da_ranch)
 - story_counts = @report.delete(:story_counts)
+- non_epic_stories = @report.delete(:story_counts)
+- sorted_report = {NES: non_epic_stories}.merge!(@report.sort.to_h)
 
 .row#epics
   h2.text-center.short Epics
   ul.epics
-    - @report.keys.each do |epic|
+    - sorted_report.keys.each do |epic|
       .epic-block
         li.epic = epic.to_s
-        li.requestors = @report[epic.to_sym][:requestors].join(', ') if @report[epic.to_sym][:requestors].kind_of?(Array)
+        li.requestors = sorted_report[epic.to_sym][:requestors].join(', ') if sorted_report[epic.to_sym][:requestors].kind_of?(Array)
         li.user-list
           ul.users
-            - @report[epic.to_sym][:developers].keys.each do |user|
+            - sorted_report[epic.to_sym][:developers].keys.each do |user|
               li.user = user.to_s
               li.stories_list
                 ul.stories
-                  - @report[epic.to_sym][:developers][user.to_sym].each do |story|
+                  - sorted_report[epic.to_sym][:developers][user.to_sym].each do |story|
                     a.age-anchor href="#{story.url}" title="#{story.name}" target="_blank" data-age="#{story.age_seconds}"
                       i class="#{story.display_class}"
 .row
