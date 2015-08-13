@@ -24,6 +24,8 @@ class SendGridWrapper
   end
 
   def self.send_mail(to, subject, html)
+    return if Integrity.config.dtest?
+
     mail = SendGrid::Mail.new do |m|
       m.to = to
       m.from = config.sender_email_address
