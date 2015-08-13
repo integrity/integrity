@@ -21,9 +21,10 @@
         .form-group
           label for="#{codebase}_branch" #{codebase} branch
           input.form-control type='text' name='[branches][#{codebase}]' id="#{codebase}_branch" placeholder='master' autocomplete='off'
-      /.form-group
+      .form-group
         label for="pocs" Points Of Contact
-        input.form-control type='text' name='pocs' id="pocs" autocomplete='off' placeholder='kato usernames or emails, comma separated'
+        input.form-control type='text' name='pocs' id="pocs" autocomplete='off' placeholder='Rita, Jerry Garcia, Elmo'
+        p.help-block Stacks with out a POC may be deleted without notice!!!
       button.btn.btn-primary type='submit' Create stack
 
   h3 Stacks

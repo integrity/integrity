@@ -580,15 +580,22 @@ module Integrity
         @running = @builds.running.all(order: :started_at.desc)
         @completed = @builds.completed.all(order: :completed_at.desc)
         @stories_in_flight = Tracker::Story.all(:current_state => ['started', 'finished'], :order => :created_at.asc)
-        @delivered_stories = Tracker::Story.all(:current_state => ['delivered'], :order => :created_at.asc)
         show :home, title: 'project'
       end
     end
 
-    get '/epics' do
+    ['/epics', '/allocations'].each do |path|
+      get path do
+        login_required
+        @report = Tracker::Report.developer_report
+        slim :epics, layout: path.eql?('/epics') ? :tv_layout : :layout
+      end
+    end
+
+    get '/delivered' do
       login_required
-      @report = Tracker::Report.developer_report
-      slim :'epics', layout: :tv_layout
+      @delivered_stories = Tracker::Story.all(:current_state => ['delivered'], :order => :created_at.asc)
+      slim :delivered
     end
 
     # List Running Builds (Index)
