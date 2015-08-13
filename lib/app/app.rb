@@ -173,7 +173,7 @@ module Integrity
             story.set_state(params[:highlight])
           else
             story = Tracker::Story.create(primary_resource[:id])
-            story.send_start_email(params[:performed_by][:name]) unless Integrity.config.dtest?
+            story.send_start_email(params[:performed_by][:name])
           end
         when 'finished', 'delivered', 'accepted', 'unstarted'
           if story = Tracker::Story.first(id: primary_resource[:id])
