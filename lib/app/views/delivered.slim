@@ -13,11 +13,11 @@ h2.text-center.short Delivered Stories
     tbody
       - @delivered_stories.each do |story|
         tr
-          th
+          td
             a href="#{story.url}" target="_blank"
               = story.id
-          th = story.type
-          th = story.name
-          th = story.requestor.name
-          th = story.owners.map(&:name).join(', ')
-          th = story.age
+          td = story.type
+          td = story.name
+          td = story.requestor.name
+          td = story.owners.map(&:name).join(', ')
+          td = story.age
