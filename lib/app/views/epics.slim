@@ -4,7 +4,7 @@
 .row#epics
   h2.text-center.short Epics
   ul.epics
-    - @report.keys.each do |epic|
+    - @report.keys.sort.each do |epic|
       .epic-block
         li.epic = epic.to_s
         li.requestors = @report[epic.to_sym][:requestors].join(', ') if @report[epic.to_sym][:requestors].kind_of?(Array)

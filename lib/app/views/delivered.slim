@@ -1,0 +1,24 @@
+h2.text-center.short Delivered Stories
+.table-responsive
+  table.table.table-hover.table-condensed
+    thead
+      tr
+        th ID
+        th Type
+        th Story Name
+        th Requestor
+        th Owners
+        th Age (days)
+      tr
+    thead
+    tbody
+    - @delivered_stories.each do |story|
+      tr
+        th
+          a href="#{story.url}" target="_blank"
+            = story.id
+        th = story.type
+        th = story.name
+        th = story.requestor
+        th = story.owners.join(', ')
+        th = story.age

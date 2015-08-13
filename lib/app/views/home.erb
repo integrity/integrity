@@ -38,7 +38,5 @@
     <%= partial(:story_list, locals: {stories: @stories_in_flight}) if @stories_in_flight.any? %>
     <h3 class="text-center short">Completed Builds</h3>
     <%= partial(:build_list, locals: {builds: @completed}) if @completed.any? %>
-    <h3 class="text-center short">Delivered Stories</h3>
-    <%= partial(:delivered_story_list, locals: {stories: @delivered_stories}) if @delivered_stories.any? %>
   </div>
 <% end %>

@@ -306,3 +306,7 @@ table.table.commits {
   boxShadow: none;
   background: transparent;
 }
+
+.requestors {
+  width: 160px;
+}
