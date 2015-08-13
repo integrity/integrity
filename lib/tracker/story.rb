@@ -167,7 +167,7 @@ module Tracker
     end
 
     def pr_url
-      return unless latest_build && (is_non_ci? || self.current_state == 'finished')
+      return unless latest_build
 
       pr_body = I18n.t('story.pr_body', commit_message: latest_build.commit.message,
                                               story_id: self.id,
