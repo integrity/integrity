@@ -10,7 +10,6 @@ h2.text-center.short Delivered Stories
         th Owners
         th Age (days)
       tr
-    thead
     tbody
     - @delivered_stories.each do |story|
       tr
@@ -19,6 +18,6 @@ h2.text-center.short Delivered Stories
             = story.id
         th = story.type
         th = story.name
-        th = story.requestor
-        th = story.owners.join(', ')
+        th = story.requestor.name
+        th = story.owners.map(&:name).join(', ')
         th = story.age

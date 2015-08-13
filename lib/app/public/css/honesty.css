@@ -285,6 +285,7 @@ table.table.commits {
 }
 
 .epic-block {
+  width: 12em;
   float: left;
   background-color: #fff7bc;
   margin: .5em;
@@ -305,8 +306,4 @@ table.table.commits {
   outline: none;
   boxShadow: none;
   background: transparent;
-}
-
-.requestors {
-  width: 160px;
 }
