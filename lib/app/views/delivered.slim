@@ -11,13 +11,13 @@ h2.text-center.short Delivered Stories
         th Age (days)
       tr
     tbody
-    - @delivered_stories.each do |story|
-      tr
-        th
-          a href="#{story.url}" target="_blank"
-            = story.id
-        th = story.type
-        th = story.name
-        th = story.requestor.name
-        th = story.owners.map(&:name).join(', ')
-        th = story.age
+      - @delivered_stories.each do |story|
+        tr
+          th
+            a href="#{story.url}" target="_blank"
+              = story.id
+          th = story.type
+          th = story.name
+          th = story.requestor.name
+          th = story.owners.map(&:name).join(', ')
+          th = story.age
