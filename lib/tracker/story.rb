@@ -102,17 +102,21 @@ module Tracker
       self.commit_state = 'started'
       self.current_state  = 'started'
       TrackerWrapper.set_state(id, current_state)
+      self.save
     end
 
-    def finish
+    def finish(pr_url)
       self.current_state  = self.type == 'chore' ?  'started' : 'finished'
+      self.pr_url = pr_url
       TrackerWrapper.set_state(id, current_state)
+      self.save
     end
 
     def deliver
       self.current_state = self.type == 'chore' ?  'accepted' : 'delivered'
       TrackerWrapper.set_state(id, current_state)
       send_delivered_email
+      self.save
     end
 
     def set_state(state)
