@@ -188,14 +188,25 @@ module Tracker
       (owners << requestor).uniq.map(&:name).join(', ')
     end
 
+    def age_class
+      case
+      when age < 2
+        'epic-icon-green'
+      when age < 5
+        'epic-icon-orange'
+      else
+        'epic-icon-red'
+      end
+    end
+
     def display_class
       case current_state
       when 'started'
-        'fa fa-cogs'
+        'fa fa-cogs ' + age_class
       when 'finished'
-        'fa fa-code-fork'
+        'fa fa-code-fork ' + age_class
       when 'delivered'
-        'fa fa-gavel'
+        'fa fa-gavel ' + age_class
       else
       end
     end

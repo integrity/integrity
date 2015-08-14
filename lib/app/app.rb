@@ -139,6 +139,7 @@ module Integrity
       if payload.merge_to_master?
         Integrity.logger.debug "[GITHUB_TRACKER_EVENT] MERGE TO MASTER FOR TRACKER STORY: #{payload.merged_story}"
         if story = Tracker::Story.first(id: payload.merged_story)
+          Tracker::Report.create(story.id)
           story.deliver
         end
       end
@@ -587,6 +588,7 @@ module Integrity
       get path do
         login_required
         @report = Tracker::Report.developer_report
+        @nes_report = Tracker::Report.nes_report
         slim :epics, layout: path.eql?('/epics') ? :tv_layout : :layout
       end
     end

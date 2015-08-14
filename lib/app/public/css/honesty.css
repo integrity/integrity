@@ -261,6 +261,18 @@ table.table.commits {
   background-color: grey;
 }
 
+.epic-icon-green {
+  color: #5cb85c;
+}
+
+.epic-icon-orange {
+  color: #f0ad4e;
+}
+
+.epic-icon-red {
+  color: #d9534f;
+}
+
 .epic {
   color: darkred;
   font-size: large;
@@ -285,9 +297,10 @@ table.table.commits {
 }
 
 .epic-block {
+  border-radius: 0.15em;
   width: 12em;
   float: left;
-  background-color: #fff7bc;
+  background-color: #fcfbfd;
   margin: .5em;
   padding: .5em;
   border-color: #7148B2;
