@@ -7,6 +7,8 @@ module Tracker
     def self.nes_report
       stories_in_time_frame = Tracker::StoryMerge.all(:created_at => (2.days.ago..Time.now))
 
+      return unless stories_in_time_frame
+
       stories_count = stories_in_time_frame.count
       nes_count = stories_in_time_frame.count(nes: true)
       es_count = stories_in_time_frame.count(nes: false)

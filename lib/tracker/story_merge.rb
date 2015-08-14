@@ -13,15 +13,15 @@ module Tracker
     def self.create(story_id)
       return unless tracker_story = TrackerWrapper.tracker_story(story_id)
 
-      report = Report.new
+      story_merge = StoryMerge.new
 
-      report.id       = tracker_story.id
-      report.estimate = tracker_story.estimate.to_i
-      report.nes      = tracker_story[:labels].any?{|label| label.name.eql?('nes')}
-      report.type     = tracker_story.story_type
-      report.user_id  = tracker_story.owned_by_id
+      story_merge.id       = tracker_story.id
+      story_merge.estimate = tracker_story.estimate.to_i
+      story_merge.nes      = tracker_story[:labels].any?{|label| label.name.eql?('nes')}
+      story_merge.type     = tracker_story.story_type
+      story_merge.user_id  = tracker_story.owned_by_id
 
-      report.save
+      story_merge.save
     end
   end
 end
