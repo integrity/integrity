@@ -99,7 +99,7 @@ module Integrity
         story_id = story_id_from_message pull_request[:head][:label]
 
         {
-          pr_url: pull_request[:url],
+          pr_url: pull_request[:html_url],
           story_id: story_id,
         }
       end
