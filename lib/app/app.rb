@@ -136,6 +136,13 @@ module Integrity
         halt 200
       end
 
+      if payload.merge_to_master?
+        Integrity.logger.debug "[GITHUB_TRACKER_EVENT] MERGE TO MASTER FOR TRACKER STORY: #{payload.merged_story}"
+        if story = Tracker::Story.first(id: payload.merged_story)
+          story.deliver
+        end
+      end
+
       halt 200 if ignore_branch?(payload.branch_name)
 
       if !payload.project
@@ -155,13 +162,6 @@ module Integrity
       if !payload.commit
         log "[HOOK] /hook.json params: #{params.inspect} hook.json called without commit"
         halt 404
-      end
-
-      if payload.merge_to_master?
-        Integrity.logger.debug "[GITHUB_TRACKER_EVENT] MERGE TO MASTER FOR TRACKER STORY: #{payload.merged_story}"
-        if story = Tracker::Story.first(id: payload.merged_story)
-          story.deliver
-        end
       end
 
       build = payload.build!
