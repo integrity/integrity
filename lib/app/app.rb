@@ -131,8 +131,7 @@ module Integrity
         pull_request = payload.pull_request
         Integrity.logger.debug "[GITHUB_TRACKER_EVENT] PULL REQUEST FOR TRACKER STORY: #{pull_request[:story_id]}"
         if story = Tracker::Story.first(id: pull_request[:story_id])
-          story.pr_url = pull_request[:pr_url]
-          story.finish
+          story.finish(pull_request[:pr_url])
         end
         halt 200
       end
