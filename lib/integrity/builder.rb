@@ -5,13 +5,15 @@ module Integrity
 
     # Only launch build if the number of running builds hasn't reached the limit.
     def self.start_build(build)
+      scheduled_machine = Integrity.cluster.next_available_machine_for_build
+
       if build.started?
         log_build(:start_build, build, "not running because build started already, in #{build.status} state")
-      elsif at_capacity?
-          log_build(:start_build, build, "not running because Integrity is at capacity")
+      elsif scheduled_machine.nil?
+        log_build(:start_build, build, "not running because there are no machines with build capacity")
       else
         log_build(:start_build, build, "Clear builds on branch: #{build.branch_name}") { Integrity::Event.trigger('branch:cleanup', build.id) }
-        log_build(:start_build, build, "Running build"){ launch_build(build) }
+        log_build(:start_build, build, "Running build"){ launch_build(build, scheduled_machine) }
       end
     end
 
@@ -26,10 +28,12 @@ module Integrity
 
     # Launches the passed build on fleet. Before starting, it kills
     # older builds from same branch (and itself if it was a re-run)
-    def self.launch_build(build)
+    def self.launch_build(build, scheduled_machine)
       log_execution(:launch_build, build) do
         log_build(:launch_build, build, :cleanup) { Integrity.cluster.destroy_build(build.service_options) }
-        log_build(:launch_build, build, :starting){ Integrity.cluster.start_build(build.service_options) }
+        log_build(:launch_build, build, "starting on worker ip=#{scheduled_machine.ip} id=#{scheduled_machine.id}") do
+          Integrity.cluster.start_build(build.service_options, scheduled_machine.id)
+        end
         log_build(:launch_build, build, :started) { build.reload.started! }
         log_build(:launch_build, build, 'Updating fleet'){ Build.update_fleetctl_status }
       end
@@ -55,14 +59,6 @@ module Integrity
       msg = "[Integrity::Builder]: #{msg}"
       Integrity.logger.info msg
       Integrity.sys_logger(:delayed_job).info msg
-    end
-
-    #According to this, 4 tp builds would be 'at capacity'.  This is probably an artifact, we can discuss later
-    def self.at_capacity?
-      running   = Build.running(:count)
-      run_limit = Integrity.config.run_limit
-      log "at_capacity?: #{running} out of #{run_limit} builds running."
-      running >= run_limit
     end
   end
 end

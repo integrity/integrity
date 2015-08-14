@@ -8,6 +8,10 @@ module Pancakes
     serialize_attributes :symbolize, :state
 
     STATES = %i[off failed active inactive activating deactivating]
+    PANCAKES_UNIT_REGEX = /\/?(?<stack_name>#{Pancakes::NAMESPACE}_[0-9a-f]+_\d+)_(?<service_name>[a-z0-9\-_]+)(?:\.service)?/i
+    # other versions of this regex that may be useful at some point
+    # /\/?(?:pancakes)_(?<branch_id>[0-9a-f]+)_no(?<serialno>\d+)_(?<service>\w+)/
+    # /\/?(?<stack_name>#{Pancakes::NAMESPACE}_[0-9a-f]+)_(?<service_name>[a-z0-9\-_]+)(?:\.service)?/i
 
     many_to_one :stack, key: :stack_id, class: :"Pancakes::Stack"
 
@@ -194,9 +198,7 @@ module Pancakes
     def self.parse_unit_name(name)
       return nil unless name
       name = name.to_s
-      #match = name.match((/\/?(?:pancakes)_(?<branch_id>[0-9a-f]+)_no(?<serialno>\d+)_(?<service>\w+)/))
-      #match = name.match(/\/?(?<stack_name>#{Pancakes::NAMESPACE}_[0-9a-f]+)_(?<service_name>[a-z0-9\-_]+)(?:\.service)?/i)
-      match = name.match(/\/?(?<stack_name>#{Pancakes::NAMESPACE}_[0-9a-f]+_\d+)_(?<service_name>[a-z0-9\-_]+)(?:\.service)?/i)
+      match = name.match(PANCAKES_UNIT_REGEX)
 
       if !match
         Pancakes.logger.warn "unit name '#{name}' didnt match the expected format"

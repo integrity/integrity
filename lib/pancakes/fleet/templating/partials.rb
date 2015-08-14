@@ -83,6 +83,13 @@ module Pancakes
           )
         end
 
+        def machine_id(machine_id)
+          in_section(
+            'X-Fleet',
+            'MachineID' => machine_id,
+          )
+        end
+
         def global
           in_section(
             'X-Fleet',
