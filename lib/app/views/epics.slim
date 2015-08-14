@@ -28,6 +28,12 @@
   .col-md-6
     h2.text-center.short Stories
     ul.stories
-      li Started #{story_counts[:started]}
-      li Finished #{story_counts[:finished]}
-      li Delivered #{story_counts[:delivered]}
+      li
+        i class='f fa fa-cogs'
+          |  Started #{story_counts[:started]}
+      li
+        i class='fa fa-code-fork'
+          |  Finished #{story_counts[:finished]}
+      li
+        i class='fa fa-gavel'
+          |  Delivered #{story_counts[:delivered]}
