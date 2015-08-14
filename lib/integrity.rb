@@ -83,7 +83,6 @@ require 'integrity/checkout'
 require 'integrity/command_runner'
 require 'integrity/builder'
 require 'integrity/instance_manager'
-require 'integrity/fleet_helper'
 require 'integrity/stats_job'
 
 require 'pancakes'
