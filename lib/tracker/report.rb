@@ -4,6 +4,24 @@ require 'i18n'
 module Tracker
   class Report
 
+    def self.nes_report
+      stories_in_time_frame = Tracker::StoryMerge.all(:created_at => (2.days.ago..Time.now))
+
+      stories_count = stories_in_time_frame.count
+      nes_count = stories_in_time_frame.count(nes: true)
+      es_count = stories_in_time_frame.count(nes: false)
+      nes_percent = ((nes_count.to_f / stories_count) * 100).to_i
+      es_percent = 100 - nes_percent
+
+      {
+        stories_count: stories_count,
+        nes_count: nes_count,
+        es_count: es_count,
+        nes_percent: nes_percent,
+        es_percent: es_percent,
+      }
+    end
+
     def self.developer_report
       epics = Hash.new {|h,k| h[k] = Hash.new {|p,q| p[q]= Hash.new {|m,n| m[n]=[]}}}
       epics[:off_da_ranch] = []
