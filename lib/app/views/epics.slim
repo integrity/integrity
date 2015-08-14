@@ -22,15 +22,15 @@
 .row
   h2.text-center.short Non Epic Story Completion
   .progress
-    .progress-bar.progress-bar-success style="width: #{@nes_report.nes_percent}%"
-    .progress-bar.progress-bar-info style="width: #{@nes_report.es_percent}%"
+    .progress-bar.progress-bar-success style="width: #{@nes_report[:nes_percent]}%"
+    .progress-bar.progress-bar-info style="width: #{@nes_report[:es_percent]}%"
   .row
     .col-md-4
-      | Total Stories #{@nes_report.stories_count}
+      | Total Stories #{@nes_report[:stories_count]}
     .col-md-4
-      | NES Stories #{@nes_report.nes_count}
+      | NES Stories #{@nes_report[:nes_count]}
     .col-md-4
-      | Epic Stories #{@nes_report.es_count}
+      | Epic Stories #{@nes_report[:es_count]}
 .row
   .col-md-6
     h2.text-center.short Unassigned Engineers
