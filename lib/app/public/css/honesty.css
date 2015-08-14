@@ -164,7 +164,7 @@ table.table.commits {
 }
 
 .label-green {
-  background-color: #dff0d8;
+  background-color: rgb(26, 255, 0);
 }
 
 @-moz-keyframes blinker {
@@ -211,7 +211,7 @@ table.table.commits {
 }
 
 .label-red {
-  background-color: #f2dede;
+  background-color: rgb(255, 0, 77);
   -webkit-animation-name: pause-shake;
   -webkit-animation-duration: 1.5s;
   -webkit-animation-delay: 2s;
@@ -254,11 +254,23 @@ table.table.commits {
 }
 
 .label-blue {
-  background-color: #d9edf7;
+  background-color: rgb(0, 197, 255);
 }
 
 .label-grey {
   background-color: grey;
+}
+
+.epic-icon-green {
+  color: #5cb85c;
+}
+
+.epic-icon-orange {
+  color: #f0ad4e;
+}
+
+.epic-icon-red {
+  color: #d9534f;
 }
 
 .epic {

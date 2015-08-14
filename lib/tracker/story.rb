@@ -191,11 +191,11 @@ module Tracker
     def age_class
       case
       when age < 2
-        'text-success'
+        'epic-icon-green'
       when age < 5
-        'text-warning'
+        'epic-icon-orange'
       else
-        'text-danger'
+        'epic-icon-red'
       end
     end
 
