@@ -19,10 +19,23 @@ module Pancakes
         @dry_run
       end
 
-      def next_available_machine_for_build
-        mach_and_builds = running_builds_grouped_by_machine.detect{ |machine,builds| builds.size < machine.max_builds }
-        if mach_and_builds
-          mach_and_builds.first
+      def worker_machines_with_build_capacity
+        worker_machines_with_units.select(&:has_capacity?)
+      end
+
+      def select_machine_for_build_with_id(id)
+        worker_machines_with_build_capacity.detect{|e| e.id == id }
+      end
+
+      def select_machine_for_build
+        machines = worker_machines_with_build_capacity
+          .sort do |a,b|
+            # this sort makes the scheduling affinity be towards filling machines before scheduling on empty ones
+            a.capacity <=> b.capacity
+          end
+
+        if !machines.empty?
+          machines.first
         else
           nil
         end
@@ -115,14 +128,31 @@ module Pancakes
         worker_machines.map{|e| {e.ip => e}}.reduce(&:merge)
       end
 
+      def worker_machines_with_units
+        machines = worker_machines_by_ip
+        units = build_units
+        units.each do |unit|
+          machines[unit.machine_ip].add_unit(unit)
+        end
+        machines.values
+      end
+
       def list_machines
         logger.info 'getting all machines'
         @client.list_machines['machines'].map{|e| Pancakes::Fleet::Machine.new(e) }
       end
 
+      def pancakes_units
+        all_units.select{|u| Unit.pancakes_unit?(u.name) }
+      end
+
+      def build_units
+        all_units.select{|u| !Unit.pancakes_unit?(u.name) && u.name.match(BUILD_REGEX) }
+      end
+
       def all_units
         logger.info 'getting all units'
-        @client.list.select{|u| Unit.pancakes_unit?(u[:name]) }.map{|u| Hashie::Mash.new(u) }
+        client.list.map{|u| Hashie::Mash.new(u) }
       end
 
       # @api public
@@ -146,142 +176,7 @@ module Pancakes
       end
 
       def running_build_count_by_machine
-        running_builds_grouped_by_machine.map{|machine,builds| [machine.ip, builds.size] }
-      end
-
-      def running_builds_grouped_by_machine
-        running_builds.group_by do |_,v|
-          v[:machine]
-        end
-      end
-
-      def running_builds_grouped_by_machine_test
-        {
-          { "ip" => "10.0.80.21", "id" => "929cdd95fdb6486eb0739c469dcefb6b", "metadata" => { "role" => "worker" } } => [
-            [
-              "jarvis_281dd2c_12340",
-              {
-                :units => [
-                  {
-                    :name => "jarvis_281dd2c_12340_app.service",
-                    :load_state => "loaded",
-                    :active_state => "active",
-                    :sub_state => "running",
-                    :machine_id => "929cdd95fdb6486eb0739c469dcefb6b",
-                    :machine_ip => "10.0.80.21"
-                  },
-                  {
-                    :name => "jarvis_281dd2c_12340_mysql.service",
-                    :load_state => "loaded",
-                    :active_state => "active",
-                    :sub_state => "running",
-                    :machine_id => "929cdd95fdb6486eb0739c469dcefb6b",
-                    :machine_ip => "10.0.80.21"
-                  }
-                ],
-                :unit_types => [
-                  "app",
-                  "mysql"
-                ],
-                :machine => {
-                  "ip" => "10.0.80.21",
-                  "id" => "929cdd95fdb6486eb0739c469dcefb6b",
-                  "metadata" => {
-                    "role" => "worker"
-                  }
-                }
-              }
-            ],
-            [
-              "jarvis_7fb4966_12338",
-              {
-                :units => [
-                  {
-                    :name => "jarvis_7fb4966_12338_app.service",
-                    :load_state => "loaded",
-                    :active_state => "active",
-                    :sub_state => "running",
-                    :machine_id => "929cdd95fdb6486eb0739c469dcefb6b",
-                    :machine_ip => "10.0.80.21"
-                  },
-                  {
-                    :name => "jarvis_7fb4966_12338_mysql.service",
-                    :load_state => "loaded",
-                    :active_state => "active",
-                    :sub_state => "running",
-                    :machine_id => "929cdd95fdb6486eb0739c469dcefb6b",
-                    :machine_ip => "10.0.80.21"
-                  }
-                ],
-                :unit_types => [
-                  "app",
-                  "mysql"
-                ],
-                :machine => {
-                  "ip" => "10.0.80.21",
-                  "id" => "929cdd95fdb6486eb0739c469dcefb6b",
-                  "metadata" => {
-                    "role" => "worker"
-                  }
-                }
-              }
-            ]
-          ],
-          { "ip" => "10.0.80.31", "id" => "9449eeba7df8464cb876f8c86712a3e8", "metadata" => { "role" => "worker" } } => [
-            [
-              "jarvis_abda3c6_12341",
-              {
-                :units => [
-                  {
-                    :name => "jarvis_abda3c6_12341_app.service",
-                    :load_state => "loaded",
-                    :active_state => "active",
-                    :sub_state => "running",
-                    :machine_id => "9449eeba7df8464cb876f8c86712a3e8",
-                    :machine_ip => "10.0.80.31"
-                  },
-                  {
-                    :name => "jarvis_abda3c6_12341_mysql.service",
-                    :load_state => "loaded",
-                    :active_state => "active",
-                    :sub_state => "running",
-                    :machine_id => "9449eeba7df8464cb876f8c86712a3e8",
-                    :machine_ip => "10.0.80.31"
-                  }
-                ],
-                :unit_types => [
-                  "app",
-                  "mysql"
-                ],
-                :machine => {
-                  "ip" => "10.0.80.31",
-                  "id" => "9449eeba7df8464cb876f8c86712a3e8",
-                  "metadata" => {
-                    "role" => "worker"
-                  }
-                }
-              }
-            ]
-          ]
-        }.map{|m,b| [Pancakes::Fleet::Machine.new(m), b] }.to_h
-      end
-
-      def running_builds
-        machines = worker_machines_by_ip
-        client.list.select do |unit|
-          unit[:name] =~ BUILD_REGEX && unit[:active_state] == 'active' && unit[:sub_state] == 'running'
-        end
-        .reduce({}) do |memo,unit|
-          match = unit[:name].match(BUILD_REGEX)
-          build, type = match[:build], match[:type]
-          memo[build] ||= { units: [], unit_types: [], machine: machines[unit[:machine_ip]] }
-          memo[build][:units] << unit
-          memo[build][:unit_types] << type
-          memo
-        end
-        .select do |build,info|
-          info[:unit_types].sort == %w[app mysql] || info[:unit_types].sort == %w[app db]
-        end
+        worker_machines_with_units.map{|machine,builds| [machine.ip, machine.running_builds.size] }.to_h
       end
     end
   end

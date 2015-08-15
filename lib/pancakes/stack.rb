@@ -480,7 +480,7 @@ module Pancakes
 
     # @api private
     def refresh_unit_states
-      cluster_units = Pancakes.cluster.all_units.select do |u|
+      cluster_units = Pancakes.cluster.pancakes_units.select do |u|
         u.name.start_with?(self.name)
       end
       .map do |u|

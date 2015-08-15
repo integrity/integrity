@@ -3,17 +3,24 @@ module Integrity
 
     attr_reader :build, :logger
 
-    # Only launch build if the number of running builds hasn't reached the limit.
     def self.start_build(build)
-      scheduled_machine = Integrity.cluster.next_available_machine_for_build
+      scheduled_machine = Integrity.cluster.select_machine_for_build
 
       if build.started?
         log_build(:start_build, build, "not running because build started already, in #{build.status} state")
       elsif scheduled_machine.nil?
         log_build(:start_build, build, "not running because there are no machines with build capacity")
       else
-        log_build(:start_build, build, "Clear builds on branch: #{build.branch_name}") { Integrity::Event.trigger('branch:cleanup', build.id) }
-        log_build(:start_build, build, "Running build"){ launch_build(build, scheduled_machine) }
+        sleep(Integrity.scheduling_wait_for_fleet_time)
+        verified_scheduled_machine = Integrity.cluster.select_machine_for_build_with_id(scheduled_machine.id)
+
+        if verified_scheduled_machine
+          log_build(:start_build, build, "Clear builds on branch: #{build.branch_name}") { Integrity::Event.trigger('branch:cleanup', build.id) }
+          log_build(:start_build, build, "Running build"){ launch_build(build, scheduled_machine) }
+        else
+          log_build(:start_build, build, "not running because the selected machine(id=#{scheduled_machine.id} capacity=#{scheduled_machine.capacity}) " +
+                                         "did not have capacity after the wait time heuristic(#{Integrity.scheduling_wait_for_fleet_time}s)")
+        end
       end
     end
 
