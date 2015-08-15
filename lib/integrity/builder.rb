@@ -11,7 +11,7 @@ module Integrity
       elsif scheduled_machine.nil?
         log_build(:start_build, build, "not running because there are no machines with build capacity")
       else
-        sleep(Integrity.scheduling_wait_for_fleet_time)
+        sleep(Integrity.config.scheduling_wait_for_fleet_time)
         verified_scheduled_machine = Integrity.cluster.select_machine_for_build_with_id(scheduled_machine.id)
 
         if verified_scheduled_machine
@@ -19,7 +19,7 @@ module Integrity
           log_build(:start_build, build, "Running build"){ launch_build(build, scheduled_machine) }
         else
           log_build(:start_build, build, "not running because the selected machine(id=#{scheduled_machine.id} capacity=#{scheduled_machine.capacity}) " +
-                                         "did not have capacity after the wait time heuristic(#{Integrity.scheduling_wait_for_fleet_time}s)")
+                    "did not have capacity after the wait time heuristic(#{Integrity.config.scheduling_wait_for_fleet_time}s)")
         end
       end
     end

@@ -319,4 +319,3 @@ module Integrity
   end
 end
 
-require 'opts/delayed_job'
