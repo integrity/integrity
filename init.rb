@@ -59,7 +59,7 @@ end
 puts "HONESTY_BASE_URL=#{base_url}"
 
 Logging.logger.root.appenders = Logging.appenders.stdout(layout: ::Logging::Layouts::Pattern.new(pattern: logging_pattern))
-Logging.logger['honesty'].level  = :debug
+Logging.logger['honesty'].level  = :info
 
 Integrity.configure do |c|
   c.environment                 = app.environment           # Environment to run in (i.e. development, production, etc).
