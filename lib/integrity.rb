@@ -88,7 +88,7 @@ require 'integrity/stats_job'
 require 'pancakes'
 require 'tracker'
 
-DataMapper::Logger.new(STDOUT, :debug)
+DataMapper::Logger.new(STDOUT, :info)
 DataMapper.finalize
 
 Addressable::URI.class_eval do
