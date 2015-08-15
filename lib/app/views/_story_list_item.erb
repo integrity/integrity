@@ -15,7 +15,7 @@
     <td><%= story.age %></td>
     <td>
       <% if story.branch_name %>
-        <a class='copy-branch-name' data-branch-name="<%= story.branch_name %>" href="">Copy</a>
+        <a class='copy-branch-name' data-branch-name="<%= story.branch_name %>" href="" data-container="body" data-toggle="popover" data-placement="bottom" data-content="<%= story.branch_name %> Copied!" tabindex="0">Copy</a>
       <% end %>
     </tp>
     <td>
