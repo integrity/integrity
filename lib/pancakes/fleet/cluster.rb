@@ -74,7 +74,7 @@ module Pancakes
       end
 
       def destroy_build(service_opts)
-        units = Pancakes::Fleet::Templating.spec_build_template(service_opts)
+        units = Pancakes::Fleet::Templating.spec_build_template(service_opts, nil)
         units.each do |unit_fname,_|
           logger.info "method=destroy_build #{unit_fname}"
           @client.destroy(unit_fname)
