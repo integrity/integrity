@@ -172,8 +172,8 @@ module Integrity
     def self.start_build(build)
       if build.started?
         log_build(:start_build, build, "not running because build started already, in #{build.status} state")
-      elsif first_inquiry_machine.nil?
-        log_build(:start_build, build, "not running because there are no machines with build capacity")
+      #elsif first_inquiry_machine.nil?
+        #log_build(:start_build, build, "not running because there are no machines with build capacity")
       else
         # If another build wins the race against this one for the same first_inquiry_machine,
         # then the loser fill not start until the next github push, finished build, or manual start.
