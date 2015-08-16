@@ -1,21 +1,19 @@
 module Integrity
-  module Scheduler
-    def scheduler_wait
+  class Builder
+    extend Scheduler
+
+    attr_reader :build, :logger
+
+    def self.scheduler_wait
       wait_t = Integrity.config.scheduler_wait_for_fleet_time
       Integrity.logger.debug "sleeping for scheduler_wait_for_fleet_time=#{wait_t}s"
       sleep(wait_t)
     end
 
-    def scheduler_select_machine(nickname=nil, machine_id=nil)
+    def self.scheduler_select_machine(nickname=nil, machine_id=nil)
       machine = machine_id ? Integrity.cluster.select_machine_for_build : Integrity.cluster.select_machine_for_build_with_id(machine_id)
       Integrity.logger.debug "#{nickname || 'selected'} machine=#{machine}"
     end
-  end
-
-  class Builder
-    extend Scheduler
-
-    attr_reader :build, :logger
 
     def self.start_build(build)
       scheduler_wait
