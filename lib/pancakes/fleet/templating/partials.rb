@@ -41,7 +41,7 @@ module Pancakes
             'ExecStartPre' => [
               systemd_minus(docker_cmd(:kill, container_name)),
               systemd_minus(docker_cmd(:rm, container_name)),
-              docker_cmd(:pull, image_name),
+              systemd_minus(docker_cmd(:pull, image_name)),
             ]
           )
         end
