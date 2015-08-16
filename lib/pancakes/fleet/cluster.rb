@@ -4,7 +4,7 @@ module Pancakes
       include Pancakes::ClassLogger
 
       SERVICE_TEMPLATES_PATH = './services/templates'
-      BUILD_REGEX = /\A(?<build>\w+_[0-9a-f]{7}_\d+)_(?<type>\w+)\.service\z/
+      BUILD_REGEX = /\A(?<name>(?<codebase>\w+)_(?<sha>[0-9a-f]{7})_(?<id>\d+))_(?<type>\w+)\.service\z/
 
       attr_reader :client, :etcd
       attr_writer :dry_run

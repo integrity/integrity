@@ -24,46 +24,201 @@ module Integrity
     end
 
     def self.scheduler_select_machine(build, nickname: nil, machine_id: nil)
-      machine = machine_id ? Integrity.cluster.select_machine_for_build_with_id(machine_id) : Integrity.cluster.select_machine_for_build
+      machine =
+        if machine_id
+          Integrity.cluster.select_machine_for_build_with_id(machine_id)
+        else
+          Integrity.cluster.select_machine_for_build
+        end
       log_build(:scheduler_select_machine, build, "#{nickname || 'selected'} machine=#{machine}")
       machine
     end
 
-    # if pending_builds.count > any_machine.capacity
-    def self.scheduler_should_wait?(build)
+    # if pending_builds.count > cluster.capacity then wait
+    # - requires round robin on top of current strategy so that, and even that might not work
+    #
+    # if pending_builds.count > 1 (this 1 includes the current canidate for start_build) then wait
+    #
+    # if pending_builds.count > any_machine.capacity then wait
+    #def self.scheduler_should_wait?(build)
       #log_build(:scheduler_should_wait?, build, "")
-      # TODO
+    #end
+
+    #def self.scheduler_claimed_machines
+      #@__scheduler_claimed_machines ||= {}
+    #end
+
+    #def self.scheduler_add_claim(build_id, machine_id)
+      #scheduler_claimed_machines[build_id] = machine_id
+    #end
+
+    ## policy for removing entries?
+    #def self.scheduler_rm_claim(build_id)
+      #scheduler_claimed_machines.delete(build_id)
+    #end
+
+    # Whenever it's time to look at intents, expire the old ones.
+    def self.cluster_intents_init
+      @__cluster_intents ||= []
     end
 
-    def self.start_build(build)
-      scheduler_wait_for_cluster(build)
-      first_inquiry_machine = scheduler_select_machine(build, nickname: :first_inquiry)
+    def self.cluster_intents
+      cluster_intents_init
+      cluster_expire_intents
+      @__cluster_intents
+    end
 
+    def self.cluster_intent_ttl_sec
+      10000
+    end
+
+    def self.cluster_expire_intents
+      #expired = []
+      @__cluster_intents.reject! do |intent|
+        if intent.created_at && (Time.now - intent.created_at) > intent.ttl
+          #expired << intent
+          true
+        else
+          false
+        end
+      end
+
+      # we would potentially want to call events.rb { Builder.queue_builds! } on this trigger
+      #Integrity::Event.trigger('intents:expired', {expired_intents: expired})
+    end
+
+    def self.cluster_mk_intent(build_id, type, machine)
+      intent = Hashie::Mash.new(
+        build_id: build_id,
+        type: type,
+        ttl: cluster_intent_ttl_sec,
+        created_at: Time.now,
+        machine: machine,
+      )
+    end
+
+    def self.cluster_query_intents(build_id: nil, type: nil, machine_id: nil, not_machine_id: nil)
+      results = cluster_intents.select do |intent|
+        (build_id.nil?   || intent.build_id   == build_id) &&
+        (type.nil?       || intent.type       == type) &&
+        (machine_id.nil? || (intent.machine && intent.machine.id == machine_id))
+      end
+      .reject do |intent|
+        (not_machine_id && intent.machine.id == not_machine_id)
+      end
+
+      results.empty? ? nil : results
+
+      #results = cluster_intents.select do |intent|
+        #intent.build_id == build_id && (type == nil || intent.type == type)
+      #end
+
+      #if type && results.size > 1
+        #raise "expected only one intent with build_id=#{build_id} and type=#{type}. got: #{results.inspect}"
+      #end
+
+      #results
+    end
+
+    def self.cluster_query_first_intent(**args)
+      intents = cluster_query_intents(**args)
+      intents ? intents.first : intents
+    end
+
+    def self.cluster_get_machine_for_start_build(build_id)
+      intent = cluster_query_first_intent(build_id: build_id, type: :build_start)
+      intent ? intent.machine : intent
+    end
+
+    # :build_start intents ideally should expire/resolve exactly when the units
+    # show up to clients of the fleet API.
+    # :build_destroy intents similarly should resolve when the units diappear.
+    #
+    # These situations can be ignored for now by using a conservatiely estimated
+    # hard ttl. The ClusterWatcher component would need to be written to get
+    # the exact functionality defined above.
+    #
+    # The trade off is that resources which are available may not be considered
+    # available (the delete case), and resources that are not available are
+    # considered available (the start case)
+    def self.cluster_add_intent(build_id:, type:, machine: nil)
+      raise("intent build_id can't be nil") unless build_id
+      raise("bad intent type for build_id=#{build_id} (type=#{type})") unless [:build_start, :build_destroy].include?(type)
+
+      if type == :build_destroy && cluster_query_intents(build_id: build_id, type: :build_start)
+        raise("expected no :build_start intent to exist during add :build_destroy for build_id=#{build_id} type=#{type}")
+      end
+
+      if cluster_query_intents(build_id: build_id, type: type)
+        raise("existing intent found with build_id=#{build_id} type=#{type}")
+      end
+
+      cluster_intents << cluster_mk_intent(build_id, type, machine)
+    end
+
+    #def self.cluster_rm_intent(build_id, type)
+      #raise("expected build_id and type but got build_id=#{build_id} and type=#{type}") if !build_id || !type
+
+      #pre_size = cluster_intents.size
+      #cluster_intents.reject! do |intent|
+        #intent.build_id == build_id && intent.type == type
+      #end
+      #post_size = cluster_intents.size
+
+      #raise("expected intent to be removed but none were. build_id=#{build_id} type=#{type}") if post_size == pre_size
+      #nil
+    #end
+
+    def self.start_build(build)
       if build.started?
         log_build(:start_build, build, "not running because build started already, in #{build.status} state")
       elsif first_inquiry_machine.nil?
         log_build(:start_build, build, "not running because there are no machines with build capacity")
       else
-        scheduler_wait_for_cluster(build)
-        verified_machine = scheduler_select_machine(build, nickname: :verified, machine_id: first_inquiry_machine.id)
+        # If another build wins the race against this one for the same first_inquiry_machine,
+        # then the loser fill not start until the next github push, finished build, or manual start.
+        # This is not desired behavior. Instead, we want the loser to try a new machine.
+        #
+        # - approaches:
+        #   - intents
+        #     - pro
+        #       - direct assignment control over packing, which is strategic for autoscaling
+        #       - fastest
+        #     - con
+        #       - state
+        #       - more moving parts
+        #   - retry loop
+        #     - pro
+        #       - stateless
+        #       - control over packing by nature of how the _next_ machine is chosen, which is strategic for autoscaling
+        #     - con
+        #       - slow
+        #       - ugly
+        #   - round-robin with worker MRU list
+        #     - pro
+        #       - simple state
+        #     - con
+        #       - packing is spread out :(
+        intended_machine = cluster_get_machine_for_start_build(build.id)
 
-        if verified_machine
-          log_build(:start_build, build, "verified scheduled machine ip=#{verified_machine.ip}")
+        if intended_machine
+          log_build(:start_build, build, "intended scheduled machine ip=#{intended_machine.ip}")
           log_build(:start_build, build, "Clear builds on branch: #{build.branch_name}") { Integrity::Event.trigger('branch:cleanup', build.id) }
-          log_build(:start_build, build, "Running build"){ launch_build(build, verified_machine) }
+          log_build(:start_build, build, "Running build"){ launch_build(build, intended_machine) }
         else
-          log_build(:start_build, build, "not running because the first_inquiry machine(id=#{first_inquiry_machine.id} capacity=#{first_inquiry_machine.capacity}) " +
-                    "did not have capacity after the scheduler_wait_for_fleet_time")
+          log_build(:start_build, build, "not running because no :build_start intent was found for build_id=#{build_id}")
         end
       end
     end
 
-    # Keep Queuing Builds until we have reached the threashhold.
-    # Try to queue all pending builds.
     def self.queue_builds!
       log "queue_builds: - #{Build.pending.count} builds pending. Attempting to queue remaining builds..."
+      # TODO schedule everything at once, making sure there is room before running the build
+      # add number of :build_destroy intents to the cluster capactity.
+      # subtract number of :build_start intents from cluster capacity
       Build.pending.map do |b|
-        log_build(:queue_builds, b, :queueing) { b.run }
+        cluster_add_intent(build_id: b.id, type: :build_start, machine: :foo)
+        log_build(:queue_builds!, b, :queueing) { b.run }
       end
     end
 
@@ -82,7 +237,9 @@ module Integrity
 
     # Kill fleet unit and destroy service matching build that was passed.
     def self.destroy_build(build)
+      cluster_add_intent(build_id: build.id, type: :build_destroy)
       log_execution(:destroy_build, build){ Integrity.cluster.destroy_build(build.service_options) }
+      # TODO Here, wait for units to disappear, then remove intent.
     end
 
     def self.log_execution(action, build)
