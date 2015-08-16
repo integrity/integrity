@@ -27,6 +27,7 @@ module Pancakes
         worker_machines_with_build_capacity.detect{|e| e.id == id }
       end
 
+      # For_build is meant to imply that a machine with capacity for running a build will be selected (or nil).
       def select_machine_for_build
         machines = worker_machines_with_build_capacity
           .sort do |a,b|

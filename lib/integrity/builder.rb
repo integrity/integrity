@@ -5,6 +5,7 @@ module Integrity
 
     def self.start_build(build)
       scheduled_machine = Integrity.cluster.select_machine_for_build
+      Integrity.logger.debug "scheduled_machine=#{scheduled_machine}"
 
       if build.started?
         log_build(:start_build, build, "not running because build started already, in #{build.status} state")
@@ -12,10 +13,12 @@ module Integrity
         log_build(:start_build, build, "not running because there are no machines with build capacity")
       else
         wait_t = Integrity.config.scheduling_wait_for_fleet_time
-        log "sleeping for scheduling_wait_for_fleet_time=#{wait_t}"
+        Integrity.logger.debug "sleeping for scheduling_wait_for_fleet_time=#{wait_t}s"
         sleep(wait_t)
 
-        if Integrity.cluster.select_machine_for_build_with_id(scheduled_machine.id)
+        verified_machine = Integrity.cluster.select_machine_for_build_with_id(scheduled_machine.id)
+        Integrity.logger.debug "verified_machine=#{verified_machine}"
+        if verified_machine
           log "verified scheduled machine ip=#{scheduled_machine.ip}"
           log_build(:start_build, build, "Clear builds on branch: #{build.branch_name}") { Integrity::Event.trigger('branch:cleanup', build.id) }
           log_build(:start_build, build, "Running build"){ launch_build(build, scheduled_machine) }
@@ -67,7 +70,6 @@ module Integrity
     def self.log(msg)
       msg = "[Integrity::Builder]: #{msg}"
       Integrity.logger.info msg
-      Integrity.sys_logger(:delayed_job).info msg
     end
   end
 end

@@ -51,6 +51,17 @@ module Pancakes
           0
         end
       end
+
+      def to_s
+        format(
+          '#<Machine:0x%x id=%s ip=%s %d/%d',
+          object_id << 1,
+          id,
+          ip,
+          capacity,
+          max_builds,
+        )
+      end
     end
   end
 end
