@@ -1,7 +1,5 @@
 module Integrity
   class Builder
-    extend Scheduler
-
     attr_reader :build, :logger
 
     def self.scheduler_wait
