@@ -2,28 +2,28 @@ module Integrity
   class Builder
     attr_reader :build, :logger
 
-    def self.scheduler_wait_for_cluster
+    def self.scheduler_wait_for_cluster(build)
       wait_t = Integrity.config.scheduler_wait_for_fleet_time
       log_build(:scheduler_wait_for_cluster, build, "sleeping for scheduler_wait_for_fleet_time=#{wait_t}s")
       sleep(wait_t)
     end
 
-    def self.scheduler_select_machine(nickname=nil, machine_id=nil)
+    def self.scheduler_select_machine(build, nickname: nil, machine_id: nil)
       machine = machine_id ? Integrity.cluster.select_machine_for_build : Integrity.cluster.select_machine_for_build_with_id(machine_id)
       log_build(:scheuler_select_machine, build, "#{nickname || 'selected'} machine=#{machine}")
     end
 
     def self.start_build(build)
-      scheduler_wait_for_cluster
-      first_inquiry_machine = scheduler_select_machine(:first_inquiry)
+      scheduler_wait_for_cluster(build)
+      first_inquiry_machine = scheduler_select_machine(build, nickname: :first_inquiry)
 
       if build.started?
         log_build(:start_build, build, "not running because build started already, in #{build.status} state")
       elsif first_inquiry_machine.nil?
         log_build(:start_build, build, "not running because there are no machines with build capacity")
       else
-        scheduler_wait_for_cluster
-        verified_machine = scheduler_select_machine(:verified)
+        scheduler_wait_for_cluster(build)
+        verified_machine = scheduler_select_machine(build, nickname: :verified, machine_id: first_inquiry_machine.id)
 
         if verified_machine
           log_build(:start_build, build, "verified scheduled machine ip=#{verified_machine.ip}")
