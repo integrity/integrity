@@ -1,30 +1,41 @@
 module Integrity
+  module Scheduler
+    def self.scheduler_wait
+      wait_t = Integrity.config.scheduler_wait_for_fleet_time
+      Integrity.logger.debug "sleeping for scheduler_wait_for_fleet_time=#{wait_t}s"
+      sleep(wait_t)
+    end
+
+    def self.scheduler_select_machine(nickname=nil, machine_id=nil)
+      machine = machine_id ? Integrity.cluster.select_machine_for_build : Integrity.cluster.select_machine_for_build_with_id(machine_id)
+      Integrity.logger.debug "#{nickname || 'selected'} machine=#{machine}"
+    end
+  end
+
   class Builder
+    include Scheduler
 
     attr_reader :build, :logger
 
     def self.start_build(build)
-      scheduled_machine = Integrity.cluster.select_machine_for_build
-      Integrity.logger.debug "scheduled_machine=#{scheduled_machine}"
+      scheduler_wait
+      first_inquiry_machine = scheduler_select_machine(:first_inquiry)
 
       if build.started?
         log_build(:start_build, build, "not running because build started already, in #{build.status} state")
-      elsif scheduled_machine.nil?
+      elsif first_inquiry_machine.nil?
         log_build(:start_build, build, "not running because there are no machines with build capacity")
       else
-        wait_t = Integrity.config.scheduling_wait_for_fleet_time
-        Integrity.logger.debug "sleeping for scheduling_wait_for_fleet_time=#{wait_t}s"
-        sleep(wait_t)
+        scheduler_wait
+        verified_machine = scheduler_select_machine(:verified)
 
-        verified_machine = Integrity.cluster.select_machine_for_build_with_id(scheduled_machine.id)
-        Integrity.logger.debug "verified_machine=#{verified_machine}"
         if verified_machine
-          log "verified scheduled machine ip=#{scheduled_machine.ip}"
+          log "verified scheduled machine ip=#{verified_machine.ip}"
           log_build(:start_build, build, "Clear builds on branch: #{build.branch_name}") { Integrity::Event.trigger('branch:cleanup', build.id) }
-          log_build(:start_build, build, "Running build"){ launch_build(build, scheduled_machine) }
+          log_build(:start_build, build, "Running build"){ launch_build(build, verified_machine) }
         else
-          log_build(:start_build, build, "not running because the selected machine(id=#{scheduled_machine.id} capacity=#{scheduled_machine.capacity}) " +
-                    "did not have capacity after the wait time heuristic(#{wait_t}s)")
+          log_build(:start_build, build, "not running because the first_inquiry machine(id=#{first_inquiry_machine.id} capacity=#{first_inquiry_machine.capacity}) " +
+                    "did not have capacity after the scheduler_wait_for_fleet_time")
         end
       end
     end

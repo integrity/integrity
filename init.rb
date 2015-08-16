@@ -84,7 +84,7 @@ Integrity.configure do |c|
   c.logger                      = Logging.logger['honesty']
   c.fleet_host                  = ENV['FLEETCTL_ENDPOINT'] ? ENV['FLEETCTL_ENDPOINT'].sub(/https?:\/\//, '').split(':')[0] : raise("must set FLEETCTL_ENDPOINT")
   c.dtest                       = DTEST
-  c.scheduling_wait_for_fleet_time = 10                     # seconds
+  c.scheduler_wait_for_fleet_time = 10                     # seconds
   # Use https://github.com/grahamc/git-cachecow to cache repository locally
   # c.checkout_proc             = Proc.new do |runner, repo_uri, branch, sha1, target_directory|
   #   runner.run! "git scclone #{repo_uri} #{target_directory} #{sha1}"
