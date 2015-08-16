@@ -206,7 +206,7 @@ module Integrity
           log_build(:start_build, build, "Clear builds on branch: #{build.branch_name}") { Integrity::Event.trigger('branch:cleanup', build.id) }
           log_build(:start_build, build, "Running build"){ launch_build(build, intended_machine) }
         else
-          log_build(:start_build, build, "not running because no :build_start intent was found for build_id=#{build_id}")
+          log_build(:start_build, build, "not running because no :build_start intent was found for build.id=#{build.id}")
         end
       end
     end
