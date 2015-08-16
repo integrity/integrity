@@ -2,6 +2,21 @@ module Integrity
   class Builder
     attr_reader :build, :logger
 
+    # A little context for this:
+    #
+    # Before the scheduler, when a build was started, it was started because it
+    # wons the race of all pending builds being started in a loop in quick
+    # succession. As soon as the winner had it's DB record updated, no other
+    # pending build would be started, because the value for build capacity was
+    # hardcoded and therefore instantly and accurately available.
+    #
+    # In comparison, with the scheduler, the information about build capacity is
+    # delayed. The cluster operation ("delete the old build's units") before
+    # starting a build will not be reflected in the scheduler's inquiries for a
+    # free machine until after a delay. The delay comes from Fleet (which
+    # probably comes from just a lot of shit happening between major system
+    # components, of which Fleet is at the top).
+    #
     def self.scheduler_wait_for_cluster(build)
       wait_t = Integrity.config.scheduler_wait_for_fleet_time
       log_build(:scheduler_wait_for_cluster, build, "sleeping for scheduler_wait_for_fleet_time=#{wait_t}s")
@@ -12,6 +27,12 @@ module Integrity
       machine = machine_id ? Integrity.cluster.select_machine_for_build_with_id(machine_id) : Integrity.cluster.select_machine_for_build
       log_build(:scheduler_select_machine, build, "#{nickname || 'selected'} machine=#{machine}")
       machine
+    end
+
+    # if pending_builds.count > any_machine.capacity
+    def self.scheduler_should_wait?(build)
+      #log_build(:scheduler_should_wait?, build, "")
+      # TODO
     end
 
     def self.start_build(build)
