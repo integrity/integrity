@@ -12,12 +12,12 @@ module Integrity
         log_build(:start_build, build, "not running because there are no machines with build capacity")
       else
         wait_t = Integrity.config.scheduling_wait_for_fleet_time
-        logger.debug "sleeping for scheduling_wait_for_fleet_time=#{wait_t}"
+        log "sleeping for scheduling_wait_for_fleet_time=#{wait_t}"
         sleep(wait_t)
         verified_scheduled_machine = Integrity.cluster.select_machine_for_build_with_id(scheduled_machine.id)
 
         if verified_scheduled_machine
-          logger.debug "verified scheduled machine ip=#{scheduled_machine.ip}"
+          log "verified scheduled machine ip=#{scheduled_machine.ip}"
           log_build(:start_build, build, "Clear builds on branch: #{build.branch_name}") { Integrity::Event.trigger('branch:cleanup', build.id) }
           log_build(:start_build, build, "Running build"){ launch_build(build, scheduled_machine) }
         else
