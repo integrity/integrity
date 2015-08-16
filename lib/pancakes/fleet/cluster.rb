@@ -20,7 +20,9 @@ module Pancakes
       end
 
       def worker_machines_with_build_capacity
-        worker_machines_with_units.select(&:has_capacity?)
+        ww = worker_machines_with_units.select(&:has_capacity?)
+        Pancakes.logger.debug ww.ai
+        ww
       end
 
       def select_machine_for_build_with_id(id)
