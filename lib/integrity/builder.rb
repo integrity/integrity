@@ -10,7 +10,8 @@ module Integrity
 
     def self.scheduler_select_machine(build, nickname: nil, machine_id: nil)
       machine = machine_id ? Integrity.cluster.select_machine_for_build : Integrity.cluster.select_machine_for_build_with_id(machine_id)
-      log_build(:scheuler_select_machine, build, "#{nickname || 'selected'} machine=#{machine}")
+      log_build(:scheduler_select_machine, build, "#{nickname || 'selected'} machine=#{machine}")
+      machine
     end
 
     def self.start_build(build)
