@@ -12,18 +12,17 @@ module Integrity
         log_build(:start_build, build, "not running because there are no machines with build capacity")
       else
         wait_t = Integrity.config.scheduling_wait_for_fleet_time
-        log "sleeping for scheduling_wait_for_fleet_time=#{wait_t}"
-        sleep(wait_t)
-        verified_scheduled_machine = Integrity.cluster.select_machine_for_build_with_id(scheduled_machine.id)
+        #log "sleeping for scheduling_wait_for_fleet_time=#{wait_t}"
+        #sleep(wait_t)
 
-        if verified_scheduled_machine
-          log "verified scheduled machine ip=#{scheduled_machine.ip}"
+        #if Integrity.cluster.select_machine_for_build_with_id(scheduled_machine.id)
+          #log "verified scheduled machine ip=#{scheduled_machine.ip}"
           log_build(:start_build, build, "Clear builds on branch: #{build.branch_name}") { Integrity::Event.trigger('branch:cleanup', build.id) }
           log_build(:start_build, build, "Running build"){ launch_build(build, scheduled_machine) }
-        else
-          log_build(:start_build, build, "not running because the selected machine(id=#{scheduled_machine.id} capacity=#{scheduled_machine.capacity}) " +
-                    "did not have capacity after the wait time heuristic(#{wait_t}s)")
-        end
+        #else
+          #log_build(:start_build, build, "not running because the selected machine(id=#{scheduled_machine.id} capacity=#{scheduled_machine.capacity}) " +
+                    #"did not have capacity after the wait time heuristic(#{wait_t}s)")
+        #end
       end
     end
 
