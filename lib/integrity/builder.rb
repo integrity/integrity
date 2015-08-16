@@ -142,6 +142,8 @@ module Integrity
     # available (the delete case), and resources that are not available are
     # considered available (the start case)
     def self.cluster_add_intent(build_id:, type:, machine: nil)
+      Integrity.logger.debug "adding intent build_id=#{build_id} type=#{type}"
+
       raise("intent build_id can't be nil") unless build_id
       raise("bad intent type for build_id=#{build_id} (type=#{type})") unless [:build_start, :build_destroy].include?(type)
 
