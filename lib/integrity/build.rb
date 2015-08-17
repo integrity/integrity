@@ -15,6 +15,13 @@ require 'integrity/build/status'
     #- If the build has not already finished and there is capacity, then Integrity::Builder.launch_build, will call Builder.start_build
     #- Builder.start_build will actually do the build
 
+
+
+# add props to build which represent intent system:
+# - intended_cluster_state
+# - intended_cluster_state_updated_at
+# - assigned_machine
+
 module Integrity
   class Build
     include DataMapper::Resource

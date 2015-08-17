@@ -171,12 +171,14 @@ module Integrity
       #nil
     #end
 
-    def self.start_build(build)
+    def self.start_build(build, machine)
       if build.started?
         log_build(:start_build, build, "not running because build started already, in #{build.status} state")
       #elsif first_inquiry_machine.nil?
         #log_build(:start_build, build, "not running because there are no machines with build capacity")
       else
+        cluster_add_intent(build_id: build.id, type: :build_start, machine: machine)
+
         # If another build wins the race against this one for the same first_inquiry_machine,
         # then the loser fill not start until the next github push, finished build, or manual start.
         # This is not desired behavior. Instead, we want the loser to try a new machine.
@@ -219,7 +221,6 @@ module Integrity
       # add number of :build_destroy intents to the cluster capactity.
       # subtract number of :build_start intents from cluster capacity
       Build.pending.map do |b|
-        cluster_add_intent(build_id: b.id, type: :build_start, machine: :foo)
         log_build(:queue_builds!, b, :queueing) { b.run }
       end
     end
