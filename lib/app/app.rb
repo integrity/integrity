@@ -571,7 +571,7 @@ module Integrity
     end
 
     # List Projects (Index)
-    ['/?', '/projects'].each do |path|
+    ['/?', '/projects', '/user/:initials'].each do |path|
       get path, provides: 'html' do
         load_projects
         @masters = Integrity::Branch.all(name: 'master').sort{|a,b| b.project.pushes <=> a.project.pushes }
@@ -579,7 +579,12 @@ module Integrity
         @pending = @builds.pending.all(order: :created_at.desc)
         @running = @builds.running.all(order: :started_at.desc)
         @completed = @builds.completed.all(order: :completed_at.desc)
-        @stories_in_flight = Tracker::Story.all(:current_state => ['started', 'finished'], :order => :created_at.asc)
+        if initials = params[:initials]
+          user = Tracker::User.first(initials: params[:initials])
+          @stories_in_flight = user.owned_stories.select{|s| ['started', 'finished'].include?(s.current_state)}
+        else
+          @stories_in_flight = Tracker::Story.all(:current_state => ['started', 'finished'], :order => :created_at.asc)
+        end
         show :home, title: 'project'
       end
     end
