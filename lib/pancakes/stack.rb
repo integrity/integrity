@@ -112,6 +112,11 @@ module Pancakes
       format("%s_%s_%d", Pancakes::NAMESPACE, self.short_sha, self.id)
     end
 
+    def start_unit_with_dumb_sibling(unit, setup_db)
+      Pancakes.cluster.start_template(unit.service_file_name, Pancakes::Fleet::Templating.detect_and_make_template(unit, setup_db: setup_db))
+      Pancakes.cluster.start_template(unit.dumb_sibling_service_file_name, Pancakes::Fleet::Templating.dumb_sibling_template(unit))
+    end
+
     # TODO break this down into smaller pieces. it's also similar in structure to bring_down.
     def bring_up(thaw_dbs: false)
       # pre
@@ -139,7 +144,7 @@ module Pancakes
 
       begin
         nm = netmaster_unit
-        Pancakes.cluster.start_template(nm.service_file_name, Pancakes::Fleet::Templating.detect_and_make_template(nm))
+        start_unit_with_dumb_sibling(nm, true)
 
         timeout = 60
 
@@ -158,7 +163,7 @@ module Pancakes
         #run_thaw_er if should_thaw
 
         non_netmaster_units.each do |unit|
-          Pancakes.cluster.start_template(unit.service_file_name, Pancakes::Fleet::Templating.detect_and_make_template(unit, setup_db: !should_thaw))
+          start_unit_with_dumb_sibling(unit, !should_thaw)
         end
       rescue Pancakes::ClusterError, Pancakes::TimeoutError => e
         # this will never run during a dry_run, so we dont need to worry about re-enabling StatHatWrapper
@@ -190,6 +195,11 @@ module Pancakes
         StatHatWrapper.post_count('pancakes stacks bring_up timeouts', 1)
         return false
       end
+    end
+
+    def destroy_unit_with_dumb_sibling(unit, setup_db)
+      Pancakes.cluster.start_template(unit.service_file_name, Pancakes::Fleet::Templating.detect_and_make_template(unit, setup_db: setup_db))
+      Pancakes.cluster.start_template(unit.dumb_sibling_service_file_name, Pancakes::Fleet::Templating.dumb_sibling_template(unit))
     end
 
     def bring_down(freeze_dbs: false)
@@ -482,6 +492,9 @@ module Pancakes
     def refresh_unit_states
       cluster_units = Pancakes.cluster.all_units.select do |u|
         u.name.start_with?(self.name)
+      end
+      .reject do |u|
+        u.name.match(/dumb_sibling/)
       end
       .map do |u|
         { Unit.parse_unit_name(u.name).service_name => { cluster_unit: u } }

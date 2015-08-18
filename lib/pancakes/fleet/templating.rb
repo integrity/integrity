@@ -252,6 +252,16 @@ module Pancakes
         end
       end
 
+      def dumb_sibling_template(unit)
+        unify([
+          unit_section(desc: "dumb sibling for pancakes container #{unit.service_name}", requires_service_fname: 'docker.service'),
+          install_section,
+          execstart('/bin/sh -c "while true ; do sleep 1 ; done"'),
+          machine_metadata('role=worker'),
+          conflicts(unit.service_file_name),
+        ])
+      end
+
       def freezer_template(freezer_unit:, fname:, mysql_host:, mysql_port:, mysql_dbs:)
         docker_template(
           freezer_unit,
