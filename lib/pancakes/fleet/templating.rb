@@ -258,7 +258,7 @@ module Pancakes
           install_section,
           execstart('/bin/sh -c "while true ; do sleep 1 ; done"'),
           machine_metadata('role=worker'),
-          conflicts(unit.service_file_name),
+          machine_of("#{unit.stack.name}_mysql-dumb_sibling.service"),
         ])
       end
 
