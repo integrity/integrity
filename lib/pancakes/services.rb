@@ -2,12 +2,15 @@ module Pancakes
   module Services
     extend self
 
+    # also supported, etcd uris! 'FOOBAR'  => 'etcd:///grnds/keys/FOOBAR',
     SERVICE_ENV = {
-      'GITHUB_READ_TOKEN'     => ':self',
-      'SEND_WITH_US_API_KEY'  => 'etcd:///grnds/keys/SEND_WITH_US_API_KEY',
-      'AWS_ACCESS_KEY_ID'     => ':DEV_AWS_ACCESS_KEY_ID',
       'AWS_SECRET_ACCESS_KEY' => ':DEV_AWS_SECRET_ACCESS_KEY',
       'AWS_SECRET_KEY'        => ':DEV_AWS_SECRET_KEY',
+      'AWS_ACCESS_KEY_ID'     => ':DEV_AWS_ACCESS_KEY_ID',
+      'DICOMGRID_LOGIN'       => ':self',
+      'DICOMGRID_PASSWORD'    => ':self',
+      'GITHUB_READ_TOKEN'     => ':self',
+      'SEND_WITH_US_API_KEY'  => ':self',
     }
 
     # conventions
