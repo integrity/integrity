@@ -144,7 +144,7 @@ module Pancakes
 
       begin
         nm = netmaster_unit
-        start_unit_with_dumb_sibling(nm)
+        start_unit_with_dumb_sibling(nm, true)
 
         timeout = 60
 
