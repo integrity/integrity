@@ -87,13 +87,16 @@ module Pancakes
 
       def destroy_unit(unit)
         unit_fname = unit.service_file_name
+        dumb_sibling_fname = unit.dumb_sibling_service_file_name
 
         if !@dry_run
-          logger.info "destroying #{unit_fname}"
+          logger.info "destroying #{unit_fname}, #{dumb_sibling_fname}"
           @client.destroy(unit_fname)
           sleep 0.3
+          @client.destroy(dumb_sibling_fname)
+          sleep 0.3
         else
-          logger.info "dry-run destroying #{unit_fname}"
+          logger.info "dry-run destroying #{unit_fname}, #{dumb_sibling_fname}"
         end
       rescue ::Fleet::NotFound => e
         logger.info "unit #{unit.name} not found during destroy. that's fine, we want it gone"

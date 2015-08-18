@@ -90,6 +90,13 @@ module Pancakes
           )
         end
 
+        def conflicts(conflict)
+          in_section(
+            'X-Fleet',
+            'Conflicts' => conflict,
+          )
+        end
+
         def service_type(type)
           in_service_section('Type' => type)
         end
