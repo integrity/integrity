@@ -68,7 +68,7 @@
     <li class="dropdown">
       <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-fw fa-lg fa-user"></i>Developers<b class="caret"></b></a>
       <ul class="dropdown-menu message-dropdown">
-        <% @users.each do |user| %>
+        <% all_developers.each do |user| %>
           <li class="message-preview">
             <a href="/user/<%= user.initials.downcase %>"><%= user.name %></a>
           </li>
