@@ -578,6 +578,7 @@ module Integrity
         @pending = @builds.pending.all(order: :created_at.desc)
         @running = @builds.running.all(order: :started_at.desc)
         @completed = @builds.completed.all(order: :completed_at.desc)
+        @users = Tracker::User.all(developer: true)
         if initials = params[:initials]
           user = Tracker::User.first(initials: params[:initials])
           @stories_in_flight = user.owned_stories.select{|s| ['started', 'finished'].include?(s.current_state)}
