@@ -160,7 +160,7 @@ module Pancakes
         #run_thaw_er if should_thaw
 
         non_netmaster_units.each do |unit|
-          Pancakes.cluster.start_template(unit.service_file_name, Pancakes::Fleet::Templating.detect_and_make_template(nm, setup_db: !should_thaw))
+          Pancakes.cluster.start_template(unit.service_file_name, Pancakes::Fleet::Templating.detect_and_make_template(unit, setup_db: !should_thaw))
         end
 
         non_netmaster_units.each do |unit|
