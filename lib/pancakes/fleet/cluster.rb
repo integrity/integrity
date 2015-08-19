@@ -144,6 +144,14 @@ module Pancakes
         machines.values
       end
 
+      def etcd_machines
+        list_machines.select(&:etcd?)
+      end
+
+      def etcdctl_peers
+        list_machines.select(&:etcd?).map{|e| "http://#{e.ip}:4001" }.join(',')
+      end
+
       def list_machines
         logger.info 'getting all machines'
         @client.list_machines['machines'].map{|e| Pancakes::Fleet::Machine.new(e) }

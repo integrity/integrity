@@ -99,6 +99,10 @@ module Pancakes
         metadata.role == 'worker'
       end
 
+      def etcd?
+        metadata.role == 'etcd'
+      end
+
       def max_builds
         if worker?
           PROD_WORKERS_MAX_BUILDS[ip] || 1
