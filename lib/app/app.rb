@@ -132,10 +132,16 @@ module Integrity
         pull_request = payload.pull_request
         Integrity.logger.debug "[GITHUB_TRACKER_EVENT] PULL REQUEST FOR TRACKER STORY: #{pull_request[:story_id]}"
         if story = Tracker::Story.first(id: pull_request[:story_id])
-          story.pr_url = pull_request[:pr_url]
-          story.finish
+          story.finish(pull_request[:pr_url])
         end
         halt 200
+      end
+
+      if payload.merge_to_master?
+        Integrity.logger.debug "[GITHUB_TRACKER_EVENT] MERGE TO MASTER FOR TRACKER STORY: #{payload.merged_story}"
+        if story = Tracker::Story.first(id: payload.merged_story)
+          story.deliver
+        end
       end
 
       halt 200 if ignore_branch?(payload.branch_name)
@@ -157,13 +163,6 @@ module Integrity
       if !payload.commit
         log "[HOOK] /hook.json params: #{params.inspect} hook.json called without commit"
         halt 404
-      end
-
-      if payload.merge_to_master?
-        Integrity.logger.debug "[GITHUB_TRACKER_EVENT] MERGE TO MASTER FOR TRACKER STORY: #{payload.merged_story}"
-        if story = Tracker::Story.first(id: payload.merged_story)
-          story.deliver
-        end
       end
 
       build = payload.build!
@@ -573,7 +572,7 @@ module Integrity
     end
 
     # List Projects (Index)
-    ['/?', '/projects'].each do |path|
+    ['/?', '/projects', '/user/:initials'].each do |path|
       get path, provides: 'html' do
         load_projects
         @masters = Integrity::Branch.all(name: 'master').sort{|a,b| b.project.pushes <=> a.project.pushes }
@@ -581,7 +580,12 @@ module Integrity
         @pending = @builds.pending.all(order: :created_at.desc)
         @running = @builds.running.all(order: :started_at.desc)
         @completed = @builds.completed.all(order: :completed_at.desc)
-        @stories_in_flight = Tracker::Story.all(:current_state => ['started', 'finished'], :order => :created_at.asc)
+        if initials = params[:initials]
+          user = Tracker::User.first(initials: params[:initials])
+          @stories_in_flight = user.owned_stories.select{|s| ['started', 'finished'].include?(s.current_state)}
+        else
+          @stories_in_flight = Tracker::Story.all(:current_state => ['started', 'finished'], :order => :created_at.asc)
+        end
         show :home, title: 'project'
       end
     end
@@ -590,6 +594,7 @@ module Integrity
       get path do
         login_required
         @report = Tracker::Report.developer_report
+        @nes_report = Tracker::Report.nes_report
         slim :epics, layout: path.eql?('/epics') ? :tv_layout : :layout
       end
     end

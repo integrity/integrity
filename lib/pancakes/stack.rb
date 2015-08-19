@@ -153,6 +153,8 @@ module Pancakes
           raise Pancakes::ClusterError.new('timeout waiting for netmaster container run')
         end
 
+        Pancakes.cluster.start_template(nm.dumb_sibling_service_file_name, Pancakes::Fleet::Templating.dumb_sibling_template(nm))
+
         #should_thaw = thaw_dbs && Pancakes::Freezer.stack_exists?(self.id)
         should_thaw = false
         #run_thaw_er if should_thaw
@@ -160,6 +162,11 @@ module Pancakes
         non_netmaster_units.each do |unit|
           Pancakes.cluster.start_template(unit.service_file_name, Pancakes::Fleet::Templating.detect_and_make_template(unit, setup_db: !should_thaw))
         end
+
+        non_netmaster_units.each do |unit|
+          Pancakes.cluster.start_template(unit.dumb_sibling_service_file_name, Pancakes::Fleet::Templating.dumb_sibling_template(unit))
+        end
+
       rescue Pancakes::ClusterError, Pancakes::TimeoutError => e
         # this will never run during a dry_run, so we dont need to worry about re-enabling StatHatWrapper
         StatHatWrapper.post_count('pancakes stacks bring_up errors', 1)
@@ -190,6 +197,11 @@ module Pancakes
         StatHatWrapper.post_count('pancakes stacks bring_up timeouts', 1)
         return false
       end
+    end
+
+    def destroy_unit_with_dumb_sibling(unit, setup_db)
+      Pancakes.cluster.start_template(unit.service_file_name, Pancakes::Fleet::Templating.detect_and_make_template(unit, setup_db: setup_db))
+      Pancakes.cluster.start_template(unit.dumb_sibling_service_file_name, Pancakes::Fleet::Templating.dumb_sibling_template(unit))
     end
 
     def bring_down(freeze_dbs: false)
@@ -482,6 +494,9 @@ module Pancakes
     def refresh_unit_states
       cluster_units = Pancakes.cluster.pancakes_units.select do |u|
         u.name.start_with?(self.name)
+      end
+      .reject do |u|
+        u.name.match(/dumb_sibling/)
       end
       .map do |u|
         { Unit.parse_unit_name(u.name).service_name => { cluster_unit: u } }

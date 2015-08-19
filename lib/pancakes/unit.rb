@@ -111,6 +111,14 @@ module Pancakes
       end
     end
 
+    def dumb_sibling_name
+      "#{name}-dumb_sibling"
+    end
+
+    def dumb_sibling_service_file_name
+      "#{dumb_sibling_name}.service"
+    end
+
     def service_file_name
       "#{name}.service"
     end

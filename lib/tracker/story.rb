@@ -102,17 +102,22 @@ module Tracker
       self.commit_state = 'started'
       self.current_state  = 'started'
       TrackerWrapper.set_state(id, current_state)
+      self.save
     end
 
-    def finish
+    def finish(pr_url)
       self.current_state  = self.type == 'chore' ?  'started' : 'finished'
+      self.pr_url = pr_url
       TrackerWrapper.set_state(id, current_state)
+      self.save
     end
 
     def deliver
       self.current_state = self.type == 'chore' ?  'accepted' : 'delivered'
-      TrackerWrapper.set_state(id, current_state)
+      self.save
       send_delivered_email
+      Tracker::StoryMerge.create(id)
+      TrackerWrapper.set_state(id, current_state)
     end
 
     def set_state(state)
@@ -184,14 +189,25 @@ module Tracker
       (owners << requestor).uniq.map(&:name).join(', ')
     end
 
+    def age_class
+      case
+      when age < 2
+        'epic-icon-green'
+      when age < 5
+        'epic-icon-orange'
+      else
+        'epic-icon-red'
+      end
+    end
+
     def display_class
       case current_state
       when 'started'
-        'fa fa-cogs'
+        'fa fa-cogs ' + age_class
       when 'finished'
-        'fa fa-code-fork'
+        'fa fa-code-fork ' + age_class
       when 'delivered'
-        'fa fa-gavel'
+        'fa fa-gavel ' + age_class
       else
       end
     end

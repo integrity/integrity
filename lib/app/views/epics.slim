@@ -17,8 +17,18 @@
               li.stories_list
                 ul.stories
                   - sorted_report[epic.to_sym][:developers][user.to_sym].each do |story|
-                    a.age-anchor href="#{story.url}" title="#{story.name}" target="_blank" data-age="#{story.age_seconds}"
+                    a href="#{story.url}" title="#{story.name}" target="_blank" data-age="#{story.age_seconds}"
                       i class="#{story.display_class}"
+.row
+  h2.text-center.short NES Work
+  .progress
+    .progress-bar.progress-bar-success style="width: #{@nes_report[:nes_percent]}%"
+    .progress-bar.progress-bar-info style="width: #{@nes_report[:es_percent]}%"
+  .ul
+    .li
+      | Total Stories #{@nes_report[:stories_count]}
+    .li
+      | NES Percentage #{@nes_report[:nes_percent]}
 .row
   .col-md-6
     h2.text-center.short Unassigned Engineers
@@ -28,6 +38,12 @@
   .col-md-6
     h2.text-center.short Stories
     ul.stories
-      li Started #{story_counts[:started]}
-      li Finished #{story_counts[:finished]}
-      li Delivered #{story_counts[:delivered]}
+      li
+        i class='f fa fa-cogs'
+          |  Started #{story_counts[:started]}
+      li
+        i class='fa fa-code-fork'
+          |  Finished #{story_counts[:finished]}
+      li
+        i class='fa fa-gavel'
+          |  Delivered #{story_counts[:delivered]}

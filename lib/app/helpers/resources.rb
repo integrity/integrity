@@ -17,6 +17,10 @@ module Integrity
         Integrity::Build.all(order: :created_at.desc, limit: limit)
       end
 
+      def all_developers
+        Tracker::User.all(developer: true)
+      end
+
       def update_notifiers_of(project)
         if notifiers = params[:notifiers]
           enabled = params[:enabled_notifiers] || []
