@@ -22,7 +22,7 @@ module Pancakes
       def worker_machines_with_build_capacity
         ww = worker_machines_with_units.select(&:has_capacity?)
         Pancakes.logger.debug "machines with capacity:"
-        Pancakes.logger.debug ww.map{|e|{machine:e,builds:e.running_builds}}.ai
+        Pancakes.logger.debug ww.map{|e|{machine:e,builds:e.builds}}.ai
         ww
       end
 
@@ -191,7 +191,7 @@ module Pancakes
       end
 
       def running_build_count_by_machine
-        worker_machines_with_units.map{|machine,builds| [machine.ip, machine.running_builds.size] }.to_h
+        worker_machines_with_units.map{|machine,builds| [machine.ip, machine.builds.size] }.to_h
       end
     end
   end

@@ -17,19 +17,14 @@ module Integrity
     # probably comes from just a lot of shit happening between major system
     # components, of which Fleet is at the top).
     #
-    def self.scheduler_wait_for_cluster(build)
-      wait_t = Integrity.config.scheduler_wait_for_fleet_time
-      log_build(:scheduler_wait_for_cluster, build, "sleeping for scheduler_wait_for_fleet_time=#{wait_t}s")
-      sleep(wait_t)
-    end
+    #def self.scheduler_wait_for_cluster(build)
+      #wait_t = Integrity.config.scheduler_wait_for_fleet_time
+      #log_build(:scheduler_wait_for_cluster, build, "sleeping for scheduler_wait_for_fleet_time=#{wait_t}s")
+      #sleep(wait_t)
+    #end
 
-    def self.scheduler_select_machine(build, nickname: nil, machine_id: nil)
-      machine =
-        if machine_id
-          Integrity.cluster.select_machine_for_build_with_id(machine_id)
-        else
-          Integrity.cluster.select_machine_for_build
-        end
+    def self.scheduler_select_machine(build)
+      machine = Integrity.cluster.select_machine_for_build
       log_build(:scheduler_select_machine, build, "#{nickname || 'selected'} machine=#{machine}")
       machine
     end
@@ -58,77 +53,67 @@ module Integrity
     #end
 
     # Whenever it's time to look at intents, expire the old ones.
-    def self.cluster_intents_init
-      @__cluster_intents ||= []
-    end
+    #def self.cluster_intents_init
+      #@__cluster_intents ||= []
+    #end
 
-    def self.cluster_intents
-      cluster_intents_init
-      cluster_expire_intents
-      @__cluster_intents
-    end
+    #def self.cluster_intents
+      #cluster_intents_init
+      #cluster_expire_intents
+      #@__cluster_intents
+    #end
 
-    def self.cluster_intent_ttl_sec
-      10000
-    end
+    #def self.cluster_intent_ttl_sec
+      #10000
+    #end
 
-    def self.cluster_expire_intents
-      #expired = []
-      @__cluster_intents.reject! do |intent|
-        if intent.created_at && (Time.now - intent.created_at) > intent.ttl
-          #expired << intent
-          true
-        else
-          false
-        end
-      end
+    #def self.cluster_expire_intents
+      ##expired = []
+      #@__cluster_intents.reject! do |intent|
+        #if intent.created_at && (Time.now - intent.created_at) > intent.ttl
+          ##expired << intent
+          #true
+        #else
+          #false
+        #end
+      #end
 
       # we would potentially want to call events.rb { Builder.queue_builds! } on this trigger
       #Integrity::Event.trigger('intents:expired', {expired_intents: expired})
-    end
+    #end
 
-    def self.cluster_mk_intent(build_id, type, machine)
-      intent = Hashie::Mash.new(
-        build_id: build_id,
-        type: type,
-        ttl: cluster_intent_ttl_sec,
-        created_at: Time.now,
-        machine: machine,
-      )
-    end
+    #def self.cluster_mk_intent(build_id, type, machine)
+      #intent = Hashie::Mash.new(
+        #build_id: build_id,
+        #type: type,
+        #ttl: cluster_intent_ttl_sec,
+        #created_at: Time.now,
+        #machine: machine,
+      #)
+    #end
 
-    def self.cluster_query_intents(build_id: nil, type: nil, machine_id: nil, not_machine_id: nil)
-      results = cluster_intents.select do |intent|
-        (build_id.nil?   || intent.build_id   == build_id) &&
-        (type.nil?       || intent.type       == type) &&
-        (machine_id.nil? || (intent.machine && intent.machine.id == machine_id))
-      end
-      .reject do |intent|
-        (not_machine_id && intent.machine.id == not_machine_id)
-      end
-
-      results.empty? ? nil : results
-
+    #def self.cluster_query_intents(build_id: nil, type: nil, machine_id: nil, not_machine_id: nil)
       #results = cluster_intents.select do |intent|
-        #intent.build_id == build_id && (type == nil || intent.type == type)
+        #(build_id.nil?   || intent.build_id   == build_id) &&
+        #(type.nil?       || intent.type       == type) &&
+        #(machine_id.nil? || (intent.machine && intent.machine.id == machine_id))
+      #end
+      #.reject do |intent|
+        #(not_machine_id && intent.machine.id == not_machine_id)
       #end
 
-      #if type && results.size > 1
-        #raise "expected only one intent with build_id=#{build_id} and type=#{type}. got: #{results.inspect}"
-      #end
+      #results.empty? ? nil : results
+    #end
 
-      #results
-    end
+    #def self.cluster_query_first_intent(**args)
+      #intents = cluster_query_intents(**args)
+      #intents ? intents.first : intents
+    #end
 
-    def self.cluster_query_first_intent(**args)
-      intents = cluster_query_intents(**args)
-      intents ? intents.first : intents
-    end
-
-    def self.cluster_get_machine_for_start_build(build_id)
-      intent = cluster_query_first_intent(build_id: build_id, type: :build_start)
-      intent ? intent.machine : intent
-    end
+    #def self.cluster_get_machine_for_start_build(build_id)
+      #intent = cluster_query_first_intent(build_id: build_id, type: :build_start)
+      #intent ? intent.machine : intent
+    #end
 
     # :build_start intents ideally should expire/resolve exactly when the units
     # show up to clients of the fleet API.
@@ -141,22 +126,22 @@ module Integrity
     # The trade off is that resources which are available may not be considered
     # available (the delete case), and resources that are not available are
     # considered available (the start case)
-    def self.cluster_add_intent(build_id:, type:, machine: nil)
-      Integrity.logger.debug "adding intent build_id=#{build_id} type=#{type}"
+    #def self.cluster_add_intent(build_id:, type:, machine: nil)
+      #Integrity.logger.debug "adding intent build_id=#{build_id} type=#{type}"
 
-      raise("intent build_id can't be nil") unless build_id
-      raise("bad intent type for build_id=#{build_id} (type=#{type})") unless [:build_start, :build_destroy].include?(type)
+      #raise("intent build_id can't be nil") unless build_id
+      #raise("bad intent type for build_id=#{build_id} (type=#{type})") unless [:build_start, :build_destroy].include?(type)
 
-      if type == :build_destroy && cluster_query_intents(build_id: build_id, type: :build_start)
-        raise("expected no :build_start intent to exist during add :build_destroy for build_id=#{build_id} type=#{type}")
-      end
+      #if type == :build_destroy && cluster_query_intents(build_id: build_id, type: :build_start)
+        #raise("expected no :build_start intent to exist during add :build_destroy for build_id=#{build_id} type=#{type}")
+      #end
 
-      if cluster_query_intents(build_id: build_id, type: type)
-        raise("existing intent found with build_id=#{build_id} type=#{type}")
-      end
+      #if cluster_query_intents(build_id: build_id, type: type)
+        #raise("existing intent found with build_id=#{build_id} type=#{type}")
+      #end
 
-      cluster_intents << cluster_mk_intent(build_id, type, machine)
-    end
+      #cluster_intents << cluster_mk_intent(build_id, type, machine)
+    #end
 
     #def self.cluster_rm_intent(build_id, type)
       #raise("expected build_id and type but got build_id=#{build_id} and type=#{type}") if !build_id || !type
@@ -174,10 +159,8 @@ module Integrity
     def self.start_build(build, machine)
       if build.started?
         log_build(:start_build, build, "not running because build started already, in #{build.status} state")
-      #elsif first_inquiry_machine.nil?
-        #log_build(:start_build, build, "not running because there are no machines with build capacity")
       else
-        cluster_add_intent(build_id: build.id, type: :build_start, machine: machine)
+        #cluster_add_intent(build_id: build.id, type: :build_start, machine: machine)
 
         # If another build wins the race against this one for the same first_inquiry_machine,
         # then the loser fill not start until the next github push, finished build, or manual start.
@@ -203,7 +186,7 @@ module Integrity
         #       - simple state
         #     - con
         #       - packing is spread out :(
-        intended_machine = cluster_get_machine_for_start_build(build.id)
+        intended_machine = select_machine_for_build(build)
 
         if intended_machine
           log_build(:start_build, build, "intended scheduled machine ip=#{intended_machine.ip}")
@@ -240,9 +223,7 @@ module Integrity
 
     # Kill fleet unit and destroy service matching build that was passed.
     def self.destroy_build(build)
-      cluster_add_intent(build_id: build.id, type: :build_destroy)
       log_execution(:destroy_build, build){ Integrity.cluster.destroy_build(build.service_options) }
-      # TODO Here, wait for units to disappear, then remove intent.
     end
 
     def self.log_execution(action, build)

@@ -20,7 +20,6 @@ module Integrity
       :status_image_always_public,
       :logger,
       :fleet_host,
-      :scheduler_wait_for_fleet_time,
       :dtest
 
     def status_image_always_public?
