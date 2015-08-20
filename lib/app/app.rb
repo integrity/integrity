@@ -124,7 +124,8 @@ module Integrity
     post '/hook.json', provides: :json do
       @format = :json
       #log "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{JSON.dump(params)}"
-      Integrity.logger.debug "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{JSON.dump(params)}"
+      #Integrity.logger.debug "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{JSON.dump(params)}"
+      Integrity.logger.debug "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json"
       payload = Payload.new(params)
 
       if payload.is_new_pull_request?
@@ -174,7 +175,8 @@ module Integrity
       params.symbolize_keys!
       @format = :json
 
-      Integrity.logger.debug "[HOOK][RECEIVED_TRACKER_PAYLOAD] /tracker.json params: #{JSON.dump(params)}"
+      #Integrity.logger.debug "[HOOK][RECEIVED_TRACKER_PAYLOAD] /tracker.json params: #{JSON.dump(params)}"
+      Integrity.logger.debug "[HOOK][RECEIVED_TRACKER_PAYLOAD] /tracker.json"
 
       params[:primary_resources].each do |primary_resource|
         case params[:highlight]

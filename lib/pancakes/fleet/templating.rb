@@ -141,22 +141,6 @@ module Pancakes
                   service_name,
                   requires_service_name,
                   service_def,
-                  #bash_minus_c(
-                    #logging_prefix_pipe(
-                      #unit.name,
-                      #bash_and(
-                        #dockyard_clone(Pancakes.gh_read_token, config.dockyard_branch),
-                        #dockyard_build_sh(
-                          #sha:               unit.commit.sha,
-                          #repo:              unit.repo,
-                          #debug:             Pancakes.dockyard_debug?,
-                          #branch:            unit.commit.branch,
-                          #setup_db:          setup_db,
-                          #service_type:      unit.subtype,
-                        #)
-                      #)
-                    #)
-                  #)
                 )
               end
 
@@ -302,9 +286,9 @@ module Pancakes
         )
       end
 
-      def logspout
+      def logspout(image_tag)
         unit_name = 'logspout'
-        image_name = 'gliderlabs/logspout:latest'
+        image_name = "gliderlabs/logspout:#{image_tag}"
 
         unify(
           [
@@ -331,27 +315,32 @@ module Pancakes
         )
       end
 
-      def metrics
+      def metrics(etcdctl_peers, image_tag)
         unit_name = 'metrics'
-        image_name = 'grnds/metrics:latest'
+        image_name = "grnds/metrics:#{image_tag}"
 
         unify(
           [
-            unit_section(desc: "Metrics v04", requires_service_fname: 'docker.service'),
+            unit_section(desc: 'Metrics v2', requires_service_fname: 'docker.service'),
             timeout_start_sec('10min'),
             restart_always,
             in_service_section('KillSignal' => 'SIGKILL'),
             docker_execstartpre(container_name: unit_name, image_name: image_name),
             execstart(
-              docker_cmd(
-                :run,
-                '--rm',
-                env_str(
-                  'METRICS_HOSTNAME' => '%H',
-                  'STATHAT_EZ_KEY' => ':self',
-                ),
-                '--name', unit_name,
-                image_name,
+              bash_minus_c(
+                docker_cmd(
+                  :run,
+                  '--rm',
+                  '--name', unit_name,
+                  '--hostname', 'metrics',
+                  env_str(
+                    'METRICS_HOSTNAME' => '%H',
+                    'STATHAT_EZ_KEY'   => ':self',
+                    'ETCDCTL_PEERS'    => etcdctl_peers,
+                    'MACHINE_ID'       => '$(cat /etc/machine-id)'
+                  ),
+                  image_name,
+                )
               )
             ),
             docker_execstop(container_name: unit_name),

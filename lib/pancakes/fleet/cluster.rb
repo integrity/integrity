@@ -3,30 +3,7 @@ module Pancakes
     class Cluster
       include Pancakes::ClassLogger
 
-      SERVICE_TEMPLATES_PATH = './services/templates'
-      #SERVICE_TEMPLATE = <<HERE
-#[Unit]
-#Description=Run %{service_name}
-#After=%{after}.service
-#Requires=%{after}.service
-
-#[Service]
-#TimeoutStartSec=10min
-#ExecStartPre=-/usr/bin/docker kill %{service_name}
-#ExecStartPre=-/usr/bin/docker rm %{service_name}
-#ExecStartPre=/usr/bin/docker pull %{image}
-#ExecStart=/usr/bin/docker run --rm -v /var/lib/docker/tmp:/tmp/hosttmp --name %{service_name} %{volumes} %{links} %{envs} %{ports} %{image} %{command}
-#ExecStop=/usr/bin/docker stop %{service_name}
-#ExecStopPost=/usr/bin/docker rm -f %{service_name}
-
-#[Install]
-#WantedBy=local.target
-
-#[X-Fleet]
-#%{machine_of}
-#MachineMetadata=role=worker
-#HERE
-
+      BUILD_REGEX = /\A(?<name>(?<codebase>\w+)_(?<sha>[0-9a-f]{7})_(?<id>\d+))_(?<type>\w+)\.service\z/
 
       attr_reader :client, :etcd
       attr_writer :dry_run
@@ -102,8 +79,7 @@ module Pancakes
         logger.info "unit #{unit.name} not found during destroy. that's fine, we want it gone"
       end
 
-      # @api private
-      def reset_failed(host)
+      private def reset_failed(host)
         if !@dry_run
           logger.info "calling systemctl reset-failed on #{host}"
           system("ssh core@#{host} sudo systemctl reset-failed")
@@ -120,21 +96,52 @@ module Pancakes
       end
 
       def worker_machine_ips
-        list_machines.select{|m| m['metadata']['role'] == 'worker' }.map{|m| m['primaryIP'] }
+        worker_machines.map(&:ip)
       end
 
-      # @api private
+      def worker_machines
+        list_machines.select(&:worker?)
+      end
+
+      def worker_machines_by_ip
+        worker_machines.map{|e| {e.ip => e}}.reduce(&:merge)
+      end
+
+      def worker_machines_with_units
+        machines = worker_machines_by_ip
+        units = build_units
+        units.each do |unit|
+          machines[unit.machine_ip].add_unit(unit)
+        end
+        machines.values
+      end
+
+      def etcd_machines
+        list_machines.select(&:etcd?)
+      end
+
+      def etcdctl_peers
+        etcd_machines.map{|e| "http://#{e.ip}:4001" }.join(',')
+      end
+
       def list_machines
         logger.info 'getting all machines'
-        @client.list_machines['machines']
+        @client.list_machines['machines'].map{|e| Pancakes::Fleet::Machine.new(e) }
+      end
+
+      def pancakes_units
+        all_units.select{|u| Unit.pancakes_unit?(u.name) }
+      end
+
+      def build_units
+        all_units.select{|u| !Unit.pancakes_unit?(u.name) && u.name.match(BUILD_REGEX) }
       end
 
       def all_units
         logger.info 'getting all units'
-        @client.list.select{|u| Unit.pancakes_unit?(u[:name]) }.map{|u| Hashie::Mash.new(u) }
+        client.list.map{|u| Hashie::Mash.new(u) }
       end
 
-      # @api public
       def get_service_status
         services = @client.list.select{|s| s[:name].scan(/_/).count == 3}
         services.each do|service|
@@ -152,6 +159,10 @@ module Pancakes
           id_sha[id] = services.select{|s| s[:id] == id}
         end
         id_sha
+      end
+
+      def running_build_count_by_machine
+        worker_machines_with_units.map{|machine,builds| [machine.ip, machine.builds.size] }.to_h
       end
     end
   end

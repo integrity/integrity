@@ -243,6 +243,7 @@ require 'stathat_wrapper'
 require 'pancakes/errors'
 
 require 'pancakes/fleet'
+require 'pancakes/fleet/machine'
 require 'pancakes/fleet/etcd'
 require 'pancakes/fleet/cluster'
 

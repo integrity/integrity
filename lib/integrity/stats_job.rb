@@ -11,7 +11,7 @@ module Integrity
     def send_honesty_stats
       Integrity.logger.info 'sending honesty stats'
 
-      FleetHelper.running_build_count_by_machine.each do |machine_ip,count|
+      Integrity.cluster.running_build_count_by_machine.each do |machine_ip,count|
         StatHatWrapper.post_value("honesty running builds #{machine_ip}", count)
       end
 

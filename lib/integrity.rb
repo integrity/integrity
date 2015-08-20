@@ -83,13 +83,12 @@ require 'integrity/checkout'
 require 'integrity/command_runner'
 require 'integrity/builder'
 require 'integrity/instance_manager'
-require 'integrity/fleet_helper'
 require 'integrity/stats_job'
 
 require 'pancakes'
 require 'tracker'
 
-DataMapper::Logger.new(STDOUT, :debug)
+DataMapper::Logger.new(STDOUT, :info)
 DataMapper.finalize
 
 Addressable::URI.class_eval do
@@ -243,14 +242,35 @@ module Integrity
     Time.now.to_i.to_s
   end
 
-  def self.start_service(service)
-    unit_fname = "#{service}.service"
-    hsh = Pancakes::Fleet::Templating.send(service.to_sym)
-    self.cluster.start_template(unit_fname, hsh)
+  def self.destroy_metrics_units
+    logger.info "stopping metrics"
+    cluster.client.stop('metrics.service')
+    sleep 1
+    logger.info "destroying metrics"
+    cluster.client.destroy('metrics.service')
+    sleep 0.1
+  rescue ::Fleet::NotFound => e
+    logger.info "there was no metrics to destroy. fine."
+  end
+
+  def self.start_metrics(etcdctl_peers: self.cluster.etcdctl_peers, image_tag: 'latest')
+    destroy_metrics_units
+    cluster.start_template(
+      'metrics.service',
+      Pancakes::Fleet::Templating.metrics(etcdctl_peers, image_tag)
+    )
+  end
+
+  def self.start_logspout(image_tag: 'latest')
+    cluster.start_template(
+      'logspout.service',
+      Pancakes::Fleet::Templating.logspout(image_tag)
+    )
   end
 
   def self.start_services
-    ['logspout', 'metrics'].each {|s| self.start_service(s) }
+    start_logspout
+    start_metric
   end
 
   def self.max_running_builds
