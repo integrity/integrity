@@ -3,7 +3,6 @@ module Pancakes
     class Cluster
       include Pancakes::ClassLogger
 
-      SERVICE_TEMPLATES_PATH = './services/templates'
       BUILD_REGEX = /\A(?<name>(?<codebase>\w+)_(?<sha>[0-9a-f]{7})_(?<id>\d+))_(?<type>\w+)\.service\z/
 
       attr_reader :client, :etcd
@@ -106,8 +105,7 @@ module Pancakes
         logger.info "unit #{unit.name} not found during destroy. that's fine, we want it gone"
       end
 
-      # @api private
-      def reset_failed(host)
+      private def reset_failed(host)
         if !@dry_run
           logger.info "calling systemctl reset-failed on #{host}"
           system("ssh core@#{host} sudo systemctl reset-failed")
@@ -170,7 +168,6 @@ module Pancakes
         client.list.map{|u| Hashie::Mash.new(u) }
       end
 
-      # @api public
       def get_service_status
         services = @client.list.select{|s| s[:name].scan(/_/).count == 3}
         services.each do|service|
