@@ -109,6 +109,7 @@ module Integrity
     def started!
       log 'started!'
       update(started_at: Time.now)
+      StatHatWrapper.post_count("honesty started builds~#{project.name},all", 1)
       update_ports if server?
     end
 
@@ -188,6 +189,7 @@ module Integrity
 
       StatHatWrapper.post_value("honesty completed build duration~#{project.name},all", run_time / 60.0)
       StatHatWrapper.post_count("honesty #{success ? 'green' : 'red'} builds~#{project.name},all", 1)
+      StatHatWrapper.post_count("honesty completed builds~#{project.name},all", 1)
     end
 
     def escape_glob(path)
