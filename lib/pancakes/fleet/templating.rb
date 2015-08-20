@@ -117,7 +117,7 @@ module Pancakes
           [:project, :sha, :id].map{|i| build_hsh[i] }.join('_')
         end
 
-        def spec_build_template(build_hsh, machine_id)
+        def spec_build_template(build_hsh)
           services =
             if build_hsh[:template_name] == 'spec'
               service_def_for_spec_build(build_hsh)
@@ -135,7 +135,7 @@ module Pancakes
 
             template_hash =
               if %w(mysql db).include?(service_def[:name])
-                spec_db_template(service_name, requires_service_name, service_def, machine_id)
+                spec_db_template(service_name, requires_service_name, service_def)
               else
                 spec_docker_template(
                   service_name,
@@ -179,7 +179,7 @@ module Pancakes
           unify(partials)
         end
 
-        def spec_db_template(service_name, requires_service_name, service_def, machine_id=nil)
+        def spec_db_template(service_name, requires_service_name, service_def)
           partials = [
             unit_section(desc: "honesty build #{service_name}", requires_service_fname: requires_service_name),
             timeout_start_sec('10min'),
@@ -189,10 +189,6 @@ module Pancakes
             install_section,
             machine_metadata('role=worker'),
           ]
-
-          if machine_id
-            partials << machine_id(machine_id)
-          end
 
           partials << execstart(
             docker_cmd(

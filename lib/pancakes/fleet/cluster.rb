@@ -18,34 +18,8 @@ module Pancakes
         @dry_run
       end
 
-      def worker_machines_with_build_capacity
-        ww = worker_machines_with_units.select(&:has_capacity?)
-        Pancakes.logger.debug "machines with capacity:"
-        Pancakes.logger.debug ww.map{|e|{machine:e,builds:e.builds}}.ai
-        ww
-      end
-
-      def select_machine_for_build_with_id(id)
-        worker_machines_with_build_capacity.detect{|e| e.id == id }
-      end
-
-      # For_build is meant to imply that a machine with capacity for running a build will be selected (or nil).
-      def select_machine_for_build
-        machines = worker_machines_with_build_capacity
-          .sort do |a,b|
-            # this sort makes the scheduling affinity be towards filling machines before scheduling on empty ones
-            a.capacity <=> b.capacity
-          end
-
-        if !machines.empty?
-          machines.first
-        else
-          nil
-        end
-      end
-
-      def start_build(service_opts, machine_id)
-        units = Pancakes::Fleet::Templating.spec_build_template(service_opts, machine_id)
+      def start_build(service_opts)
+        units = Pancakes::Fleet::Templating.spec_build_template(service_opts)
         units.each do |unit_fname,unit_hash|
           start_template(unit_fname, unit_hash)
         end
@@ -77,7 +51,7 @@ module Pancakes
       end
 
       def destroy_build(service_opts)
-        units = Pancakes::Fleet::Templating.spec_build_template(service_opts, nil)
+        units = Pancakes::Fleet::Templating.spec_build_template(service_opts)
         units.each do |unit_fname,_|
           logger.info "method=destroy_build #{unit_fname}"
           @client.destroy(unit_fname)
@@ -147,7 +121,7 @@ module Pancakes
       end
 
       def etcdctl_peers
-        list_machines.select(&:etcd?).map{|e| "http://#{e.ip}:4001" }.join(',')
+        etcd_machines.map{|e| "http://#{e.ip}:4001" }.join(',')
       end
 
       def list_machines

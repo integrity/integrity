@@ -1,7 +1,4 @@
 module Integrity
-
-  # This event code does not appear to be async at all.
-  #
   class Event
     include Singleton
 
@@ -19,7 +16,6 @@ module Integrity
 
     def initialize
       @registered_events = {}
-      # TODO FleetCommand module for reacting to Fleet changes
 
       #Why use this indirection for build.run? This is the only place builder.enqueue is called,
       #it could go straight in .run
@@ -31,7 +27,6 @@ module Integrity
         build:cleanup
       )){|build| Integrity.builder.run(:destroy_build, build) }
 
-      # TODO unless build.branch == 'master'
       on('branch:cleanup'){|build| Build.get(build).cancel_previous_builds! }
 
       on(*%w(

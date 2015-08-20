@@ -45,46 +45,6 @@ module Pancakes
         end
       end
 
-      #def consider_destroy_intents(builds)
-        #builds.reject do |build_name,build_info|
-          ## if there is a :build_destroy intent for the build, don't include it
-          #Integrity::Builder.cluster_query_intents(build_id: build_info.build_id, type: :build_destroy)
-        #end
-      #end
-
-      #def consider_start_intents(builds)
-        #builds = builds.to_a
-        ## create a build representing each :build_start intent
-        #start_intents = Integrity::Builder.cluster_query_intents(type: :build_start, machine_id: self.id)
-        #(start_intents || []).each do |intent|
-          #codebase = 'intent'
-          #sha = '1234567'
-          #id = intent.build_id
-          #build_name = "#{codebase}_#{sha}_#{id}_#{intent.type}"
-          #builds << [
-            #build_name,
-            #Hashie::Mash.new(
-              #build_name: build_name,
-              #build_codebase: codebase,
-              #build_sha: sha,
-              #build_id: id,
-              #units: [],
-              #unit_types: [],
-              #machine: self
-            #)
-          #]
-        #end
-        #builds.to_h
-      #end
-
-      #def builds_with_intent
-        #consider_start_intents(
-          #consider_destroy_intents(
-            #builds
-          #)
-        #)
-      #end
-
       def has_capacity?
         capacity > 0
       end
@@ -92,10 +52,6 @@ module Pancakes
       def capacity
         max_builds - builds.size
       end
-
-      #def capacity_with_intent
-        #max_builds - builds_with_intent.size
-      #end
 
       def worker?
         metadata.role == 'worker'
