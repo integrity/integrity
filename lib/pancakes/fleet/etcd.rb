@@ -1,16 +1,48 @@
 module Pancakes
   module Fleet
+
+    attr_reader :machine_id, :expires_at
+
+    class Metrics
+      def initialize(machine_id, expires_at, metrics)
+        @machine_id = machine_id
+        @expires_at = expires_at
+        @metrics = metrics
+      end
+
+      def to_h
+        @metrics
+      end
+
+      %w[load1 load5 load15 memtotal memfree memavailable diskfree ncpus].each do |method|
+        define_method(method) do
+          @metrics[method]
+        end
+      end
+    end
+
     class Etcd
       include Pancakes::ClassLogger
 
       DEFAULT_WATCH_TIMEOUT = 30
       STATES_KEY = '/_coreos.com/fleet/state'
       URL_SCHEME = 'etcd://'
+      METRICS_KEY = '/grnds/metrics'
 
       attr_reader :client
 
       def initialize
         @client = ::Etcd.client(host: URI.parse(ENV['FLEETCTL_ENDPOINT']).host, port: 4001)
+      end
+
+      def get_all_metrics
+        resp = @client.get(METRICS_KEY, recursive: true)
+        resp.node.children.map do |metrics_node|
+          machine_id = metrics_node.key.split('/').last
+          Metrics.new(machine_id, metrics_node.expiration, JSON.parse(metrics_node.value))
+        end
+      rescue ::Etcd::KeyNotFound
+        nil
       end
 
       # this seems useful
