@@ -116,8 +116,8 @@ module Tracker
       self.current_state = self.type == 'chore' ?  'accepted' : 'delivered'
       self.save
       send_delivered_email
-      Tracker::StoryMerge.create(id)
       TrackerWrapper.set_state(id, current_state)
+      Tracker::StoryMerge.create(id)
     end
 
     def set_state(state)
