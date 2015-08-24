@@ -240,6 +240,8 @@ require 'aws-sdk'
 
 require 'stathat_wrapper'
 
+require 'honesty_cluster'
+
 require 'pancakes/errors'
 
 require 'pancakes/fleet'

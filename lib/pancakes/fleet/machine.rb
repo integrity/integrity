@@ -69,10 +69,8 @@ module Pancakes
         end
       end
 
-      def clear_worker_cache_for_codebase(codebase)
-        raise("codebase must be real") unless codebase
-        raise("codebase can't have dots") if codebase['.']
-        system %Q[ssh core@#{ip} "sudo find /var/lib/docker/tmp/bundler -maxdepth 1 -name #{codebase}-* -exec rm -rfv {} \\;"]
+      def clear_cache(codebase)
+        HonestyCluster::BundleCache.clear_machine_cache(machine_ip: ip, codebase: codebase)
       end
 
       def clear_aws_cache_for_codebase(codebase)
