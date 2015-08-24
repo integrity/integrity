@@ -69,15 +69,6 @@ module Pancakes
         end
       end
 
-      def clear_cache(codebase)
-        HonestyCluster::BundleCache.clear_machine_cache(machine_ip: ip, codebase: codebase)
-      end
-
-      def clear_aws_cache_for_codebase(codebase)
-        raise("codebase must be real") unless codebase
-        raise("codebase can't have dots") if codebase['.']
-      end
-
       def to_s
         format(
           '#<Machine:0x%x id=%s ip=%s %d/%d',
