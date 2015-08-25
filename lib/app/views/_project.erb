@@ -1,4 +1,4 @@
-<a class="pill label label-<%= status.color %>" href="<%= project_path(project) %>">
+<a class="pill label label-<%= build_status(build).color %>" href="<%= project_path(project) %>">
   <% if build && [:failed].include?(build.status) %>
     <i class="fa fa-fire-extinguisher fa-3x"></i>
   <% end %>

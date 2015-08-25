@@ -45,7 +45,7 @@ module Integrity
       end
 
       def project_status(project)
-        status = get_status(project.status)
+        status = project ? get_status(project.status) : get_status(nil)
         status.icon = "#{status.icon}-o" if status.icon == :clock
         status.icon = "#{status.icon}-circle" if status.circle
         status

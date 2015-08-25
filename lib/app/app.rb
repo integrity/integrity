@@ -575,7 +575,9 @@ module Integrity
     ['/?', '/projects', '/user/:initials'].each do |path|
       get path, provides: 'html' do
         load_projects
-        @masters = Integrity::Branch.all(name: 'master').sort{|a,b| b.project.pushes <=> a.project.pushes }
+        @projects = Integrity::Project.all(order: :pushes.desc).map do |prj|
+          [prj, prj.latest_master_build]
+        end
         @builds  = Integrity::Build.all(limit: 30, order: :created_at.desc)
         @pending = @builds.pending.all(order: :created_at.desc)
         @running = @builds.running.all(order: :started_at.desc)

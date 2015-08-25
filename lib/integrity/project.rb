@@ -198,6 +198,15 @@ module Integrity
       {project: attributes_for_json}.to_json
     end
 
+    def master_branch
+      branches.first(name: 'master')
+    end
+
+    def latest_master_build
+      _master_branch = master_branch
+      _master_branch ? _master_branch.builds.last : nil
+    end
+
     private
 
     def fix_line_endings
