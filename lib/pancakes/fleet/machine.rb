@@ -6,11 +6,11 @@ module Pancakes
       property :metadata, required: true, transform_with: lambda { |v| Hashie::Mash.new(v)  }
       property :units, required: true, default: []
 
-      PROD_WORKERS_MAX_BUILDS = {
-        "10.0.80.21" => 2,
-        "10.0.80.31" => 2,
-        "10.0.80.7" => 2,
-        "10.0.80.9" => 2,
+      WORKERS_MAX_BUILDS = {
+        '10.0.80.21' => 2,
+        '10.0.80.31' => 2,
+        '10.0.80.7' => 2,
+        '10.0.80.9' => 2,
       }
 
       def add_unit(unit)
@@ -63,7 +63,7 @@ module Pancakes
 
       def max_builds
         if worker?
-          PROD_WORKERS_MAX_BUILDS[ip] || 1
+          WORKERS_MAX_BUILDS[ip] || 1
         else
           0
         end

@@ -126,7 +126,10 @@ module Pancakes
 
       def list_machines
         logger.info 'getting all machines'
-        @client.list_machines['machines'].map{|e| Pancakes::Fleet::Machine.new(e) }
+        @client.list_machines['machines'].map do |e|
+          raise("list_machines JSON says: machine with no primaryIP: #{e}") if e['primaryIP'] == nil
+          Pancakes::Fleet::Machine.new(e)
+        end
       end
 
       def pancakes_units
