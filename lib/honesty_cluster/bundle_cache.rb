@@ -26,7 +26,7 @@ module HonestyCluster
 
     def clear_machine_cache(machine_ip:, codebase:)
       validate_codebase(codebase)
-      system %Q[ssh -o 'StrictHostKeyChecking no' core@#{machine_ip} "sudo find /var/lib/docker/tmp/bundler -maxdepth 1 -name #{codebase}-* -exec rm -rfv {} \\;"]
+      system %Q[ssh -o 'StrictHostKeyChecking no' core@#{machine_ip} "sudo find /var/lib/docker/tmp/bundler -maxdepth 1 -name #{codebase}-* -exec rm -rf {} \\;"]
     end
 
     private def validate_codebase(codebase)
