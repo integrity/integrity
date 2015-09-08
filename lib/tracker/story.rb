@@ -179,6 +179,7 @@ module Tracker
 
       pr_link = I18n.t('story.pr_github_link', github_project_url: latest_build.branch.project.uri.to_s.gsub('git://', 'http://'),
                                                       branch_name: latest_build.branch.name,
+                                                         story_id: self.id,
                                                        story_name: self.name,
                                                           pr_body: pr_body)
 
