@@ -38,7 +38,6 @@
           </button>
         </form>
       <% end %>
-
       <% if build.pending? or build.building? %>
         <form action="<%= build_path(build, :cancel) %>" method="post" class="submit">
           <button class="btn btn-danger" title="Cancel Build">
@@ -46,16 +45,6 @@
           </button>
         </form>
       <% end %>
-
-      <% if build.completed? or build.service_template != 'spec' %>
-        <form action="<%= build_path(build) %>" method="post" class="submit">
-          <button class="btn btn-default" title='Run Specs' type='submit'>
-            <img src="/images/cats.png" height="20em">
-            Run Specs
-          </button>
-        </form>
-      <% end %>
-
     </div>
   </div>
 
