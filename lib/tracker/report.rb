@@ -49,7 +49,7 @@ module Tracker
                 epics[epic.name.to_sym][:developers][user.name.to_sym] << story
               end
             else
-              epics[:'Non Epic'][:developers][user.name.to_sym] << story
+              epics[:Uncategorized][:developers][user.name.to_sym] << story
             end
           else
 
