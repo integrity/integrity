@@ -175,7 +175,6 @@ module Integrity
       params.symbolize_keys!
       @format = :json
 
-      #Integrity.logger.debug "[HOOK][RECEIVED_TRACKER_PAYLOAD] /tracker.json params: #{JSON.dump(params)}"
       Integrity.logger.debug "[HOOK][RECEIVED_TRACKER_PAYLOAD] /tracker.json"
 
       params[:primary_resources].each do |primary_resource|
@@ -195,7 +194,6 @@ module Integrity
           if params[:changes].first[:kind] == 'epic'
             Tracker::Epic.update_from_hook params[:primary_resources].first
           end
-# params: {"kind":"story_update_activity","guid":"422567_141430","project_version":141430,"message":"Ken Berland edited this feature","highlight":"edited","changes":[{"kind":"label","change_type":"update","id":12316046,"original_values":{"counts":{"number_of_zero_point_stories_by_state":{"accepted":0,"started":1,"finished":0,"unstarted":0,"planned":0,"delivered":0,"unscheduled":0,"rejected":0,"kind":"counts_by_story_state"},"sum_of_story_estimates_by_state":{"accepted":0,"started":0,"finished":0,"unstarted":0,"planned":0,"delivered":0,"unscheduled":0,"rejected":0,"kind":"counts_by_story_state"},"number_of_stories_by_state":{"accepted":0,"started":1,"finished":0,"unstarted":0,"planned":0,"delivered":0,"unscheduled":0,"rejected":0,"kind":"counts_by_story_state"},"kind":"story_counts"}},"new_values":{"counts":{"number_of_zero_point_stories_by_state":{"accepted":0,"started":0,"finished":0,"unstarted":0,"planned":0,"delivered":0,"unscheduled":0,"rejected":0,"kind":"counts_by_story_state"},"sum_of_story_estimates_by_state":{"accepted":0,"started":0,"finished":0,"unstarted":0,"planned":0,"delivered":0,"unscheduled":0,"rejected":0,"kind":"counts_by_story_state"},"number_of_stories_by_state":{"accepted":0,"started":0,"finished":0,"unstarted":0,"planned":0,"delivered":0,"unscheduled":0,"rejected":0,"kind":"counts_by_story_state"},"kind":"story_counts"}},"name":"baz"},{"kind":"story","change_type":"update","id":99846558,"original_values":{"label_ids":[12316046,12315958,12266016],"updated_at":1437842544000,"labels":["baz","foo","honesty 3"]},"new_values":{"label_ids":[12315958,12266016],"updated_at":1437842562000,"labels":["foo","honesty 3"]},"name":"Update epics when stories are updated","story_type":"feature"}],"primary_resources":[{"kind":"story","id":99846558,"name":"Update epics when stories are updated","story_type":"feature","url":"https://www.pivotaltracker.com/story/show/99846558"}],"project":{"kind":"project","id":422567,"name":"Grand Rounds"},"performed_by": :{"kind":"person","id":998335,"name":"Ken Berland","initials":"KB"},"occurred_at":1437842562000}
           if params[:kind] == 'story_update_activity'
             id = params[:primary_resources].first[:id]
             params[:changes].each do |c|
@@ -483,7 +481,7 @@ module Integrity
       else
         logger.info "stack NOT found id=#{@stack.id}"
         halt 400, "not found: stack id=#{params[:id]}\n"
-       end
+      end
     end
 
     get '/pancakes/api/vX/stacks/:id/state' do
@@ -582,7 +580,7 @@ module Integrity
         @pending = @builds.pending.all(order: :created_at.desc)
         @running = @builds.running.all(order: :started_at.desc)
         @completed = @builds.completed.all(order: :completed_at.desc)
-        if initials = params[:initials]
+        if params[:initials]
           user = Tracker::User.first(initials: params[:initials])
           @stories_in_flight = user.owned_stories.select{|s| ['started', 'finished'].include?(s.current_state)}
         else
@@ -827,8 +825,8 @@ module Integrity
       artifact = CGI.unescape(artifact)
 
       artifact_files = current_build.artifact_files
-      file = artifact_files.detect do |file|
-        file[:relative_path] == artifact
+      file = artifact_files.detect do |f|
+        f[:relative_path] == artifact
       end
 
       if file.nil?
