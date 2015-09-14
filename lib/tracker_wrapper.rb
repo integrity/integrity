@@ -36,6 +36,10 @@ class TrackerWrapper
     tracker_story.save
   end
 
+  def self.add_comment(story_id, comment)
+    client.post("projects/#{config.project_id}/stories/#{story_id}/comments", {body: {text: comment}})
+  end
+
   def self.project
     client.project(config.project_id)
   end

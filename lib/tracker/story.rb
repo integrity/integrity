@@ -109,6 +109,7 @@ module Tracker
       self.current_state  = self.type == 'chore' ?  'started' : 'finished'
       self.pr_url = pr_url
       TrackerWrapper.set_state(id, current_state)
+      TrackerWrapper.add_comment(id, pr_url)
       self.save
     end
 
