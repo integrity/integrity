@@ -4,7 +4,18 @@
 - sorted_report = {NES: non_epic_stories}.merge!(@report.sort.to_h)
 
 .row#epics
-  h2.text-center.short Epics
+  .row
+    .col-md-4
+    .col-md-4
+      h2.text-center.short Epics
+    .col-md-4
+      .state-view-toggle.btn-group.pull-right
+        button.btn.btn-default.active data-toggle='fa-cogs'
+          i.f.fa.fa-cogs
+        button.btn.btn-default.active data-toggle='fa-code-fork'
+          i.fa.fa-code-fork
+        button.btn.btn-default.active data-toggle='fa-gavel'
+          i.fa.fa-gavel
   ul.epics
     - sorted_report.keys.each do |epic|
       .epic-block
@@ -39,11 +50,11 @@
     h2.text-center.short Stories
     ul.stories
       li
-        i class='f fa fa-cogs'
+        i.f.fa.fa-cogs
           |  Started #{story_counts[:started]}
       li
-        i class='fa fa-code-fork'
+        i.fa.fa-code-fork
           |  Finished #{story_counts[:finished]}
       li
-        i class='fa fa-gavel'
+        i.fa.fa-gavel
           |  Delivered #{story_counts[:delivered]}
