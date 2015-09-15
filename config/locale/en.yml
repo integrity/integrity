@@ -27,4 +27,4 @@ story:
   failure_email_subject: "Story %{story_id} has failed on Honesty"
   delivered_email_subject: "Story %{story_id} is ready for you to Accept/Reject"
   pr_body: "%{commit_message}\n\n[Tracker #%{story_id}](%{story_url})"
-  pr_github_link: "%{github_project_url}/compare/master...%{branch_name}?title=%{story_name}&body=%{pr_body}"
+  pr_github_link: "%{github_project_url}/compare/master...%{branch_name}?title=[# %{story_id}] %{story_name}&body=%{pr_body}"
