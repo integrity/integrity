@@ -29,17 +29,17 @@ module Pancakes
       def start_template(unit_fname, unit_hash)
         if !@dry_run
           logger.debug "submitting #{unit_fname}"
-          @client.submit(unit_fname, unit_hash)
+          client.submit(unit_fname, unit_hash)
 
           sleep 0.1
 
           logger.debug "loading #{unit_fname}"
-          @client.load(unit_fname)
+          client.load(unit_fname)
 
           sleep 0.1
 
           logger.info "starting #{unit_fname}"
-          @client.start(unit_fname)
+          client.start(unit_fname)
 
           sleep 0.1
         else
@@ -54,7 +54,7 @@ module Pancakes
         units = Pancakes::Fleet::Templating.spec_build_template(service_opts)
         units.each do |unit_fname,_|
           logger.info "method=destroy_build #{unit_fname}"
-          @client.destroy(unit_fname)
+          client.destroy(unit_fname)
         end
         true
       rescue ::Fleet::NotFound => e
@@ -68,9 +68,9 @@ module Pancakes
 
         if !@dry_run
           logger.info "destroying #{unit_fname}, #{dumb_sibling_fname}"
-          @client.destroy(unit_fname)
+          client.destroy(unit_fname)
           sleep 0.3
-          @client.destroy(dumb_sibling_fname)
+          client.destroy(dumb_sibling_fname)
           sleep 0.3
         else
           logger.info "dry-run destroying #{unit_fname}, #{dumb_sibling_fname}"
@@ -82,7 +82,7 @@ module Pancakes
       private def reset_failed(host)
         if !@dry_run
           logger.info "calling systemctl reset-failed on #{host}"
-          system("ssh core@#{host} sudo systemctl reset-failed")
+          system("ssh -A -o StrictHostKeyChecking=no core@#{host} sudo systemctl reset-failed")
           StatHatWrapper.post_count('pancakes fleet cluster reset-failed calls', 1)
         else
           logger.info "dry_run calling but not really systemctl reset-failed on #{host}"
@@ -126,7 +126,7 @@ module Pancakes
 
       def list_machines
         logger.info 'getting all machines'
-        @client.list_machines['machines'].map do |e|
+        client.list_machines['machines'].map do |e|
           raise("list_machines JSON says: machine with no primaryIP: #{e}") if e['primaryIP'] == nil
           Pancakes::Fleet::Machine.new(e)
         end
@@ -146,7 +146,7 @@ module Pancakes
       end
 
       def get_service_status
-        services = @client.list.select{|s| s[:name].scan(/_/).count == 3}
+        services = client.list.select{|s| s[:name].scan(/_/).count == 3}
         services.each do|service|
           app, sha, id, type = service[:name].split("_")
           type = type.split(".").first
