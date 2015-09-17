@@ -70,7 +70,7 @@ module Integrity
             when :success   then {color: :green,  icon: :check,    circle: true}
             when :failed    then {color: :red,    icon: :times,    circle: true}
             when :pending   then {color: :yellow, icon: :clock,    circle: false}
-            when :building  then {color: :blue,   icon: :refresh,  circle: false}
+            when :building  then {color: :blue,   icon: 'refresh fa-spin',  circle: false}
             when :killed    then {color: :grey,   icon: :ban,      circle: false}
             when :cancelled then {color: :grey,   icon: :ban,      circle: false}
             else                 {color: :grey,   icon: :question, circle: true}
