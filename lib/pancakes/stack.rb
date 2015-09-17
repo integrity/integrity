@@ -141,7 +141,7 @@ module Pancakes
         nm = netmaster_unit
         Pancakes.cluster.start_template(nm.service_file_name, Pancakes::Fleet::Templating.detect_and_make_template(nm))
 
-        timeout = 120
+        timeout = 60*5
 
         Pancakes.block_until_values(values: true, timeout: timeout, raise_on_timeout: true) do
           refresh_unit_states
@@ -177,7 +177,7 @@ module Pancakes
       StatHatWrapper.unpause if dry_run
       return if dry_run
 
-      timeout = 60*7
+      timeout = 60*20
       state = block_until_stack_states(states: %i[running failed], timeout: timeout)
 
 

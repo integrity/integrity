@@ -346,7 +346,6 @@ module Pancakes
             docker_execstop(container_name: unit_name),
             docker_execstop_post(container_name: unit_name),
             global,
-            machine_metadata('role=worker'),
           ]
         )
       end
