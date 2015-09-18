@@ -254,7 +254,7 @@ module Integrity
   end
 
   def self.start_metrics(etcdctl_peers: self.cluster.etcdctl_peers, image_tag: 'latest')
-    destroy_metrics_units
+    #destroy_metrics_units
     cluster.start_template(
       'metrics.service',
       Pancakes::Fleet::Templating.metrics(etcdctl_peers, image_tag)
@@ -270,7 +270,7 @@ module Integrity
 
   def self.start_services
     start_logspout
-    start_metric
+    start_metrics
   end
 
   def self.max_running_builds
