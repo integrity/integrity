@@ -21,13 +21,42 @@ module Pancakes
 
       module HonestyBuilds
         # @api private
-        def service_def_for_spec_build(build_hsh)
+        def service_defs_for_spec_build_without_datastore(build_hsh)
+          [
+            {
+              name: 'app',
+              image: "grnds/#{build_hsh[:project]}_ci:latest",
+              env: {
+                'BRANCH' => build_hsh[:branch],
+                'SHA' => build_hsh[:sha],
+                'BUILD_ID' => build_hsh[:id],
+                'GITHUB_READ_TOKEN' => ':self',
+                'AWS_ACCESS_KEY_ID' => ':self',
+                'AWS_SECRET_ACCESS_KEY' => ':self',
+                'AWS_SECRET_KEY' => ':self',
+                'SAUCE_USERNAME' => ':self',
+                'SAUCE_ACCESS_KEY' => ':self',
+                'CALLBACK_URL' => "https://#{ENV['CALLBACK_HOST']}/status.json",
+              },
+              volumes: [
+                '/etc/profile:/mnt/etc/profile',
+                '/var/lib/docker/tmp:/tmp/hosttmp',
+              ],
+              links: [],
+              ports: [12000],
+              requires: nil,
+            },
+          ]
+        end
+
+        # @api private
+        def service_defs_for_spec_build_with_mysql(build_hsh)
           [
             {
               name:  'mysql',
               image: 'grnds/mysql:latest',
               ports: [3306],
-              requires: 'docker.service',
+              requires: nil,
               volumes: [
                 '/var/lib/docker/tmp:/tmp/hosttmp',
               ],
@@ -62,13 +91,13 @@ module Pancakes
           ]
         end
 
-        def service_def_for_spec_psql_build(build_hsh)
+        def service_defs_for_spec_build_with_postgres(build_hsh)
           [
             {
               name:  'db',
               image: 'grnds/postgres:latest',
               ports: [5432],
-              requires: 'docker.service',
+              requires: nil,
               volumes: [
                 '/var/lib/docker/tmp:/tmp/hosttmp',
               ],
@@ -117,20 +146,22 @@ module Pancakes
           [:project, :sha, :id].map{|i| build_hsh[i] }.join('_')
         end
 
-        def spec_build_template(build_hsh)
+        def spec_build_template(build_hsh, datastore)
           services =
-            if build_hsh[:template_name] == 'spec'
-              service_def_for_spec_build(build_hsh)
-            elsif build_hsh[:template_name] == 'spec_psql'
-              service_def_for_spec_psql_build(build_hsh)
+            if datastore == 'mysql'
+              service_defs_for_spec_build_with_mysql(build_hsh)
+            elsif datastore == 'postgres'
+              service_defs_for_spec_build_with_postgres(build_hsh)
+            elsif datastore == nil
+              service_defs_for_spec_build_without_datastore(build_hsh)
             else
-              raise "unknown template type '#{build_hsh[:template]}'"
+              raise "unknown build datastore: #{datastore}"
             end
 
           services.map do |service_def|
             service_type = service_def[:name]
             service_name = service_name(service_type, build_hsh)
-            requires_service_name = service_def[:requires] == 'docker.service' ? service_def[:requires] : service_name(service_def[:requires], build_hsh)
+            requires_service_name = !service_def[:requires] ? 'docker.service' : service_name(service_def[:requires], build_hsh)
             service_fname = service_file(service_type, build_hsh)
 
             template_hash =
