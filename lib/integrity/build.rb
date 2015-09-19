@@ -35,8 +35,8 @@ module Integrity
     property :state,                 String
     property :fleetctl_status,       String
     property :machine_ip,            String
-    property :service_template,      String, default: 'spec'
-    property :public_port,           String
+    #property :service_template,      String, default: 'spec'
+    #property :public_port,           String
     property :kill_reason,           String, default: '', length:512
     property :fail_category,         String, default: '', length:512
 
@@ -98,19 +98,19 @@ module Integrity
       end
     end
 
-    def spec?
-      service_template == 'spec'
-    end
+    #def spec?
+      #service_template == 'spec'
+    #end
 
-    def server?
-      service_template == 'server'
-    end
+    #def server?
+      #service_template == 'server'
+    #end
 
     def started!
       log 'started!'
       update(started_at: Time.now)
       StatHatWrapper.post_count("honesty started builds~#{project.name},all", 1)
-      update_ports if server?
+      #update_ports if server?
     end
 
     def notify
@@ -274,7 +274,7 @@ module Integrity
         project: permalink,
         branch: branch_name,
         sha: sha,
-        template_name: service_template
+        #template_name: service_template
       }
     end
 
@@ -295,13 +295,13 @@ module Integrity
       try(:project).try(:weight)
     end
 
-    def update_ports
-      update(public_port: get_public_port)
-    end
+    #def update_ports
+      #update(public_port: get_public_port)
+    #end
 
-    def public_link
-      @machine_ip && public_port ? "http://#{machine_ip}:#{public_port}" : false
-    end
+    #def public_link
+      #@machine_ip && public_port ? "http://#{machine_ip}:#{public_port}" : false
+    #end
 
     def log(msg)
       Integrity.logger.info "[Integrity::Build]:[Build:#{id}] event:#{msg}, params:#{self.inspect}"
@@ -337,22 +337,22 @@ module Integrity
       Integrity::Event.trigger('build:cleanup', self.id)
     end
 
-    def get_public_port
-      ports = get_ports(app_service_name)
-      port = ports.select{|p| p[:internal_port] == '3000'}.first
-      log "Setting ports as #{port}"
-      port[:external_port] if port
-    end
+    #def get_public_port
+      #ports = get_ports(app_service_name)
+      #port = ports.select{|p| p[:internal_port] == '3000'}.first
+      #log "Setting ports as #{port}"
+      #port[:external_port] if port
+    #end
 
-    def get_ports(service)
-      docker_info = `ssh core@#{machine_ip} 'docker ps | grep #{service}'`
-      ports = docker_info.split(" ").select{|e| e.include?("->")}
-      ports.map!{|e| e.split("->")}.map!{|n, m| {external_port:n, internal_port:m}}
-      ports.each{|p| p[:external_port] = /0.0.0.0:(\d*)/.match(p[:external_port])[1]}
-      ports.each{|p| p[:internal_port] = /(\d*)\//.match(p[:internal_port])[1]}
-      log "get_ports #{ports}"
-      ports
-    end
+    #def get_ports(service)
+      #docker_info = `ssh core@#{machine_ip} 'docker ps | grep #{service}'`
+      #ports = docker_info.split(" ").select{|e| e.include?("->")}
+      #ports.map!{|e| e.split("->")}.map!{|n, m| {external_port:n, internal_port:m}}
+      #ports.each{|p| p[:external_port] = /0.0.0.0:(\d*)/.match(p[:external_port])[1]}
+      #ports.each{|p| p[:internal_port] = /(\d*)\//.match(p[:internal_port])[1]}
+      #log "get_ports #{ports}"
+      #ports
+    #end
 
     def mercy_kill?
       building? && failed_on_docker? && passed_give_up_time?

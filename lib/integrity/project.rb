@@ -100,14 +100,14 @@ module Integrity
         template = project_service_spec_template if template == 'spec'
     end
 
-    def project_service_spec_template
-      uses_psql? ? 'spec_psql' : 'spec'
-    end
+    #def project_service_spec_template
+      #uses_psql? ? 'spec_psql' : 'spec'
+    #end
 
-    def uses_psql?
-      psql_apps = ['banyan']
-      psql_apps.include?(name)
-    end
+    #def uses_psql?
+      #psql_apps = ['banyan']
+      #psql_apps.include?(name)
+    #end
 
     def inc_pushes
       self.pushes += 1
@@ -125,7 +125,7 @@ module Integrity
       if commit.identifier.present?
         build = builds.create(
           branch: branch,
-          service_template: choose_service_template(service),
+          #service_template: choose_service_template(service),
           rebuild: rebuild
         )
         commit = commit.merge(build_id: build.id)

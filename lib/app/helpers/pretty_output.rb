@@ -78,13 +78,13 @@ module Integrity
         )
       end
 
-      def build_service(build)
-        case build.service_template
-        when 'spec' then {color: :warning, icon: :bug}
-        when 'spec_psql' then {color: :warning, icon: :bug}
-        when 'server' then {color: :info, icon: :laptop}
-        end
-      end
+      #def build_service(build)
+        #case build.service_template
+        #when 'spec' then {color: :warning, icon: :bug}
+        #when 'spec_psql' then {color: :warning, icon: :bug}
+        #when 'server' then {color: :info, icon: :laptop}
+        #end
+      #end
 
       def message(build)
         msg = build.try(:full_message).to_s
