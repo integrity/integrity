@@ -18,8 +18,8 @@ module Pancakes
         @dry_run
       end
 
-      def start_build(service_opts)
-        units = Pancakes::Fleet::Templating.spec_build_template(service_opts)
+      def start_build(build)
+        units = Pancakes::Fleet::Templating.spec_build_template(build.service_opts, build.datastore)
         units.each do |unit_fname,unit_hash|
           start_template(unit_fname, unit_hash)
         end
@@ -50,8 +50,8 @@ module Pancakes
         raise Pancakes::ClusterError.new_with_original(e)
       end
 
-      def destroy_build(service_opts)
-        units = Pancakes::Fleet::Templating.spec_build_template(service_opts)
+      def destroy_build(build)
+        units = Pancakes::Fleet::Templating.spec_build_template(build.service_opts, build.datastore)
         units.each do |unit_fname,_|
           logger.info "method=destroy_build #{unit_fname}"
           client.destroy(unit_fname)

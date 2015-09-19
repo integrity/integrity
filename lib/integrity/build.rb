@@ -65,6 +65,10 @@ module Integrity
       branch.try(:name)
     end
 
+    def datastore
+      project.datastore
+    end
+
     def run
       log 'run'
       Integrity::Event.trigger('build:queue', self.id)

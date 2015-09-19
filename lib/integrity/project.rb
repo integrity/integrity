@@ -17,6 +17,7 @@ module Integrity
     property :last_build_id, Integer, required: false
     property :weight, Integer, required: true, default: 1
     property :pushes, Integer, default: 0
+    property :datastore, String, default: nil
 
     timestamps :at
 
