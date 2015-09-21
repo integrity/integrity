@@ -126,7 +126,6 @@ module Integrity
       if commit.identifier.present?
         build = builds.create(
           branch: branch,
-          #service_template: choose_service_template(service),
           rebuild: rebuild
         )
         commit = commit.merge(build_id: build.id)
