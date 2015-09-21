@@ -37,7 +37,7 @@ module Integrity
 
     # Kill fleet unit and destroy service matching build that was passed.
     def self.destroy_build(build)
-      log_execution(:destroy_build, build){ Integrity.cluster.destroy_build(build.service_options) }
+      log_execution(:destroy_build, build){ Integrity.cluster.destroy_build(build) }
     end
 
     def self.log_execution(action, build)
