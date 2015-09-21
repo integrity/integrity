@@ -46,7 +46,7 @@ module Integrity
     belongs_to :branch
     has 1,     :commit
 
-    delegate :name, :permalink, :repo, :command, to: :project
+    delegate :name, :permalink, :repo, :command, :datastore, to: :project
 
     after :create do
       project.update(last_build_id: id)
@@ -63,10 +63,6 @@ module Integrity
 
     def branch_name
       branch.try(:name)
-    end
-
-    def datastore
-      project.datastore
     end
 
     def run
