@@ -22,8 +22,7 @@ module Pancakes
         #       #    #     #      ##    #    #     #    ######
 
 
-        # @api private
-        def service_defs_for_build(build)
+        private def service_defs_for_build(build)
           if build.datastore == 'mysql'
             mysql_build_service_defs(build)
           elsif build.datastore == 'postgres'
@@ -35,8 +34,7 @@ module Pancakes
           end
         end
 
-        # @api private
-        def detect_and_make_build_template(service_def)
+        private def detect_and_make_build_template(service_def)
           merge_partials(
             if %w(mysql db).include?(service_def[:name])
               build_db_partials(service_def)
@@ -46,8 +44,7 @@ module Pancakes
           )
         end
 
-        # @api private
-        def build_shared_partials(service_name, requires_service_fname, image_name)
+        private def build_shared_partials(service_name, requires_service_fname, image_name)
           [
             unit_section(desc: "honesty build #{service_name}", requires_service_fname: requires_service_fname),
             timeout_start_sec('10min'),
@@ -59,8 +56,7 @@ module Pancakes
           ]
         end
 
-        # @api private
-        def build_app_partials(service_def)
+        private def build_app_partials(service_def)
           [
             build_shared_partials(service_def[:service_name], service_def[:requires], service_def[:image]),
             execstart(
@@ -79,8 +75,7 @@ module Pancakes
           ]
         end
 
-        # @api private
-        def build_db_partials(service_def)
+        private def build_db_partials(service_def)
           [
             build_shared_partials(service_def[:service_name], service_def[:requires], service_def[:image]),
             execstart(
@@ -97,8 +92,7 @@ module Pancakes
           ]
         end
 
-        # @api private
-        def app_service_def(build: build, requires: nil)
+        private def app_service_def(build: build, requires: nil)
           service_type = 'app'
           service = {
             #name: "#{build.project_name}-spec",
@@ -139,8 +133,7 @@ module Pancakes
           end
         end
 
-        # @api private
-        def mysql_service_def(build)
+        private def mysql_service_def(build)
           service_type = 'mysql'
           {
             name:  service_type,
@@ -152,8 +145,7 @@ module Pancakes
           }
         end
 
-        # @api private
-        def postgres_service_def(build)
+        private def postgres_service_def(build)
           service_type = 'db'
           {
             name:  service_type,
@@ -165,36 +157,31 @@ module Pancakes
           }
         end
 
-        # @api private
-        def build_only_service_defs(build)
+        private def build_only_service_defs(build)
           [
             app_service_def(build: build),
           ]
         end
 
-        # @api private
-        def mysql_build_service_defs(build)
+        private def mysql_build_service_defs(build)
           [
             mysql_service_def(build),
             app_service_def(build: build, requires: :mysql),
           ]
         end
 
-        # @api private
-        def postgres_build_service_defs(build)
+        private def postgres_build_service_defs(build)
           [
             postgres_service_def(build),
             app_service_def(build: build, requires: :db),
           ]
         end
 
-        # @api private
-        def docker_service_fname
+        private def docker_service_fname
           'docker.service'
         end
 
-        # @api private
-        def machine_scheduling_option(requires_service_fname)
+        private def machine_scheduling_option(requires_service_fname)
           if requires_service_fname == docker_service_fname
             machine_metadata('role=worker')
           else
@@ -202,28 +189,23 @@ module Pancakes
           end
         end
 
-        # @api private
-        def callback_host
+        private def callback_host
           ENV['CALLBACK_HOST']
         end
 
-        # @api private
-        def service_name(build, service_type)
+        private def service_name(build, service_type)
           "#{build.service_name}_#{service_type}"
         end
 
-        # @api private
-        def dot_service(service_name)
+        private def dot_service(service_name)
           service_name.end_with?('.service') ? service_name : "#{service_name}.service"
         end
 
-        # @api private
-        def no_dot_service(service_name)
+        private def no_dot_service(service_name)
           service_name.end_with?('.service') ? service_name.sub(/\.service$/, '') : service_name
         end
 
-        # @api private
-        def docker_link(container_name, link_name)
+        private def docker_link(container_name, link_name)
           [container_name, link_name].join(':')
         end
       end
