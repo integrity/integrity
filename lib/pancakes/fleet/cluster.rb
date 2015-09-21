@@ -19,7 +19,7 @@ module Pancakes
       end
 
       def start_build(build)
-        units = Pancakes::Fleet::Templating.spec_build_template(build.service_opts, build.datastore)
+        units = Pancakes::Fleet::Templating.spec_build_template(build.service_options, build.datastore)
         units.each do |unit_fname,unit_hash|
           start_template(unit_fname, unit_hash)
         end
@@ -51,7 +51,7 @@ module Pancakes
       end
 
       def destroy_build(build)
-        units = Pancakes::Fleet::Templating.spec_build_template(build.service_opts, build.datastore)
+        units = Pancakes::Fleet::Templating.spec_build_template(build.service_options, build.datastore)
         units.each do |unit_fname,_|
           logger.info "method=destroy_build #{unit_fname}"
           client.destroy(unit_fname)
