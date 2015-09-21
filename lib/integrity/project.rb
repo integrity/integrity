@@ -93,23 +93,6 @@ module Integrity
       branch
     end
 
-    #This is a temporary solution for psql apps to use the psql spec helper. It would be better if
-    #the correct file were checked out of github.
-    #
-    def choose_service_template(service)
-        template = service.presence || 'spec'
-        template = project_service_spec_template if template == 'spec'
-    end
-
-    #def project_service_spec_template
-      #uses_psql? ? 'spec_psql' : 'spec'
-    #end
-
-    #def uses_psql?
-      #psql_apps = ['banyan']
-      #psql_apps.include?(name)
-    #end
-
     def inc_pushes
       self.pushes += 1
     end
