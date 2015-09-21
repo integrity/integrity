@@ -769,7 +769,7 @@ module Integrity
       login_required
 
       log("[Build:#{current_build.id}] /:project/builds/:build (Build:Re-build) build:#{current_build.inspect}, commit: #{current_build.commit.inspect}")
-      @build = current_project.build(current_build.commit, true, params["template"])
+      @build = current_project.build(current_build.commit, true)
       redirect build_url(@build)
     end
 

@@ -114,7 +114,7 @@ module Integrity
       self.pushes += 1
     end
 
-    def build(commit, rebuild=false, service=nil)
+    def build(commit, rebuild=false)
       if commit.is_a?(Hash)
         commit = commit.merge(project_id: id)
       else
