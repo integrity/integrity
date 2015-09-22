@@ -21,12 +21,6 @@
       <% unless build.fail_category.empty? %>
         <p>Failed Category: <%= build.fail_category %></p>
       <% end %>
-      <h4>
-        <span class="label label-<%= build_service(build)[:color] if build_service(build) %>">
-          <i class="fa fa-<%= build_service(build)[:icon] if build_service(build) %>" > </i>
-          <%= build.service_template %>
-        </span>
-      </h4>
 
     </div>
     <div class="col-sm-4">
@@ -38,7 +32,7 @@
         </form>
       <% end %>
 
-      <% if build.completed? or build.service_template != 'spec' %>
+      <% if build.completed? %>
         <form action="<%= build_path(build) %>" method="post" class="submit">
           <button class="btn btn-default" title='Run Specs' type='submit'>
             <img src="/images/cats.png" height="20em">
@@ -91,9 +85,7 @@
             <th>updated_at</th>
             <th>state</th>
             <th>status</th>
-            <th>fleetctl_status</th>
             <th>machine_ip</th>
-            <th>public_port</th>
           </tr>
         </thead>
         <tbody>
@@ -103,9 +95,7 @@
           <td><%= build.updated_at %></td>
           <td><%= build.state %></td>
           <td><%= build.status %></td>
-          <td><%= build.fleetctl_status %></td>
           <td><%= build.machine_ip %></td>
-          <td><%= build.public_port %></td>
         </tbody>
       </table>
     </div>

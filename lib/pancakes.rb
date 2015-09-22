@@ -251,6 +251,7 @@ require 'pancakes/fleet/cluster'
 
 require 'pancakes/fleet/templating/helpers'
 require 'pancakes/fleet/templating/partials'
+require 'pancakes/fleet/templating/honesty_builds'
 require 'pancakes/fleet/templating'
 
 require 'pancakes/commit'

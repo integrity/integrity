@@ -18,8 +18,7 @@ end
 set :user, 'ubuntu'
 set :use_sudo, false
 set :application, 'honesty'
-#set :repository,  "git@github.com:ConsultingMD/#{application}.git"
-set :repository,  "git@github.com:ConsultingMD/integrity.git"
+set :repository,  "git@github.com:ConsultingMD/#{application}.git"
 set :deploy_to, "/home/ubuntu/app/#{application}"
 set :deploy_via, :remote_cache
 set :ssh_options, {forward_agent: true}

@@ -28,8 +28,8 @@ module Integrity
     # older builds from same branch (and itself if it was a re-run)
     def self.launch_build(build)
       log_execution(:launch_build, build) do
-        log_build(:launch_build, build, :cleanup) { Integrity.cluster.destroy_build(build.service_options) }
-        log_build(:launch_build, build, :starting){ Integrity.cluster.start_build(build.service_options) }
+        log_build(:launch_build, build, :cleanup) { Integrity.cluster.destroy_build(build) }
+        log_build(:launch_build, build, :starting){ Integrity.cluster.start_build(build) }
         log_build(:launch_build, build, :started) { build.reload.started! }
         log_build(:launch_build, build, 'Updating fleet'){ Build.update_fleetctl_status }
       end
@@ -37,7 +37,7 @@ module Integrity
 
     # Kill fleet unit and destroy service matching build that was passed.
     def self.destroy_build(build)
-      log_execution(:destroy_build, build){ Integrity.cluster.destroy_build(build.service_options) }
+      log_execution(:destroy_build, build){ Integrity.cluster.destroy_build(build) }
     end
 
     def self.log_execution(action, build)

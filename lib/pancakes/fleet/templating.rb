@@ -4,6 +4,7 @@ module Pancakes
       extend self
       extend Templating::Helpers
       extend Templating::Partials
+      extend Templating::HonestyBuilds
 
       DOCKER = '/usr/bin/docker'
 
@@ -18,195 +19,6 @@ module Pancakes
       def config
         @@config
       end
-
-      module HonestyBuilds
-        # @api private
-        def service_def_for_spec_build(build_hsh)
-          [
-            {
-              name:  'mysql',
-              image: 'grnds/mysql:latest',
-              ports: [3306],
-              requires: 'docker.service',
-              volumes: [
-                '/var/lib/docker/tmp:/tmp/hosttmp',
-              ],
-            },
-            {
-              #name: "#{build_hsh[:project]}-spec",
-              name: 'app',
-              image: "grnds/#{build_hsh[:project]}_ci:latest",
-              env: {
-                'BRANCH' => build_hsh[:branch],
-                'SHA' => build_hsh[:sha],
-                'BUILD_ID' => build_hsh[:id],
-                'GITHUB_READ_TOKEN' => ':self',
-                'AWS_ACCESS_KEY_ID' => ':self',
-                'AWS_SECRET_ACCESS_KEY' => ':self',
-                'AWS_SECRET_KEY' => ':self',
-                'SAUCE_USERNAME' => ':self',
-                'SAUCE_ACCESS_KEY' => ':self',
-                'CALLBACK_URL' => "https://#{ENV['CALLBACK_HOST']}/status.json",
-              },
-              volumes: [
-                '/etc/profile:/mnt/etc/profile',
-                '/var/lib/docker/tmp:/tmp/hosttmp',
-              ],
-              links: [
-                'mysql',
-              ],
-              ports: [12000],
-              requires: :mysql,
-              machineof: :mysql,
-            },
-          ]
-        end
-
-        def service_def_for_spec_psql_build(build_hsh)
-          [
-            {
-              name:  'db',
-              image: 'grnds/postgres:latest',
-              ports: [5432],
-              requires: 'docker.service',
-              volumes: [
-                '/var/lib/docker/tmp:/tmp/hosttmp',
-              ],
-            },
-            {
-              name: 'app',
-              image: "grnds/#{build_hsh[:project]}_ci:latest",
-              env: {
-                'BRANCH' => build_hsh[:branch],
-                'SHA' => build_hsh[:sha],
-                'BUILD_ID' => build_hsh[:id],
-                'GITHUB_READ_TOKEN' => ':self',
-                'AWS_ACCESS_KEY_ID' => ':self',
-                'AWS_SECRET_ACCESS_KEY' => ':self',
-                'AWS_SECRET_KEY' => ':self',
-                'SAUCE_USERNAME' => ':self',
-                'SAUCE_ACCESS_KEY' => ':self',
-                'CALLBACK_URL' => "https://#{ENV['CALLBACK_HOST']}/status.json",
-              },
-              volumes: [
-                '/etc/profile:/mnt/etc/profile',
-                '/var/lib/docker/tmp:/tmp/hosttmp',
-              ],
-              links: [
-                'db',
-              ],
-              ports: [12000],
-              requires: :db,
-              machineof: :db,
-            },
-          ]
-        end
-
-        # @api private
-        def service_name(service_type, build_hsh)
-          "#{build_name(build_hsh)}_#{service_type}"
-        end
-
-        # @api private
-        def service_file(service_type, build_hsh)
-          "#{service_name(service_type, build_hsh)}.service"
-        end
-
-        # @api private
-        def build_name(build_hsh)
-          [:project, :sha, :id].map{|i| build_hsh[i] }.join('_')
-        end
-
-        def spec_build_template(build_hsh)
-          services =
-            if build_hsh[:template_name] == 'spec'
-              service_def_for_spec_build(build_hsh)
-            elsif build_hsh[:template_name] == 'spec_psql'
-              service_def_for_spec_psql_build(build_hsh)
-            else
-              raise "unknown template type '#{build_hsh[:template]}'"
-            end
-
-          services.map do |service_def|
-            service_type = service_def[:name]
-            service_name = service_name(service_type, build_hsh)
-            requires_service_name = service_def[:requires] == 'docker.service' ? service_def[:requires] : service_name(service_def[:requires], build_hsh)
-            service_fname = service_file(service_type, build_hsh)
-
-            template_hash =
-              if %w(mysql db).include?(service_def[:name])
-                spec_db_template(service_name, requires_service_name, service_def)
-              else
-                spec_docker_template(
-                  service_name,
-                  requires_service_name,
-                  service_def,
-                )
-              end
-
-            [service_fname, template_hash]
-          end
-        end
-
-        def spec_docker_template(service_name, requires_service_name, service_def, cmd=nil)
-          requires_service_fname = "#{requires_service_name}.service"
-
-          partials = [
-            unit_section(desc: "honesty build #{service_name}", requires_service_fname: requires_service_fname),
-            timeout_start_sec('10min'),
-            docker_execstartpre(container_name: service_name, image_name: service_def[:image]),
-            docker_execstop(container_name: service_name),
-            docker_execstop_post(container_name: service_name),
-            install_section,
-            machine_of(requires_service_fname),
-          ]
-
-          partials << execstart(
-            docker_cmd(
-              :run,
-              '--rm',
-              #grnds_dns,
-              volumes_str(service_def[:volumes]),
-              '--name', service_name,
-              '--link', [requires_service_name, service_def[:requires]].join(':'),
-              env_str(service_def[:env]),
-              ports_str(service_def[:ports]),
-              service_def[:image],
-              cmd,
-            )
-          )
-
-          unify(partials)
-        end
-
-        def spec_db_template(service_name, requires_service_name, service_def)
-          partials = [
-            unit_section(desc: "honesty build #{service_name}", requires_service_fname: requires_service_name),
-            timeout_start_sec('10min'),
-            docker_execstartpre(container_name: service_name, image_name: service_def[:image]),
-            docker_execstop(container_name: service_name),
-            docker_execstop_post(container_name: service_name),
-            install_section,
-            machine_metadata('role=worker'),
-          ]
-
-          partials << execstart(
-            docker_cmd(
-              :run,
-              '--rm',
-              #grnds_dns,
-              volumes_str(service_def[:volumes]),
-              '--name', service_name,
-              ports_str(service_def[:ports]),
-              service_def[:image],
-            )
-          )
-
-          unify(partials)
-        end
-      end
-
-      extend HonestyBuilds
 
       def detect_and_make_template(unit, setup_db: true)
         if %w[mysql mailcatcher postgres].include?(unit.service_name)
@@ -250,7 +62,7 @@ module Pancakes
           partials << machine_of("#{unit.stack.name}_mysql-dumb_sibling.service")
         end
 
-        unify(partials)
+        merge_partials(partials)
       end
 
       def freezer_template(freezer_unit:, fname:, mysql_host:, mysql_port:, mysql_dbs:)
@@ -290,7 +102,7 @@ module Pancakes
         unit_name = 'logspout'
         image_name = "gliderlabs/logspout:#{image_tag}"
 
-        unify(
+        merge_partials(
           [
             unit_section(desc: "log log log log log log log log log log", requires_service_fname: 'docker.service'),
             timeout_start_sec('10min'),
@@ -319,7 +131,7 @@ module Pancakes
         unit_name = 'metrics'
         image_name = "grnds/metrics:#{image_tag}"
 
-        unify(
+        merge_partials(
           [
             unit_section(desc: 'Metrics v2', requires_service_fname: 'docker.service'),
             timeout_start_sec('10min'),
@@ -384,19 +196,21 @@ module Pancakes
           partials << remain_after_exit
         end
 
-        unify(partials)
+        merge_partials(partials)
       end
 
       # @api private
-      def unify(partials_list)
-        partials_list.compact.reduce{ |config,partial| config_merge(config, partial) }
+      def merge_partials(partials_list)
+        partials_list.flatten.compact.reduce do |config,partial|
+          merge_partial(config, partial)
+        end
       end
 
       # @api private
-      def config_merge(base, layer)
+      def merge_partial(base, layer)
         base.merge(layer) do |key,baseval,layerval|
           if baseval.is_a?(Hash) && layerval.is_a?(Hash)
-            config_merge(baseval, layerval)
+            merge_partial(baseval, layerval)
           elsif baseval.is_a?(String) && layerval.is_a?(String)
             layerval
           elsif baseval.is_a?(Array) || layerval.is_a?(Array)

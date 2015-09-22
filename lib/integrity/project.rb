@@ -17,6 +17,7 @@ module Integrity
     property :last_build_id, Integer, required: false
     property :weight, Integer, required: true, default: 1
     property :pushes, Integer, default: 0
+    property :datastore, String
 
     timestamps :at
 
@@ -92,28 +93,11 @@ module Integrity
       branch
     end
 
-    #This is a temporary solution for psql apps to use the psql spec helper. It would be better if
-    #the correct file were checked out of github.
-    #
-    def choose_service_template(service)
-        template = service.presence || 'spec'
-        template = project_service_spec_template if template == 'spec'
-    end
-
-    def project_service_spec_template
-      uses_psql? ? 'spec_psql' : 'spec'
-    end
-
-    def uses_psql?
-      psql_apps = ['banyan']
-      psql_apps.include?(name)
-    end
-
     def inc_pushes
       self.pushes += 1
     end
 
-    def build(commit, rebuild=false, service=nil)
+    def build(commit, rebuild=false)
       if commit.is_a?(Hash)
         commit = commit.merge(project_id: id)
       else
@@ -125,7 +109,6 @@ module Integrity
       if commit.identifier.present?
         build = builds.create(
           branch: branch,
-          service_template: choose_service_template(service),
           rebuild: rebuild
         )
         commit = commit.merge(build_id: build.id)
