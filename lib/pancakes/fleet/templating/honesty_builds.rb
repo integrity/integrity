@@ -65,6 +65,7 @@ module Pancakes
                 '--rm',
                 #grnds_dns,
                 volumes_str(service_def[:volumes]),
+                '--hostname', service_def[:service_name],
                 '--name', service_def[:service_name],
                 service_def[:link] ? "--link #{docker_link(no_dot_service(service_def[:requires]), service_def[:link])}" : nil,
                 env_str(service_def[:env]),
@@ -84,6 +85,7 @@ module Pancakes
                 '--rm',
                 #grnds_dns,
                 volumes_str(service_def[:volumes]),
+                '--hostname', service_def[:service_name],
                 '--name', service_def[:service_name],
                 ports_str(service_def[:ports]),
                 service_def[:image],
@@ -100,6 +102,7 @@ module Pancakes
             service_name: service_name(build, service_type),
             image: "grnds/#{build.project_name}_ci:latest",
             env: {
+              'PROJECT' => build.project_name,
               'BRANCH' => build.branch_name,
               'SHA' => build.sha,
               'BUILD_ID' => build.id,
