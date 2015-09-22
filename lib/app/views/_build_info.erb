@@ -30,15 +30,6 @@
 
     </div>
     <div class="col-sm-4">
-      <% unless build.building? %>
-        <form action="<%= build_path(build) %>" method="post" class="submit">
-          <input name="_method" type="hidden" value="delete"/>
-          <button class="btn btn-danger" title="Delete Build">
-            Delete
-          </button>
-        </form>
-      <% end %>
-
       <% if build.pending? or build.building? %>
         <form action="<%= build_path(build, :cancel) %>" method="post" class="submit">
           <button class="btn btn-danger" title="Cancel Build">
