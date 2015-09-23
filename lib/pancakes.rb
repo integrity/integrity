@@ -18,8 +18,8 @@
 # optional:
 # - PANCAKES_DRY_RUN   (eg. true)
 # - PANCAKES_LOG_LEVEL (eg. debug, 2)
-# - DOCKYARD_BRANCH    (eg. pancakes-develop)
-# - DOCKYARD_DEBUG     (eg. true)
+# - TIMBERLAND_BRANCH    (eg. pancakes-develop)
+# - TIMBERLAND_DEBUG     (eg. true)
 
 module Pancakes
   extend self
@@ -33,7 +33,7 @@ module Pancakes
         namespace: nil,
       ),
       templating: Hashie::Mash.new(
-        dockyard_branch: 'pancakes',
+        timberland_branch: 'pancakes',
       ),
     )
 
@@ -70,7 +70,7 @@ module Pancakes
     # validate pancakes config
     [
       %w[freezer namespace],
-      %w[templating dockyard_branch],
+      %w[templating timberland_branch],
     ].each{|keys| !keys.reduce(@@config){|memo,key| memo && memo[key] }.nil? || raise("Pancakes.config.#{keys.join('.')} is required") }
 
 
@@ -84,8 +84,8 @@ module Pancakes
     })
 
     Pancakes::Fleet::Templating.configure do |c|
-      c.dockyard_branch = @@config.templating.dockyard_branch
-      Pancakes.logger.info "DOCKYARD_BRANCH=#{@@config.templating.dockyard_branch}"
+      c.timberland_branch = @@config.templating.timberland_branch
+      Pancakes.logger.info "TIMBERLAND_BRANCH=#{@@config.templating.timberland_branch}"
     end
   end
 
@@ -178,8 +178,8 @@ module Pancakes
     ENV['GITHUB_READ_TOKEN'] || raise('GITHUB_READ_TOKEN not set')
   end
 
-  def dockyard_debug?
-    !!ENV['DOCKYARD_DEBUG']
+  def timberland_debug?
+    !!ENV['TIMBERLAND_DEBUG']
   end
 
   def db
