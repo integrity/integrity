@@ -9,7 +9,7 @@ module Pancakes
       DOCKER = '/usr/bin/docker'
 
       @@config = Hashie::Mash.new(
-        timberland_branch: 'pancakes',
+        timberland_branch: 'feature/2083842/103152948/timberland-submodule',
       )
 
       def configure

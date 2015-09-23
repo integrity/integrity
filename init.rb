@@ -93,7 +93,7 @@ end
 
 Pancakes.configure do |c|
   c.freezer.namespace          = DTEST ? 'dtest' : 'production'
-  c.templating.timberland_branch = ENV['TIMBERLAND_BRANCH'] || 'feature/2083842/103152948/timberland-submodule'
+  c.templating.timberland_branch ||= ENV['TIMBERLAND_BRANCH']
 end
 
 TrackerWrapper.configure do |c|
