@@ -23,7 +23,7 @@ module Pancakes
             'git', 'clone',
             '--depth', 1,
             '--branch', branch,
-            "https://#{gh_read_token}@github.com/consultingmd/timberland",
+            "https://#{gh_read_token}@github.com/consultingmd/dockyard",
             'timberland',
           )
         end
