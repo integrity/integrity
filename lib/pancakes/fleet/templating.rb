@@ -9,7 +9,7 @@ module Pancakes
       DOCKER = '/usr/bin/docker'
 
       @@config = Hashie::Mash.new(
-        dockyard_branch: 'pancakes',
+        timberland_branch: 'pancakes',
       )
 
       def configure
@@ -30,11 +30,11 @@ module Pancakes
               logging_prefix_pipe(
                 unit.name,
                 bash_and(
-                  dockyard_clone(Pancakes.gh_read_token, config.dockyard_branch),
-                  dockyard_build_sh(
+                  timberland_clone(Pancakes.gh_read_token, config.timberland_branch),
+                  timberland_build_sh(
                     sha:               unit.commit.sha,
                     repo:              unit.repo,
-                    debug:             Pancakes.dockyard_debug?,
+                    debug:             Pancakes.timberland_debug?,
                     branch:            unit.commit.branch,
                     setup_db:          setup_db,
                     service_type:      unit.subtype,
