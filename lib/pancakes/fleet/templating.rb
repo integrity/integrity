@@ -32,6 +32,7 @@ module Pancakes
                 bash_and(
                   timberland_clone(Pancakes.gh_read_token, config.timberland_branch),
                   timberland_build_sh(
+                    boot_type:         'pancakes',
                     sha:               unit.commit.sha,
                     repo:              unit.repo,
                     debug:             Pancakes.timberland_debug?,

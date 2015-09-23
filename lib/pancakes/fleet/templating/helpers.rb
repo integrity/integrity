@@ -4,9 +4,10 @@ module Pancakes
       module Helpers
         extend self
 
-        def timberland_build_sh(branch:, sha:, repo:, service_type:, setup_db:, debug:)
+        def timberland_build_sh(boot_type:, branch:, sha:, repo:, service_type:, setup_db:, debug:)
           args = [
             './timberland/build.sh',
+            '--boot-type', boot_type,
             '-s', sha,
             '-r', repo,
             '--service-type', service_type,
