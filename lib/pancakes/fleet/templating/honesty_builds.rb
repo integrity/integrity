@@ -79,9 +79,10 @@ module Pancakes
                   bash_and(
                     timberland_clone(Pancakes.gh_read_token, build_timberland_branch),
                     timberland_build_sh(
+                      boot_type:         'build',
                       sha:               service_def[:env]['SHA'],
                       repo:              "ConsultingMD/#{service_def[:env]['PROJECT']}",
-                      debug:             true,#Pancakes.timberland_debug?,
+                      debug:             true, #Pancakes.timberland_debug?,
                       branch:            service_def[:env]['BRANCH'],
                       setup_db:          true,
                       service_type:      'spec',
