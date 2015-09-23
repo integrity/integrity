@@ -60,7 +60,36 @@ module Pancakes
           'feature/2083842/103152948/timberland-submodule'
         end
 
+        private def timberlandified_builds
+          %w[
+            jarvis
+          ]
+        end
+
         private def build_app_partials(service_def)
+          project = service_def[:env]['PROJECT']
+
+          cmd =
+            if timberlandified_builds.include?(project)
+              bash_minus_c(
+                bash_and(
+                  timberland_clone(Pancakes.gh_read_token, build_timberland_branch),
+                  'cd timberland',
+                  timberland(
+                    boot_type:    'build',
+                    sha:          service_def[:env]['SHA'],
+                    repo:         "ConsultingMD/#{project}",
+                    debug:        true, #Pancakes.timberland_debug?,
+                    branch:       service_def[:env]['BRANCH'],
+                    setup_db:     true,
+                    service_type: 'spec',
+                  )
+                )
+              )
+            else
+              nil
+            end
+
           [
             build_shared_partials(service_def[:service_name], service_def[:requires], service_def[:image]),
             execstart(
@@ -75,21 +104,7 @@ module Pancakes
                 env_str(service_def[:env]),
                 ports_str(service_def[:ports]),
                 service_def[:image],
-                bash_minus_c(
-                  bash_and(
-                    timberland_clone(Pancakes.gh_read_token, build_timberland_branch),
-                    'cd timberland',
-                    timberland(
-                      boot_type:    'build',
-                      sha:          service_def[:env]['SHA'],
-                      repo:         "ConsultingMD/#{service_def[:env]['PROJECT']}",
-                      debug:        true, #Pancakes.timberland_debug?,
-                      branch:       service_def[:env]['BRANCH'],
-                      setup_db:     true,
-                      service_type: 'spec',
-                    )
-                  )
-                )
+                cmd,
               )
             ),
           ]
