@@ -29,7 +29,14 @@ update_metrics()
 
     g_metrics[memfree]=$(($(cat /proc/meminfo | grep MemFree | cut -d: -f2 | tr -d 'kB' | tr -d ' ') * 1024))
     g_metrics[memtotal]=$(($(cat /proc/meminfo | grep MemTotal | cut -d: -f2 | tr -d 'kB' | tr -d ' ') * 1024))
-    g_metrics[diskfree]=$(df --block-size=1024m / | tail -1 | awk '{print $4}')
+    g_metrics[diskfree_root]=$(df -B1 / | tail -1 | awk '{print $4}')
+
+    if df -B1 /dev/xvdh ; then
+        g_metrics[diskfree_xvdh]=$(df -B1 /dev/xvdh | tail -1 | awk '{print $4}')
+    else
+        g_metrics[diskfree_xvdh]=0
+    fi
+
     g_metrics[ncpus]=$(cat /proc/cpuinfo | grep processor | wc -l)
 
     #echo "load: ${g_metrics[load1]} ${g_metrics[load5]} ${g_metrics[load15]}  memfree: ${g_metrics[memfree]}B  diskfree: ${g_metrics[diskfree]}GB"
@@ -53,7 +60,8 @@ send_stathat_metrics()
         {"stat": "$STATHAT_METRICS_PREFIX $METRICS_HOSTNAME memavailable", "value": ${g_metrics[memavailable]}},
         {"stat": "$STATHAT_METRICS_PREFIX $METRICS_HOSTNAME memfree", "value": ${g_metrics[memfree]}},
         {"stat": "$STATHAT_METRICS_PREFIX $METRICS_HOSTNAME memtotal", "value": ${g_metrics[memtotal]}},
-        {"stat": "$STATHAT_METRICS_PREFIX $METRICS_HOSTNAME diskfree", "value": ${g_metrics[diskfree]}}
+        {"stat": "$STATHAT_METRICS_PREFIX $METRICS_HOSTNAME diskfree /", "value": ${g_metrics[diskfree_root]}},
+        {"stat": "$STATHAT_METRICS_PREFIX $METRICS_HOSTNAME diskfree /dev/xvdh", "value": ${g_metrics[diskfree_xvdh]}}
     ]
 }
 EOF
