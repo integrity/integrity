@@ -74,3 +74,4 @@ end
 
 require 'honesty_cluster/aws_clients'
 require 'honesty_cluster/bundle_cache'
+require 'honesty_cluster/swarm_backend'

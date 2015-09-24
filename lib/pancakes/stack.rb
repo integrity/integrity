@@ -1,6 +1,7 @@
 module Pancakes
   class Stack < Sequel::Model
     include Pancakes::ClassLogger
+    include HonestyCluster::SwarmBackend::Pancakes::InstanceMethods
 
     set_dataset :pancakes_stacks
     plugin :timestamps
