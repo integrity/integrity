@@ -9,9 +9,18 @@
 <div class="form-group col-lg-12">
   <label for="project_repository"><%= "Repository URI #{errors_on(@project, :uri)}" %></label>
   <input class="text" id="project_repository" name="project_data[uri]" type="text" value="<%= @project.uri %>"/>
-</div>
-
-<div class="form-group col-lg-12">
-  <label for="project_weight"><%= "Weight #{errors_on(@project, :weight)}" %></label>
-  <input class="text" id="project_weight" name="project_data[weight]" type="text" value="<%= @project.weight %>"/>
+  <ul>
+    <li>
+      For <b>public</b> repos, use the https://github.com/ORG/REPO.git URI format.
+    </li>
+    <li>
+      For <b>private</b> repos, use the git://github.com/ORG/REPO format.
+    </li>
+    <li>
+      Otherwise Honesy won't notice your pushes.
+    </li>
+    <li>
+      If the project you are adding requires a datastore, you can't set that through this form yet. Look on AskBot.
+    </li>
+  </ul>
 </div>
