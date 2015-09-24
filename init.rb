@@ -35,7 +35,7 @@ app = RConfig.application
 ENV['RACK_ENV'] = (app.environment || 'production').to_s
 DTEST = ENV['HONESTY_DTEST'] == 'true'
 puts 'environment has DTEST applied' if DTEST
-puts "DOCKYARD_DEBUG=#{ENV['DOCKYARD_DEBUG']}" if ENV['DOCKYARD_DEBUG']
+puts "TIMBERLAND_DEBUG=#{ENV['TIMBERLAND_DEBUG']}" if ENV['TIMBERLAND_DEBUG']
 
 if app.environment == 'production'
   logging_pattern = "%.1l %c: %m\n"
@@ -93,7 +93,7 @@ end
 
 Pancakes.configure do |c|
   c.freezer.namespace          = DTEST ? 'dtest' : 'production'
-  c.templating.dockyard_branch = ENV['DOCKYARD_BRANCH'] || 'pancakes'
+  c.templating.timberland_branch ||= ENV['TIMBERLAND_BRANCH']
 end
 
 TrackerWrapper.configure do |c|

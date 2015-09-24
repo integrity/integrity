@@ -4,9 +4,10 @@ module Pancakes
       module Helpers
         extend self
 
-        def dockyard_build_sh(branch:, sha:, repo:, service_type:, setup_db:, debug:)
+        def timberland(boot_type:, branch:, sha:, repo:, service_type:, setup_db:, debug:)
           args = [
-            './dockyard/build.sh',
+            './timberland',
+            '--boot-type', boot_type,
             '-s', sha,
             '-r', repo,
             '--service-type', service_type,
@@ -18,13 +19,13 @@ module Pancakes
           join_args(*args)
         end
 
-        def dockyard_clone(gh_read_token, branch)
+        def timberland_clone(gh_read_token, branch)
           join_args(
             'git', 'clone',
             '--depth', 1,
             '--branch', branch,
-            "https://#{gh_read_token}@github.com/consultingmd/dockyard",
-            'dockyard',
+            "https://#{gh_read_token}@github.com/consultingmd/timberland",
+            'timberland',
           )
         end
 
