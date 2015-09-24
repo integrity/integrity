@@ -2,8 +2,8 @@
 
 CMD_OUTPUT_DEST="/dev/null"
 STATHAT_UPDATE_INTERVAL=15
-ETCD_UPDATE_INTERVAL=3
-GRNDS_METRICS_DIR='/grnds/metrics'
+#ETCD_UPDATE_INTERVAL=3
+#GRNDS_METRICS_DIR='/grnds/metrics'
 STATHAT_METRICS_PREFIX='host'
 
 declare -A g_metrics
@@ -67,38 +67,38 @@ EOF
     done
 }
 
-send_etcd_metrics()
-{
-    echo "sending metrics to etcd every ${ETCD_UPDATE_INTERVAL}s"
+#send_etcd_metrics()
+#{
+    #echo "sending metrics to etcd every ${ETCD_UPDATE_INTERVAL}s"
 
-    while true; do
-        update_metrics
+    #while true; do
+        #update_metrics
 
-        define JSON <<EOF
-{
-    "memfree": ${g_metrics[memfree]},
-    "memavailable": ${g_metrics[memavailable]},
-    "memtotal": ${g_metrics[memtotal]},
-    "diskfree": ${g_metrics[diskfree]},
-    "load1": "${g_metrics[load1]}",
-    "load5": "${g_metrics[load5]}",
-    "load15": "${g_metrics[load15]}",
-    "ncpus": ${g_metrics[ncpus]}
-}
-EOF
+        #define JSON <<EOF
+#{
+    #"memfree": ${g_metrics[memfree]},
+    #"memavailable": ${g_metrics[memavailable]},
+    #"memtotal": ${g_metrics[memtotal]},
+    #"diskfree": ${g_metrics[diskfree]},
+    #"load1": "${g_metrics[load1]}",
+    #"load5": "${g_metrics[load5]}",
+    #"load15": "${g_metrics[load15]}",
+    #"ncpus": ${g_metrics[ncpus]}
+#}
+#EOF
 
-        JSON=`echo $JSON | tr '\n' ' ' | sed -e 's/ +/ /g'`
-        #echo "etcdctl set --ttl 60 /grnds/metrics/$MACHINE_ID \"$JSON\" > $CMD_OUTPUT_DEST"
-        etcdctl set --ttl 60 $GRNDS_METRICS_DIR/$MACHINE_ID "$JSON" > $CMD_OUTPUT_DEST
+        #JSON=`echo $JSON | tr '\n' ' ' | sed -e 's/ +/ /g'`
+        ##echo "etcdctl set --ttl 60 /grnds/metrics/$MACHINE_ID \"$JSON\" > $CMD_OUTPUT_DEST"
+        #etcdctl set --ttl 60 $GRNDS_METRICS_DIR/$MACHINE_ID "$JSON" > $CMD_OUTPUT_DEST
 
-        sleep $ETCD_UPDATE_INTERVAL
-    done
-}
+        #sleep $ETCD_UPDATE_INTERVAL
+    #done
+#}
 
 main()
 {
     #echo etcdctl mkdir $GRNDS_METRICS_DIR
-    etcdctl mkdir $GRNDS_METRICS_DIR
+    #etcdctl mkdir $GRNDS_METRICS_DIR
 
     send_stathat_metrics &
     #send_etcd_metrics &
