@@ -31,7 +31,7 @@ update_metrics()
     g_metrics[memtotal]=$(($(cat /proc/meminfo | grep MemTotal | cut -d: -f2 | tr -d 'kB' | tr -d ' ') * 1024))
     g_metrics[diskfree_root]=$(df -B1 / | tail -1 | awk '{print $4}')
 
-    if df -B1 /dev/xvdh > /dev/null ; then
+    if df -B1 /dev/xvdh >& /dev/null ; then
         g_metrics[diskfree_xvdh]=$(df -B1 /dev/xvdh | tail -1 | awk '{print $4}')
     else
         g_metrics[diskfree_xvdh]=0
