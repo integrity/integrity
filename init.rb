@@ -92,8 +92,8 @@ Integrity.configure do |c|
 end
 
 Pancakes.configure do |c|
-  c.freezer.namespace          = DTEST ? 'dtest' : 'production'
-  c.templating.timberland_branch ||= ENV['TIMBERLAND_BRANCH']
+  c.freezer.namespace            = DTEST ? 'dtest' : 'production'
+  c.templating.timberland_branch = ENV['TIMBERLAND_BRANCH'] || 'master'
 end
 
 TrackerWrapper.configure do |c|

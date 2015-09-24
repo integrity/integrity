@@ -33,7 +33,7 @@ module Pancakes
         namespace: nil,
       ),
       templating: Hashie::Mash.new(
-        timberland_branch: 'pancakes',
+        timberland_branch: nil,
       ),
     )
 
