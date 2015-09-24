@@ -85,7 +85,7 @@ module Integrity
       if private?
         "git://github.com/#{repository.full_name}"
       else
-        "https://github.com#{repository.full_name}.git"
+        "https://github.com/#{repository.full_name}.git"
       end
     end
 
