@@ -4,6 +4,7 @@ CMD_OUTPUT_DEST="/dev/null"
 STATHAT_UPDATE_INTERVAL=15
 ETCD_UPDATE_INTERVAL=3
 GRNDS_METRICS_DIR='/grnds/metrics'
+STATHAT_METRICS_PREFIX='host'
 
 declare -A g_metrics
 
@@ -45,18 +46,19 @@ send_stathat_metrics()
 {
     "ezkey": "${STATHAT_EZ_KEY}",
     "data": [
-        {"stat": "$METRICS_HOSTNAME load1", "value": ${g_metrics[load1]}},
-        {"stat": "$METRICS_HOSTNAME load5", "value": ${g_metrics[load5]}},
-        {"stat": "$METRICS_HOSTNAME load15", "value": ${g_metrics[load15]}},
-        {"stat": "$METRICS_HOSTNAME ncpus", "value": ${g_metrics[ncpus]}},
-        {"stat": "$METRICS_HOSTNAME memavailable", "value": ${g_metrics[memavailable]}},
-        {"stat": "$METRICS_HOSTNAME memfree", "value": ${g_metrics[memfree]}},
-        {"stat": "$METRICS_HOSTNAME memtotal", "value": ${g_metrics[memtotal]}},
-        {"stat": "$METRICS_HOSTNAME diskfree", "value": ${g_metrics[diskfree]}}
+        {"stat": "$STATHAT_METRICS_PREFIX $METRICS_HOSTNAME load1", "value": ${g_metrics[load1]}},
+        {"stat": "$STATHAT_METRICS_PREFIX $METRICS_HOSTNAME load5", "value": ${g_metrics[load5]}},
+        {"stat": "$STATHAT_METRICS_PREFIX $METRICS_HOSTNAME load15", "value": ${g_metrics[load15]}},
+        {"stat": "$STATHAT_METRICS_PREFIX $METRICS_HOSTNAME ncpus", "value": ${g_metrics[ncpus]}},
+        {"stat": "$STATHAT_METRICS_PREFIX $METRICS_HOSTNAME memavailable", "value": ${g_metrics[memavailable]}},
+        {"stat": "$STATHAT_METRICS_PREFIX $METRICS_HOSTNAME memfree", "value": ${g_metrics[memfree]}},
+        {"stat": "$STATHAT_METRICS_PREFIX $METRICS_HOSTNAME memtotal", "value": ${g_metrics[memtotal]}},
+        {"stat": "$STATHAT_METRICS_PREFIX $METRICS_HOSTNAME diskfree", "value": ${g_metrics[diskfree]}}
     ]
 }
 EOF
 
+        echo "sending metrics to StatHat"
         JSON=`echo $JSON | tr '\n' ' '`
         #echo "curl -s -X POST -H \"'Content-Type: application/json'\" https://api.stathat.com/ez -d\"'$JSON'\" > $CMD_OUTPUT_DEST"
         eval curl -s -H "'Content-Type: application/json'" -d"'$JSON'" -X POST https://api.stathat.com/ez > $CMD_OUTPUT_DEST
