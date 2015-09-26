@@ -1,11 +1,3 @@
-module Docker
-  class Container
-    def port_mapping
-      @info['Ports'].map{|p| { p['PrivatePort'] => p['PublicPort']  } }.reduce(&:merge)
-    end
-  end
-end
-
 module Pancakes
   class Docker
     include Pancakes::ClassLogger

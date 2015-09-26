@@ -1,5 +1,7 @@
 module Pancakes
   class Unit < Sequel::Model
+    include HonestyCluster::SwarmBackend::Service
+
     set_dataset :pancakes_units
     plugin :timestamps
     plugin :serialization, :json, :service_def, :cluster_info
@@ -70,7 +72,8 @@ module Pancakes
     def env
       (service_def.env || {}).merge(
         if codebase == 'jarvis'
-          self.stack.jarvis_env
+          #self.stack.jarvis_env
+          {}
         else
           {}
         end
@@ -100,7 +103,7 @@ module Pancakes
     end
 
     def active?
-      self.state == :active
+      !!tcp_str
     end
 
     def name
@@ -129,7 +132,7 @@ module Pancakes
     end
 
     def tcp_str
-      machine_ip && port ? format('%s:%d', machine_ip, port) : nil
+      (machine_ip && port) ? format('%s:%d', machine_ip, port) : nil
     end
 
     def to_s
@@ -142,6 +145,18 @@ module Pancakes
       else
         nil
       end
+    end
+
+    private def service_name_parts
+      service_name.split('-')
+    end
+
+    def service_type
+      service_name_parts[0]
+    end
+
+    def service_subtype
+      service_name_parts[1]
     end
 
     def codebase

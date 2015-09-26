@@ -1,7 +1,7 @@
 module Pancakes
   class Stack < Sequel::Model
     include Pancakes::ClassLogger
-    include HonestyCluster::SwarmBackend::Pancakes::InstanceMethods
+    include HonestyCluster::SwarmBackend::Stack
 
     set_dataset :pancakes_stacks
     plugin :timestamps
@@ -352,22 +352,6 @@ module Pancakes
     def refresh_commits(force: false)
       commits.each do |ci|
         ci.refresh_myself(force: force)
-      end
-    end
-
-    def service_addrs
-      cont = netmaster_unit.container
-
-      if cont
-        cont.port_mapping.map do |k,v|
-          [
-            Pancakes::Services.get_by_port(k)[:name].split('-')[0],
-            "#{netmaster_unit.machine_ip}:#{v}",
-          ]
-        end.to_h
-      else
-        logger.debug "netmaster_unit.container is nil"
-        nil
       end
     end
 

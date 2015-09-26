@@ -227,6 +227,7 @@ module Integrity
 
     get '/pancakes' do
       @stacks = Pancakes::Stack.order(:created_at)
+      @stacks.map(&:refresh_unit_addrs)
       slim :"pancakes/stacks/index"
     end
 
