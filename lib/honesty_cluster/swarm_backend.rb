@@ -83,7 +83,7 @@ module HonestyCluster
     # }
     def create_container(unit)
       puts "creating container #{unit.name}"
-      cmd = make_command(unit)
+      cmd = make_timberland_command(unit)
       #cmd2 = cmd.gsub("'", '').split(/\s+/) if cmd
       byebug if cmd
       Docker::Container.create(container_json(unit, cmd), conn)
@@ -113,7 +113,7 @@ module HonestyCluster
       }
     end
 
-    def make_command(unit, setup_db: true)
+    def make_timberland_command(unit, setup_db: true)
       if !%w[mysql mailcatcher postgres].include?(unit.service_name)
         [
           '/bin/bash', '-c',
@@ -134,27 +134,6 @@ module HonestyCluster
             )
           )
         ]
-        #Pancakes::Fleet::Templating.bash_minus_c(
-          #Pancakes::Fleet::Templating.logging_prefix_pipe(
-            #unit.name,
-            #Pancakes::Fleet::Templating.bash_and(
-              #Pancakes::Fleet::Templating.timberland_clone(
-                #Pancakes.gh_read_token,
-                #Pancakes::Fleet::Templating.config.timberland_branch
-              #),
-              #'cd timberland',
-              #Pancakes::Fleet::Templating.timberland(
-                #boot_type:    'pancakes',
-                #sha:          unit.commit.sha,
-                #repo:         unit.repo,
-                #debug:        Pancakes.timberland_debug?,
-                #branch:       unit.commit.branch,
-                #setup_db:     setup_db,
-                #service_type: unit.subtype,
-              #)
-            #)
-          #)
-        #)
       else
         nil
       end
