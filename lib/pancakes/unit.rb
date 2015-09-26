@@ -147,16 +147,8 @@ module Pancakes
       end
     end
 
-    private def service_name_parts
-      service_name.split('-')
-    end
-
     def service_type
-      service_name_parts[0]
-    end
-
-    def service_subtype
-      service_name_parts[1]
+      service_name.split('-')[0]
     end
 
     def codebase

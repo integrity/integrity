@@ -83,40 +83,81 @@ module HonestyCluster
     # }
     def create_container(unit)
       puts "creating container #{unit.name}"
-      #docker_run(
-        #container_name: unit.name,
-        #netmaster_name: unit.stack.netmaster_unit.name,
-        #environment: {
-          #'PANCAKES_ID' => unit.stack.id,
-          #'PANCAKES_SHA' => unit.stack.short_sha,
-          #'HONESTY_BASE_URL' => Integrity.base_url,
-        #}.merge(unit.env),
-        #ports: unit.netmaster? ? unit.stack.ports : nil,
-        #image: unit.image,
-        #cmd: cmd,
-      #)
+      cmd = make_command(unit)
+      #cmd2 = cmd.gsub("'", '').split(/\s+/) if cmd
+      byebug if cmd
+      Docker::Container.create(container_json(unit, cmd), conn)
+    end
 
-      cmd = nil
-
-      Docker::Container.create(
-        {
-          'name' => unit.name,
-          Cmd: cmd,
-          Image: unit.image,
-          ExposedPorts: docker_api_exposed_ports(unit),
-          Env: docker_api_env(unit),
-          Labels: {
-            'honesty' => '',
-            'pancakes-stack' => unit.stack.name,
-          },
-          'HostConfig' => {
-            Binds: ['/var/lib/docker/tmp:/tmp/hosttmp'],
-            PublishAllPorts: true,
-            #'PortBindings' => {'3306/tcp' => [{'HostPort' => ''}]},
+    def container_json(unit, cmd)
+      {
+        'name' => unit.name,
+        Cmd: cmd,
+        Image: unit.image,
+        ExposedPorts: docker_api_exposed_ports(unit),
+        Env: docker_api_env(unit),
+        Hostname: unit.name,
+        Labels: {
+          'honesty' => '',
+          'pancakes-stack' => unit.stack.name,
+        },
+        HostConfig: {
+          Binds: ['/var/lib/docker/tmp:/tmp/hosttmp'],
+          PublishAllPorts: true,
+          #'PortBindings' => {'3306/tcp' => [{'HostPort' => ''}]},
+          LogConfig: {
+            Type: 'syslog',
+            Config: {'syslog-tag' => unit.name},
           },
         },
-        conn,
-      )
+      }
+    end
+
+    def make_command(unit, setup_db: true)
+      if !%w[mysql mailcatcher postgres].include?(unit.service_name)
+        [
+          '/bin/bash', '-c',
+          Pancakes::Fleet::Templating.bash_and(
+            Pancakes::Fleet::Templating.timberland_clone(
+              Pancakes.gh_read_token,
+              Pancakes::Fleet::Templating.config.timberland_branch
+            ),
+            'cd timberland',
+            Pancakes::Fleet::Templating.timberland(
+              boot_type:    'pancakes',
+              sha:          unit.commit.sha,
+              repo:         unit.repo,
+              debug:        Pancakes.timberland_debug?,
+              branch:       unit.commit.branch,
+              setup_db:     setup_db,
+              service_type: unit.subtype,
+            )
+          )
+        ]
+        #Pancakes::Fleet::Templating.bash_minus_c(
+          #Pancakes::Fleet::Templating.logging_prefix_pipe(
+            #unit.name,
+            #Pancakes::Fleet::Templating.bash_and(
+              #Pancakes::Fleet::Templating.timberland_clone(
+                #Pancakes.gh_read_token,
+                #Pancakes::Fleet::Templating.config.timberland_branch
+              #),
+              #'cd timberland',
+              #Pancakes::Fleet::Templating.timberland(
+                #boot_type:    'pancakes',
+                #sha:          unit.commit.sha,
+                #repo:         unit.repo,
+                #debug:        Pancakes.timberland_debug?,
+                #branch:       unit.commit.branch,
+                #setup_db:     setup_db,
+                #service_type: unit.subtype,
+              #)
+            #)
+          #)
+        #)
+      else
+        nil
+      end
     end
 
     def docker_api_env(unit)
@@ -126,8 +167,18 @@ module HonestyCluster
         'HONESTY_BASE_URL' => base_url,
       }.merge(unit.env)
       .map do |k,v|
-        [k,v].join('=')
+        fill_env_value(k,v).join('=')
       end
+    end
+
+    def fill_env_value(k,v)
+      v = v.to_s
+      if v == ':self'
+        v = ENV[k]
+      elsif v.start_with?(':')
+        v = ENV[v.sub(/\A:/, '')]
+      end
+      [k,v]
     end
 
     def docker_api_exposed_ports(unit)
@@ -142,8 +193,7 @@ module HonestyCluster
 
     def run_unit(unit)
       container = create_container(unit)
-      #byebug
-      #container.start
+      container.start
     end
 
     #def destroy_unit(unit)
