@@ -6,12 +6,8 @@ module HonestyCluster
       config.url = "http://#{ENV['CONSUL_HOST']}:8500"
     end
 
-    def swarm_master_host
-      ENV['SWARM_MASTER']
-    end
-
     def conn
-      @__swarm_conn ||= Docker::Connection.new("tcp://#{swarm_master_host}", {})
+      @__swarm_conn ||= Docker::Connection.new(ENV['DOCKER_HOST'], {})
     end
 
     # {
