@@ -10,7 +10,7 @@ module Pancakes
     serialize_attributes :symbolize, :state
 
     STATES = %i[off failed active inactive activating deactivating]
-    PANCAKES_UNIT_REGEX = /\/?(?<stack_name>#{Pancakes::NAMESPACE}_[0-9a-f]+_\d+)_(?<service_name>[a-z0-9\-_]+)(?:\.service)?/i
+    PANCAKES_UNIT_REGEX = /\/?(?<stack_name>#{Pancakes::NAMESPACE}_[0-9a-f]+_(?<stack_id>\d+))_(?<service_name>[a-z0-9\-_]+)(?:\.service)?/i
     # other versions of this regex that may be useful at some point
     # /\/?(?:pancakes)_(?<branch_id>[0-9a-f]+)_no(?<serialno>\d+)_(?<service>\w+)/
     # /\/?(?<stack_name>#{Pancakes::NAMESPACE}_[0-9a-f]+)_(?<service_name>[a-z0-9\-_]+)(?:\.service)?/i
@@ -80,19 +80,19 @@ module Pancakes
       )
     end
 
-    def container
-      if machine_ip
-        Pancakes.docker.set_machine_ip(machine_ip)
-        cc = Pancakes.docker.get_container(name)
-        if !cc
-          Pancakes.logger.warn "unit(service_name=#{service_name}) has no container, but does have a machine_ip(#{machine_ip})"
-        end
-        cc
-      else
-        Pancakes.logger.warn "unit(service_name=#{service_name}) has no machine_ip, but one was likely expected"
-        nil
-      end
-    end
+    #def container
+      #if machine_ip
+        #Pancakes.docker.set_machine_ip(machine_ip)
+        #cc = Pancakes.docker.get_container(name)
+        #if !cc
+          #Pancakes.logger.warn "unit(service_name=#{service_name}) has no container, but does have a machine_ip(#{machine_ip})"
+        #end
+        #cc
+      #else
+        #Pancakes.logger.warn "unit(service_name=#{service_name}) has no machine_ip, but one was likely expected"
+        #nil
+      #end
+    #end
 
     def netmaster?
       service_def.netmaster
@@ -222,6 +222,7 @@ module Pancakes
 
       Hashie::Mash.new(
         name: name,
+        stack_id: match[:stack_id].to_i,
         stack_name: match[:stack_name],
         service_name: match[:service_name]
       )
