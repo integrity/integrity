@@ -431,7 +431,7 @@ module Integrity
       halt 200, '1.2.3.4:5678' if params[:dry_run]
 
       @stack = Pancakes::Stack[params[:id]]
-      update_state = params[:update_state]
+      #update_state = params[:update_state]
       service_name = params[:service_name]
 
       if !@stack
@@ -441,9 +441,11 @@ module Integrity
 
       logger.info "stack found id=#{@stack.id}"
 
-      if update_state == 'true'
-        @stack.state_from_cluster!
-      end
+      #if update_state == 'true'
+        #@stack.state_from_cluster!
+      #end
+
+      @stack.refresh_unit_addrs
 
       @unit = @stack.unit_with_service_name(service_name)
 

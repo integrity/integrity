@@ -136,10 +136,10 @@ module HonestyCluster
       #     "CgroupParent": ""
       #   }
       # }
-      def create_container(more_env:{})
+      def create_container
         puts "creating container #{self.name}"
         cmd = make_timberland_command(self)
-        Docker::Container.create(container_json(self, cmd, more_env), SwarmBackend.conn)
+        Docker::Container.create(container_json(self, cmd), SwarmBackend.conn)
       end
 
       def start_container
@@ -150,8 +150,8 @@ module HonestyCluster
         container.start
       end
 
-      def run_container_async(more_env:{})
-        _start_container create_container(more_env)
+      def run_container_async
+        _start_container create_container
       end
 
       def container
@@ -169,14 +169,14 @@ module HonestyCluster
       #end
 
 
-      private def container_json(unit, cmd, more_env={})
-        more_env ||= {}
+      private def container_json(unit, cmd)
+        puts "timberland cmd: #{cmd}"
         {
           'name' => unit.name,
           Cmd: cmd,
           Image: unit.image,
           ExposedPorts: docker_api_exposed_ports(unit),
-          Env: docker_api_env(unit, more_env),
+          Env: docker_api_env(unit),
           Hostname: unit.name,
           Labels: {
             'honesty' => '',
@@ -243,12 +243,12 @@ module HonestyCluster
         end
       end
 
-      private def docker_api_env(unit, more_env=nil)
+      private def docker_api_env(unit)
         {
           'PANCAKES_ID' => unit.stack.id,
           'PANCAKES_SHA' => unit.stack.short_sha,
           'HONESTY_BASE_URL' => SwarmBackend.base_url,
-        }.merge(unit.env).merge(more_env || {})
+        }.merge(unit.env)
         .map do |k,v|
           fill_env_value(k,v).join('=')
         end
@@ -267,11 +267,14 @@ module HonestyCluster
       def swarm_spin_up
         clear_unit_addrs
 
-        mysql_unit.run_container_async
-        postgres_unit.run_container_async
+        #mysql_unit.run_container_async
+        #postgres_unit.run_container_async
 
-        self.units.reject do |unit|
-          %w[mysql postgres].include?(unit.service_name)
+        #self.units.reject do |unit|
+          #%w[mysql postgres].include?(unit.service_name)
+        #end
+        self.units.select do |unit|
+          %w[banyan-server postgres].include?(unit.service_name)
         end
         .each do |unit|
           unit.run_container_async
