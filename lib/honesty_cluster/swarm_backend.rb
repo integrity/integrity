@@ -274,7 +274,9 @@ module HonestyCluster
           #%w[mysql postgres].include?(unit.service_name)
         #end
         self.units.select do |unit|
-          %w[banyan-server postgres].include?(unit.service_name)
+          %w[postgres jarvis-setup mysql].include?(unit.service_name)
+          #%w[jarvis-server jarvis-setup mysql].include?(unit.service_name)
+          #%w[jarvis-delayed_job jarvis-server jarvis-setup mysql].include?(unit.service_name)
         end
         .each do |unit|
           unit.run_container_async

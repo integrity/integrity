@@ -58,7 +58,7 @@ module Pancakes
         dbs: %w[frick-development ruote-development],
       },
       {
-        name: 'jarvis-orchestra',
+        name: 'jarvis-setup',
         image: 'grnds/jarvis_ci:latest',
         repo: 'consultingmd/consultingmd',
         machineof: :mysql,
@@ -71,7 +71,7 @@ module Pancakes
         image: 'grnds/jarvis_ci:latest',
         repo: 'consultingmd/consultingmd',
         machineof: :mysql,
-        requires: :"jarvis-orchestra",
+        requires: :"jarvis-setup",
         ports: [10001],
         ping_url: 'http://$ip:$port/status',
         http_status: 200,
@@ -82,11 +82,11 @@ module Pancakes
         image: 'grnds/jarvis_ci:latest',
         repo: 'consultingmd/consultingmd',
         machineof: :mysql,
-        requires: :"jarvis-orchestra",
+        requires: :"jarvis-setup",
         env: SERVICE_ENV,
       },
       {
-        name: 'tim-orchestra',
+        name: 'tim-setup',
         image: 'grnds/tim_ci:latest',
         repo: 'consultingmd/tim',
         machineof: :mysql,
@@ -99,7 +99,7 @@ module Pancakes
         image: 'grnds/tim_ci:latest',
         repo: 'consultingmd/tim',
         machineof: :mysql,
-        requires: :"tim-orchestra",
+        requires: :"tim-setup",
         ports: [10004],
         ping_url: 'http://$ip:$port/status',
         http_status: 200,
@@ -110,7 +110,7 @@ module Pancakes
         image: 'grnds/tim_ci:latest',
         repo: 'consultingmd/tim',
         machineof: :mysql,
-        requires: :"tim-orchestra",
+        requires: :"tim-setup",
         env: SERVICE_ENV,
       },
       {
@@ -149,7 +149,7 @@ module Pancakes
     end
 
     def jarvis_services
-      %w[mysql mailcatcher jarvis-server jarvis-orchestra jarvis-delayed_job tim-server tim-orchestra tim-delayed_job frick-server]
+      %w[mysql mailcatcher jarvis-server jarvis-setup jarvis-delayed_job tim-server tim-setup tim-delayed_job frick-server]
     end
 
     def tp_services

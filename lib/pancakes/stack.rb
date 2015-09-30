@@ -544,9 +544,9 @@ module Pancakes
 
     # @api private
     def non_netmaster_units
-      # sort orchestra units to the top
+      # sort setup units to the top
       units_dataset.exclude(service_name: Pancakes::Services.netmaster).to_a
-        .sort { |a,b| (a.name['orchestra'] && -1) || (b.name['orchestra'] && 1) || 0 }
+        .sort { |a,b| (a.name['setup'] && -1) || (b.name['setup'] && 1) || 0 }
     end
 
     # @api private
