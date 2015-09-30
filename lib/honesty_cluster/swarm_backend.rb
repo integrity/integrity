@@ -273,18 +273,19 @@ module HonestyCluster
         #self.units.reject do |unit|
           #%w[mysql postgres].include?(unit.service_name)
         #end
-        self.units.select do |unit|
-          %w[postgres jarvis-setup mysql].include?(unit.service_name)
+        #self.units.select do |unit|
+          #%w[tp-server frick-server tim-server tim-banyan-server postgres jarvis-delayed_job jarvis-server jarvis-setup mysql].include?(unit.service_name)
           #%w[jarvis-server jarvis-setup mysql].include?(unit.service_name)
           #%w[jarvis-delayed_job jarvis-server jarvis-setup mysql].include?(unit.service_name)
-        end
-        .each do |unit|
+        #end
+        self.units.each do |unit|
           unit.run_container_async
         end
       end
 
       def swarm_destroy
         containers.each do |container|
+          puts "removing (with force) container #{container.name}"
           container.remove(force: true)
         end
 
