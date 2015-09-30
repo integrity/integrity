@@ -168,15 +168,17 @@ module HonestyCluster
         #save
       #end
 
+      private def bash_minus_c(cmd)
+        ['/bin/bash', '-c', cmd]
+      end
 
       private def container_json(unit, cmd)
-        puts "timberland cmd: #{cmd}"
         {
           'name' => unit.name,
-          Cmd: cmd,
+          Cmd: cmd ? bash_minus_c(cmd) : nil,
           Image: unit.image,
           ExposedPorts: docker_api_exposed_ports(unit),
-          Env: docker_api_env(unit),
+          Env: docker_api_env(unit, cmd),
           Hostname: unit.name,
           Labels: {
             'honesty' => '',
@@ -219,35 +221,33 @@ module HonestyCluster
 
       private def make_timberland_command(unit, setup_db: true)
         if !%w[mysql mailcatcher postgres].include?(unit.service_name)
-          [
-            '/bin/bash', '-c',
-            Pancakes::Fleet::Templating.bash_and(
-              Pancakes::Fleet::Templating.timberland_clone(
-                Pancakes.gh_read_token,
-                Pancakes::Fleet::Templating.config.timberland_branch
-              ),
-              'cd timberland',
-              Pancakes::Fleet::Templating.timberland(
-                boot_type:    'pancakes',
-                sha:          unit.commit.sha,
-                repo:         unit.repo,
-                debug:        Pancakes.timberland_debug?,
-                branch:       unit.commit.branch,
-                setup_db:     setup_db,
-                service_type: unit.subtype,
-              )
+          Pancakes::Fleet::Templating.bash_and(
+            Pancakes::Fleet::Templating.timberland_clone(
+              Pancakes.gh_read_token,
+              Pancakes::Fleet::Templating.config.timberland_branch
+            ),
+            'cd timberland',
+            Pancakes::Fleet::Templating.timberland(
+              boot_type:    'pancakes',
+              sha:          unit.commit.sha,
+              repo:         unit.repo,
+              debug:        Pancakes.timberland_debug?,
+              branch:       unit.commit.branch,
+              setup_db:     setup_db,
+              service_type: unit.subtype,
             )
-          ]
+          )
         else
           nil
         end
       end
 
-      private def docker_api_env(unit)
+      private def docker_api_env(unit, cmd)
         {
           'PANCAKES_ID' => unit.stack.id,
           'PANCAKES_SHA' => unit.stack.short_sha,
           'HONESTY_BASE_URL' => SwarmBackend.base_url,
+          'TIMBERLAND_CMD' => cmd,
         }.merge(unit.env)
         .map do |k,v|
           fill_env_value(k,v).join('=')
