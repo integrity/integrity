@@ -55,8 +55,6 @@ gem 'net-ssh', '~> 2.9.1'
 gem 'hashie', '~> 2.1.2'
 gem 'sequel', '~> 4.21.0'
 gem 'aws-sdk', '~> 2.0.41'
-#gem 'diplomat', '~> 0.13'
-gem 'diplomat', git: 'https://github.com/WeAreFarmGeek/diplomat.git', branch: 'master'
 
 group :test do
   gem 'rspec'

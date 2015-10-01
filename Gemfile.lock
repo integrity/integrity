@@ -1,12 +1,3 @@
-GIT
-  remote: https://github.com/WeAreFarmGeek/diplomat.git
-  revision: d83e5b2a32818cd65e6d7dfbb5688d7c1f22309d
-  branch: master
-  specs:
-    diplomat (0.13.3)
-      faraday (~> 0.9)
-      json (~> 1.8)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -312,7 +303,6 @@ DEPENDENCIES
   delayed_job
   delayed_job_active_record
   delayed_job_web
-  diplomat!
   dm-core
   dm-mysql-adapter
   docker-api (~> 1.22.4)
