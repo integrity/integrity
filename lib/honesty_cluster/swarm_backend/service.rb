@@ -111,10 +111,10 @@ module HonestyCluster
             code = resp.code.to_i
 
             if code == healthy_status
-              puts "service #{name}(#{healthy_status}) reached at #{url} (#{code})"
+              puts "service #{name} health_check passed. required=#{healthy_status} got=#{code} url=#{url}"
               return true
             else
-              puts "service #{name}(#{healthy_status}) at #{url} is unreachable with #{code}"
+              puts "service #{name} health_check failed. required=#{healthy_status} got=#{code} url=#{url}"
               return false
             end
           else
