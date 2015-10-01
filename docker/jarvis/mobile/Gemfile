@@ -1,0 +1,8 @@
+source 'https://rubygems.org'
+
+gem 'appium_lib'
+gem 'rest-client'
+gem 'rspec'
+gem 'rspec-expectations'
+gem 'spec'
+gem 'sauce_whisk'
