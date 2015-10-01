@@ -16,6 +16,6 @@ RUN chmod 600 .ssh/config
 
 COPY build.sh ./
 
-ENV MOBILE_SPEC_BRANCH feature/2052890/103458506/mobile-specs-dockerfile
+ENV MOBILE_SPEC_BRANCH master
 
 CMD ./build.sh
