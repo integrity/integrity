@@ -62,14 +62,14 @@ module HonestyCluster
               false
             end
           else
-            puts "setup is still running"
-            false
+            puts "setup is still running, but that's okay"
+            true
           end
         elsif _container.running?
           puts "the container is running"
           true
         else
-          puts "the container is niether running nor exited"
+          puts "the container is neither running nor exited"
           false
         end
       end
@@ -78,27 +78,33 @@ module HonestyCluster
         machine_ip && port
       end
 
-      def ping_url
-        if addr_known? && pingable?
+      def health_check_url
+        if addr_known? && health_checkable?
           service_def.ping_url.sub('$ip', machine_ip).sub('$port', port.to_s)
         else
           nil
         end
       end
 
-      def pingable?
+      def health_checkable?
         !!service_def.ping_url
       end
 
-      def ping_healthy_status
+      def healthy_http_status
         service_def.http_status
       end
 
-      def ping
+      def create_health_check_event(passed, msg=nil)
+        status = passed ? 'HEALTH_CHECK_COMPLETE' : 'HEALTH_CHECK_FAILED'
+        self.add_event(source: 'honesty', type: 'Pancakes::Service::HealthCheck', status: status, status_message: msg)
+        return passed
+      end
+
+      def check_health
         name = self.service_name
-        raise "service #{name} is not ready for pinging" unless pingable?
+        raise "service #{name} is not ready for health check" unless health_checkable?
         url = self.ping_url
-        healthy_status = self.ping_healthy_status
+        healthy_status = self.healthy_http_status
 
         begin
           if url.start_with?('http')
@@ -111,20 +117,20 @@ module HonestyCluster
             code = resp.code.to_i
 
             if code == healthy_status
-              puts "service #{name} health_check passed. required=#{healthy_status} got=#{code} url=#{url}"
-              return true
+              create_health_check_event(true)
             else
-              puts "service #{name} health_check failed. required=#{healthy_status} got=#{code} url=#{url}"
-              return false
+              create_health_check_event(false, "service #{name} health_check failed. required=#{healthy_status} got=#{code} url=#{url}")
             end
           else
-            puts "service #{name} at #{url} cannot be pinged due to url scheme #{url}"
-            return false
+            create_health_check_event(false, "service #{name} at #{url} cannot be health checked due to url scheme #{url}")
           end
         rescue StandardError => e
-          puts "service #{name} at #{url} is unreachable due to #{e.class} '#{e.message}'"
-          return false
+          create_health_check_event(false, "service #{name} at #{url} is unreachable due to #{e.class} '#{e.message}'")
         end
+      end
+
+      def last_health_check
+        events_dataset.where(type: 'Pancakes::Service::HealthCheck').reverse_order(:created_at).limit(1).first
       end
 
 

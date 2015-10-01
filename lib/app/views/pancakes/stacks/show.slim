@@ -2,11 +2,128 @@
   div
     == link_to h('<- Back to all stacks'), '/pancakes', class: 'btn btn-link btn-lg'
 
-  table.table.pancakes
-    thead
-      tr
-        th
-        th
-        th
-    tbody
-      == slim :"pancakes/stacks/_stack", locals: { stack: @stack, view: false }, layout: false
+  .row
+    .col-xs-12
+      h1
+        | Stack ##{@stack.id} #{@stack.short_sha}
+        div: small = @stack.name
+
+      h3
+        - if @last_health_check
+          div
+            span.label class="label-#{event_bootstrap_class(@last_health_check)}" = event_status(@last_health_check)
+            small< = event_timestamp(@last_health_check)
+        - else
+          div no health checks found
+
+      br
+
+  .row
+    .col-xs-12
+      .btn-toolbar role='toolbar'
+        .btn-group role='group'
+          a.btn.btn-primary href="/pancakes/stacks/#{@stack.id}/check_health"
+            | Check health
+
+        .btn-group role='group'
+          a.btn.btn-primary href="/pancakes/stacks/#{@stack.id}/restart_with_branch_heads"
+            | Restart with branch heads
+
+        .btn-group role='group'
+          a.btn.btn-primary href="/pancakes/stacks/#{@stack.id}/restart_with_same_commits"
+            | Restart with same commits
+
+        .btn-group role='group'
+          a.btn.btn-danger href="/pancakes/stacks/#{@stack.id}/bring_down"
+            | Bring down
+
+        .btn-group role='group'
+          a.btn.btn-danger href="/pancakes/stacks/#{@stack.id}/destroy" class=(@stack.off? ? '' : 'disabled')
+            | Destroy
+
+  .row
+    .col-xs-12
+      h3 Commits
+      table.table.commits
+        thead
+          tr
+            th Codebase
+            th Lock
+            th SHA
+            th Branch
+            th Commit date
+            th Commit message
+        tbody
+          - @stack.commits.sort{|a,b| a.codebase <=> b.codebase }.each do |commit|
+            tr
+              td.col-xs-1 = commit.codebase
+              td.col-xs-1.lock-controls
+                span.fa> class=(commit.locked? ? 'fa-lock' : 'fa-unlock')
+                a.btn.btn-xs.btn-default.toggle-lock-btn href="/pancakes/stacks/#{@stack.id}/#{commit.codebase}/toggle_lock"
+                  - if commit.locked?
+                    | unlock
+                  - else
+                    | lock
+              td.col-xs-1.mono
+                = commit.short_sha
+              td.col-xs-1.mono
+                = commit.branch
+              td.col-xs-1
+                span.no-wrap
+                  = time_ago_in_words(commit.date) + ' ago by ' + commit.author
+              td.col-xs-7.commit-message
+                = commit.message
+
+  .row
+    .col-xs-12
+      h3 Services
+      table.table
+        thead
+          tr
+            th Container
+            th Health
+            th Actions
+            th Name
+            th Notes
+        tbody
+          - _containers = @stack.containers_mapped_by_service_name
+          - @stack.units.sort{|a,b| a.service_name <=> b.service_name }.map{|unit| [unit, unit.last_health_check] }.each do |unit,last_health_check|
+            tr
+              td.col-xs-1
+                - _container = _containers[unit.service_name]
+                span.label class="label-#{container_status_bootstrap_class(_container)}" = container_state(_container)
+              td.col-xs-1
+                - if last_health_check
+                  span.label class="label-#{event_bootstrap_class(last_health_check)}" = event_status(last_health_check)
+                  br
+                  small< = event_timestamp(last_health_check)
+              td.col-xs-1
+                - if unit.health_checkable? || is_mailcatcher = (unit.service_name == 'mailcatcher')
+                  == launch_button(unit.codebase || unit.service_name, http_url(unit), enabled: (last_health_check && last_health_check.complete?) || is_mailcatcher)
+              td.col-xs-1
+                = unit.service_name
+              td.col-xs-8.mono
+                ul
+                  - service_notes(unit).each do |note|
+                    li = note
+
+  .row
+    .col-xs-12
+      h3 Events
+      table.table
+        thead
+          tr
+            th Timestamp
+            th Source
+            th Type
+            th Status
+            th Status Message
+        tbody
+          - @stack.all_events.sort{|a,b| b.created_at <=> a.created_at }.each do |event|
+            tr
+              td.col-xs-1 = pacific_time(event.created_at).strftime("%F %r %z")
+              td.col-xs-1 = event.source
+              td.col-xs-1 = event.type
+              td.col-xs-1
+                span.label class="label-#{event_bootstrap_class(event)}" = event_status(event)
+              td.col-xs-8 = event.status_message

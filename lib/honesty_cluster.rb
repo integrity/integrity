@@ -76,6 +76,7 @@ end
 require 'coreext/docker/container'
 require 'honesty_cluster/aws_clients'
 require 'honesty_cluster/bundle_cache'
+require 'honesty_cluster/honesty_event'
 require 'honesty_cluster/swarm_backend'
 require 'honesty_cluster/swarm_backend/service'
 require 'honesty_cluster/swarm_backend/stack'

@@ -18,6 +18,7 @@ module Pancakes
 
     one_to_many :commits, key: :stack_id, class: :"Pancakes::Commit"
     one_to_many :units,   key: :stack_id, class: :"Pancakes::Unit"
+    one_to_many :events,  key: :stack_id, class: :"HonestyCluster::HonestyEvent", order: :created_at
 
     add_association_dependencies commits: :destroy, units: :destroy
 
@@ -629,6 +630,22 @@ module Pancakes
         is_service_up?(unit)
       end
       .reduce(true){|memo,val| memo && val }
+    end
+
+    def clear_events
+      units.each do |unit|
+        unit.clear_events
+      end
+
+      events_dataset.destroy
+    end
+
+    def service_events
+      units.map(&:events).flatten.sort{|a,b| a.created_at <=> b.created_at }
+    end
+
+    def all_events
+      (units.map(&:events).flatten + events).sort{|a,b| a.created_at <=> b.created_at }
     end
 
     private

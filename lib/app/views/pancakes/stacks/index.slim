@@ -28,14 +28,24 @@
       button.btn.btn-primary type='submit' Create stack
 
   h3 Stacks
+
   .row
     .col-xs-12
-      - @stacks.each do |stack|
-        table.table.stack
-          thead
-            tr
-              th
-              th
-              th
-          tbody
-            == slim :"pancakes/stacks/_stack", locals: { stack: stack, view: true }, layout: false
+      table.table.table-bordered.table-hover.stacks-list
+        thead
+          tr
+            th Health
+            th Name
+            th POCs
+            th Status Message
+        tbody
+          - @stacks.map{|stack| [stack, stack.last_health_check] }.each do |stack,last_health_check|
+            tr class=event_bootstrap_class(last_health_check)
+              td.col-xs-1
+                = event_status(last_health_check)
+              td.col-xs-1
+                == link_to stack.name, "/pancakes/stacks/#{stack.id}"
+              td.col-xs-2
+                = poc_string(stack.pocs)
+              td.col-xs-8
+                = last_health_check.status_message

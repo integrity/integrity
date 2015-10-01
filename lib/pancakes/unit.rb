@@ -16,6 +16,7 @@ module Pancakes
     # /\/?(?<stack_name>#{Pancakes::NAMESPACE}_[0-9a-f]+)_(?<service_name>[a-z0-9\-_]+)(?:\.service)?/i
 
     many_to_one :stack, key: :stack_id, class: :"Pancakes::Stack"
+    one_to_many :events, key: :service_id, class: :"HonestyCluster::HonestyEvent", order: :created_at
 
     def validate
       super
@@ -131,21 +132,30 @@ module Pancakes
       service_def.repo
     end
 
-    def tcp_str
-      (machine_ip && port) ? format('%s:%d', machine_ip, port) : nil
+    def tcp_str(port_to_use=port)
+      (machine_ip && port_to_use) ? format('%s:%d', machine_ip, port_to_use) : nil
+    end
+
+    def lookup_public_port(private_port)
+      _container = container
+      if _container
+        _container.port_mapping[private_port.to_i]
+      else
+        nil
+      end
     end
 
     def to_s
       name
     end
 
-    def primary_private_port
-      if p = service_def.ports
-        p.first
-      else
-        nil
-      end
-    end
+    #def primary_private_port
+      #if p = service_def.ports
+        #p.first
+      #else
+        #nil
+      #end
+    #end
 
     def service_type
       service_name.split('-')[0]
@@ -181,6 +191,10 @@ module Pancakes
 
     def dbs
       service_def.dbs
+    end
+
+    def clear_events
+      events_dataset.destroy
     end
 
     def ping_url

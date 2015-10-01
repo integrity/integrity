@@ -1,7 +1,7 @@
 module Docker
   class Container
 
-    RUNNING_REGEXP = /Up \d+ \w+/
+    RUNNING_REGEXP = /Up .+/
     EXITED_REGEXP  = /Exited \((?<exit_code>\d+)\) \d+ \w+ ago/
 
     def info
@@ -30,6 +30,10 @@ module Docker
 
     def exited?
       !!status.match(EXITED_REGEXP)
+    end
+
+    def failed?
+      exited? && exit_code != 0
     end
 
     def exit_code

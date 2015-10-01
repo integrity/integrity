@@ -131,5 +131,3 @@ NOTE: Irb will load integrity application automatically
 #### Links:
 - Live: https://integrity.test.grandrounds.com
 - Code: http://github.com/ConsultingMD/honesty
-
-

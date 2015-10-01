@@ -227,12 +227,13 @@ module Integrity
 
     get '/pancakes' do
       @stacks = Pancakes::Stack.order(:created_at)
-      @stacks.map(&:refresh_unit_addrs)
+      @stacks.map(&:refresh_service_addrs)
       slim :"pancakes/stacks/index"
     end
 
     get '/pancakes/stacks/:id' do
       @stack = Pancakes::Stack[params[:id]]
+      @last_health_check = @stack.last_health_check
 
       if @stack
         slim :"pancakes/stacks/show"
@@ -250,9 +251,11 @@ module Integrity
         if @commit
           @commit.toggle_lock!
         end
-      end
 
-      redirect back
+        redirect to("/pancakes/stacks/#{@stack.id}")
+      else
+        redirect to('/pancakes')
+      end
     end
 
     get '/pancakes/stacks/:id/restart_with_branch_heads' do
@@ -287,14 +290,15 @@ module Integrity
       redirect back
     end
 
-    get '/pancakes/stacks/:id/refresh' do
+    get '/pancakes/stacks/:id/check_health' do
       @stack = Pancakes::Stack[params[:id]]
 
       if @stack
-        @stack.state_from_cluster!
+        @stack.check_health
+        redirect to("/pancakes/stacks/#{@stack.id}")
+      else
+        redirect to('/pancakes')
       end
-
-      redirect back
     end
 
     get '/pancakes/stacks/:id/destroy' do
@@ -445,7 +449,7 @@ module Integrity
         #@stack.state_from_cluster!
       #end
 
-      @stack.refresh_unit_addrs
+      @stack.refresh_service_addrs
 
       @unit = @stack.unit_with_service_name(service_name)
 

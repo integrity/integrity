@@ -11,11 +11,11 @@ module HonestyCluster
       # |__|             \/             \/
 
       def swarm_spin_up
-        clear_unit_addrs
+        clear_service_addrs
         self.units.each do |unit|
           unit.run_container_async
         end
-        refresh_unit_addrs
+        refresh_service_addrs
       end
 
       def swarm_destroy
@@ -24,11 +24,11 @@ module HonestyCluster
           container.remove(force: true)
         end
 
-        refresh_unit_addrs
+        refresh_service_addrs
         nil
       end
 
-      def clear_unit_addrs
+      def clear_service_addrs
         units_dataset.update(machine_ip: nil, port: nil)
       end
 
@@ -42,7 +42,8 @@ module HonestyCluster
         )
       end
 
-      def refresh_unit_addrs
+      def refresh_service_addrs
+        puts 'refreshing service addresses'
         mapped_containers = containers_mapped_by_service_name
 
         self.units.each do |unit|
@@ -60,7 +61,7 @@ module HonestyCluster
       end
 
       def service_addrs
-        refresh_unit_addrs
+        refresh_service_addrs
 
         self.units.map do |unit|
           next(nil) unless unit.tcp_str
@@ -74,16 +75,44 @@ module HonestyCluster
         self.units.map(&:"container_nominal?").reduce(true){|memo,val| memo && val}
       end
 
-      def services_ping_success?
-        self.units.select(&:"pingable?").map do |unit|
-          unit.ping
+      def services_healthy?
+        self.units.select(&:"health_checkable?").map do |unit|
+          unit.check_health
         end.reduce(true){|memo,val| memo && val}
       end
 
-      def healthy?
-        service_containers_nominal? && services_ping_success?
+      def check_health
+        refresh_service_addrs
+
+        _containers_healthy = service_containers_nominal?
+        if !_containers_healthy
+          return create_health_check_event(false, "one or more containers are in a bad state")
+        end
+
+        _services_healthy = services_healthy?
+        if !_services_healthy
+          return create_health_check_event(false, "one or more services are unhealthy")
+        end
+
+        create_health_check_event(true)
       end
 
+      def create_health_check_event(passed, msg=nil)
+        status = passed ? 'HEALTH_CHECK_COMPLETE' : 'HEALTH_CHECK_FAILED'
+        self.add_event(source: 'honesty', type: 'Pancakes::Stack::HealthCheck', status: status, status_message: msg)
+        return passed
+      end
+
+      def last_health_check
+        events_dataset.where(type: 'Pancakes::Stack::HealthCheck').reverse_order(:created_at).limit(1).first
+      end
+
+
+      def containers_mapped_by_service_name
+        containers.map do |container|
+          [Pancakes::Unit.parse_unit_name(container.name).service_name, container]
+        end.to_h
+      end
 
       #              .__               __
       # _____________|__|__  _______ _/  |_  ____
@@ -92,11 +121,6 @@ module HonestyCluster
       # |   __/|__|  |__| \_/  (____  /__|  \___  >
       # |__|                        \/          \/
 
-      private def containers_mapped_by_service_name
-        containers.map do |container|
-          [Pancakes::Unit.parse_unit_name(container.name).service_name, container]
-        end.to_h
-      end
     end
   end
 end
