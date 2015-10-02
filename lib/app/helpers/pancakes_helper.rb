@@ -71,7 +71,7 @@ module Integrity
       #end
 
       def launch_button_helper(service_name, url, enabled)
-        link_to "Launch #{service_name}", url, target: '_blank', class: "btn btn-primary#{enabled ? '' : ' disabled'} launch-btn"
+        link_to "Launch #{service_name}", url, target: '_blank', class: "btn btn-sm btn-primary#{enabled ? '' : ' disabled'} launch-btn"
       end
 
       #def tcp_string(commit)
@@ -172,6 +172,10 @@ module Integrity
 
       def services_for_form
         %w[jarvis frick tim tp banyan]
+      end
+
+      def service_logs_url(unit)
+        "#{Integrity.logs_url}?q=#{unit.name}"
       end
     end
   end

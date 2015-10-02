@@ -331,6 +331,19 @@ module Integrity
       redirect back
     end
 
+    get '/pancakes/events' do
+      stack_id       = params[:stack_id]
+      unit_id        = params[:service_id]
+      source         = params[:source]
+      log_location   = params[:log_location]
+      code_location  = params[:code_location]
+      type           = params[:type]
+      status         = params[:status]
+      status_message = params[:message]
+
+      puts params.inspect
+    end
+
     get '/pancakes/branches/:codebase.json' do |codebase|
       term = params[:term]
 

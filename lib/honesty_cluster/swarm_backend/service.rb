@@ -102,8 +102,9 @@ module HonestyCluster
 
       def check_health
         name = self.service_name
+        create_health_check_event(false, "health check address is unavailable") unless addr_known?
         raise "service #{name} is not ready for health check" unless health_checkable?
-        url = self.ping_url
+        url = self.health_check_url
         healthy_status = self.healthy_http_status
 
         begin
@@ -211,6 +212,8 @@ module HonestyCluster
       private def docker_api_env(unit, cmd)
         {
           'PANCAKES_ID' => unit.stack.id,
+          'STACK_ID' => unit.stack.id,
+          'SERVICE_ID' => unit.id,
           'PANCAKES_SHA' => unit.stack.short_sha,
           'HONESTY_BASE_URL' => SwarmBackend.base_url,
           'TIMBERLAND_CMD' => cmd,

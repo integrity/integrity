@@ -44,7 +44,7 @@
   .row
     .col-xs-12
       h3 Commits
-      table.table.commits
+      table.table.table-bordered
         thead
           tr
             th Codebase
@@ -56,7 +56,7 @@
         tbody
           - @stack.commits.sort{|a,b| a.codebase <=> b.codebase }.each do |commit|
             tr
-              td.col-xs-1 = commit.codebase
+              td.col-xs-1.mono = commit.codebase
               td.col-xs-1.lock-controls
                 span.fa> class=(commit.locked? ? 'fa-lock' : 'fa-unlock')
                 a.btn.btn-xs.btn-default.toggle-lock-btn href="/pancakes/stacks/#{@stack.id}/#{commit.codebase}/toggle_lock"
@@ -77,7 +77,7 @@
   .row
     .col-xs-12
       h3 Services
-      table.table
+      table.table.table-bordered
         thead
           tr
             th Container
@@ -98,9 +98,11 @@
                   br
                   small< = event_timestamp(last_health_check)
               td.col-xs-1
-                - if unit.health_checkable? || is_mailcatcher = (unit.service_name == 'mailcatcher')
-                  == launch_button(unit.codebase || unit.service_name, http_url(unit), enabled: (last_health_check && last_health_check.complete?) || is_mailcatcher)
-              td.col-xs-1
+                .btn-group role='group'
+                  == link_to 'Logs', service_logs_url(unit), target: '_blank', class: "btn btn-sm btn-primary"
+                  - if unit.health_checkable? || is_mailcatcher = (unit.service_name == 'mailcatcher')
+                    == launch_button(unit.codebase || unit.service_name, http_url(unit), enabled: (last_health_check && last_health_check.complete?) || is_mailcatcher)
+              td.col-xs-1.mono
                 = unit.service_name
               td.col-xs-8.mono
                 ul
@@ -110,7 +112,7 @@
   .row
     .col-xs-12
       h3 Events
-      table.table
+      table.table.table-bordered
         thead
           tr
             th Timestamp
@@ -121,7 +123,7 @@
         tbody
           - @stack.all_events.sort{|a,b| b.created_at <=> a.created_at }.each do |event|
             tr
-              td.col-xs-1 = pacific_time(event.created_at).strftime("%F %r %z")
+              td.col-xs-1: small = pacific_time(event.created_at).strftime("%F %r")
               td.col-xs-1 = event.source
               td.col-xs-1 = event.type
               td.col-xs-1

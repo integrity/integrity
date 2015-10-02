@@ -83,18 +83,22 @@ module HonestyCluster
 
       def check_health
         refresh_service_addrs
+        check_state = true
+        msg = nil
 
         _containers_healthy = service_containers_nominal?
         if !_containers_healthy
-          return create_health_check_event(false, "one or more containers are in a bad state")
+          check_state &&= false
+          msg = "one or more containers are in a bad state"
         end
 
         _services_healthy = services_healthy?
         if !_services_healthy
-          return create_health_check_event(false, "one or more services are unhealthy")
+          check_state &&= false
+          msg = "one or more services are unhealthy"
         end
 
-        create_health_check_event(true)
+        create_health_check_event(check_state, msg)
       end
 
       def create_health_check_event(passed, msg=nil)
