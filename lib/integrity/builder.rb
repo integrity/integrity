@@ -28,16 +28,30 @@ module Integrity
     # older builds from same branch (and itself if it was a re-run)
     def self.launch_build(build)
       log_execution(:launch_build, build) do
-        log_build(:launch_build, build, :cleanup) { build.swarm_destroy }
-        log_build(:launch_build, build, :starting){ build.swarm_start }
+        if use_swarm(build)
+          log_build(:launch_build, build, :cleanup) { build.swarm_destroy }
+          log_build(:launch_build, build, :starting){ build.swarm_start }
+        else
+          log_build(:launch_build, build, :cleanup) { Integrity.cluster.destroy_build(build) }
+          log_build(:launch_build, build, :starting){ Integrity.cluster.start_build(build) }
+        end
         log_build(:launch_build, build, :started) { build.reload.started! }
-        #log_build(:launch_build, build, 'Updating fleet'){ Build.update_fleetctl_status }
       end
     end
 
     # Kill fleet unit and destroy service matching build that was passed.
     def self.destroy_build(build)
-      log_execution(:destroy_build, build){ build.swarm_destroy }
+      if use_swarm(build)
+        log_execution(:destroy_build, build){ build.swarm_destroy }
+      else
+        log_execution(:destroy_build, build){ Integrity.cluster.destroy_build(build) }
+      end
+    end
+
+    def self.use_swarm(build)
+      File.readlines('/tmp/swarm_repos.txt').map(&:chomp).include?(build.repo.name)
+    rescue Errno::ENOENT
+      false
     end
 
     def self.log_execution(action, build)
