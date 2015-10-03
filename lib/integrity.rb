@@ -62,6 +62,7 @@ require 'docker'
 
 require 'app/app'
 
+require 'pancakes'
 
 require 'integrity/event'
 require 'integrity/web_utils'
@@ -85,7 +86,6 @@ require 'integrity/builder'
 require 'integrity/instance_manager'
 require 'integrity/stats_job'
 
-require 'pancakes'
 require 'tracker'
 
 DataMapper::Logger.new(STDOUT, :info)
@@ -119,6 +119,10 @@ module Integrity
     end
     def owner
       @owner.presence || Integrity.config.github_account
+    end
+
+    def full_name
+      [owner, name].join('/')
     end
   end
 

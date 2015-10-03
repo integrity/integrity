@@ -2,6 +2,8 @@ module HonestyCluster
   module SwarmBackend
     module Service
 
+      include SwarmBackend::Container
+
 
       #             ___.   .__  .__
       # ______  __ _\_ |__ |  | |__| ____
@@ -14,10 +16,6 @@ module HonestyCluster
         puts "creating container #{self.name}"
         cmd = make_timberland_command(self)
         Docker::Container.create(container_json(self, cmd), SwarmBackend.conn)
-      end
-
-      def start_container
-        _start_container(container)
       end
 
       def _start_container(container)

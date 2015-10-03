@@ -20,6 +20,7 @@ module Integrity
     include DataMapper::Resource
     extend DataMapper::Resource::ClassMethods
     include Status
+    include HonestyCluster::SwarmBackend::Build
 
     GLOB_CHARS = '*?[]' unless defined?(GLOB_CHARS)
     MERCY_KILL_TIMESPAN = 20.minutes unless defined?(MERCY_KILL_TIMESPAN)
@@ -61,6 +62,10 @@ module Integrity
 
     def branch_name
       branch.try(:name)
+    end
+
+    def repo_full_name
+      repo.full_name
     end
 
     def run
