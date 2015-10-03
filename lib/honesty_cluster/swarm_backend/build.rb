@@ -132,16 +132,16 @@ module HonestyCluster
 
 
       def swarm_start
-        json = datastore_container_json
-        #byebug
-        _container = create_container(json)
-        _container.start
+        if datastore
+          ds_json = datastore_container_json
+          #byebug
+          _container = create_container(ds_json)
+          _container.start
+        end
 
-        sleep 2
-
-        json = app_container_json
+        app_json = app_container_json
         #byebug
-        _container = create_container(json)
+        _container = create_container(app_json)
         _container.start
       end
 
