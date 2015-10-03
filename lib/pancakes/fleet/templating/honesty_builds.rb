@@ -56,10 +56,6 @@ module Pancakes
           ]
         end
 
-        private def build_timberland_branch
-          'feature/2083842/103152948/timberland-submodule'
-        end
-
         private def timberlandified_builds
           %w[
             jarvis
@@ -73,7 +69,7 @@ module Pancakes
             if timberlandified_builds.include?(project)
               bash_minus_c(
                 bash_and(
-                  timberland_clone(Pancakes.gh_read_token, build_timberland_branch),
+                  timberland_clone(Pancakes.gh_read_token, Pancakes::Fleet::Templating.config.timberland_branch),
                   'cd timberland',
                   timberland(
                     boot_type:    'build',

@@ -602,7 +602,7 @@ module Integrity
         @completed = @builds.completed.all(order: :completed_at.desc)
         if params[:initials]
           user = Tracker::User.first(initials: params[:initials])
-          @stories_in_flight = user.owned_stories.select{|s| ['started', 'finished'].include?(s.current_state)}
+          @stories_in_flight = user.owned_stories.select{|s| ['started', 'finished', 'delivered'].include?(s.current_state)}
         else
           @stories_in_flight = Tracker::Story.all(:current_state => ['started', 'finished'], :order => :created_at.asc)
         end
