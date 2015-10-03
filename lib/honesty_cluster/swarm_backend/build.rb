@@ -218,17 +218,6 @@ module HonestyCluster
         "grnds/#{self.datastore}:latest"
       end
 
-      #-e "PROJECT=jarvis"
-      #-e "BRANCH=br"
-      #-e "SHA=03dc531"
-      #-e "BUILD_ID=15622"
-      #-e "GITHUB_READ_TOKEN=foo"
-      #-e "AWS_ACCESS_KEY_ID=bar"
-      #-e "AWS_SECRET_ACCESS_KEY=flab"
-      #-e "AWS_SECRET_KEY=flubb"
-      #-e "SAUCE_USERNAME=farts"
-      #-e "SAUCE_ACCESS_KEY=keeee"
-      #-e "CALLBACK_URL=https://integrity-hook.test.grandrounds.com/status.json"
       def app_docker_env(more_env=nil)
         {
           'PROJECT' => self.project_name,
