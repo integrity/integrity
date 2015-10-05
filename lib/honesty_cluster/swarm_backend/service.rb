@@ -12,20 +12,19 @@ module HonestyCluster
       # |   __/|____/|___  /____/__|\___  >
       # |__|             \/             \/
 
+      #same
       def create_container
         puts "creating container #{self.name}"
         cmd = make_timberland_command(self)
         Docker::Container.create(container_json(self, cmd), SwarmBackend.conn)
       end
 
-      def _start_container(container)
-        container.start
-      end
-
+      #new
       def run_container_async
-        _start_container create_container
+        create_container.start
       end
 
+      #similar
       def container
         Docker::Container.all(
           {
@@ -36,14 +35,17 @@ module HonestyCluster
         ).first
       end
 
+      # pk
       def container_running?
         container.running?
       end
 
+      # pk
       def is_setup_service?
         self.subtype == 'setup'
       end
 
+      # pk
       def container_nominal?
         _container = container
 
@@ -72,10 +74,12 @@ module HonestyCluster
         end
       end
 
+      # hc
       def addr_known?
         machine_ip && port
       end
 
+      # hc
       def health_check_url
         if addr_known? && health_checkable?
           service_def.ping_url.sub('$ip', machine_ip).sub('$port', port.to_s)
@@ -84,20 +88,24 @@ module HonestyCluster
         end
       end
 
+      # hc
       def health_checkable?
         !!service_def.ping_url
       end
 
+      # hc
       def healthy_http_status
         service_def.http_status
       end
 
+      # hc
       def create_health_check_event(passed, msg=nil)
         status = passed ? 'HEALTH_CHECK_COMPLETE' : 'HEALTH_CHECK_FAILED'
         self.add_event(source: 'honesty', type: 'Pancakes::Service::HealthCheck', status: status, status_message: msg)
         return passed
       end
 
+      # hc
       def check_health
         name = self.service_name
         create_health_check_event(false, "health check address is unavailable") unless addr_known?
@@ -128,6 +136,7 @@ module HonestyCluster
         end
       end
 
+      # hc
       def last_health_check
         events_dataset.where(type: 'Pancakes::Service::HealthCheck').reverse_order(:created_at).limit(1).first
       end
@@ -140,10 +149,12 @@ module HonestyCluster
       # |   __/|__|  |__| \_/  (____  /__|  \___  >
       # |__|                        \/          \/
 
+      # tb
       private def bash_minus_c(cmd)
         ['/bin/bash', '-c', cmd]
       end
 
+      # build
       private def container_json(unit, cmd)
         {
           'name' => unit.name,
@@ -168,6 +179,7 @@ module HonestyCluster
         }
       end
 
+      # docker helpers
       private def fill_env_value(k,v)
         v = v.to_s
         if v == ':self'
@@ -178,12 +190,14 @@ module HonestyCluster
         [k,v]
       end
 
+      # docker helpers
       private def docker_api_exposed_ports(unit)
         (unit.ports || []).map do |port|
           {"#{port}/tcp" => {}}
         end.reduce(&:merge)
       end
 
+      #tb
       private def make_timberland_command(unit, setup_db: true)
         if !%w[mysql mailcatcher postgres].include?(unit.service_name)
           Pancakes::Fleet::Templating.bash_and(
@@ -207,6 +221,7 @@ module HonestyCluster
         end
       end
 
+      # docker helpers
       private def docker_api_env(unit, cmd)
         {
           'PANCAKES_ID' => unit.stack.id,
