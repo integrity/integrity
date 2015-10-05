@@ -83,10 +83,10 @@ require 'honesty_cluster/bundle_cache'
 require 'honesty_cluster/honesty_event'
 
 require 'honesty_cluster/swarm_backend'
-require 'honesty_cluster/swarm_backend/docker_api_helpers'
-require 'honesty_cluster/swarm_backend/container'
+require 'honesty_cluster/swarm_backend/docker_util'
+require 'honesty_cluster/swarm_backend/cargo'
 require 'honesty_cluster/swarm_backend/build'
-require 'honesty_cluster/swarm_backend/datastore'
+require 'honesty_cluster/swarm_backend/build_datastore'
 require 'honesty_cluster/swarm_backend/service'
 require 'honesty_cluster/swarm_backend/stack'
 

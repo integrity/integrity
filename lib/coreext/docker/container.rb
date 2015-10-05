@@ -48,6 +48,15 @@ module Docker
       remove(force: true)
     end
 
+    def start
+      if HonestyCluster.dry_run?
+        puts "not starting because dry_run is on"
+        return false
+      else
+        super
+      end
+    end
+
     # possibly deprecated
     def port_mapping
       info.Ports.map do |port_mapping|

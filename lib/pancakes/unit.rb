@@ -48,6 +48,18 @@ module Pancakes
       stack.commit_for_codebase(codebase)
     end
 
+    def sha
+      commit.sha
+    end
+
+    def branch
+      commit.branch
+    end
+
+    def stack_id
+      stack.id
+    end
+
     def requires
       req = service_def.requires.to_s
       if req.end_with?('.service')
@@ -70,16 +82,16 @@ module Pancakes
       service_def.image
     end
 
-    def env
-      (service_def.env || {}).merge(
-        if codebase == 'jarvis'
-          #self.stack.jarvis_env
-          {}
-        else
-          {}
-        end
-      )
-    end
+    #def env
+      #(service_def.env || {}).merge(
+        #if codebase == 'jarvis'
+          ##self.stack.jarvis_env
+          #{}
+        #else
+          #{}
+        #end
+      #)
+    #end
 
     #def container
       #if machine_ip

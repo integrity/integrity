@@ -35,6 +35,7 @@ app = RConfig.application
 ENV['RACK_ENV'] = (app.environment || 'production').to_s
 DTEST = ENV['HONESTY_DTEST'] == 'true'
 puts 'environment has DTEST applied' if DTEST
+puts 'HONESTY_DRY_RUN is true' if HonestyCluster.dry_run?
 puts "TIMBERLAND_DEBUG=#{ENV['TIMBERLAND_DEBUG']}" if ENV['TIMBERLAND_DEBUG']
 
 if app.environment == 'production'

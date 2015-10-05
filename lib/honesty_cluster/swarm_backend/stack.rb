@@ -1,6 +1,7 @@
 module HonestyCluster
   module SwarmBackend
     module Stack
+      include DockerUtil
 
 
       #             ___.   .__  .__
@@ -13,7 +14,7 @@ module HonestyCluster
       def swarm_spin_up
         clear_service_addrs
         self.units.each do |unit|
-          unit.run_container_async
+          unit.run_container
         end
         refresh_service_addrs
       end
@@ -38,8 +39,16 @@ module HonestyCluster
             'all' => 1, # 'all' can't be a symbol key
             filters: SwarmBackend.label_filter('pancakes-stack', self.name),
           },
-          SwarmBackend.conn,
+          SwarmBackend.connection,
         )
+      end
+
+      def containers
+        containers_filtered(id_filter, self.id)
+      end
+
+      def id_filter
+        'pancakes-stack-id'
       end
 
       def refresh_service_addrs

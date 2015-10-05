@@ -31,7 +31,7 @@ module Integrity
         if use_swarm(build)
           log "using swarm"
           log_build(:launch_build, build, :cleanup) { build.swarm_destroy }
-          log_build(:launch_build, build, :starting){ build.swarm_start }
+          log_build(:launch_build, build, :starting){ build.run_container }
         else
           log "using fleet"
           log_build(:launch_build, build, :cleanup) { Integrity.cluster.destroy_build(build) }

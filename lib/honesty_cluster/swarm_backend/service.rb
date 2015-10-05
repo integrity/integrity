@@ -1,8 +1,7 @@
 module HonestyCluster
   module SwarmBackend
     module Service
-
-      include SwarmBackend::Container
+      include SwarmBackend::Cargo
 
 
       #             ___.   .__  .__
@@ -12,40 +11,89 @@ module HonestyCluster
       # |   __/|____/|___  /____/__|\___  >
       # |__|             \/             \/
 
-      #same
-      def create_container
-        puts "creating container #{self.name}"
-        cmd = make_timberland_command(self)
-        Docker::Container.create(container_json(self, cmd), SwarmBackend.conn)
+
+      def timberland_command
+        @__tmb_cmd ||= Timberland::Cmd.new(
+          boot_type:    'pancakes',
+          sha:          self.sha,
+          repo:         self.repo,
+          debug:        Pancakes.timberland_debug?,
+          branch:       self.branch,
+          setup_db:     true,
+          service_type: self.subtype,
+        )
       end
 
-      #new
-      def run_container_async
-        create_container.start
+      # Cargo
+      def cargo_name
+        'pancakes-service-id'
       end
 
-      #similar
+      # Cargo
+      def cargo_identifier
+        self.id
+      end
+
+      # Cargo
+      def container_name
+        self.name
+      end
+
+      # Cargo
+      def container_links
+        nil
+      end
+
+      # Cargo
+      def image_name
+        self.image
+      end
+
+      # Cargo
+      def docker_command
+        timberland_command.to_docker_api_cmd
+      end
+
+      # Cargo
+      def exposed_ports
+        self.ports
+      end
+
+      # Cargo
+      def container_env
+        {
+          'PANCAKES_ID' => self.stack_id,
+          'STACK_ID' => self.stack_id,
+          'SERVICE_ID' => self.id,
+          'PANCAKES_SHA' => self.stack.short_sha,
+          'HONESTY_BASE_URL' => SwarmBackend.base_url,
+          'TIMBERLAND_CMD' => self.timberland_command.run_cmd,
+        }
+      end
+
+      # Cargo
+      def container_labels
+        {
+          'pancakes-stack-id' => self.stack_id,
+        }
+      end
+
+
+
+      # pancakes
+
       def container
-        Docker::Container.all(
-          {
-            'all' => 1,
-            filters: SwarmBackend.label_filter('pancakes-unit', self.name),
-          },
-          SwarmBackend.conn,
-        ).first
+        containers.first
       end
 
-      # pk
       def container_running?
         container.running?
       end
 
-      # pk
       def is_setup_service?
         self.subtype == 'setup'
       end
 
-      # pk
       def container_nominal?
         _container = container
 
@@ -74,12 +122,14 @@ module HonestyCluster
         end
       end
 
-      # hc
+
+
+      # health checking
+
       def addr_known?
         machine_ip && port
       end
 
-      # hc
       def health_check_url
         if addr_known? && health_checkable?
           service_def.ping_url.sub('$ip', machine_ip).sub('$port', port.to_s)
@@ -88,24 +138,20 @@ module HonestyCluster
         end
       end
 
-      # hc
       def health_checkable?
         !!service_def.ping_url
       end
 
-      # hc
       def healthy_http_status
         service_def.http_status
       end
 
-      # hc
       def create_health_check_event(passed, msg=nil)
         status = passed ? 'HEALTH_CHECK_COMPLETE' : 'HEALTH_CHECK_FAILED'
         self.add_event(source: 'honesty', type: 'Pancakes::Service::HealthCheck', status: status, status_message: msg)
         return passed
       end
 
-      # hc
       def check_health
         name = self.service_name
         create_health_check_event(false, "health check address is unavailable") unless addr_known?
@@ -136,7 +182,6 @@ module HonestyCluster
         end
       end
 
-      # hc
       def last_health_check
         events_dataset.where(type: 'Pancakes::Service::HealthCheck').reverse_order(:created_at).limit(1).first
       end
@@ -149,92 +194,90 @@ module HonestyCluster
       # |   __/|__|  |__| \_/  (____  /__|  \___  >
       # |__|                        \/          \/
 
-      # tb
-      private def bash_minus_c(cmd)
-        ['/bin/bash', '-c', cmd]
-      end
+      #private def bash_minus_c(cmd)
+        #['/bin/bash', '-c', cmd]
+      #end
 
-      # build
-      private def container_json(unit, cmd)
-        {
-          'name' => unit.name,
-          Cmd: cmd ? bash_minus_c(cmd) : nil,
-          Image: unit.image,
-          ExposedPorts: docker_api_exposed_ports(unit),
-          Env: docker_api_env(unit, cmd),
-          Hostname: unit.name,
-          Labels: {
-            'honesty' => '',
-            'pancakes-stack' => unit.stack.name,
-            'pancakes-unit' => unit.name,
-          },
-          HostConfig: {
-            Binds: ['/var/lib/docker/tmp:/tmp/hosttmp'],
-            PublishAllPorts: true,
-            LogConfig: {
-              Type: 'syslog',
-              Config: {'syslog-tag' => unit.name},
-            },
-          },
-        }
-      end
+      #private def container_json(unit, cmd)
+        #{
+          #'name' => unit.name,
+          #Cmd: cmd ? bash_minus_c(cmd) : nil,
+          #Image: unit.image,
+          #ExposedPorts: docker_api_exposed_ports(unit),
+          #Env: docker_api_env(unit, cmd),
+          #Hostname: unit.name,
+          #Labels: {
+            #'honesty' => '',
+            #'pancakes-stack-id' => unit.stack.id,
+            #'pancakes-service-id' => unit.id,
+          #},
+          #HostConfig: {
+            #Binds: ['/var/lib/docker/tmp:/tmp/hosttmp'],
+            #PublishAllPorts: true,
+            #LogConfig: {
+              #Type: 'syslog',
+              #Config: {'syslog-tag' => unit.name},
+            #},
+          #},
+        #}
+      #end
 
       # docker helpers
-      private def fill_env_value(k,v)
-        v = v.to_s
-        if v == ':self'
-          v = ENV[k]
-        elsif v.start_with?(':')
-          v = ENV[v.sub(/\A:/, '')]
-        end
-        [k,v]
-      end
+      #private def fill_env_value(k,v)
+        #v = v.to_s
+        #if v == ':self'
+          #v = ENV[k]
+        #elsif v.start_with?(':')
+          #v = ENV[v.sub(/\A:/, '')]
+        #end
+        #[k,v]
+      #end
 
       # docker helpers
-      private def docker_api_exposed_ports(unit)
-        (unit.ports || []).map do |port|
-          {"#{port}/tcp" => {}}
-        end.reduce(&:merge)
-      end
+      #private def docker_api_exposed_ports(unit)
+        #(unit.ports || []).map do |port|
+          #{"#{port}/tcp" => {}}
+        #end.reduce(&:merge)
+      #end
 
       #tb
-      private def make_timberland_command(unit, setup_db: true)
-        if !%w[mysql mailcatcher postgres].include?(unit.service_name)
-          Pancakes::Fleet::Templating.bash_and(
-            Pancakes::Fleet::Templating.timberland_clone(
-              Pancakes.gh_read_token,
-              Pancakes::Fleet::Templating.config.timberland_branch
-            ),
-            'cd timberland',
-            Pancakes::Fleet::Templating.timberland(
-              boot_type:    'pancakes',
-              sha:          unit.commit.sha,
-              repo:         unit.repo,
-              debug:        Pancakes.timberland_debug?,
-              branch:       unit.commit.branch,
-              setup_db:     setup_db,
-              service_type: unit.subtype,
-            )
-          )
-        else
-          nil
-        end
-      end
+      #private def make_timberland_command(unit, setup_db: true)
+        #if !%w[mysql mailcatcher postgres].include?(unit.service_name)
+          #Pancakes::Fleet::Templating.bash_and(
+            #Pancakes::Fleet::Templating.timberland_clone(
+              #Pancakes.gh_read_token,
+              #Pancakes::Fleet::Templating.config.timberland_branch
+            #),
+            #'cd timberland',
+            #Pancakes::Fleet::Templating.timberland(
+              #boot_type:    'pancakes',
+              #sha:          unit.commit.sha,
+              #repo:         unit.repo,
+              #debug:        Pancakes.timberland_debug?,
+              #branch:       unit.commit.branch,
+              #setup_db:     setup_db,
+              #service_type: unit.subtype,
+            #)
+          #)
+        #else
+          #nil
+        #end
+      #end
 
       # docker helpers
-      private def docker_api_env(unit, cmd)
-        {
-          'PANCAKES_ID' => unit.stack.id,
-          'STACK_ID' => unit.stack.id,
-          'SERVICE_ID' => unit.id,
-          'PANCAKES_SHA' => unit.stack.short_sha,
-          'HONESTY_BASE_URL' => SwarmBackend.base_url,
-          'TIMBERLAND_CMD' => cmd,
-        }.merge(unit.env)
-        .map do |k,v|
-          fill_env_value(k,v).join('=')
-        end
-      end
+      #private def docker_api_env(unit, cmd)
+        #{
+          #'PANCAKES_ID' => unit.stack.id,
+          #'STACK_ID' => unit.stack.id,
+          #'SERVICE_ID' => unit.id,
+          #'PANCAKES_SHA' => unit.stack.short_sha,
+          #'HONESTY_BASE_URL' => SwarmBackend.base_url,
+          #'TIMBERLAND_CMD' => cmd,
+        #}.merge(unit.env)
+        #.map do |k,v|
+          #fill_env_value(k,v).join('=')
+        #end
+      #end
     end
   end
 end
