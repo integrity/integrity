@@ -6,17 +6,30 @@ module HonestyCluster
       attr_reader :build
 
       def initialize(build)
+        if !build.datastore
+          raise "cannot create BuildDatastore for build id=#{build.id} datastore=nil"
+        end
         @build = build
       end
 
       # Cargo
-      def cargo_name
-        build.cargo_name
+      def cargo_group_type
+        build.cargo_group_type
       end
 
       # Cargo
-      def cargo_identifier
-        build.cargo_identifier
+      def cargo_group_id
+        build.cargo_group_id
+      end
+
+      # Cargo
+      def cargo_type
+        build.datastore
+      end
+
+      # Cargo
+      def cargo_id
+        build.cargo_id
       end
 
       # Cargo
@@ -41,9 +54,7 @@ module HonestyCluster
 
       # Cargo
       def container_labels
-        {
-          'build-type' => build.datastore,
-        }
+        nil
       end
 
       # Cargo

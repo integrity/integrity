@@ -2,7 +2,7 @@ module HonestyCluster
   module SwarmBackend
     module Build
       include SwarmBackend::Cargo
-
+      include SwarmBackend::CargoGroup
 
       def timberland_command
         @__tmb_cmd ||= Timberland::Cmd.new(
@@ -14,12 +14,30 @@ module HonestyCluster
         )
       end
 
-      # Cargo
+      def datastore_cargo
+        if datastore
+          @__ds_cargo ||= BuildDatastore.new(self)
+        else
+          nil
+        end
+      end
+
+      # CargoGroup
+      def cargo_list
+        list = [self]
+        if datastore
+          list.unshift(datastore_cargo)
+        else
+          list
+        end
+      end
+
+      # Cargo, CargoGroup
       def cargo_group_type
         'build'
       end
 
-      # Cargo
+      # Cargo, CargoGroup
       def cargo_group_id
         self.id
       end
@@ -69,15 +87,13 @@ module HonestyCluster
 
       # Cargo
       def container_labels
-        {
-          'build-type' => 'app',
-        }
+        nil
       end
 
       # Cargo
       def container_links
         if datastore
-          [[datastore_container_name, datastore].join(':')]
+          [[datastore_cargo.container_name, datastore].join(':')]
         else
           nil
         end

@@ -3,15 +3,6 @@ module HonestyCluster
     module Service
       include SwarmBackend::Cargo
 
-
-      #             ___.   .__  .__
-      # ______  __ _\_ |__ |  | |__| ____
-      # \____ \|  |  \ __ \|  | |  |/ ___\
-      # |  |_> >  |  / \_\ \  |_|  \  \___
-      # |   __/|____/|___  /____/__|\___  >
-      # |__|             \/             \/
-
-
       def timberland_command
         @__tmb_cmd ||= Timberland::Cmd.new(
           boot_type:    'pancakes',
@@ -83,9 +74,7 @@ module HonestyCluster
 
       # Cargo
       def container_labels
-        {
-          'pancakes-stack-id' => self.stack_id,
-        }
+        nil
       end
 
 

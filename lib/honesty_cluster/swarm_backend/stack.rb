@@ -33,15 +33,15 @@ module HonestyCluster
         units_dataset.update(machine_ip: nil, port: nil)
       end
 
-      def containers
-        Docker::Container.all(
-          {
-            'all' => 1, # 'all' can't be a symbol key
-            filters: SwarmBackend.label_filter('pancakes-stack', self.name),
-          },
-          SwarmBackend.connection,
-        )
-      end
+      #def containers
+        #Docker::Container.all(
+          #{
+            #'all' => 1, # 'all' can't be a symbol key
+            #filters: SwarmBackend.label_filters('pancakes-stack', self.name),
+          #},
+          #SwarmBackend.connection,
+        #)
+      #end
 
       def containers
         containers_filtered(id_filter, self.id)

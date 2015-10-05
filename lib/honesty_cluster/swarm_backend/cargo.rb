@@ -10,10 +10,10 @@ module HonestyCluster
       # a unique identifier for this particular cargo
       interface_method :cargo_id
 
-      # a string which uniquely identifies this type of cargo
+      # the type of the cargo group this cargo belongs to
       interface_method :cargo_group_type
 
-      # a unique identifier for this particular cargo
+      # the id of the cargo group this cargo belongs to
       interface_method :cargo_group_id
 
       # a string of the container name
@@ -39,14 +39,22 @@ module HonestyCluster
 
 
       def run_container
-        create_container.start
+        if HonestyCluster.dry_run?
+          puts "not starting because dry_run is on"
+          return false
+        else
+          create_container(container_def).start
+        end
       end
 
       def container
-        containers_filtered(cargo_name, cargo_identifier).first
+        containers_filtered(
+          'cargo-type' => cargo_type,
+          'cargo-id'   => cargo_id,
+        ).first
       end
 
-      def container_json
+      def container_def
         docker_api_container_json(
           name:          container_name,
           links:         container_links,
@@ -56,10 +64,6 @@ module HonestyCluster
           env:           container_env,
           labels:        default_container_labels.merge(container_labels || {}),
         )
-      end
-
-      private def create_container
-        create_container(container_json)
       end
 
       private def default_container_labels

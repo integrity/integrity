@@ -32,7 +32,7 @@ module HonestyCluster
           ExposedPorts: docker_api_transform_exposed_ports(exposed_ports),
           Env: docker_api_build_env(env),
           Hostname: name,
-          Labels: labels,
+          Labels: docker_api_stringify_labels(labels),
           HostConfig: {
             Binds: ['/var/lib/docker/tmp:/tmp/hosttmp'],
             PublishAllPorts: true,
@@ -42,34 +42,37 @@ module HonestyCluster
         }
       end
 
-      def containers_filtered(filter_key, filter_val)
+      def containers_filtered(filters)
         return [] if HonestyCluster.dry_run?
         Docker::Container.all(
           {
             'all' => 1,
-            filters: SwarmBackend.label_filter(filter_key, filter_val),
+            filters: label_filters(filters),
           },
           SwarmBackend.connection,
         )
       end
 
       def create_container(json)
-        msg = "creating container #{_json['name']}"
+        msg = "creating container #{json['name']}"
         if HonestyCluster.dry_run?
           puts "[dry-run] #{msg}"
           puts "[dry-run] json:"
-          puts _json.ai
+          puts json.ai
           nil
         else
           puts msg
-          Docker::Container.create(_json, SwarmBackend.connection)
+          Docker::Container.create(json, SwarmBackend.connection)
         end
       end
 
-      private def label_filter(key, value)
-        JSON.dump(
-          { label: [[key, value].join('=')] }
-        )
+      private def label_filters(filters)
+        #byebug
+        filters = filters.to_a.map do |key,value|
+          [key.to_s, value.to_s].join('=')
+        end
+
+        JSON.dump({ label: filters })
       end
 
       private def docker_api_build_env(env_hash)
@@ -94,6 +97,12 @@ module HonestyCluster
           v = ENV[v.sub(/\A:/, '')]
         end
         [k,v]
+      end
+
+      private def docker_api_stringify_labels(labels)
+        labels.map do |k,v|
+          [k.to_s, v.to_s]
+        end.to_h
       end
     end
   end

@@ -1,12 +1,24 @@
 module HonestyCluster
   module SwarmBackend
+
+    # thing which represents a collection of Cargos.
     module CargoGroup
       extend Interface
       include DockerUtil
 
+      # the type of the cargo group
+      interface_method :cargo_group_type
+
+      # the id of the cargo group
+      interface_method :cargo_group_id
+
+      # list of Cargos
+      interface_method :cargo_list
+
       def run_containers
-        create_container(datastore_container_json).start if datastore
-        create_container(container_json).start
+        cargo_list.each do |cargo|
+          cargo.run_container
+        end
       end
 
       def destroy_containers
@@ -17,7 +29,10 @@ module HonestyCluster
       end
 
       def containers
-        containers_filtered(cargo_name, cargo_identifier)
+        containers_filtered(
+          'cargo-group-type' => cargo_group_type,
+          'cargo-group-id'   => cargo_group_id,
+        )
       end
     end
   end
