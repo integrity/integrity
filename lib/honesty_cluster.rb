@@ -3,6 +3,10 @@ module HonestyCluster
     Pancakes.cluster
   end
 
+  def self.dry_run?
+    !!ENV['HONESTY_DRY_RUN']
+  end
+
   module Turds
 
     REPOS_WHICH_CANT_BUILD = %w[
@@ -79,8 +83,10 @@ require 'honesty_cluster/bundle_cache'
 require 'honesty_cluster/honesty_event'
 
 require 'honesty_cluster/swarm_backend'
+require 'honesty_cluster/swarm_backend/docker_api_helpers'
 require 'honesty_cluster/swarm_backend/container'
 require 'honesty_cluster/swarm_backend/build'
+require 'honesty_cluster/swarm_backend/datastore'
 require 'honesty_cluster/swarm_backend/service'
 require 'honesty_cluster/swarm_backend/stack'
 

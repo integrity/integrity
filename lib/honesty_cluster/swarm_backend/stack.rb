@@ -21,7 +21,7 @@ module HonestyCluster
       def swarm_destroy
         containers.each do |container|
           puts "removing (with force) container #{container.name}"
-          container.remove(force: true)
+          container.force_remove
         end
 
         refresh_service_addrs

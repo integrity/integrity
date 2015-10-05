@@ -1,55 +1,5 @@
-
 module HonestyCluster
   module SwarmBackend
-
-    module DockerApiHelpers
-      def docker_api_container_json(name:, image:, cmd: nil, links: nil, exposed_ports: nil, env: nil, labels: nil)
-        {
-          'name' => name,
-          Cmd: cmd,
-          Image: image,
-          ExposedPorts: docker_api_transform_exposed_ports(exposed_ports),
-          Env: docker_api_build_env(env),
-          Hostname: name,
-          Labels: {'honesty' => ''}.merge(labels),
-          HostConfig: {
-            Binds: ['/var/lib/docker/tmp:/tmp/hosttmp'],
-            PublishAllPorts: true,
-            Links: links,
-            LogConfig: {
-              Type: 'syslog',
-              Config: {'syslog-tag' => name},
-            },
-          },
-        }
-      end
-
-      def docker_api_build_env(env_hash)
-        return nil unless env_hash
-        env_hash.map do |k,v|
-          docker_api_interpolate_env_var(k,v).join('=')
-        end
-      end
-
-      private def docker_api_transform_exposed_ports(list_of_ports)
-        return nil unless list_of_ports && !list_of_ports.empty?
-        list_of_ports.map do |port|
-          {"#{port}/tcp" => {}}
-        end.reduce(&:merge)
-      end
-
-      private def docker_api_interpolate_env_var(k,v)
-        k, v = k.to_s, v.to_s
-        if v == ':self'
-          v = ENV[k] || "<<< #{k} not found in honesty environment >>>"
-        elsif v.start_with?(':')
-          v = ENV[v.sub(/\A:/, '')]
-        end
-        [k,v]
-      end
-    end
-
-
     module Build
       include DockerApiHelpers
 
@@ -63,31 +13,31 @@ module HonestyCluster
 
 
       def swarm_start
-        if datastore
-          ds_json = datastore_container_json
-          #byebug
-          _container = create_container(ds_json)
-          _container.start
-        end
-
-        app_json = app_container_json
-        #byebug
-        _container = create_container(app_json)
-        _container.start
+        create_and_start_container(datastore_container_json) if datastore
+        create_and_start_container(app_container_json)
       end
 
       def swarm_destroy
         containers.each do |container|
           puts "removing (with force) container #{container.name}"
-          container.remove(force: true)
+          container.force_remove
         end
       end
 
-      def containers
+      private def create_and_start_container(json)
+        #byebug
+        cc = create_container(json)
+        cc.start unless HonestyCluster.dry_run?
+        cc
+      end
+
+      private def containers
+        return [] if HonestyCluster.dry_run?
+
         Docker::Container.all(
           {
             'all' => 1,
-            filters: SwarmBackend.label_filter('honesty-build', build_container_prefix),
+            filters: SwarmBackend.label_filter('honesty-build-id', self.id),
           },
           SwarmBackend.conn,
         )
@@ -97,20 +47,25 @@ module HonestyCluster
         self.service_name
       end
 
-      def create_container(json)
-        puts "creating container #{json['name']}"
-        Docker::Container.create(json, SwarmBackend.conn)
+      def timberland_boot_type
+       'build'
       end
 
-      def datastore_container_json
-        return nil unless datastore
+      def timberland_service_type
+        'spec'
+      end
 
-        docker_api_container_json(
-          name:          self.datastore_container_name,
-          image:         self.datastore_image_name,
-          exposed_ports: self.datastore_exposed_ports,
-          labels:        self.datastore_docker_labels,
-        )
+      def create_container(json)
+        msg = "creating container #{json['name']}"
+        if HonestyCluster.dry_run?
+          puts "[dry-run] #{msg}"
+          puts "[dry-run] json:"
+          puts json.ai
+          nil
+        else
+          puts msg
+          Docker::Container.create(json, SwarmBackend.conn)
+        end
       end
 
       def app_container_json
@@ -137,16 +92,8 @@ module HonestyCluster
         [build_container_prefix, 'app'].join('_')
       end
 
-      def datastore_container_name
-        [build_container_prefix, datastore].join('_')
-      end
-
       def app_image_name
         "grnds/#{self.project_name}_ci:latest"
-      end
-
-      def datastore_image_name
-        "grnds/#{self.datastore}:latest"
       end
 
       def app_docker_env(more_env=nil)
@@ -165,6 +112,13 @@ module HonestyCluster
         }.merge(more_env || {})
       end
 
+      def app_docker_labels
+        {
+          'honesty-build-id' => self.id,
+          'honesty-build-type' => 'app',
+        }
+      end
+
       def app_container_links
         if datastore
           [[datastore_container_name, datastore].join(':')]
@@ -177,6 +131,29 @@ module HonestyCluster
         nil
       end
 
+
+
+
+
+      def datastore_container_json
+        return nil unless datastore
+
+        docker_api_container_json(
+          name:          self.datastore_container_name,
+          image:         self.datastore_image_name,
+          exposed_ports: self.datastore_exposed_ports,
+          labels:        self.datastore_docker_labels,
+        )
+      end
+
+      def datastore_container_name
+        [build_container_prefix, datastore].join('_')
+      end
+
+      def datastore_image_name
+        "grnds/#{self.datastore}:latest"
+      end
+
       def datastore_exposed_ports
         if datastore == 'mysql'
           [3306]
@@ -187,26 +164,11 @@ module HonestyCluster
         end
       end
 
-      def app_docker_labels
-        {
-          'honesty-build' => build_container_prefix,
-          'honesty-build-type' => 'app',
-        }
-      end
-
       def datastore_docker_labels
         {
-          'honesty-build' => build_container_prefix,
+          'honesty-build-id' => self.id,
           'honesty-build-type' => datastore,
         }
-      end
-
-      def timberland_boot_type
-       'build'
-      end
-
-      def timberland_service_type
-        'spec'
       end
     end
   end

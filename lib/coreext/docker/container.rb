@@ -44,12 +44,8 @@ module Docker
       !!status.match(RUNNING_REGEXP)
     end
 
-    private def first_port_mapping
-      info.Ports.first
-    end
-
-    private def name_parts
-      full_name.sub(/^\//, '').split('/')
+    def force_remove
+      remove(force: true)
     end
 
     # possibly deprecated
@@ -57,6 +53,14 @@ module Docker
       info.Ports.map do |port_mapping|
         { port_mapping.PrivatePort => port_mapping.PublicPort }
       end.reduce(&:merge)
+    end
+
+    private def first_port_mapping
+      info.Ports.first
+    end
+
+    private def name_parts
+      full_name.sub(/^\//, '').split('/')
     end
   end
 end
