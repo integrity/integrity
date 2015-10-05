@@ -25,12 +25,22 @@ module HonestyCluster
       end
 
       # Cargo
-      def cargo_name
-        'pancakes-service-id'
+      def cargo_group_type
+        'pancakes-stack'
       end
 
       # Cargo
-      def cargo_identifier
+      def cargo_group_id
+        self.stack_id
+      end
+
+      # Cargo
+      def cargo_type
+        'pancakes-service'
+      end
+
+      # Cargo
+      def cargo_id
         self.id
       end
 

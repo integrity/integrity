@@ -1,11 +1,3 @@
-module Interface
-  def interface_method(name)
-    define_method(name) { |*args|
-      raise "interface method #{name} not implemented"
-    }
-  end
-end
-
 module HonestyCluster
   module SwarmBackend
     module Cargo
@@ -13,10 +5,16 @@ module HonestyCluster
       include DockerUtil
 
       # a string which uniquely identifies this type of cargo
-      interface_method :cargo_name
+      interface_method :cargo_type
 
       # a unique identifier for this particular cargo
-      interface_method :cargo_identifier
+      interface_method :cargo_id
+
+      # a string which uniquely identifies this type of cargo
+      interface_method :cargo_group_type
+
+      # a unique identifier for this particular cargo
+      interface_method :cargo_group_id
 
       # a string of the container name
       interface_method :container_name
@@ -44,8 +42,8 @@ module HonestyCluster
         create_container.start
       end
 
-      def containers
-        containers_filtered(cargo_name, cargo_identifier)
+      def container
+        containers_filtered(cargo_name, cargo_identifier).first
       end
 
       def container_json
@@ -65,10 +63,20 @@ module HonestyCluster
       end
 
       private def default_container_labels
-        {
+        labels = {
           'honesty' => '',
-          cargo_name => cargo_identifier,
+          'cargo-type' => cargo_type,
+          'cargo-id'   => cargo_id,
         }
+
+        if cargo_group_type
+          labels = labels.merge({
+            'cargo-group-type' => cargo_group_type,
+            'cargo-group-id'   => cargo_group_id,
+          })
+        end
+
+        labels
       end
     end
   end

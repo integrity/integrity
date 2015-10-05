@@ -76,6 +76,7 @@ done
   end
 end
 
+require 'interface'
 
 require 'coreext/docker/container'
 require 'honesty_cluster/aws_clients'
@@ -85,6 +86,7 @@ require 'honesty_cluster/honesty_event'
 require 'honesty_cluster/swarm_backend'
 require 'honesty_cluster/swarm_backend/docker_util'
 require 'honesty_cluster/swarm_backend/cargo'
+require 'honesty_cluster/swarm_backend/cargo_group'
 require 'honesty_cluster/swarm_backend/build'
 require 'honesty_cluster/swarm_backend/build_datastore'
 require 'honesty_cluster/swarm_backend/service'

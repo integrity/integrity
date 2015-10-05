@@ -3,17 +3,6 @@ module HonestyCluster
     module Build
       include SwarmBackend::Cargo
 
-      #def swarm_run
-        #create_container(datastore_container_json).start if datastore
-        #create_container(container_json).start
-      #end
-
-      #def swarm_destroy
-        #containers.each do |container|
-          #puts "removing (with force) container #{container.name}"
-          #container.force_remove
-        #end
-      #end
 
       def timberland_command
         @__tmb_cmd ||= Timberland::Cmd.new(
@@ -26,12 +15,22 @@ module HonestyCluster
       end
 
       # Cargo
-      def cargo_name
-        'build-id'
+      def cargo_group_type
+        'build'
       end
 
       # Cargo
-      def cargo_identifier
+      def cargo_group_id
+        self.id
+      end
+
+      # Cargo
+      def cargo_type
+        'app'
+      end
+
+      # Cargo
+      def cargo_id
         self.id
       end
 
