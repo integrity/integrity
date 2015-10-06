@@ -74,8 +74,13 @@ module HonestyCluster
       end
 
       # Cargo
+      # - first we tried 1
+      # - each c4.8xlarge has 37 cores in the schedulers perspective because of the swarm overcommit ratio default value
+      # - i noticed the prepare_parallel_specs loops were going slower than id ever noticed
+      # - during a build with 35 spec procs, mysql cpu was at 150%, and systemd-journal was at 99%
+      # - now im wondering if we could get better performance out of mysql with 2 cores
       def cpu_shares
-        1
+        7
       end
     end
   end

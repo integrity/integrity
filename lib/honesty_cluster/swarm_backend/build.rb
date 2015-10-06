@@ -115,7 +115,8 @@ module HonestyCluster
 
       # Cargo
       def cpu_shares
-        35
+        30
+        #2
       end
     end
   end

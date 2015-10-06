@@ -14,7 +14,7 @@ class Docker::Container
   end
 
   def name
-    full_name.split('/')[2]
+    full_name.split('/').last
   end
 
   def ip
