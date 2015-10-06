@@ -7,6 +7,10 @@ module HonestyCluster
     !!ENV['HONESTY_DRY_RUN']
   end
 
+  def self.run_waitresses
+    NodeCountWaitress.new.run
+  end
+
   module Turds
 
     REPOS_WHICH_CANT_BUILD = %w[
@@ -82,6 +86,7 @@ require 'coreext/docker/container'
 require 'honesty_cluster/aws_clients'
 require 'honesty_cluster/bundle_cache'
 require 'honesty_cluster/honesty_event'
+require 'honesty_cluster/waitress'
 
 require 'honesty_cluster/swarm_backend'
 require 'honesty_cluster/swarm_backend/docker_util'
