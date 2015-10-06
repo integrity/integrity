@@ -66,12 +66,12 @@ module HonestyCluster
           cmd:           docker_command,
           exposed_ports: exposed_ports,
           env:           container_env,
-          labels:        default_container_labels.merge(container_labels || {}),
+          labels:        default_labels.merge(container_labels || {}),
           cpu_shares:    cpu_shares,
         )
       end
 
-      private def default_container_labels
+      private def default_labels
         labels = {
           'honesty' => '',
           'cargo-type' => cargo_type,

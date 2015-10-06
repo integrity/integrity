@@ -8,11 +8,13 @@ class Docker::Container
   end
 
   def full_name
-    info.Names.first
+    info.Names.detect do |name|
+      name.split('/').size == 3
+    end
   end
 
   def name
-    name_parts[1]
+    full_name.split('/')[2]
   end
 
   def ip
@@ -56,9 +58,5 @@ class Docker::Container
 
   private def first_port_mapping
     info.Ports.first
-  end
-
-  private def name_parts
-    full_name.sub(/^\//, '').split('/')
   end
 end
