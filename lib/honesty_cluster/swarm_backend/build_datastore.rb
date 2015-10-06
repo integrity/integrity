@@ -80,7 +80,11 @@ module HonestyCluster
       # - during a build with 35 spec procs, mysql cpu was at 150%, and systemd-journal was at 99%
       # - now im wondering if we could get better performance out of mysql with 2 cores
       def cpu_shares
-        7
+        if build.uses_parallel_spec?
+          7
+        else
+          1
+        end
       end
     end
   end

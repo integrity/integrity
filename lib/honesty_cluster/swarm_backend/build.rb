@@ -12,7 +12,7 @@ module HonestyCluster
           repo:         self.repo_full_name,
           branch:       self.branch_name,
           parallel_spec_jobs: self.parallel_spec_jobs,
-          sleep:        500,
+          #sleep:        500,
         )
       end
 
@@ -24,8 +24,16 @@ module HonestyCluster
         end
       end
 
+      def timberlandified?
+        %w[ ConsultingMD ].include?(self.repo_name)
+      end
+
+      def uses_parallel_spec?
+        self.repo_full_name == "ConsultingMD/ConsultingMD"
+      end
+
       def parallel_spec_jobs
-        if self.repo_full_name == "ConsultingMD/ConsultingMD"
+        if uses_parallel_spec?
           cpu_shares
         else
           nil
@@ -64,7 +72,11 @@ module HonestyCluster
 
       # Cargo
       def docker_command
-        timberland_command.to_docker_api_cmd
+        if timberlandified?
+          timberland_command.to_docker_api_cmd
+        else
+          nil
+        end
       end
 
       # Cargo
@@ -116,8 +128,12 @@ module HonestyCluster
 
       # Cargo
       def cpu_shares
-        30
-        #2
+        if uses_parallel_spec?
+          30
+          #2
+        else
+          1
+        end
       end
     end
   end

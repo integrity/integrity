@@ -68,6 +68,10 @@ module Integrity
       repo.full_name
     end
 
+    def repo_name
+      repo.name
+    end
+
     def run
       log 'run'
       Integrity::Event.trigger('build:queue', self.id)
