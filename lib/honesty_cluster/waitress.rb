@@ -27,6 +27,10 @@ module HonestyCluster
       self.class.register(self)
     end
 
+    def to_s
+      "Waitress(#@name)"
+    end
+
     def work
       nil
     end
@@ -47,12 +51,12 @@ module HonestyCluster
           end
           sleep(sleep_interval)
         rescue StandardError => e
-          puts "Waitress(#@name) main_loop raised an error: #{e.class} '#{e.message}'"
+          puts "#{to_s} main_loop raised an error: #{e.class} '#{e.message}'"
           if retries_exhausted?
-            puts "Waitress(#@name) retries exhausted"
+            puts "#{to_s} retries exhausted"
             raise(e)
           else
-            puts "Waitress(#@name) retrying"
+            puts "#{to_s} retrying"
             sleep 1
             inc_retries
           end
@@ -62,6 +66,7 @@ module HonestyCluster
 
     def run_async(&block)
       @thread = Thread.new do
+        puts "started thread for #{to_s}"
         run(&block)
       end
     end
@@ -75,15 +80,18 @@ module HonestyCluster
     attr_accessor :last_node_count
 
     def initialize
-      super('node_count_waitress')
+      super('node_count_waitress', 5)
     end
 
     def work
       curr_node_count = HonestyCluster::SwarmBackend.node_count
-      if last_node_count != curr_node_count
-        Integrity::Event.trigger('machine:added')
+      if self.last_node_count != curr_node_count
+        puts "node_count changed from #{self.last_node_count || 'nil'} to #{curr_node_count}"
+        Integrity::Event.trigger('machine_count_changed')
+      #else
+        #puts "node_count still at #{self.last_node_count || 'nil'}"
       end
-      last_node_count = curr_node_count
+      self.last_node_count = curr_node_count
     end
   end
 end

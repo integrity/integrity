@@ -8,7 +8,7 @@ module HonestyCluster
   end
 
   def self.run_waitresses
-    NodeCountWaitress.new.run
+    NodeCountWaitress.new.run_async
   end
 
   module Turds
