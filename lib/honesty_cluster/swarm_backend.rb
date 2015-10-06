@@ -10,6 +10,10 @@ module HonestyCluster
       Integrity.base_url
     end
 
+    def node_count
+      Docker.info(SwarmBackend.connection)['DriverStatus'].detect{|e| e[0].match(/Nodes/) }.last.to_i
+    end
+
     #def get_unit_from_container(container_name)
       #unit_info = Pancakes::Unit.parse_unit_name(container_name)
       #Pancakes::Unit.where(stack_id: unit_info.stack_id, service_name: unit_info.service_name).first

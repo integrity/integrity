@@ -25,7 +25,8 @@
 
 # Directories
 builds
-doc
+doc/*
+!doc/honesty-ignore.txt
 log
 tags
 tmp
