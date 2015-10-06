@@ -1,29 +1,6 @@
 module HonestyCluster
   module SwarmBackend
     module DockerUtil
-
-      #def service_container_json
-        #docker_api_container_json(
-          #name:          self.container_name,
-          #links:         self.app_container_links,
-          #image:         self.app_image_name,
-          #cmd:           self.docker_command,
-          #exposed_ports: self.app_exposed_ports,
-          #env:           self.app_docker_env('TIMBERLAND_CMD' => self.command.run_cmd),
-          #labels:        self.app_docker_labels,
-        #)
-      #end
-      #def app_container_json
-        #docker_api_container_json(
-          #name:          self.container_name,
-          #links:         self.container_links,
-          #image:         self.image_name,
-          #cmd:           self.docker_command,
-          #exposed_ports: self.exposed_ports,
-          #env:           self.docker_env,
-          #labels:        self.container_labels,
-        #)
-      #end
       def docker_api_container_json(name:, image:, cmd:, links:, exposed_ports:, env:, labels:)
         {
           'name' => name,

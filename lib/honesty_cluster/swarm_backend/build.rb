@@ -11,12 +11,21 @@ module HonestyCluster
           sha:          self.sha,
           repo:         self.repo_full_name,
           branch:       self.branch_name,
+          parallel_spec_jobs: self.parallel_spec_jobs,
         )
       end
 
       def datastore_cargo
         if datastore
           @__ds_cargo ||= BuildDatastore.new(self)
+        else
+          nil
+        end
+      end
+
+      def parallel_spec_jobs
+        if self.repo_full_name == "ConsultingMD/ConsultingMD"
+          35
         else
           nil
         end

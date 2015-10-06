@@ -2,12 +2,13 @@ module HonestyCluster
   module Timberland
     class Cmd
 
-      attr_reader :boot_type, :sha, :repo, :debug, :branch, :setup_db, :service_type
+      attr_reader :boot_type, :sha, :repo, :debug, :branch, :setup_db, :service_type, :parallel_spec_jobs
 
-      def initialize(boot_type:, service_type:, sha:, repo:, branch:nil, debug:nil, setup_db:nil)
+      def initialize(boot_type:, service_type:, sha:, repo:, branch:nil, debug:nil, setup_db:nil, parallel_spec_jobs:nil)
         @timberland_branch = Pancakes::Fleet::Templating.config.timberland_branch
         @boot_type    = boot_type
         @service_type = service_type
+        @parallel_spec_jobs = parallel_spec_jobs
         @sha          = sha
         @repo         = repo
         @branch       = branch
@@ -50,6 +51,7 @@ module HonestyCluster
           '--repo', repo,
           !setup_db ? '--no-setup-db' : nil,
           debug ? '--debug' : nil,
+          parallel_spec_jobs ? "--parallel-spec-jobs #{parallel_spec_jobs}" : nil,
           (branch && !branch.empty?) ? ['--branch', branch] : nil
         )
       end
