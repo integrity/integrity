@@ -30,8 +30,8 @@ module Integrity
       log_execution(:launch_build, build) do
         if use_swarm(build)
           log "using swarm"
-          log_build(:launch_build, build, :cleanup) { build.swarm_destroy }
-          log_build(:launch_build, build, :starting){ build.run_container }
+          log_build(:launch_build, build, :cleanup) { build.destroy_containers }
+          log_build(:launch_build, build, :starting){ build.run_containers }
         else
           log "using fleet"
           log_build(:launch_build, build, :cleanup) { Integrity.cluster.destroy_build(build) }
@@ -44,7 +44,7 @@ module Integrity
     # Kill fleet unit and destroy service matching build that was passed.
     def self.destroy_build(build)
       if use_swarm(build)
-        log_execution(:destroy_build, build){ build.swarm_destroy }
+        log_execution(:destroy_build, build){ build.destroy_containers }
       else
         log_execution(:destroy_build, build){ Integrity.cluster.destroy_build(build) }
       end
