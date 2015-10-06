@@ -78,7 +78,7 @@ module Pancakes
                     debug:        true, #Pancakes.timberland_debug?,
                     branch:       service_def[:env]['BRANCH'],
                     setup_db:     true,
-                    service_type: 'spec',
+                    service_type: spec_build_service_defs(service_def[:env]['BRANCH']),
                   )
                 )
               )
@@ -208,6 +208,16 @@ module Pancakes
             postgres_service_def(build),
             app_service_def(build: build, requires: :db),
           ]
+        end
+
+        private def spec_build_service_defs(branch_name)
+          if branch_name.include?("smoke/rc")
+            'uat-smoke'
+          elsif branch_name.include?("rc/branch")
+            'uat-integration'
+          else
+            'spec'
+          end
         end
 
         private def docker_service_fname
