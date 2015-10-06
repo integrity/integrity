@@ -1,8 +1,23 @@
-Integrity — Continuous Integration Server
-=========================================
+Honesty CI
+==========
 
-### Intro
-Integrity is the custom-built, CI server for Grand Rounds. It is backed by CoreOS and Docker.
+# Useful Stuff
+
+```bash
+# deploy with a branch
+DEPLOY_ENV=dtest cap deploy -s branch=foobar
+
+# master will be used if no branch is specified
+DEPLOY_ENV=production cap deploy
+
+# only 'dtest', and 'production' are valid values for DEPLOY_ENV
+
+
+# local pry session
+# you'll probably need to get this file from $GR_HOME/engineering/honesty/env.sh.gpg
+source env
+pry -r./init
+```
 
 #### Installation
 

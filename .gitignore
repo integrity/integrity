@@ -32,4 +32,8 @@ tags
 tmp
 bin
 coverage
+
+# developer environment files
 .env
+env
+honesty-env*
