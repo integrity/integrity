@@ -16,8 +16,18 @@ module HonestyCluster
       interface_method :cargo_list
 
       def run_containers
-        cargo_list.each do |cargo|
-          cargo.run_container
+        begin
+          cargo_list.each do |cargo|
+            cargo.run_container
+          end
+        rescue Docker::Error::ServerError => e
+          if e.message.include?('no resources available to schedule container')
+            puts "failure: #{e.message}"
+            puts "destroying this cargo group"
+            destroy_containers
+          else
+            raise e
+          end
         end
       end
 

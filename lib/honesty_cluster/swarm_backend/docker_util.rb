@@ -1,7 +1,7 @@
 module HonestyCluster
   module SwarmBackend
     module DockerUtil
-      def docker_api_container_json(name:, image:, cmd:, links:, exposed_ports:, env:, labels:)
+      def docker_api_container_json(name:, image:, cmd:, links:, exposed_ports:, env:, labels:, cpu_shares:)
         {
           'name' => name,
           Cmd: cmd,
@@ -12,6 +12,7 @@ module HonestyCluster
           Labels: docker_api_stringify_labels(labels),
           HostConfig: {
             Binds: ['/var/lib/docker/tmp:/tmp/hosttmp'],
+            CpuShares: cpu_shares,
             PublishAllPorts: true,
             Links: links,
             LogConfig: { Type: 'syslog', Config: {'syslog-tag' => name} },

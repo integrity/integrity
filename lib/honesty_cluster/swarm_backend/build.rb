@@ -25,7 +25,7 @@ module HonestyCluster
 
       def parallel_spec_jobs
         if self.repo_full_name == "ConsultingMD/ConsultingMD"
-          35
+          cpu_shares
         else
           nil
         end
@@ -111,6 +111,11 @@ module HonestyCluster
       # Cargo
       def exposed_ports
         nil
+      end
+
+      # Cargo
+      def cpu_shares
+        35
       end
     end
   end

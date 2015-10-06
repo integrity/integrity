@@ -37,6 +37,9 @@ module HonestyCluster
       # a hash of var => value or nil, which is added to default labels
       interface_method :container_labels
 
+      # number of cores to reserve for this cargo
+      interface_method :cpu_shares
+
 
       def run_container
         if HonestyCluster.dry_run?
@@ -64,6 +67,7 @@ module HonestyCluster
           exposed_ports: exposed_ports,
           env:           container_env,
           labels:        default_container_labels.merge(container_labels || {}),
+          cpu_shares:    cpu_shares,
         )
       end
 

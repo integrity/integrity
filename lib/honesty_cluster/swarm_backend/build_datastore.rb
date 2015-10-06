@@ -72,6 +72,11 @@ module HonestyCluster
           nil
         end
       end
+
+      # Cargo
+      def cpu_shares
+        1
+      end
     end
   end
 end
