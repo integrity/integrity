@@ -12,6 +12,7 @@ module HonestyCluster
           repo:         self.repo_full_name,
           branch:       self.branch_name,
           parallel_spec_jobs: self.parallel_spec_jobs,
+          sleep:        500,
         )
       end
 
