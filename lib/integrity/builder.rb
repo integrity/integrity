@@ -8,7 +8,7 @@ module Integrity
       if build.started?
         log_build(:start_build, build, "not running because build started already, in #{build.status} state")
       elsif at_capacity?
-          log_build(:start_build, build, "not running because Integrity is at capacity")
+        log_build(:start_build, build, "not running because Integrity is at capacity")
       else
         log_build(:start_build, build, "Clear builds on branch: #{build.branch_name}") { Integrity::Event.trigger('branch:cleanup', build.id) }
         log_build(:start_build, build, "Running build"){ launch_build(build) }
@@ -70,7 +70,6 @@ module Integrity
     def self.log(msg)
       msg = "[Integrity::Builder]: #{msg}"
       Integrity.logger.info msg
-      Integrity.sys_logger(:delayed_job).info msg
     end
 
     #According to this, 4 tp builds would be 'at capacity'.  This is probably an artifact, we can discuss later

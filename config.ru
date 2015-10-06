@@ -3,6 +3,8 @@ require 'rack/urlmap'
 require 'delayed_job_web'
 require './init'
 
+Integrity.config.logger = Logging.logger['honesty']
+
 use Rack::PostBodyContentTypeParser
 use Rack::Session::Cookie, key: 'rack.session', path: '/', secret: 'secret', expire_after: 1800 # 30mins
 use Rack::Flash
