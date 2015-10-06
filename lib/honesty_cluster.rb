@@ -8,6 +8,7 @@ module HonestyCluster
   end
 
   def self.run_waitresses
+    puts "running waitresses"
     NodeCountWaitress.new.run_async
   end
 

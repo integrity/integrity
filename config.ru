@@ -24,6 +24,8 @@ end
 
 DelayedJobWeb.disable :sessions
 
+HonestyCluster.run_waitresses
+
 run Rack::URLMap.new(
   '/' => Integrity.app,
   '/delayed_jobs' => DelayedJobWeb
