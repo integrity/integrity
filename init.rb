@@ -113,5 +113,3 @@ if Delayed::Job.where(queue: 'stats').count == 0
 end
 
 Slim::Engine.set_default_options pretty: true
-
-#HonestyCluster.run_waitresses
