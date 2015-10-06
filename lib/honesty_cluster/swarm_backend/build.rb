@@ -82,7 +82,7 @@ module HonestyCluster
           'SAUCE_ACCESS_KEY' => ':self',
           'CALLBACK_URL' => "https://#{ENV['CALLBACK_HOST']}/status.json",
           'TIMBERLAND_CMD' => self.timberland_command.run_cmd,
-        }
+        }.merge(builds_constraint)
       end
 
       # Cargo

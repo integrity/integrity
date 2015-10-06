@@ -66,8 +66,13 @@ module HonestyCluster
         end
       end
 
+      def builds_constraint
+        {
+          "constraint:grnds.node_type==builds" => nil,
+        }
+      end
+
       private def label_filters(filters)
-        #byebug
         filters = filters.to_a.map do |key,value|
           [key.to_s, value.to_s].join('=')
         end
@@ -78,15 +83,12 @@ module HonestyCluster
       private def docker_api_build_env(env_hash)
         return nil unless env_hash
         env_hash.map do |k,v|
-          docker_api_interpolate_env_var(k,v).join('=')
+          if v
+            docker_api_interpolate_env_var(k,v).join('=')
+          else
+            k
+          end
         end
-      end
-
-      private def docker_api_transform_exposed_ports(list_of_ports)
-        return nil unless list_of_ports && !list_of_ports.empty?
-        list_of_ports.map do |port|
-          {"#{port}/tcp" => {}}
-        end.reduce(&:merge)
       end
 
       private def docker_api_interpolate_env_var(k,v)
@@ -97,6 +99,13 @@ module HonestyCluster
           v = ENV[v.sub(/\A:/, '')]
         end
         [k,v]
+      end
+
+      private def docker_api_transform_exposed_ports(list_of_ports)
+        return nil unless list_of_ports && !list_of_ports.empty?
+        list_of_ports.map do |port|
+          {"#{port}/tcp" => {}}
+        end.reduce(&:merge)
       end
 
       private def docker_api_stringify_labels(labels)

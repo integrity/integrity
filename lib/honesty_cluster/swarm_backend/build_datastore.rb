@@ -49,7 +49,7 @@ module HonestyCluster
 
       # Cargo
       def container_env
-        nil
+        builds_constraint
       end
 
       # Cargo
@@ -75,4 +75,3 @@ module HonestyCluster
     end
   end
 end
-

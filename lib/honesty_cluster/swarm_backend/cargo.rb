@@ -43,7 +43,8 @@ module HonestyCluster
           puts "not starting because dry_run is on"
           return false
         else
-          create_container(container_def).start
+          create_container(container_def).start!
+          sleep 2
         end
       end
 
