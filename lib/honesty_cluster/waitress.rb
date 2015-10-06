@@ -25,8 +25,6 @@ module HonestyCluster
       @retries = 0
       @thread = nil
       self.class.register(self)
-
-      $0 = "watiress: #@name"
     end
 
     def to_s
