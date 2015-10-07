@@ -1,16 +1,71 @@
 module HonestyCluster
   module SwarmBackend
 
-    class HealthCheck
+    # check for the status of one particular thing
+    class StatusCheck
       attr_reader :status, :message
 
+      # all possible statuses ordered by importance
+      # ie, if a status is failed, then we dont care about statuses after failed in this list
+      PRIORITIZED_STATUSES = [
+        :failed,
+        :in_progress,
+        :complete,
+      ]
+
       def initialize(status, message=nil)
+        raise("invalid status '#{status}'") unless PRIORITIZED_STATUSES.include?(status)
         @status = status
         @message = message
       end
 
-      def healthy?
+      def okay?
         status == :complete
+      end
+    end
+
+    # represent the overall health of some resource by aggregating it's StatusChecks
+    class HealthCheck
+      attr_reader :status_checks
+
+      def initialize(status_checks)
+        @status_checks = status_checks
+      end
+
+      def status
+        prioritized_status_checks[:status]
+      end
+
+      def message
+        prioritized_status_checks[:checks].map(&:message).join('; ')
+      end
+
+      def healthy?
+        #status_checks.map(&:"okay?")reduce(true){|memo,val| memo && val }
+        status == :complete
+      end
+
+      private def grouped_status_checks
+        @__groups ||= status_checks.group_by do |check|
+          check.status
+        end
+      end
+
+
+      # return the status checks with the most important status
+      private def prioritized_status_checks
+        StatusCheck::PRIORITIZED_STATUSES.map do |status|
+          [
+            status,
+            grouped_status_checks[status] || [],
+          ]
+        end
+        .each do |status,group|
+          if !group.empty?
+            return { status: status, checks: group }
+          end
+        end
+        raise('expected some status checks to prioritize')
       end
     end
 
@@ -22,15 +77,14 @@ module HonestyCluster
 
       def create_event_for_health_check(health_check)
         status = health_check.status
-        msg    = health_check.msg
-        raise("invalid create_health_check_event status '#{status}'") unless HonestyEvent::STATUS_ENDINGS.include?(status.to_sym)
+        msg    = health_check.message
         status_prefix = status == :in_progress ? 'CREATE' : 'HEALTH_CHECK'
         add_event(source: 'honesty', type: self.class._health_check_type, status: "#{status_prefix}_#{status.upcase}", status_message: msg)
         return health_check.healthy?
       end
 
       def initial_health_check
-        create_health_check_event(:in_progress)
+        create_event_for_health_check(HealthCheck.new([StatusCheck.new(:in_progress, 'created')]))
       end
 
       def last_health_check

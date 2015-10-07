@@ -6,11 +6,11 @@ module Integrity
       def event_bootstrap_class(event)
         if !event
           ''
-        elsif event.complete?
+        elsif event.status.end_with?('_COMPLETE')
           'success'
-        elsif event.in_progress?
+        elsif event.status.end_with?('_IN_PROGRESS')
           'warning'
-        elsif event.failed?
+        elsif event.status.end_with?('_FAILED')
           'danger'
         else
           ''

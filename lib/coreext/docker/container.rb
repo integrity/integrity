@@ -37,6 +37,10 @@ class Docker::Container
     exited? && exit_code != 0
   end
 
+  def clean_exit?
+    exited? && exit_code == 0
+  end
+
   def exit_code
     exited? ? status.match(EXITED_REGEXP)[:exit_code].to_i : nil
   end

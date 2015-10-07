@@ -92,17 +92,17 @@ module HonestyCluster
         end
       end
 
-      def service_containers_nominal?
-        units.map(&:"container_nominal?").reduce(true){|memo,val| memo && val}
-      end
+      #def service_containers_nominal?
+        #units.map(&:"container_nominal?").reduce(true){|memo,val| memo && val}
+      #end
 
       def services_healthy?
         units.select(&:"health_checkable?").map do |unit|
-          unit.check_health
+          unit.check_health!
         end.reduce(true){|memo,val| memo && val}
       end
 
-      def check_health
+      def current_health
         refresh_service_addrs
         check_state = true
         msg = nil

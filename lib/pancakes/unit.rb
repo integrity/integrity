@@ -123,6 +123,14 @@ module Pancakes
       !!tcp_str
     end
 
+    def is_setup_container?
+      subtype == 'setup'
+    end
+
+    def addr_known?
+      machine_ip && port
+    end
+
     def name
       if self.stack
         "#{self.stack.name}_#{service_name}"
@@ -237,19 +245,19 @@ module Pancakes
       subtype == 'delayed_job'
     end
 
-    def ping_url
-      return nil unless pingable?
-      service_def.ping_url.sub('$ip', machine_ip).sub('$port', port.to_s)
-    end
+    #def ping_url
+      #return nil unless pingable?
+      #service_def.ping_url.sub('$ip', machine_ip).sub('$port', port.to_s)
+    #end
 
-    def ping_http_status
-      return nil unless pingable?
-      service_def.http_status
-    end
+    #def ping_http_status
+      #return nil unless pingable?
+      #service_def.http_status
+    #end
 
-    def pingable?
-      !!(service_def.ping_url && machine_ip && port)
-    end
+    #def pingable?
+      #!!(service_def.ping_url && machine_ip && port)
+    #end
 
     def self.subtype(service_name)
       srv_name = Services.parse_service_name(service_name)
@@ -280,6 +288,90 @@ module Pancakes
         stack_name: match[:stack_name],
         service_name: match[:service_name]
       )
+    end
+
+
+    # health checking
+
+    def container_status_check
+      cnt = container
+      if !cnt
+        [:failed, "there is no container for this service"]
+      elsif is_setup_container?
+        if cnt.exited?
+          if cnt.clean_exit?
+            [:complete, "setup was successful"]
+          else
+            [:failed, "setup failed"]
+          end
+        else
+          [:complete, "setup is still running, but that's okay"]
+        end
+      elsif cnt.running?
+        [:complete, "the container is running"]
+      else
+        [:in_progress, "the container is neither running nor exited"]
+      end
+    end
+
+    def health_checkable?
+      !!service_def.ping_url
+    end
+
+    def health_check_url
+      if addr_known? && health_checkable?
+        service_def.ping_url.sub('$ip', machine_ip).sub('$port', port.to_s)
+      else
+        nil
+      end
+    end
+
+    def healthy_http_status
+      service_def.http_status
+    end
+
+    def make_health_check_http_request(url, desired_response)
+      resp =
+        if desired_response == 302
+          Net::HTTP.get_response(URI(url))
+        else
+          RestClient::Request.execute(method: :get, url: url, timeout: 5, open_timeout: 5)
+        end
+
+      if (resp_code = resp.code.to_i) == healthy_status
+        [:complete]
+      else
+        [:failed,
+         "http status check failed. required=#{healthy_status} got=#{code} url=#{url}"]
+      end
+    end
+
+    def http_status_check
+      name           = service_name
+      url            = health_check_url
+      healthy_status = healthy_http_status
+      if url
+        begin
+          make_health_check_http_request(url, healthy_status)
+        rescue StandardError => e
+          [:failed,
+           "unreachable at #{url} due to #{e.class} '#{e.message}'"]
+        end
+      else
+        [:failed,
+         "http status check url is unavailable"]
+      end
+    end
+
+    def status_checks
+      [
+        container_status_check,
+        http_status_check,
+       ].map{|check| HonestyCluster::SwarmBackend::StatusCheck.new(*check) }
+    end
+
+    def current_health
+      HonestyCluster::SwarmBackend::HealthCheck.new(status_checks)
     end
   end
 end
