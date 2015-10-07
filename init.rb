@@ -113,4 +113,4 @@ if Delayed::Job.where(queue: 'stats').count == 0
   Delayed::Job.enqueue(Integrity::StatsJob.new)
 end
 
-Slim::Engine.set_default_options pretty: true
+Slim::Engine.set_options pretty: true
