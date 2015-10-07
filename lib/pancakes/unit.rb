@@ -107,9 +107,9 @@ module Pancakes
       #end
     #end
 
-    def netmaster?
-      service_def.netmaster
-    end
+    #def netmaster?
+      #service_def.netmaster
+    #end
 
     def ports
       service_def.ports
@@ -207,6 +207,30 @@ module Pancakes
 
     def clear_events
       events_dataset.destroy
+    end
+
+    def mysql?
+      service_name == 'mysql'
+    end
+
+    def postgres?
+      service_name == 'postgres'
+    end
+
+    def mailcatcher?
+      service_name == 'mailcatcher'
+    end
+
+    def setup?
+      subtype == 'setup' || subtype == 'orchestra'
+    end
+
+    def server?
+      subtype == 'server'
+    end
+
+    def delayed_job?
+      subtype == 'delayed_job'
     end
 
     def ping_url

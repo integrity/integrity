@@ -6,13 +6,17 @@ module HonestyCluster
       def timberland_command
         @__tmb_cmd ||= Timberland::Cmd.new(
           boot_type:    'pancakes',
+          service_type: self.subtype,
           sha:          self.sha,
           repo:         self.repo,
-          debug:        Pancakes.timberland_debug?,
           branch:       self.branch,
+          debug:        Pancakes.timberland_debug?,
           setup_db:     true,
-          service_type: self.subtype,
         )
+      end
+
+      def timberlandified?
+        !(mysql? || postgres? || mailcatcher?)
       end
 
       # Cargo
@@ -52,7 +56,11 @@ module HonestyCluster
 
       # Cargo
       def docker_command
-        timberland_command.to_docker_api_cmd
+        if timberlandified?
+          timberland_command.to_docker_api_cmd
+        else
+          nil
+        end
       end
 
       # Cargo
@@ -62,14 +70,19 @@ module HonestyCluster
 
       # Cargo
       def container_env
-        {
+        _env = {
           'PANCAKES_ID' => self.stack_id,
           'STACK_ID' => self.stack_id,
           'SERVICE_ID' => self.id,
           'PANCAKES_SHA' => self.stack.short_sha,
           'HONESTY_BASE_URL' => SwarmBackend.base_url,
-          'TIMBERLAND_CMD' => self.timberland_command.run_cmd,
         }
+
+        if timberlandified?
+          _env.merge('TIMBERLAND_CMD' => timberland_command.run_cmd)
+        else
+          _env
+        end
       end
 
       # Cargo
@@ -77,13 +90,19 @@ module HonestyCluster
         nil
       end
 
+      # Cargo
+      def cpu_shares
+        1
+      end
+
+      # Cargo
+      def memory
+        0.5 #gb?
+      end
+
 
 
       # pancakes
-
-      def container
-        containers.first
-      end
 
       def container_running?
         container.running?

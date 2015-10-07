@@ -40,14 +40,19 @@ module HonestyCluster
       # number of cores to reserve for this cargo
       interface_method :cpu_shares
 
+      # after start hook
+      interface_method :after_start
+
 
       def run_container
+        _container = create_container(container_def)
+
         if HonestyCluster.dry_run?
           puts "not starting because dry_run is on"
           return false
         else
-          create_container(container_def).start!
-          sleep 2
+          _container.start!
+          after_start
         end
       end
 
@@ -68,6 +73,7 @@ module HonestyCluster
           env:           container_env,
           labels:        default_labels.merge(container_labels || {}),
           cpu_shares:    cpu_shares,
+          memory:        memory,
         )
       end
 

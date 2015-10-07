@@ -11,14 +11,23 @@ module HonestyCluster
           sha:          self.sha,
           repo:         self.repo_full_name,
           branch:       self.branch_name,
+          debug:        Pancakes.timberland_debug?,
           parallel_spec_jobs: self.parallel_spec_jobs,
-          #sleep:        500,
+          sleep:        500,
         )
       end
 
       def datastore_cargo
         if datastore
           @__ds_cargo ||= BuildDatastore.new(self)
+        else
+          nil
+        end
+      end
+
+      def tmb_sleep
+        if self.branch_name.include?('/sleep')
+          500
         else
           nil
         end
@@ -134,6 +143,11 @@ module HonestyCluster
         else
           1
         end
+      end
+
+      # Cargo
+      def memory
+        0.5 #gb?
       end
     end
   end

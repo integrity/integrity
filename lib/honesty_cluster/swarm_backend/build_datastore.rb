@@ -13,6 +13,11 @@ module HonestyCluster
       end
 
       # Cargo
+      def after_start
+        sleep 2
+      end
+
+      # Cargo
       def cargo_group_type
         build.cargo_group_type
       end
@@ -85,6 +90,11 @@ module HonestyCluster
         else
           1
         end
+      end
+
+      # Cargo
+      def memory
+        0.5 #gb?
       end
     end
   end

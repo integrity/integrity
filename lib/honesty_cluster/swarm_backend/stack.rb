@@ -2,6 +2,7 @@ module HonestyCluster
   module SwarmBackend
     module Stack
       include DockerUtil
+      include SwarmBackend::CargoGroup
 
 
       #             ___.   .__  .__
