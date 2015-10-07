@@ -12,44 +12,33 @@ module HonestyCluster
       # |   __/|____/|___  /____/__|\___  >
       # |__|             \/             \/
 
-      def swarm_spin_up
+      def before_run_containers
         clear_service_addrs
-        self.units.each do |unit|
-          unit.run_container
-        end
+      end
+
+      def after_run_containers
         refresh_service_addrs
       end
 
-      def swarm_destroy
-        containers.each do |container|
-          puts "removing (with force) container #{container.name}"
-          container.force_remove
-        end
-
+      def after_destroy_containers
         refresh_service_addrs
-        nil
+      end
+
+      # CargoGroup
+      def cargo_list
+        self.units.to_a
+      end
+
+      # CargoGroup
+      def cargo_group_type
+      end
+
+      # CargoGroup
+      def cargo_group_id
       end
 
       def clear_service_addrs
         units_dataset.update(machine_ip: nil, port: nil)
-      end
-
-      #def containers
-        #Docker::Container.all(
-          #{
-            #'all' => 1, # 'all' can't be a symbol key
-            #filters: SwarmBackend.label_filters('pancakes-stack', self.name),
-          #},
-          #SwarmBackend.connection,
-        #)
-      #end
-
-      def containers
-        containers_filtered(id_filter, self.id)
-      end
-
-      def id_filter
-        'pancakes-stack-id'
       end
 
       def refresh_service_addrs
@@ -127,14 +116,6 @@ module HonestyCluster
           [Pancakes::Unit.parse_unit_name(container.name).service_name, container]
         end.to_h
       end
-
-      #              .__               __
-      # _____________|__|__  _______ _/  |_  ____
-      # \____ \_  __ \  \  \/ /\__  \\   __\/ __ \
-      # |  |_> >  | \/  |\   /  / __ \|  | \  ___/
-      # |   __/|__|  |__| \_/  (____  /__|  \___  >
-      # |__|                        \/          \/
-
     end
   end
 end

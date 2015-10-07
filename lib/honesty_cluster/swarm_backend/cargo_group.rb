@@ -15,11 +15,17 @@ module HonestyCluster
       # list of Cargos
       interface_method :cargo_list
 
+      interface_method :before_run_containers
+      interface_method :after_run_containers
+      interface_method :after_destroy_containers
+
       def run_containers
         begin
+          before_run_containers
           cargo_list.each do |cargo|
             cargo.run_container
           end
+          after_run_containers
         rescue Docker::Error::ServerError => e
           if e.message.include?('no resources available to schedule container')
             puts "failure: #{e.message}"
@@ -36,6 +42,7 @@ module HonestyCluster
           puts "removing (with force) container #{container.name}"
           container.force_remove
         end
+        after_destroy_containers
       end
 
       def containers

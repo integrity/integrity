@@ -69,6 +69,16 @@ module HonestyCluster
         self.id
       end
 
+      # CargoGroup
+      def before_run_containers
+      end
+      # CargoGroup
+      def after_run_containers
+      end
+      # CargoGroup
+      def after_destroy_containers
+      end
+
       # Cargo
       def cargo_type
         'app'
