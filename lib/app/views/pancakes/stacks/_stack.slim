@@ -1,4 +1,4 @@
-tr class=health_check_bootstrap_class(last_stack_health)
+/tr class=health_check_bootstrap_class(last_stack_health)
   td
     .mono
       b = health_check_status(last_stack_health)
@@ -52,7 +52,7 @@ tr class=health_check_bootstrap_class(last_stack_health)
       b> desired state:
       = stack.desired_state
     div
-      b> POCs:
+      b> Owner:
       = stack.pocs.join(', ')
   td.services
     table.table.commits

@@ -1,6 +1,9 @@
 module Pancakes
   class Unit < Sequel::Model
     include HonestyCluster::SwarmBackend::Service
+    include HonestyCluster::SwarmBackend::HealthCheckable
+
+    health_check_type 'Pancakes::Service'
 
     set_dataset :pancakes_units
     plugin :timestamps
@@ -41,6 +44,7 @@ module Pancakes
     def self.create_with_service_def(service_def: nil)
       me = new(service_def: service_def, ping_url: service_def[:ping_url], service_name: service_def[:name], cluster_info: {})
       me.save
+      me.initial_health_check
       me
     end
 

@@ -2,6 +2,9 @@ module Pancakes
   class Stack < Sequel::Model
     include Pancakes::ClassLogger
     include HonestyCluster::SwarmBackend::Stack
+    include HonestyCluster::SwarmBackend::HealthCheckable
+
+    health_check_type 'Pancakes::Stack'
 
     set_dataset :pancakes_stacks
     plugin :timestamps
@@ -27,6 +30,7 @@ module Pancakes
       validates_includes   CLUSTER_STATES, :state,         allow_blank: false, allow_nil: false
       validates_includes   DESIRED_STATES, :desired_state, allow_blank: false, allow_nil: false
       validates_min_length 1,              :services,      allow_blank: false, allow_nil: false
+      errors.add(:"Owner", 'cannot be empty') if pocs.empty? || pocs[0].empty?
     end
 
     def before_create
@@ -74,6 +78,7 @@ module Pancakes
           me.add_commit(Pancakes::Commit.create_from_git_string(Pancakes.repo_name(codebase), git_str))
         end
 
+        me.initial_health_check
         me
       end
     end

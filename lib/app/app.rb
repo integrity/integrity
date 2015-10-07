@@ -5,7 +5,7 @@ require 'omniauth-github'
 require 'hashie'
 require 'app/helpers'
 require 'sinatra/base'
-require 'rack/flash'
+require 'rack-flash'
 require 'cgi'
 require 'i18n'
 require 'sinatra/static_assets'
@@ -13,6 +13,7 @@ require 'sinatra/static_assets'
 module Integrity
   class App < Sinatra::Base
     register Sinatra::StaticAssets
+    use Rack::Flash
 
     configure do
       enable  :sessions
@@ -226,8 +227,8 @@ module Integrity
     ###############################################################
 
     get '/pancakes' do
-      @stacks = Pancakes::Stack.order(:created_at)
-      @stacks.map(&:refresh_service_addrs)
+      @stacks = Pancakes::Stack.reverse(:created_at).map{|stack| [stack, stack.last_health_check] }
+      #@stacks.map(&:refresh_service_addrs)
       slim :"pancakes/stacks/index"
     end
 
@@ -238,7 +239,7 @@ module Integrity
       if @stack
         slim :"pancakes/stacks/show"
       else
-        redirect to('/pancakes')
+        redirect pancakes_path
       end
     end
 
@@ -252,9 +253,9 @@ module Integrity
           @commit.toggle_lock!
         end
 
-        redirect to("/pancakes/stacks/#{@stack.id}")
+        redirect pancakes_stack_path(@stack)
       else
-        redirect to('/pancakes')
+        redirect pancakes_path
       end
     end
 
@@ -264,9 +265,10 @@ module Integrity
       if @stack
         @stack.update_all(desired_state: (@stack.state == :off ? :running : :off))
         Delayed::Job.enqueue(Pancakes::Background::RestartWithBranchHeadsJob.new(@stack.id))
+        redirect pancakes_stack_path(@stack)
+      else
+        redirect pancakes_path
       end
-
-      redirect back
     end
 
     get '/pancakes/stacks/:id/restart_with_same_commits' do
@@ -275,9 +277,10 @@ module Integrity
       if @stack
         @stack.update_all(desired_state: (@stack.state == :off ? :running : :off))
         Delayed::Job.enqueue(Pancakes::Background::RestartWithSameCommitsJob.new(@stack.id))
+        redirect pancakes_stack_path(@stack)
+      else
+        redirect pancakes_path
       end
-
-      redirect back
     end
 
     get '/pancakes/stacks/:id/bring_down' do
@@ -285,9 +288,10 @@ module Integrity
 
       if @stack
         Delayed::Job.enqueue(Pancakes::Background::BringDownJob.new(@stack.id))
+        redirect pancakes_stack_path(@stack)
+      else
+        redirect pancakes_path
       end
-
-      redirect back
     end
 
     get '/pancakes/stacks/:id/check_health' do
@@ -295,9 +299,9 @@ module Integrity
 
       if @stack
         @stack.check_health
-        redirect to("/pancakes/stacks/#{@stack.id}")
+        redirect pancakes_stack_path(@stack)
       else
-        redirect to('/pancakes')
+        redirect pancakes_path
       end
     end
 
@@ -312,23 +316,26 @@ module Integrity
       #else
         #flash[:error] = "stack not found"
       end
-      redirect back
+      redirect pancakes_path
     end
 
     post '/pancakes/stacks' do
-      services = Pancakes::Services.full_services
+      begin
+        services = Pancakes::Services.full_services
+        @stack = Pancakes::Stack.create_with_git_strings(
+          services:       services,
+          pocs:           params[:pocs],
+          branches:       params[:branches],
+          desired_state: :running,
+        )
 
-      @stack = Pancakes::Stack.create_with_git_strings(
-        services:       services,
-        pocs:           params[:pocs],
-        branches:       params[:branches],
-        desired_state: :running,
-      )
-
-      #flash[:notice] = "Stack created with sha #{@stack.short_sha}. Click 'Refresh state' to refresh the state, if you want."
-      Delayed::Job.enqueue(Pancakes::Background::BringUpJob.new(@stack.id))
-
-      redirect back
+        flash[:success] = "Stack created with sha #{@stack.short_sha}"
+        #Delayed::Job.enqueue(Pancakes::Background::BringUpJob.new(@stack.id))
+        redirect pancakes_stack_path(@stack)
+      rescue Sequel::ValidationFailed => e
+        flash[:error] = "Stack create failed: #{e.message}"
+        redirect pancakes_path
+      end
     end
 
     get '/pancakes/events' do
@@ -363,43 +370,6 @@ module Integrity
 
       JSON.dump(branches)
     end
-
-    #get '/pancakes/api/vX/stacks/search' do
-      #branches = params[:branches]
-      #data = params[:data]
-      #service_name = params[:service_name]
-      #update_state = params[:update_state]
-
-      #@stack = Pancakes::Stack.first_with_branches(branches)
-
-      #if !@stack
-        #logger.info 'stack not found'
-        #halt 400, "stack not found\n"
-      #else
-        #logger.info "stack found: #{@stack.sha}"
-
-        #if update_state == 'true'
-          #@stack.state_from_cluster!
-        #end
-
-        #@unit = @stack.unit_with_service_name(service_name)
-
-        #if !@unit
-          #logger.info 'unit not found'
-          #halt 400, "unit not found\n"
-        #elsif data == 'tcp_info'
-          #tcp_string = @unit.tcp_str
-          #if tcp_string.empty?
-            #logger.info 'tcp_string not found. service may not be running.'
-            #halt 400, "tcp_string not found. service may not be running.\n"
-          #else
-            #tcp_string
-          #end
-        #else
-          #halt 500, 'something was wrong'
-        #end
-      #end
-    #end
 
     post '/pancakes/api/vX/stacks' do
       if !params[:dry_run]
@@ -463,7 +433,6 @@ module Integrity
       #end
 
       @stack.refresh_service_addrs
-
       @unit = @stack.unit_with_service_name(service_name)
 
       if @unit

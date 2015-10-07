@@ -19,7 +19,7 @@ module Integrity
 
       def container_status_bootstrap_class(container)
         if !container
-          'danger'
+          'warning'
         elsif container.running?
           'success'
         elsif container.failed?
@@ -27,7 +27,7 @@ module Integrity
         elsif container.exited?
           'success'
         else
-          'danger'
+          'warning'
         end
       end
 
@@ -43,8 +43,12 @@ module Integrity
         pocs ? pocs.join(', ') : ''
       end
 
+      def event_status_message(event)
+        event ? event.status_message : ''
+      end
+
       def container_state(container)
-        container ? container.status : '?'
+        container ? container.status : ''
       end
 
       def http_url(unit)
@@ -53,7 +57,7 @@ module Integrity
             if public_port = unit.lookup_public_port(1080)
               unit.tcp_str(public_port)
             else
-              "wtf"
+              nil
             end
           else
             unit.tcp_str
@@ -61,8 +65,16 @@ module Integrity
         _tcp_str ? "http://#{_tcp_str}" : nil
       end
 
-      def launch_button(text, url, enabled: true)
-        launch_button_helper(text, url, enabled)
+      #def launch_button(text, url, enabled: true)
+      def launch_button(unit, last_health_check)
+        text    = unit.codebase || unit.service_name
+        url     = http_url(unit)
+        enabled = last_health_check.complete?
+        launch_button_helper(
+          text,
+          url,
+          enabled,
+        )
       end
 
       #def launch_button(commit, disabled: false)
@@ -104,9 +116,9 @@ module Integrity
         format('http://%s:%d', unit.machine_ip, unit.port)
       end
 
-      def mailcatcher_button(unit, disabled: false)
-        launch_button_helper('Mailcatcher', mailcatcher_url(unit), disabled)
-      end
+      #def mailcatcher_button(unit, disabled: false)
+        #launch_button_helper('Mailcatcher', mailcatcher_url(unit), disabled)
+      #end
 
       def mysql_notes(unit)
         if unit

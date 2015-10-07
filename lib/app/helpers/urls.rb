@@ -92,11 +92,10 @@ module Integrity
         project_url(branch.project, branch.permalink, *path)
       end
 
-
       def branch_path(branch, *path)
         project_path(branch.project, branch.permalink, *path)
       end
-      
+
       def build_url(build, *path)
         project_url(build.project, 'builds', build.id, *path)
       end
@@ -107,6 +106,14 @@ module Integrity
 
       def artifact_path(build, artifact, *path)
         build_path(build, 'artifacts', CGI.escape(CGI.escape(artifact)))
+      end
+
+      def pancakes_path
+        path('pancakes')
+      end
+
+      def pancakes_stack_path(stack)
+        path('pancakes', 'stacks', stack.id)
       end
 
       # Copyright (MIT) Eric Kidd -- http://github.com/emk/sinatra-url-for

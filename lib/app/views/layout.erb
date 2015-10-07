@@ -24,7 +24,6 @@
     <!--<link href="css/buttons.css" rel="stylesheet">-->
     <link href="/css/layout.css" rel="stylesheet">
     <link href="/css/honesty.css" rel="stylesheet">
-    <link href="/css/morris.css" rel="stylesheet">
 
 
     <!-- Custom Fonts -->
@@ -62,32 +61,7 @@
     <script src="/js/jquery-1.11.0.js"></script>
     <script src="/jquery-ui-1.11.4.custom/jquery-ui.js"></script>
     <script src="/js/bootstrap.js"></script>
-    <!-- Morris Charts JavaScript -->
-    <script src="/js/morris/raphael.min.js"></script>
-    <script src="/js/morris/morris.js"></script>
     <script src="/js/color.js"></script>
     <script src="/js/honesty.js"></script>
-    <script>
-      if ($('#builds-donut').length != 0) {
-        Morris.Donut({
-          element: 'builds-donut',
-          data: [
-            {label: "Running", value: <%= @load_utilization.running_builds if @load_utilization %> },
-            {label: "Pending", value: <%= @load_utilization.pending_builds if @load_utilization %> }
-          ],
-          resize: true
-        });
-        Morris.Area({
-          element: 'load-area',
-          data: <%= @usage.to_json %>,
-          xkey: 'period',
-          ykeys: ['running', 'pending', 'machines'],
-          labels: ['Running', 'Pending', 'Machines'],
-          pointSize: 2,
-          hideHover: 'auto',
-          resize: true
-        });
-      }
-    </script>
   </body>
 </html>

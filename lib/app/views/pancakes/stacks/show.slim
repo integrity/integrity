@@ -1,6 +1,6 @@
 .pancakes
   div
-    == link_to h('<- Back to all stacks'), '/pancakes', class: 'btn btn-link btn-lg'
+    == link_to h('All stacks'), pancakes_path, class: 'btn btn-link btn-lg'
 
   .row
     .col-xs-12
@@ -86,22 +86,20 @@
             th Name
             th Notes
         tbody
-          - _containers = @stack.containers_mapped_by_service_name
-          - @stack.units.sort{|a,b| a.service_name <=> b.service_name }.map{|unit| [unit, unit.last_health_check] }.each do |unit,last_health_check|
-            tr
+          - mapped_containers = @stack.containers_mapped_by_service_name
+          - @stack.units_with_health_and_container.each do |unit,last_health_check,container|
+            tr class=event_bootstrap_class(last_health_check)
               td.col-xs-1
-                - _container = _containers[unit.service_name]
-                span.label class="label-#{container_status_bootstrap_class(_container)}" = container_state(_container)
+                span.label class="label-#{container_status_bootstrap_class(container)}" = container_state(container)
               td.col-xs-1
-                - if last_health_check
-                  span.label class="label-#{event_bootstrap_class(last_health_check)}" = event_status(last_health_check)
-                  br
-                  small< = event_timestamp(last_health_check)
+                span.label class="label-#{event_bootstrap_class(last_health_check)}" = event_status(last_health_check)
+                br
+                small< = event_timestamp(last_health_check)
               td.col-xs-1
                 .btn-group role='group'
                   == link_to 'Logs', service_logs_url(unit), target: '_blank', class: "btn btn-sm btn-primary"
-                  - if unit.health_checkable? || is_mailcatcher = (unit.service_name == 'mailcatcher')
-                    == launch_button(unit.codebase || unit.service_name, http_url(unit), enabled: (last_health_check && last_health_check.complete?) || is_mailcatcher)
+                  - if unit.health_checkable?
+                    == launch_button(unit, last_health_check)
               td.col-xs-1.mono
                 = unit.service_name
               td.col-xs-8.mono

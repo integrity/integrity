@@ -1,7 +1,7 @@
 module HonestyCluster
   module SwarmBackend
     module Service
-      include SwarmBackend::Cargo
+      include Cargo
 
       def timberland_command
         @__tmb_cmd ||= Timberland::Cmd.new(
@@ -148,6 +148,10 @@ module HonestyCluster
         machine_ip && port
       end
 
+      def health_checkable?
+        !!service_def.ping_url
+      end
+
       def health_check_url
         if addr_known? && health_checkable?
           service_def.ping_url.sub('$ip', machine_ip).sub('$port', port.to_s)
@@ -156,52 +160,44 @@ module HonestyCluster
         end
       end
 
-      def health_checkable?
-        !!service_def.ping_url
-      end
-
       def healthy_http_status
         service_def.http_status
       end
 
-      def create_health_check_event(passed, msg=nil)
-        status = passed ? 'HEALTH_CHECK_COMPLETE' : 'HEALTH_CHECK_FAILED'
-        self.add_event(source: 'honesty', type: 'Pancakes::Service::HealthCheck', status: status, status_message: msg)
-        return passed
-      end
-
-      def check_health
-        name = self.service_name
-        create_health_check_event(false, "health check address is unavailable") unless addr_known?
-        raise "service #{name} is not ready for health check" unless health_checkable?
-        url = self.health_check_url
-        healthy_status = self.healthy_http_status
-
-        begin
-          if url.start_with?('http')
-            resp = if healthy_status == 302
-              Net::HTTP.get_response(URI(url))
-            else
-              RestClient::Request.execute(method: :get, url: url, timeout: 5, open_timeout: 5)
-            end
-
-            code = resp.code.to_i
-
-            if code == healthy_status
-              create_health_check_event(true)
-            else
-              create_health_check_event(false, "service #{name} health_check failed. required=#{healthy_status} got=#{code} url=#{url}")
-            end
+      def make_health_check_http_request(url, desired_response)
+        resp =
+          if desired_response == 302
+            Net::HTTP.get_response(URI(url))
           else
-            create_health_check_event(false, "service #{name} at #{url} cannot be health checked due to url scheme #{url}")
+            RestClient::Request.execute(method: :get, url: url, timeout: 5, open_timeout: 5)
           end
-        rescue StandardError => e
-          create_health_check_event(false, "service #{name} at #{url} is unreachable due to #{e.class} '#{e.message}'")
+
+        if (resp_code = resp.code.to_i) == healthy_status
+          [:complete]
+        else
+          [:failed,
+           "health_check failed. required=#{healthy_status} got=#{code} url=#{url}"]
         end
       end
 
-      def last_health_check
-        events_dataset.where(type: 'Pancakes::Service::HealthCheck').reverse_order(:created_at).limit(1).first
+      def current_health
+        name           = self.service_name
+        url            = self.health_check_url
+        healthy_status = self.healthy_http_status
+
+        HealthCheck.new(*
+          if url
+            begin
+              make_health_check_http_request(url, healthy_status)
+            rescue StandardError => e
+              [:failed,
+               "unreachable at #{url} due to #{e.class} '#{e.message}'"]
+            end
+          else
+            [:failed,
+             "health check url is unavailable"]
+          end
+        )
       end
 
 

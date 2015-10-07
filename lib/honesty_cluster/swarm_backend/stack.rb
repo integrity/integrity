@@ -12,29 +12,34 @@ module HonestyCluster
       # |   __/|____/|___  /____/__|\___  >
       # |__|             \/             \/
 
+      # CargoGroup
       def before_run_containers
         clear_service_addrs
       end
 
+      # CargoGroup
       def after_run_containers
         refresh_service_addrs
       end
 
+      # CargoGroup
       def after_destroy_containers
         refresh_service_addrs
       end
 
       # CargoGroup
       def cargo_list
-        self.units.to_a
+        units.to_a
       end
 
       # CargoGroup
       def cargo_group_type
+        'pancakes-stack'
       end
 
       # CargoGroup
       def cargo_group_id
+        self.id
       end
 
       def clear_service_addrs
@@ -43,11 +48,8 @@ module HonestyCluster
 
       def refresh_service_addrs
         puts 'refreshing service addresses'
-        mapped_containers = containers_mapped_by_service_name
 
-        self.units.each do |unit|
-          container = mapped_containers[unit.service_name]
-
+        units_with_health_and_container.each do |unit,_,container|
           if container
             unit.machine_ip = container.ip
             unit.port = container.public_port
@@ -62,7 +64,7 @@ module HonestyCluster
       def service_addrs
         refresh_service_addrs
 
-        self.units.map do |unit|
+        units.map do |unit|
           next(nil) unless unit.tcp_str
           { unit.service_type => unit.tcp_str }
         end
@@ -70,12 +72,32 @@ module HonestyCluster
           .reduce(&:merge)
       end
 
+      def containers_mapped_by_service_name
+        containers.map do |container|
+          [Pancakes::Unit.parse_unit_name(container.name).service_name, container]
+        end.to_h
+      end
+
+      def units_with_health_and_container
+        mapped_containers = containers_mapped_by_service_name
+        units.sort do |a,b|
+          a.service_name <=> b.service_name
+        end
+        .map do |unit|
+          [
+            unit,
+            unit.last_health_check,
+            mapped_containers[unit.service_name]
+          ]
+        end
+      end
+
       def service_containers_nominal?
-        self.units.map(&:"container_nominal?").reduce(true){|memo,val| memo && val}
+        units.map(&:"container_nominal?").reduce(true){|memo,val| memo && val}
       end
 
       def services_healthy?
-        self.units.select(&:"health_checkable?").map do |unit|
+        units.select(&:"health_checkable?").map do |unit|
           unit.check_health
         end.reduce(true){|memo,val| memo && val}
       end
@@ -97,25 +119,9 @@ module HonestyCluster
           msg = "one or more services are unhealthy"
         end
 
-        create_health_check_event(check_state, msg)
+        create_health_check_event(check_state ? :complete : :failed, msg)
       end
 
-      def create_health_check_event(passed, msg=nil)
-        status = passed ? 'HEALTH_CHECK_COMPLETE' : 'HEALTH_CHECK_FAILED'
-        self.add_event(source: 'honesty', type: 'Pancakes::Stack::HealthCheck', status: status, status_message: msg)
-        return passed
-      end
-
-      def last_health_check
-        events_dataset.where(type: 'Pancakes::Stack::HealthCheck').reverse_order(:created_at).limit(1).first
-      end
-
-
-      def containers_mapped_by_service_name
-        containers.map do |container|
-          [Pancakes::Unit.parse_unit_name(container.name).service_name, container]
-        end.to_h
-      end
     end
   end
 end

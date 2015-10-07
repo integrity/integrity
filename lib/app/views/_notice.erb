@@ -1,10 +1,10 @@
-<% if msg = (flash[:notice].presence || flash[:error].presence) %>
-<div class="row">
-  <div class="col-lg-12">
-    <div class="alert alert-info alert-dismissable">
-      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-      <i class="fa fa-info-circle"></i>  <%= msg %>
+<% if msg = (flash[:success] || flash[:notice] || flash[:error]) %>
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="alert alert-<%= (flash[:success] && 'success') || (flash[:notice] && 'info') || (flash[:error] && 'danger') %> alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <%= msg %>
+      </div>
     </div>
   </div>
-</div>
 <% end %>
