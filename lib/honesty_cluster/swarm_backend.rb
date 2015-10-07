@@ -11,7 +11,11 @@ module HonestyCluster
     end
 
     def node_count
-      Docker.info(SwarmBackend.connection)['DriverStatus'].detect{|e| e[0].match(/Nodes/) }.last.to_i
+      if HonestyCluster.dry_run?
+        1
+      else
+        Docker.info(SwarmBackend.connection)['DriverStatus'].detect{|e| e[0].match(/Nodes/) }.last.to_i
+      end
     end
 
     #def get_unit_from_container(container_name)
