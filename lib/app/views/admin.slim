@@ -1,0 +1,40 @@
+h2.text-center Admin
+
+form.form#stacks-form action='/admin/set_lineup' method='post'
+  .row
+    .col-md-3 Sheriff
+    .col-md-3
+      select.form-control type='text' name='sheriff' id="sheriff" autocomplete='off'
+        - all_developers.each do |developer|
+          - if developer.sheriff
+            option value="#{developer.id}" selected='selected' = developer.name
+          - else
+            option value="#{developer.id}" = developer.name
+    .col-md-3 Elves
+  .row
+    .col-md-3 Deputy
+    .col-md-3
+      select.form-control type='text' name='deputy' id="deputy" autocomplete='off'
+        - all_developers.each do |developer|
+          - if developer.deputy
+            option value="#{developer.id}" selected='selected' = developer.name
+          - else
+            option value="#{developer.id}" = developer.name
+    .col-md-3.col-md-offset-3
+      select.form-control type='text' name='elf' id="elf" autocomplete='off'
+        - all_developers.each do |developer|
+          - if developer.elf
+            option value="#{developer.id}" selected='selected' = developer.name
+          - else
+            option value="#{developer.id}" = developer.name
+  .row
+    .col-md-3 Santa
+    .col-md-3
+      select.form-control type='text' name='santa' id="santa" autocomplete='off'
+        - all_developers.each do |developer|
+          - if developer.santa
+            option value="#{developer.id}" selected='selected' = developer.name
+          - else
+            option value="#{developer.id}" = developer.name
+
+  button.btn.btn-primary type='submit' Set Lineup

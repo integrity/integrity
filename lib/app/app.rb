@@ -613,6 +613,11 @@ module Integrity
       show :running, title: 'running builds'
     end
 
+    get '/admin' do
+      login_required
+      slim :admin
+    end
+
     # Get Project (Show)
     get '/:project' do
       login_required unless current_project.public?
@@ -634,6 +639,12 @@ module Integrity
       @branches = current_project.branches(order: [:name.asc, :created_at.desc]).first(8)
 
       show :project, title: ['projects', current_project.name]
+    end
+
+    post '/admin/set_lineup' do
+      Tracker::Helper.update_lineup(params)
+
+      redirect back
     end
 
     # Create Project
