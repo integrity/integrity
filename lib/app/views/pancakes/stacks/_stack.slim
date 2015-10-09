@@ -66,6 +66,9 @@ tr class=human_state_row_color_class(stack)
                 - stark_unit = commit.stack.unit_with_service_name("#{commit.codebase.to_s}-server")
                 | &nbsp;
                 == launch_button_helper('Stark', "http://#{stark_unit.tcp_str}/admin/stark/cases", _disabled)
+              - elsif commit.codebase == 'frick'
+                - frick_unit = commit.stack.unit_with_service_name("#{commit.codebase.to_s}-server")
+                == launch_button_helper('Frick Console', "http://#{frick_unit.tcp_str}/_ruote", !stack.running?)
               - elsif commit.codebase == 'tp'
                 == launch_button(commit, disabled: !stack.running?)
                 br
