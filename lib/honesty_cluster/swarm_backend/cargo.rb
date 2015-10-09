@@ -39,6 +39,7 @@ module HonestyCluster
 
       # number of cores to reserve for this cargo
       interface_method :cpu_shares
+      interface_method :memory
 
       # after start hook
       interface_method :after_start
