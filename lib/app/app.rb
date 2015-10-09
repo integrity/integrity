@@ -32,9 +32,14 @@ module Integrity
 
     helpers Integrity::Helpers
 
+    def logt(tag, msg)
+      user = current_user ? "user=#{current_user.username} " : ''
+      tag = tag ? "[#{tag}]" : ''
+      Integrity.logger.debug "[Integrity::App]#{tag}: #{user}#{msg}"
+    end
+
     def log(msg)
-      user = current_user ? "{user: #{current_user.username}}" : ""
-      Integrity.logger.debug "[Integrity::App]: #{msg} user:#{user}"
+      logt(nil, msg)
     end
 
     def current_user
@@ -117,21 +122,21 @@ module Integrity
     post '/status.json', provides: :json do
       params.symbolize_keys!
       @format = :json
-      Integrity.logger.info "[Build:#{params[:build_id]}][fi] POST /status.json - completing current project with params #{params.slice(:success, :sha, :build_id)} Project is #{current_project.inspect}"
-      current_project.build_complete!(params.slice(:success, :sha, :build_id))
+      build_params = params.slice(:success, :sha, :build_id)
+      logt :status, "completing build #{build_params.map{|k,v| [k,v].join('=')}.join(' ')} project_name=#{current_project.repo.full_name} project_id=#{current_project.id}"
+      current_project.build_complete!(build_params)
       json current_project
     end
 
     post '/hook.json', provides: :json do
+      logt :hook, 'received github webhook'
+
       @format = :json
-      #log "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{JSON.dump(params)}"
-      #Integrity.logger.debug "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{JSON.dump(params)}"
-      Integrity.logger.debug "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json"
       payload = Payload.new(params)
 
       if payload.is_new_pull_request?
         pull_request = payload.pull_request
-        Integrity.logger.debug "[GITHUB_TRACKER_EVENT] PULL REQUEST FOR TRACKER STORY: #{pull_request[:story_id]}"
+        logt :hook, "new pull request for tracker story story_id=#{pull_request[:story_id]}"
         if story = Tracker::Story.first(id: pull_request[:story_id])
           story.finish(pull_request[:pr_url])
         end
@@ -139,35 +144,37 @@ module Integrity
       end
 
       if payload.merge_to_master?
-        Integrity.logger.debug "[GITHUB_TRACKER_EVENT] MERGE TO MASTER FOR TRACKER STORY: #{payload.merged_story}"
+        logt :hook, "merge to master for tracker story merged_story=#{payload.merged_story}"
         if story = Tracker::Story.first(id: payload.merged_story)
           story.deliver
         end
       end
 
-      halt 200 if ignore_branch?(payload.branch_name)
+      if ignore_branch?(payload.branch_name)
+        logt :hook, "ignoring branch name=#{payload.branch_name}"
+        halt 200
+      end
 
       if !payload.project
-        log "[HOOK] /hook.json params: #{params.inspect} hook.json called without project"
+        logt :hook, "params: #{params.inspect} hook.json called without project"
         halt 404
       end
 
       if payload.deleted?
-        log "[HOOK] /hook.json Received branch delete notice for: #{payload.branch_name}"
+        logt :hook, "received branch delete notice for branch #{payload.branch_name}"
         if branch = payload.branch
-          log "[HOOK] /hook.json Found matching branch. DELETING BRANCH: [#{branch.id}] (#{branch.inspect})"
+          logt :hook, "deleting branch id=#{branch.id} name=#{branch.name}"
           branch.destroy
           json branch and return
         end
       end
 
       if !payload.commit
-        log "[HOOK] /hook.json params: #{params.inspect} hook.json called without commit"
+        logt :hook, "params: #{params.inspect} hook.json called without commit"
         halt 404
       end
 
       build = payload.build!
-      log "[HOOK] /hook.json Build: #{build.inspect}"
       #restart_pancakes_stacks_after_github_push(params)
       json build
     end
