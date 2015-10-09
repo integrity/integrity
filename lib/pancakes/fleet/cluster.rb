@@ -1,7 +1,7 @@
 module Pancakes
   module Fleet
     class Cluster
-      include Pancakes::ClassLogger
+      include ClassLogger
 
       BUILD_REGEX = /\A(?<name>(?<codebase>\w+)_(?<sha>[0-9a-f]{7})_(?<id>\d+))_(?<type>\w+)\.service\z/
 

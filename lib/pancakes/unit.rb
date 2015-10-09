@@ -1,7 +1,7 @@
 module Pancakes
   class Unit < Sequel::Model
-    include HonestyCluster::SwarmBackend::Service
-    include HonestyCluster::SwarmBackend::HealthCheckable
+    include HonestyCluster::Health::HealthCheckable
+    include HonestyCluster::SwarmBackend::Cargo
 
     health_check_type 'Pancakes::Service'
 
@@ -19,7 +19,7 @@ module Pancakes
     # /\/?(?<stack_name>#{Pancakes::NAMESPACE}_[0-9a-f]+)_(?<service_name>[a-z0-9\-_]+)(?:\.service)?/i
 
     many_to_one :stack, key: :stack_id, class: :"Pancakes::Stack"
-    one_to_many :events, key: :service_id, class: :"HonestyCluster::HonestyEvent", order: :created_at
+    one_to_many :events, key: :service_id, class: :"HonestyCluster::StatusEvent", order: :created_at
 
     def validate
       super
@@ -44,7 +44,7 @@ module Pancakes
     def self.create_with_service_def(service_def: nil)
       me = new(service_def: service_def, ping_url: service_def[:ping_url], service_name: service_def[:name], cluster_info: {})
       me.save
-      me.initial_health_check
+      me.initial_health_check!
       me
     end
 
@@ -296,11 +296,11 @@ module Pancakes
     def container_status_check
       cnt = container
       if !cnt
-        [:failed, "there is no container for this service"]
+        [:failed, "container not found"]
       elsif is_setup_container?
         if cnt.exited?
           if cnt.clean_exit?
-            [:complete, "setup was successful"]
+            [:complete, "setup successful"]
           else
             [:failed, "setup failed"]
           end
@@ -308,18 +308,14 @@ module Pancakes
           [:complete, "setup is still running, but that's okay"]
         end
       elsif cnt.running?
-        [:complete, "the container is running"]
+        [:complete, "container running"]
       else
-        [:in_progress, "the container is neither running nor exited"]
+        [:in_progress, "container neither running nor exited"]
       end
     end
 
-    def health_checkable?
-      !!service_def.ping_url
-    end
-
     def health_check_url
-      if addr_known? && health_checkable?
+      if addr_known?
         service_def.ping_url.sub('$ip', machine_ip).sub('$port', port.to_s)
       else
         nil
@@ -329,6 +325,11 @@ module Pancakes
     def healthy_http_status
       service_def.http_status
     end
+
+    def user_facing?
+      !!service_def.ping_url
+    end
+    alias :"has_http_status_check?" :"user_facing?"
 
     def make_health_check_http_request(url, desired_response)
       resp =
@@ -366,12 +367,110 @@ module Pancakes
     def status_checks
       [
         container_status_check,
-        http_status_check,
-       ].map{|check| HonestyCluster::SwarmBackend::StatusCheck.new(*check) }
+        has_http_status_check? ? http_status_check : nil,
+      ].compact.map{|check| HonestyCluster::Health::StatusCheck.new(*check) }
     end
 
+    # HealthCheckable
     def current_health
-      HonestyCluster::SwarmBackend::HealthCheck.new(status_checks)
+      HonestyCluster::Health::HealthCheck.new(status_checks)
+    end
+
+    def timberland_command
+      @__tmb_cmd ||= Timberland::Cmd.new(
+        boot_type:    'pancakes',
+        service_type: subtype,
+        sha:          sha,
+        repo:         repo,
+        branch:       branch,
+        debug:        Pancakes.timberland_debug?,
+        setup_db:     true,
+      )
+    end
+
+    def timberlandified?
+      !(mysql? || postgres? || mailcatcher?)
+    end
+
+    # Cargo
+    def cargo_group_type
+      'pancakes-stack'
+    end
+
+    # Cargo
+    def cargo_group_id
+      stack_id
+    end
+
+    # Cargo
+    def cargo_type
+      'pancakes-service'
+    end
+
+    # Cargo
+    def cargo_id
+      id
+    end
+
+    # Cargo
+    def container_name
+      name
+    end
+
+    # Cargo
+    def container_links
+      nil
+    end
+
+    # Cargo
+    def image_name
+      image
+    end
+
+    # Cargo
+    def docker_command
+      if timberlandified?
+        timberland_command.to_docker_api_cmd
+      else
+        nil
+      end
+    end
+
+    # Cargo
+    def exposed_ports
+      ports
+    end
+
+    # Cargo
+    def container_env
+      _env = {
+        'PANCAKES_ID'      => stack_id,
+        'STACK_ID'         => stack_id,
+        'SERVICE_ID'       => id,
+        'PANCAKES_SHA'     => stack.short_sha,
+        'HONESTY_BASE_URL' => SwarmBackend.base_url,
+      }
+
+      if timberlandified?
+        _env.merge('TIMBERLAND_CMD' => timberland_command.run_cmd)
+      else
+        _env
+      end
+    end
+
+    # Cargo
+    def container_labels
+      nil
+    end
+
+    # Cargo
+    def cpu_shares
+      1
+    end
+
+    # Cargo
+    def memory
+      0.5 #gb?
     end
   end
 end

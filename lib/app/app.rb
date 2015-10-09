@@ -227,14 +227,14 @@ module Integrity
     ###############################################################
 
     get '/pancakes' do
-      @stacks = Pancakes::Stack.reverse(:created_at).map{|stack| [stack, stack.last_health_check] }
+      @stacks = Pancakes::Stack.reverse(:created_at).map{|stack| [stack, stack.last_health_check_event] }
       #@stacks.map(&:refresh_service_addrs)
       slim :"pancakes/stacks/index"
     end
 
     get '/pancakes/stacks/:id' do
       @stack = Pancakes::Stack[params[:id]]
-      @last_health_check = @stack.last_health_check
+      @last_health_check = @stack.last_health_check_event
 
       if @stack
         slim :"pancakes/stacks/show"
@@ -251,37 +251,42 @@ module Integrity
 
         if @commit
           @commit.toggle_lock!
+        else
+          flash[:error] = "Commit for #{params[:codebase]} not found"
         end
 
         redirect pancakes_stack_path(@stack)
       else
+        flash[:error] = "Stack #{params[:id]} not found"
         redirect pancakes_path
       end
     end
 
-    get '/pancakes/stacks/:id/restart_with_branch_heads' do
+    get '/pancakes/stacks/:id/restart' do
       @stack = Pancakes::Stack[params[:id]]
 
       if @stack
-        @stack.update_all(desired_state: (@stack.state == :off ? :running : :off))
-        Delayed::Job.enqueue(Pancakes::Background::RestartWithBranchHeadsJob.new(@stack.id))
+        #@stack.update_all(desired_state: (@stack.state == :off ? :running : :off))
+        #Delayed::Job.enqueue(Pancakes::Background::RestartWithBranchHeadsJob.new(@stack.id))
+        flash[:notice] = "Stack restarted"
         redirect pancakes_stack_path(@stack)
       else
+        flash[:error] = "Stack #{params[:id]} not found"
         redirect pancakes_path
       end
     end
 
-    get '/pancakes/stacks/:id/restart_with_same_commits' do
-      @stack = Pancakes::Stack[params[:id]]
+    #get '/pancakes/stacks/:id/restart_with_same_commits' do
+      #@stack = Pancakes::Stack[params[:id]]
 
-      if @stack
-        @stack.update_all(desired_state: (@stack.state == :off ? :running : :off))
-        Delayed::Job.enqueue(Pancakes::Background::RestartWithSameCommitsJob.new(@stack.id))
-        redirect pancakes_stack_path(@stack)
-      else
-        redirect pancakes_path
-      end
-    end
+      #if @stack
+        #flash[:notice] = "Stack restarted with the same commits"
+        #redirect pancakes_stack_path(@stack)
+      #else
+        #flash[:error] = "Stack #{params[:id]} not found"
+        #redirect pancakes_path
+      #end
+    #end
 
     get '/pancakes/stacks/:id/bring_down' do
       @stack = Pancakes::Stack[params[:id]]
@@ -290,6 +295,7 @@ module Integrity
         Delayed::Job.enqueue(Pancakes::Background::BringDownJob.new(@stack.id))
         redirect pancakes_stack_path(@stack)
       else
+        flash[:error] = "Stack #{params[:id]} not found"
         redirect pancakes_path
       end
     end
@@ -298,24 +304,22 @@ module Integrity
       @stack = Pancakes::Stack[params[:id]]
 
       if @stack
-        @stack.check_health
+        @stack.check_health!
         redirect pancakes_stack_path(@stack)
       else
+        flash[:error] = "Stack #{params[:id]} not found"
         redirect pancakes_path
       end
     end
 
     get '/pancakes/stacks/:id/destroy' do
       @stack = Pancakes::Stack[params[:id]]
-      @stack.state_from_cluster! if @stack
 
-      if @stack && @stack.state == :off
+      if @stack
         @stack.destroy
-      #elsif @stack.state != :off
-        #flash[:error] = "bring down the stack before deleting"
-      #else
-        #flash[:error] = "stack not found"
+        flash[:notice] = "Stack #{params[:id]} destroyed"
       end
+
       redirect pancakes_path
     end
 
@@ -346,7 +350,7 @@ module Integrity
       code_location  = params[:code_location]
       type           = params[:type]
       status         = params[:status]
-      status_message = params[:message]
+      message        = params[:message]
 
       puts params.inspect
     end

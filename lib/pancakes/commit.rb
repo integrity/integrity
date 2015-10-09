@@ -107,6 +107,14 @@ module Pancakes
       end
     end
 
+    def build
+      if icommit = Integrity::Commit.get(identifier: sha)
+        icommit.build
+      else
+        nil
+      end
+    end
+
 
     ######
     #     #  #####      #    #    #    ##     #####  ######

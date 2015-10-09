@@ -43,8 +43,8 @@ module Integrity
         pocs ? pocs.join(', ') : ''
       end
 
-      def event_status_message(event)
-        event ? event.status_message : ''
+      def event_message(event)
+        event ? event.msg(true) : ''
       end
 
       def container_state(container)
@@ -96,19 +96,27 @@ module Integrity
       #end
 
       def service_notes(unit)
-        if unit.service_name == 'mysql'
-          [
-            mysql_notes(unit),
-          ]
-        elsif unit.service_name == 'postgres'
-          [
-            postgres_notes(unit),
-          ]
+        if unit.healthy?
+          if unit.service_name == 'mysql'
+            [
+              mysql_notes(unit),
+            ]
+          elsif unit.service_name == 'postgres'
+            [
+              postgres_notes(unit),
+            ]
+          else
+            [
+              http_url(unit),
+            ]
+          end
         else
           [
-            http_url(unit),
+            unit.last_health_check_event.message
           ]
-        end.flatten.compact
+        end
+          .flatten
+          .compact
       end
 
       def mailcatcher_url(unit)
@@ -188,6 +196,22 @@ module Integrity
 
       def service_logs_url(unit)
         "#{Integrity.logs_url}?q=#{unit.name}"
+      end
+
+      def pk_build_bootstrap_class(build)
+        if build
+          build.bootstrap_class
+        else
+          ''
+        end
+      end
+
+      def build_notes(build)
+        if build
+          "bulid status: #{build.status}"
+        else
+          "build not found"
+        end
       end
     end
   end

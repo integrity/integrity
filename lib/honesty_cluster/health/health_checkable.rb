@@ -1,5 +1,5 @@
 module HonestyCluster
-  module SwarmBackend
+  module Health
 
     # check for the status of one particular thing
     class StatusCheck
@@ -26,10 +26,19 @@ module HonestyCluster
 
     # represent the overall health of some resource by aggregating it's StatusChecks
     class HealthCheck
-      attr_reader :status_checks
+      attr_reader :status_checks, :owner_name
 
-      def initialize(status_checks)
+      def initialize(status_checks, owner_name=nil)
         @status_checks = status_checks
+        @owner_name = owner_name
+      end
+
+      # bake this aggregation into a single thing
+      def to_status
+        StatusCheck.new(status, message)
+      end
+
+      def msg
       end
 
       def status
@@ -37,11 +46,21 @@ module HonestyCluster
       end
 
       def message
-        prioritized_status_checks[:checks].map(&:message).join('; ')
+        if owner_name
+          "#{message} (#{owner_name})"
+        else
+          message
+        end
+        prioritized_status_checks[:checks].map(&:msg).join('; ')
+        #checks = prioritized_status_checks[:checks]
+        #if checks.size == 1
+          #checks.first.message
+        #else
+          #"#{checks.size} failures"
+        #end
       end
 
       def healthy?
-        #status_checks.map(&:"okay?")reduce(true){|memo,val| memo && val }
         status == :complete
       end
 
@@ -50,7 +69,6 @@ module HonestyCluster
           check.status
         end
       end
-
 
       # return the status checks with the most important status
       private def prioritized_status_checks
@@ -65,7 +83,7 @@ module HonestyCluster
             return { status: status, checks: group }
           end
         end
-        raise('expected some status checks to prioritize')
+        raise('expected some status checks')
       end
     end
 
@@ -75,29 +93,34 @@ module HonestyCluster
       #included do
       #end
 
+      # @api private
       def create_event_for_health_check(health_check)
         status = health_check.status
         msg    = health_check.message
         status_prefix = status == :in_progress ? 'CREATE' : 'HEALTH_CHECK'
-        add_event(source: 'honesty', type: self.class._health_check_type, status: "#{status_prefix}_#{status.upcase}", status_message: msg)
-        return health_check.healthy?
+        add_event(source: 'honesty', type: self.class._health_check_type, status: "#{status_prefix}_#{status.upcase}", message: msg)
       end
 
-      def initial_health_check
+      def initial_health_check!
         create_event_for_health_check(HealthCheck.new([StatusCheck.new(:in_progress, 'created')]))
       end
 
-      def last_health_check
+      def last_health_check_event
         events_dataset.where(type: self.class._health_check_type).reverse_order(:created_at).limit(1).first
       end
 
-      def check_health!
-        create_event_for_health_check(current_health)
+      def healthy?
+        last_health_check_event.complete?
       end
 
-      # must return an instance of HealthCheck
+      def check_health!
+        curr = current_health
+        create_event_for_health_check(curr) if curr
+        curr
+      end
+
       def current_health
-        raise("must implement")
+        raise('must return an instance of HealthCheck')
       end
 
       module ClassMethods

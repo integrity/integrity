@@ -29,7 +29,7 @@
             th Created at
             th Name
             th Owner
-            th Status Message
+            th Message
         tbody
           - @stacks.each do |stack,last_health_check|
             tr class=event_bootstrap_class(last_health_check)
@@ -43,4 +43,4 @@
               td.col-xs-2
                 = poc_string(stack.pocs)
               td.col-xs-7
-                = event_status_message(last_health_check)
+                = event_message(last_health_check)

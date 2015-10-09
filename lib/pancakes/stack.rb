@@ -1,8 +1,8 @@
 module Pancakes
   class Stack < Sequel::Model
-    include Pancakes::ClassLogger
-    include HonestyCluster::SwarmBackend::Stack
-    include HonestyCluster::SwarmBackend::HealthCheckable
+    include ClassLogger
+    include HonestyCluster::SwarmBackend::CargoGroup
+    include HonestyCluster::Health::HealthCheckable
 
     health_check_type 'Pancakes::Stack'
 
@@ -21,7 +21,7 @@ module Pancakes
 
     one_to_many :commits, key: :stack_id, class: :"Pancakes::Commit"
     one_to_many :units,   key: :stack_id, class: :"Pancakes::Unit"
-    one_to_many :events,  key: :stack_id, class: :"HonestyCluster::HonestyEvent", order: :created_at
+    one_to_many :events,  key: :stack_id, class: :"HonestyCluster::StatusEvent", order: :created_at
 
     add_association_dependencies commits: :destroy, units: :destroy
 
@@ -41,6 +41,7 @@ module Pancakes
 
     def before_destroy
       Pancakes::Freezer.delete_stack(self.id)
+      self.destroy_containers
       super
     end
 
@@ -78,7 +79,7 @@ module Pancakes
           me.add_commit(Pancakes::Commit.create_from_git_string(Pancakes.repo_name(codebase), git_str))
         end
 
-        me.initial_health_check
+        me.initial_health_check!
         me
       end
     end
@@ -653,8 +654,6 @@ module Pancakes
       (units.map(&:events).flatten + events).sort{|a,b| a.created_at <=> b.created_at }
     end
 
-    private
-
     # @api private
     def self.has_only_states(actual, *allowed)
       allowed = Array(allowed)
@@ -668,13 +667,11 @@ module Pancakes
       !!states.detect{|s| query.include?(s) }
     end
 
-    # @api private
-    def block_until_stack_states(states:, timeout:)
+    private def block_until_stack_states(states:, timeout:)
       Pancakes.block_until_values(obj: self, method: :state_from_cluster!, values: states, timeout: timeout)
     end
 
-    # @api private
-    def is_service_up?(unit)
+    private def is_service_up?(unit)
       name = unit.service_name
       raise "service #{name} is not pingable" unless unit.pingable?
       url = unit.ping_url
@@ -706,8 +703,100 @@ module Pancakes
       end
     end
 
-    def logger_name
+    private def logger_name
       "#{self.class}[#{self.name}]"
+    end
+
+    # CargoGroup
+    def before_run_containers
+      clear_service_addrs
+    end
+
+    # CargoGroup
+    def after_run_containers
+      refresh_service_addrs
+    end
+
+    # CargoGroup
+    def after_destroy_containers
+      clear_service_addrs
+    end
+
+    # CargoGroup
+    def cargo_list
+      units.to_a
+    end
+
+    # CargoGroup
+    def cargo_group_type
+      'pancakes-stack'
+    end
+
+    # CargoGroup
+    def cargo_group_id
+      self.id
+    end
+
+    def clear_service_addrs
+      units_dataset.update(machine_ip: nil, port: nil)
+    end
+
+    def refresh_service_addrs
+      logger.info 'refreshing service addresses'
+      units_with_health_and_container.each do |unit,_,container|
+        if container
+          unit.machine_ip = container.ip
+          unit.port = container.public_port
+        else
+          unit.machine_ip = unit.port = nil
+        end
+        unit.save
+      end
+      nil
+    end
+
+    def service_addrs
+      refresh_service_addrs
+      units.map do |unit|
+        next(nil) unless unit.tcp_str
+        { unit.service_type => unit.tcp_str }
+      end
+        .compact
+        .reduce(&:merge)
+    end
+
+    def containers_mapped_by_service_name
+      containers.map do |container|
+        [
+          Pancakes::Unit.parse_unit_name(container.name).service_name,
+          container
+        ]
+      end.to_h
+    end
+
+    def units_with_health_and_container
+      mapped_containers = containers_mapped_by_service_name
+      units.sort do |a,b|
+        a.service_name <=> b.service_name
+      end
+      .map do |unit|
+        [
+          unit,
+          unit.last_health_check_event,
+          mapped_containers[unit.service_name]
+        ]
+      end
+    end
+
+    # HealthCheckable
+    def current_health
+      HonestyCluster::Health::HealthCheck.new(
+        units.map do |unit|
+          unit.check_health!
+        end
+          .compact
+          .map(&:to_status)
+      )
     end
   end
 end
