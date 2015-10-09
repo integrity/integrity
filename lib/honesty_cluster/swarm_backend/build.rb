@@ -5,7 +5,7 @@ module HonestyCluster
       include SwarmBackend::CargoGroup
 
       def timberland_command
-        @__tmb_cmd ||= Timberland::Cmd.new(
+        Timberland::Cmd.new(
           boot_type:    'build',
           service_type: 'spec',
           sha:          self.sha,

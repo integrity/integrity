@@ -377,7 +377,7 @@ module Pancakes
     end
 
     def timberland_command
-      @__tmb_cmd ||= Timberland::Cmd.new(
+      Timberland::Cmd.new(
         boot_type:    'pancakes',
         service_type: subtype,
         sha:          sha,

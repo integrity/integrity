@@ -356,9 +356,9 @@ module Pancakes
       logger.info 'done restarting with same commits'
     end
 
-    def refresh_commits(force: false)
+    def refresh_commits
       commits.each do |ci|
-        ci.refresh_myself(force: force)
+        ci.refresh_branch_head
       end
     end
 
@@ -709,6 +709,7 @@ module Pancakes
 
     # CargoGroup
     def before_run_containers
+      refresh_commits
       clear_service_addrs
     end
 
