@@ -43,7 +43,11 @@ module Integrity
     end
 
     def current_user
-      Hashie::Mash.new(session[:user])
+      if logged_in?
+        Hashie::Mash.new(session[:user])
+      else
+        nil
+      end
     end
 
     def logged_in?
