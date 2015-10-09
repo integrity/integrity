@@ -49,6 +49,11 @@ module HonestyCluster
         end
       end
 
+      # Cargo
+      def after_start
+        nil
+      end
+
       # CargoGroup
       def cargo_list
         list = [self]
