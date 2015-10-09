@@ -44,13 +44,16 @@
       <%= partial :nav %>
       <div id="page-wrapper">
         <div class="container-fluid">
-          <% if Pancakes::Fleet::Templating.config.timberland_branch != 'master' %>
-            <div class='mono'>
-              <%= "timberland_branch=#{Pancakes::Fleet::Templating.config.timberland_branch}" %>
-            </div>
-          <% end %>
           <div class='mono'>
+            <% if Pancakes::Fleet::Templating.config.timberland_branch != 'master' %>
+              <%= "timberland_branch=#{Pancakes::Fleet::Templating.config.timberland_branch}" %>
+              <br>
+            <% end %>
             <%= "swarm_nodes=#{HonestyCluster::SwarmBackend.node_count}" %>
+            <br>
+            <% if HonestyCluster.dry_run? %>
+              <%= "dry_run=true" %>
+            <% end %>
           </div>
           <%= partial :notice %>
           <%= yield %>

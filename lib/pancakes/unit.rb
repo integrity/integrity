@@ -377,7 +377,7 @@ module Pancakes
     end
 
     def timberland_command
-      Timberland::Cmd.new(
+      HonestyCluster::Timberland::Cmd.new(
         boot_type:    'pancakes',
         service_type: subtype,
         sha:          sha,
@@ -390,6 +390,11 @@ module Pancakes
 
     def timberlandified?
       !(mysql? || postgres? || mailcatcher?)
+    end
+
+    # Cargo
+    def after_start
+      nil
     end
 
     # Cargo
@@ -448,7 +453,7 @@ module Pancakes
         'STACK_ID'         => stack_id,
         'SERVICE_ID'       => id,
         'PANCAKES_SHA'     => stack.short_sha,
-        'HONESTY_BASE_URL' => SwarmBackend.base_url,
+        'HONESTY_BASE_URL' => HonestyCluster::SwarmBackend.base_url,
       }
 
       if timberlandified?
@@ -470,7 +475,7 @@ module Pancakes
 
     # Cargo
     def memory
-      0.5 #gb?
+      512 * 2**20 # MB
     end
   end
 end

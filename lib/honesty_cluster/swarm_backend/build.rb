@@ -5,7 +5,7 @@ module HonestyCluster
       include SwarmBackend::CargoGroup
 
       def timberland_command
-        Timberland::Cmd.new(
+        HonestyCluster::Timberland::Cmd.new(
           boot_type:    'build',
           service_type: 'spec',
           sha:          self.sha,
@@ -157,7 +157,7 @@ module HonestyCluster
 
       # Cargo
       def memory
-        0.5 #gb?
+        512 * 2**20 # MB
       end
     end
   end
