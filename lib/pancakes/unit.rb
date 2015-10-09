@@ -373,7 +373,7 @@ module Pancakes
 
     # HealthCheckable
     def current_health
-      HonestyCluster::Health::HealthCheck.new(status_checks)
+      HonestyCluster::Health::HealthCheck.new(status_checks, service_name)
     end
 
     def timberland_command

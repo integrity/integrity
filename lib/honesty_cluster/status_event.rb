@@ -31,31 +31,31 @@ module HonestyCluster
       #unit || stack
     #end
 
-    def unit_owned?
-      !!unit
-    end
+    #def unit_owned?
+      #!!unit
+    #end
 
-    def stack_owned?
-      !!stack
-    end
+    #def stack_owned?
+      #!!stack
+    #end
 
-    def owner_name
-      if unit_owned?
-        unit.service_name
-      elsif stack_owned?
-        stack.name
-      end
-    end
+    #def owner_name
+      #if unit_owned?
+        #unit.service_name
+      #elsif stack_owned?
+        #stack.name
+      #end
+    #end
 
-    def msg(with_owner_name=false)
-      return nil unless message
+    #def msg(with_owner_name=false)
+      #return nil unless message
 
-      if with_owner_name
-        "#{message} (#{owner_name})"
-      else
-        message
-      end
-    end
+      #if with_owner_name
+        #"#{message} (#{owner_name})"
+      #else
+        #message
+      #end
+    #end
 
     private def status_parts
       @__status_parts ||= STATUS_REGEX.match(status)

@@ -38,26 +38,17 @@ module HonestyCluster
         StatusCheck.new(status, message)
       end
 
-      def msg
-      end
-
       def status
         prioritized_status_checks[:status]
       end
 
       def message
+        msg = prioritized_status_checks[:checks].map(&:message).join('; ')
         if owner_name
-          "#{message} (#{owner_name})"
+          "#{msg} (#{owner_name})"
         else
-          message
+          msg
         end
-        prioritized_status_checks[:checks].map(&:msg).join('; ')
-        #checks = prioritized_status_checks[:checks]
-        #if checks.size == 1
-          #checks.first.message
-        #else
-          #"#{checks.size} failures"
-        #end
       end
 
       def healthy?

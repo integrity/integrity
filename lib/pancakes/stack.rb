@@ -790,13 +790,12 @@ module Pancakes
 
     # HealthCheckable
     def current_health
-      HonestyCluster::Health::HealthCheck.new(
-        units.map do |unit|
-          unit.check_health!
-        end
-          .compact
-          .map(&:to_status)
-      )
+      status_checks = units.map do |unit|
+        unit.check_health!
+      end
+        .compact
+        .map(&:to_status)
+      HonestyCluster::Health::HealthCheck.new(status_checks, name)
     end
   end
 end

@@ -44,7 +44,7 @@ module Integrity
       end
 
       def event_message(event)
-        event ? event.msg(true) : ''
+        event ? event.message : ''
       end
 
       def container_state(container)
