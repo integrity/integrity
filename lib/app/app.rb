@@ -806,7 +806,7 @@ module Integrity
     # Cancel the Pending or Running Build
     post '/:project/builds/:build/cancel' do
       login_required
-      current_build.cancel_with_reason("user #{current_user.name}", 'manual kill', 'POST /:project/builds/:build/cancel')
+      current_build.cancel_with_reason("user=#{logged_in? ? current_user.name : '<nil>'}", 'manual kill', 'POST /:project/builds/:build/cancel')
       redirect build_url(current_build)
     end
 
