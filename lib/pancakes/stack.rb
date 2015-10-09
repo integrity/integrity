@@ -50,10 +50,10 @@ module Pancakes
     # constructors
     #
 
-    def self.create_with_git_strings(services: Services.full_services, pocs: '', desired_state: :off, branches: nil, **git_strings)
+    def self.create_with_git_strings(pocs: '', desired_state: :off, branches: nil, **git_strings)
       self.db.transaction do
         pocs = (pocs || "").split(',').map(&:strip)
-        me = new(services: services.to_set.to_a, pocs: pocs, desired_state: desired_state)
+        me = new(services: Services.full_services.to_set.to_a, pocs: pocs, desired_state: desired_state)
         me.set_state(:off)
         me.save
 

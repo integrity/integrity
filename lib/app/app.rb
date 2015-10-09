@@ -228,7 +228,6 @@ module Integrity
 
     get '/pancakes' do
       @stacks = Pancakes::Stack.reverse(:created_at).map{|stack| [stack, stack.last_health_check_event] }
-      #@stacks.map(&:refresh_service_addrs)
       slim :"pancakes/stacks/index"
     end
 
@@ -266,8 +265,7 @@ module Integrity
       @stack = Pancakes::Stack[params[:id]]
 
       if @stack
-        #@stack.update_all(desired_state: (@stack.state == :off ? :running : :off))
-        #Delayed::Job.enqueue(Pancakes::Background::RestartWithBranchHeadsJob.new(@stack.id))
+        @stack.restart_containers
         flash[:notice] = "Stack restarted"
         redirect pancakes_stack_path(@stack)
       else
@@ -292,12 +290,26 @@ module Integrity
       @stack = Pancakes::Stack[params[:id]]
 
       if @stack
-        Delayed::Job.enqueue(Pancakes::Background::BringDownJob.new(@stack.id))
+        @stack.destroy_containers
+        flash[:notice] = "Stack containers destroyed"
         redirect pancakes_stack_path(@stack)
       else
         flash[:error] = "Stack #{params[:id]} not found"
         redirect pancakes_path
       end
+    end
+
+    get '/pancakes/stacks/:id/destroy' do
+      @stack = Pancakes::Stack[params[:id]]
+
+      if @stack
+        @stack.destroy
+        flash[:notice] = "Stack #{params[:id]} destroyed"
+      else
+        flash[:error] = "Stack #{params[:id]} not found"
+      end
+
+      redirect pancakes_path
     end
 
     get '/pancakes/stacks/:id/check_health' do
@@ -312,31 +324,21 @@ module Integrity
       end
     end
 
-    get '/pancakes/stacks/:id/destroy' do
-      @stack = Pancakes::Stack[params[:id]]
-
-      if @stack
-        @stack.destroy
-        flash[:notice] = "Stack #{params[:id]} destroyed"
-      end
-
-      redirect pancakes_path
-    end
-
     post '/pancakes/stacks' do
       begin
-        services = Pancakes::Services.full_services
         @stack = Pancakes::Stack.create_with_git_strings(
-          services:       services,
           pocs:           params[:pocs],
           branches:       params[:branches],
           desired_state: :running,
         )
 
+        @stack.run_containers
         flash[:success] = "Stack created with sha #{@stack.short_sha}"
-        #Delayed::Job.enqueue(Pancakes::Background::BringUpJob.new(@stack.id))
         redirect pancakes_stack_path(@stack)
       rescue Sequel::ValidationFailed => e
+        flash[:error] = e.message
+        redirect pancakes_path
+      rescue StandardError => e
         flash[:error] = "Stack create failed: #{e.message}"
         redirect pancakes_path
       end
@@ -376,32 +378,33 @@ module Integrity
     end
 
     post '/pancakes/api/vX/stacks' do
-      if !params[:dry_run]
-        services = (params[:branches][:tp] && params[:branches][:tp].empty?) ? Pancakes::Services.jarvis_services : Pancakes::Services.tp_services
-        services = (params[:branches][:banyan] && params[:branches][:banyan].empty?) ? Pancakes::Services.jarvis_services : Pancakes::Services.banyan_services
-        @stack = Pancakes::Stack.create_with_git_strings(
-          services:       services,
-          pocs:           params[:pocs],
-          branches:       params[:branches],
-          desired_state: :running,
-        )
+      begin
+        if !params[:dry_run]
+          @stack = Pancakes::Stack.create_with_git_strings(
+            pocs:           params[:pocs],
+            branches:       params[:branches],
+            desired_state: :running,
+          )
 
-        @stack.save
-        Delayed::Job.enqueue(Pancakes::Background::BringUpJob.new(@stack.id))
+          @stack.run_containers
 
-        response['Pancakes-Stack-Id'] = @stack.id.to_s
-        response['Pancakes-Stack-SHA'] = @stack.sha
-        response['Pancakes-Stack-State-Path'] = "/pancakes/api/vX/stacks/#{@stack.id}/state"
-        response['Pancakes-Stack-BringDown-Path'] = "/pancakes/api/vX/stacks/#{@stack.id}/bring_down"
-
-        halt 200
-      else
-        id = '42'
-        response['Pancakes-Stack-Id'] = id
-        response['Pancakes-Stack-SHA'] = 'beeff00d'
-        response['Pancakes-Stack-State-Path'] = "/pancakes/api/vX/stacks/#{id}/state"
-        response['Pancakes-Stack-BringDown-Path'] = "/pancakes/api/vX/stacks/#{id}/bring_down"
-        halt 200, id
+          response['Pancakes-Stack-Id'] = @stack.id.to_s
+          response['Pancakes-Stack-SHA'] = @stack.sha
+          response['Pancakes-Stack-State-Path'] = "/pancakes/api/vX/stacks/#{@stack.id}/state"
+          response['Pancakes-Stack-BringDown-Path'] = "/pancakes/api/vX/stacks/#{@stack.id}/bring_down"
+          halt 200
+        else
+          id = '42'
+          response['Pancakes-Stack-Id'] = id
+          response['Pancakes-Stack-SHA'] = 'beeff00d'
+          response['Pancakes-Stack-State-Path'] = "/pancakes/api/vX/stacks/#{id}/state"
+          response['Pancakes-Stack-BringDown-Path'] = "/pancakes/api/vX/stacks/#{id}/bring_down"
+          halt 200
+        end
+      rescue Sequel::ValidationFailed => e
+        halt 400, "error: #{e.message}\n"
+      rescue StandardError => e
+        halt 400, "error: Stack create failed: #{e.message}\n"
       end
     end
 
@@ -411,7 +414,7 @@ module Integrity
       @stack = Pancakes::Stack[params[:id]]
 
       if @stack
-        Delayed::Job.enqueue(Pancakes::Background::BringDownJob.new(@stack.id, destroy: true))
+        @stack.destroy_containers
         halt 200
       else
         halt 400, "stack(#{params[:id]}) could not be found for destroy\n"
@@ -481,10 +484,10 @@ module Integrity
       halt 200, 'running' if params[:dry_run]
 
       @stack = Pancakes::Stack[params[:id]]
-      @stack.state_from_cluster!
 
       if @stack
-        halt 200, "#{@stack.state}"
+        @stack.check_health!
+        halt 200, @stack.last_health_check_event.status
       else
         halt 400, "stack(#{params[:id]}) could not be found\n"
       end
