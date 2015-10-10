@@ -299,7 +299,7 @@ module Pancakes
       elsif cnt.clean_exit?
         [true, 'container exited cleanly']
       elsif cnt.unclean_exit?
-        [false, 'container exited with failure']
+        [false, "container exited with failure (#{cnt.exit_code})"]
       elsif cnt.running?
         [true, 'container running']
       else
