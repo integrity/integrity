@@ -32,13 +32,22 @@ module Integrity
 
     helpers Integrity::Helpers
 
+    def logt(tag, msg)
+      user = current_user ? "user=#{current_user.username} " : ''
+      tag = tag ? "[#{tag}]" : ''
+      Integrity.logger.debug "[Integrity::App]#{tag}: #{user}#{msg}"
+    end
+
     def log(msg)
-      user = current_user ? "{user: #{current_user.username}}" : ""
-      Integrity.logger.debug "[Integrity::App]: #{msg} user:#{user}"
+      logt(nil, msg)
     end
 
     def current_user
-      Hashie::Mash.new(session[:user])
+      if logged_in?
+        Hashie::Mash.new(session[:user])
+      else
+        nil
+      end
     end
 
     def logged_in?
@@ -117,21 +126,21 @@ module Integrity
     post '/status.json', provides: :json do
       params.symbolize_keys!
       @format = :json
-      Integrity.logger.info "[Build:#{params[:build_id]}][fi] POST /status.json - completing current project with params #{params.slice(:success, :sha, :build_id)} Project is #{current_project.inspect}"
-      current_project.build_complete!(params.slice(:success, :sha, :build_id))
+      build_params = params.slice(:success, :sha, :build_id)
+      logt :status, "completing build #{build_params.map{|k,v| [k,v].join('=')}.join(' ')} project_name=#{current_project.repo.full_name} project_id=#{current_project.id}"
+      current_project.build_complete!(build_params)
       json current_project
     end
 
     post '/hook.json', provides: :json do
+      logt :hook, 'received github webhook'
+
       @format = :json
-      #log "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{JSON.dump(params)}"
-      #Integrity.logger.debug "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json params: #{JSON.dump(params)}"
-      Integrity.logger.debug "[HOOK][RECEIVED_GITHUB_PAYLOAD] /hook.json"
       payload = Payload.new(params)
 
       if payload.is_new_pull_request?
         pull_request = payload.pull_request
-        Integrity.logger.debug "[GITHUB_TRACKER_EVENT] PULL REQUEST FOR TRACKER STORY: #{pull_request[:story_id]}"
+        logt :hook, "new pull request for tracker story story_id=#{pull_request[:story_id]}"
         if story = Tracker::Story.first(id: pull_request[:story_id])
           story.finish(pull_request[:pr_url])
         end
@@ -139,35 +148,37 @@ module Integrity
       end
 
       if payload.merge_to_master?
-        Integrity.logger.debug "[GITHUB_TRACKER_EVENT] MERGE TO MASTER FOR TRACKER STORY: #{payload.merged_story}"
+        logt :hook, "merge to master for tracker story merged_story=#{payload.merged_story}"
         if story = Tracker::Story.first(id: payload.merged_story)
           story.deliver
         end
       end
 
-      halt 200 if ignore_branch?(payload.branch_name)
+      if ignore_branch?(payload.branch_name)
+        logt :hook, "ignoring branch name=#{payload.branch_name}"
+        halt 200
+      end
 
       if !payload.project
-        log "[HOOK] /hook.json params: #{params.inspect} hook.json called without project"
+        logt :hook, "params: #{params.inspect} hook.json called without project"
         halt 404
       end
 
       if payload.deleted?
-        log "[HOOK] /hook.json Received branch delete notice for: #{payload.branch_name}"
+        logt :hook, "received branch delete notice for branch #{payload.branch_name}"
         if branch = payload.branch
-          log "[HOOK] /hook.json Found matching branch. DELETING BRANCH: [#{branch.id}] (#{branch.inspect})"
+          logt :hook, "deleting branch id=#{branch.id} name=#{branch.name}"
           branch.destroy
           json branch and return
         end
       end
 
       if !payload.commit
-        log "[HOOK] /hook.json params: #{params.inspect} hook.json called without commit"
+        logt :hook, "params: #{params.inspect} hook.json called without commit"
         halt 404
       end
 
       build = payload.build!
-      log "[HOOK] /hook.json Build: #{build.inspect}"
       #restart_pancakes_stacks_after_github_push(params)
       json build
     end
@@ -227,14 +238,13 @@ module Integrity
     ###############################################################
 
     get '/pancakes' do
-      @stacks = Pancakes::Stack.reverse(:created_at).map{|stack| [stack, stack.last_health_check] }
-      #@stacks.map(&:refresh_service_addrs)
+      @stacks = Pancakes::Stack.reverse(:created_at).map{|stack| [stack, stack.last_health_check_event] }
       slim :"pancakes/stacks/index"
     end
 
     get '/pancakes/stacks/:id' do
       @stack = Pancakes::Stack[params[:id]]
-      @last_health_check = @stack.last_health_check
+      @last_health_check = @stack.last_health_check_event
 
       if @stack
         slim :"pancakes/stacks/show"
@@ -251,88 +261,95 @@ module Integrity
 
         if @commit
           @commit.toggle_lock!
+        else
+          flash[:error] = "Commit for #{params[:codebase]} not found"
         end
 
         redirect pancakes_stack_path(@stack)
       else
+        flash[:error] = "Stack #{params[:id]} not found"
         redirect pancakes_path
       end
     end
 
-    get '/pancakes/stacks/:id/restart_with_branch_heads' do
+    get '/pancakes/stacks/:id/restart' do
       @stack = Pancakes::Stack[params[:id]]
 
       if @stack
-        @stack.update_all(desired_state: (@stack.state == :off ? :running : :off))
-        Delayed::Job.enqueue(Pancakes::Background::RestartWithBranchHeadsJob.new(@stack.id))
+        @stack.restart_containers
+        flash[:notice] = "Stack restarted"
         redirect pancakes_stack_path(@stack)
       else
+        flash[:error] = "Stack #{params[:id]} not found"
         redirect pancakes_path
       end
     end
 
-    get '/pancakes/stacks/:id/restart_with_same_commits' do
-      @stack = Pancakes::Stack[params[:id]]
+    #get '/pancakes/stacks/:id/restart_with_same_commits' do
+      #@stack = Pancakes::Stack[params[:id]]
 
-      if @stack
-        @stack.update_all(desired_state: (@stack.state == :off ? :running : :off))
-        Delayed::Job.enqueue(Pancakes::Background::RestartWithSameCommitsJob.new(@stack.id))
-        redirect pancakes_stack_path(@stack)
-      else
-        redirect pancakes_path
-      end
-    end
+      #if @stack
+        #flash[:notice] = "Stack restarted with the same commits"
+        #redirect pancakes_stack_path(@stack)
+      #else
+        #flash[:error] = "Stack #{params[:id]} not found"
+        #redirect pancakes_path
+      #end
+    #end
 
     get '/pancakes/stacks/:id/bring_down' do
       @stack = Pancakes::Stack[params[:id]]
 
       if @stack
-        Delayed::Job.enqueue(Pancakes::Background::BringDownJob.new(@stack.id))
+        @stack.destroy_containers
+        flash[:notice] = "Stack containers destroyed"
         redirect pancakes_stack_path(@stack)
       else
-        redirect pancakes_path
-      end
-    end
-
-    get '/pancakes/stacks/:id/check_health' do
-      @stack = Pancakes::Stack[params[:id]]
-
-      if @stack
-        @stack.check_health
-        redirect pancakes_stack_path(@stack)
-      else
+        flash[:error] = "Stack #{params[:id]} not found"
         redirect pancakes_path
       end
     end
 
     get '/pancakes/stacks/:id/destroy' do
       @stack = Pancakes::Stack[params[:id]]
-      @stack.state_from_cluster! if @stack
 
-      if @stack && @stack.state == :off
+      if @stack
         @stack.destroy
-      #elsif @stack.state != :off
-        #flash[:error] = "bring down the stack before deleting"
-      #else
-        #flash[:error] = "stack not found"
+        flash[:notice] = "Stack #{params[:id]} destroyed"
+      else
+        flash[:error] = "Stack #{params[:id]} not found"
       end
+
       redirect pancakes_path
+    end
+
+    get '/pancakes/stacks/:id/check_health' do
+      @stack = Pancakes::Stack[params[:id]]
+
+      if @stack
+        @stack.check_health!
+        redirect pancakes_stack_path(@stack)
+      else
+        flash[:error] = "Stack #{params[:id]} not found"
+        redirect pancakes_path
+      end
     end
 
     post '/pancakes/stacks' do
       begin
-        services = Pancakes::Services.full_services
         @stack = Pancakes::Stack.create_with_git_strings(
-          services:       services,
           pocs:           params[:pocs],
           branches:       params[:branches],
           desired_state: :running,
         )
 
+        @stack.run_containers
         flash[:success] = "Stack created with sha #{@stack.short_sha}"
-        #Delayed::Job.enqueue(Pancakes::Background::BringUpJob.new(@stack.id))
         redirect pancakes_stack_path(@stack)
       rescue Sequel::ValidationFailed => e
+        flash[:error] = e.message
+        redirect pancakes_path
+      rescue StandardError => e
         flash[:error] = "Stack create failed: #{e.message}"
         redirect pancakes_path
       end
@@ -346,7 +363,7 @@ module Integrity
       code_location  = params[:code_location]
       type           = params[:type]
       status         = params[:status]
-      status_message = params[:message]
+      message        = params[:message]
 
       puts params.inspect
     end
@@ -372,32 +389,33 @@ module Integrity
     end
 
     post '/pancakes/api/vX/stacks' do
-      if !params[:dry_run]
-        services = (params[:branches][:tp] && params[:branches][:tp].empty?) ? Pancakes::Services.jarvis_services : Pancakes::Services.tp_services
-        services = (params[:branches][:banyan] && params[:branches][:banyan].empty?) ? Pancakes::Services.jarvis_services : Pancakes::Services.banyan_services
-        @stack = Pancakes::Stack.create_with_git_strings(
-          services:       services,
-          pocs:           params[:pocs],
-          branches:       params[:branches],
-          desired_state: :running,
-        )
+      begin
+        if !params[:dry_run]
+          @stack = Pancakes::Stack.create_with_git_strings(
+            pocs:           params[:pocs],
+            branches:       params[:branches],
+            desired_state: :running,
+          )
 
-        @stack.save
-        Delayed::Job.enqueue(Pancakes::Background::BringUpJob.new(@stack.id))
+          @stack.run_containers
 
-        response['Pancakes-Stack-Id'] = @stack.id.to_s
-        response['Pancakes-Stack-SHA'] = @stack.sha
-        response['Pancakes-Stack-State-Path'] = "/pancakes/api/vX/stacks/#{@stack.id}/state"
-        response['Pancakes-Stack-BringDown-Path'] = "/pancakes/api/vX/stacks/#{@stack.id}/bring_down"
-
-        halt 200
-      else
-        id = '42'
-        response['Pancakes-Stack-Id'] = id
-        response['Pancakes-Stack-SHA'] = 'beeff00d'
-        response['Pancakes-Stack-State-Path'] = "/pancakes/api/vX/stacks/#{id}/state"
-        response['Pancakes-Stack-BringDown-Path'] = "/pancakes/api/vX/stacks/#{id}/bring_down"
-        halt 200, id
+          response['Pancakes-Stack-Id'] = @stack.id.to_s
+          response['Pancakes-Stack-SHA'] = @stack.sha
+          response['Pancakes-Stack-State-Path'] = "/pancakes/api/vX/stacks/#{@stack.id}/state"
+          response['Pancakes-Stack-BringDown-Path'] = "/pancakes/api/vX/stacks/#{@stack.id}/bring_down"
+          halt 200
+        else
+          id = '42'
+          response['Pancakes-Stack-Id'] = id
+          response['Pancakes-Stack-SHA'] = 'beeff00d'
+          response['Pancakes-Stack-State-Path'] = "/pancakes/api/vX/stacks/#{id}/state"
+          response['Pancakes-Stack-BringDown-Path'] = "/pancakes/api/vX/stacks/#{id}/bring_down"
+          halt 200
+        end
+      rescue Sequel::ValidationFailed => e
+        halt 400, "error: #{e.message}\n"
+      rescue StandardError => e
+        halt 400, "error: Stack create failed: #{e.message}\n"
       end
     end
 
@@ -407,7 +425,7 @@ module Integrity
       @stack = Pancakes::Stack[params[:id]]
 
       if @stack
-        Delayed::Job.enqueue(Pancakes::Background::BringDownJob.new(@stack.id, destroy: true))
+        @stack.destroy_containers
         halt 200
       else
         halt 400, "stack(#{params[:id]}) could not be found for destroy\n"
@@ -477,10 +495,10 @@ module Integrity
       halt 200, 'running' if params[:dry_run]
 
       @stack = Pancakes::Stack[params[:id]]
-      @stack.state_from_cluster!
 
       if @stack
-        halt 200, "#{@stack.state}"
+        @stack.check_health!
+        halt 200, @stack.last_health_check_event.status
       else
         halt 400, "stack(#{params[:id]}) could not be found\n"
       end
@@ -788,7 +806,7 @@ module Integrity
     # Cancel the Pending or Running Build
     post '/:project/builds/:build/cancel' do
       login_required
-      current_build.cancel_with_reason("user #{current_user.name}", 'manual kill', 'POST /:project/builds/:build/cancel')
+      current_build.cancel_with_reason("user=#{logged_in? ? current_user.name : '<nil>'}", 'manual kill', 'POST /:project/builds/:build/cancel')
       redirect build_url(current_build)
     end
 

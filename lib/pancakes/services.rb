@@ -36,6 +36,8 @@ module Pancakes
         requires: :mysql,
         machineof: :mysql,
         ports: [1080,1025],
+        ping_url: 'http://$ip:$port/',
+        http_status: 200,
       },
       {
         name: 'freezer',

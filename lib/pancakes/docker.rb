@@ -1,6 +1,6 @@
 module Pancakes
   class Docker
-    include Pancakes::ClassLogger
+    include ClassLogger
 
     API_PORT = 2375
 

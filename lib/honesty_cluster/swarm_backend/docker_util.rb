@@ -1,6 +1,8 @@
 module HonestyCluster
   module SwarmBackend
     module DockerUtil
+      include ClassLogger
+
       def docker_api_container_json(name:, image:, cmd:, links:, exposed_ports:, env:, labels:, cpu_shares:, memory:)
         {
           'name' => name,
@@ -35,12 +37,12 @@ module HonestyCluster
       def create_container(json)
         msg = "creating container #{json['name']}"
         if HonestyCluster.dry_run?
-          puts "[dry-run] #{msg}"
-          puts "[dry-run] json:"
-          puts json.ai
+          logger.info "[dry-run] #{msg}"
+          logger.info "[dry-run] json:"
+          logger.info json.ai
           nil
         else
-          puts msg
+          logger.info msg
           Docker::Container.create(json, SwarmBackend.connection)
         end
       end

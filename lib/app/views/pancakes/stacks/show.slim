@@ -26,15 +26,15 @@
             | Check health
 
         .btn-group role='group'
-          a.btn.btn-primary href="/pancakes/stacks/#{@stack.id}/restart_with_branch_heads"
-            | Restart with branch heads
+          a.btn.btn-primary href="/pancakes/stacks/#{@stack.id}/restart"
+            | Restart
+
+        /.btn-group role='group'
+          /a.btn.btn-primary href="/pancakes/stacks/#{@stack.id}/restart_with_same_commits"
+            /| Restart with same commits
 
         .btn-group role='group'
-          a.btn.btn-primary href="/pancakes/stacks/#{@stack.id}/restart_with_same_commits"
-            | Restart with same commits
-
-        .btn-group role='group'
-          a.btn.btn-danger href="/pancakes/stacks/#{@stack.id}/bring_down"
+          a.btn.btn-primary href="/pancakes/stacks/#{@stack.id}/bring_down"
             | Bring down
 
         .btn-group role='group'
@@ -55,17 +55,23 @@
             th Commit message
         tbody
           - @stack.commits.sort{|a,b| a.codebase <=> b.codebase }.each do |commit|
-            tr
+            tr class=pk_build_bootstrap_class(commit.build)
               td.col-xs-1.mono = commit.codebase
               td.col-xs-1.lock-controls
                 span.fa> class=(commit.locked? ? 'fa-lock' : 'fa-unlock')
-                a.btn.btn-xs.btn-default.toggle-lock-btn href="/pancakes/stacks/#{@stack.id}/#{commit.codebase}/toggle_lock"
+                a.btn.btn-xs.btn-primary.toggle-lock-btn href="/pancakes/stacks/#{@stack.id}/#{commit.codebase}/toggle_lock"
                   - if commit.locked?
                     | unlock
                   - else
                     | lock
               td.col-xs-1.mono
-                = commit.short_sha
+                - if commit.build
+                  == link_to commit.short_sha, build_path(commit.build)
+                - else
+                  = commit.short_sha
+                br
+                small: i
+                  = build_notes(commit.build)
               td.col-xs-1.mono
                 = commit.branch
               td.col-xs-1
@@ -98,7 +104,7 @@
               td.col-xs-1
                 .btn-group role='group'
                   == link_to 'Logs', service_logs_url(unit), target: '_blank', class: "btn btn-sm btn-primary"
-                  - if unit.health_checkable?
+                  - if unit.user_facing?
                     == launch_button(unit, last_health_check)
               td.col-xs-1.mono
                 = unit.service_name
@@ -117,7 +123,7 @@
             th Source
             th Type
             th Status
-            th Status Message
+            th Message
         tbody
           - @stack.all_events.sort{|a,b| b.created_at <=> a.created_at }.each do |event|
             tr
@@ -126,4 +132,4 @@
               td.col-xs-1 = event.type
               td.col-xs-1
                 span.label class="label-#{event_bootstrap_class(event)}" = event_status(event)
-              td.col-xs-8 = event.status_message
+              td.col-xs-8 = event_message(event)

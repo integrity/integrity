@@ -19,6 +19,11 @@ module HonestyCluster
       interface_method :after_run_containers
       interface_method :after_destroy_containers
 
+      def restart_containers
+        destroy_containers
+        run_containers
+      end
+
       def run_containers
         begin
           before_run_containers

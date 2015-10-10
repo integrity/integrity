@@ -199,23 +199,21 @@ module Pancakes
   end
 end
 
-module Pancakes
-  module ClassLogger
-    def logger_name
-      self
-    end
+module ClassLogger
+  def logger_name
+    self
+  end
 
-    def logger
-      return @__lgr if @__lgr
-      #Logging.logger[lg_name].appenders = Pancakes.log_appender
-      #Logging.logger[lg_name].level = Pancakes.log_level
-      @__lgr = Logging.logger[logger_name]
-    end
+  def logger
+    return @__lgr if @__lgr
+    #Logging.logger[lg_name].appenders = Pancakes.log_appender
+    #Logging.logger[lg_name].level = Pancakes.log_level
+    @__lgr = Logging.logger[logger_name]
+  end
 
-    # Use this method when the stack's name changes to get a new logger with the new name.
-    def refresh_logger
-      @__lgr = nil
-    end
+  # Use this method when the stack's name changes to get a new logger with the new name.
+  def refresh_logger
+    @__lgr = nil
   end
 end
 

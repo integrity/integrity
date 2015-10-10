@@ -94,7 +94,7 @@ module HonestyCluster
 
       # Cargo
       def memory
-        0.5 #gb?
+        512 * 2**20 # MB
       end
     end
   end

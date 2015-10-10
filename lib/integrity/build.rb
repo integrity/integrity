@@ -85,21 +85,21 @@ module Integrity
 
     def complete!(result)
       success = result.respond_to?(:success) ? result.success : result
-      log "[complete!][fi] with success #{success} and result #{result}. Setting_as_complete and cleanup next!"
+      log "completing build with success=#{success} result=#{result}"
       set_as_complete(success)
       Integrity::Event.trigger('build:cleanup', self.id)
     end
 
     def cancel_with_reason(agent, reason, method_name)
-      description = "Killed by [#{agent}] because [#{reason}] in method [#{method_name}]"
-      log "[kill_with_reason][fi] #{description}"
+      description = "killed by #{agent} because #{reason} in method #{method_name}"
+      log description
       update(kill_reason: description)
       cancel!
     end
 
     def cancel_previous_builds!
       previous_in_progress_builds = branch.builds_before(self).select{|b| b.in_progress?}
-      log %Q{[cancel_previous_builds!]: #{previous_in_progress_builds.map{|b| b.id}.join(",") }}
+      log %Q{cancelling previous builds: [#{previous_in_progress_builds.map{|b| b.id}.join(",") }]}
       previous_in_progress_builds.each do |b|
         b.cancel_with_reason('Honesty', 'More recent commit on branch submitted', 'cancel_previous_builds')
       end
@@ -180,7 +180,7 @@ module Integrity
     end
 
     def set_as_complete(success = false)
-      log "[set_as_complete!][fi] with success #{success}."
+      log "setting as complete with success=#{success}"
       self.raise_on_save_failure = true
       update(completed_at: Time.now, successful: success)
       notify
@@ -287,32 +287,31 @@ module Integrity
     end
 
     def log(msg)
-      Integrity.logger.info "[Integrity::Build]:[Build:#{id}] event:#{msg}, params:#{self.inspect}"
+      Integrity.logger.info "[Integrity::Build id=#{id}] #{msg}"
     end
 
     def consider_mercy_kill
       if mercy_kill?
-        log("[consider_mercy_kill][fi] Mercy Killing Unit")
-        cancel_with_reason('Coreos', 'Failed on CoreOS', 'consider_mercy_kill')
+        log("mercy killing build")
+        cancel_with_reason('CoreOS', 'Failed on CoreOS', 'consider_mercy_kill')
       end
     end
 
     private
 
     def cancel!
-      log '[cancel!][fi] Starting'
       cancel_pending! if pending?
       cancel_building! if building?
       Integrity::Event.trigger('build:canceled', self.id)
     end
 
     def cancel_pending!
-      log '[cancel_pending!][fi] Build pending, change_state'
+      log 'cancelling pending build'
       update(state: 'cancelled', completed_at: Time.now)
     end
 
     def cancel_building!
-      log '[cancel!][cancel_building!][fi] Build pending, kill!'
+      log 'killing building build'
       time = completed_at || Time.now
       update(state: 'killed', completed_at: time)
       Integrity::Event.trigger('build:cleanup', self.id)

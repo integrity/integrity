@@ -170,7 +170,7 @@ module Integrity
   end
 
   def self.human_duration(delta)
-    delta > 0 ? ChronicDuration.output(delta, format: :micro) : '0s'
+    delta && delta > 0 ? ChronicDuration.output(delta, format: :micro) : '0s'
   end
 
   # Replace or delete invalid UTF-8 characters from text, which is assumed

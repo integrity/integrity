@@ -11,7 +11,7 @@ module Integrity
       payload  = JSON.parse(payload) if payload.is_a?(String)
       @payload = Hashie::Mash.new(payload)
       Dir.mkdir('/tmp/payloads') unless File.directory?('/tmp/payloads')
-      File.open("/tmp/payloads/#{Time.now.strftime('%Y%m%dT%H:%M:%S')}.json", 'w') {|f| f.write(JSON.dump(@payload)) }
+      File.open("/tmp/payloads/payload_#{Time.now.strftime('%Y%m%dT%H:%M:%S')}.json", 'w') {|f| f.write(JSON.dump(@payload)) }
       @builder = PayloadBuilder.new(self)
     end
 
@@ -28,7 +28,11 @@ module Integrity
     end
 
     def branch_name
-      @payload[:ref].split('refs/heads/').last
+      ref.split('refs/heads/').last
+    end
+
+    def ref
+      @payload.ref || ''
     end
 
     def repo
@@ -71,10 +75,6 @@ module Integrity
 
     def private?
       @payload[:repository][:private] rescue true
-    end
-
-    def is_branch_master?
-      branch_name.eql? 'master'
     end
 
     def uri
