@@ -5,6 +5,7 @@ module Integrity
 
     # Only launch build if the number of running builds hasn't reached the limit.
     def self.start_build(build)
+      # this if stmt is the source the branch cleanup behavior bug
       if build.started?
         log_build(:start_build, build, "not running because build started already, in #{build.status} state")
       elsif at_capacity?
