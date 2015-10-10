@@ -15,9 +15,17 @@ module HonestyCluster
       # list of Cargos
       interface_method :cargo_list
 
+      # hooks
       interface_method :before_run_containers
       interface_method :after_run_containers
       interface_method :after_destroy_containers
+
+
+
+      # Some Sensible Defaults
+      def before_run_containers ; nil ; end
+      def after_run_containers ; nil ; end
+      def after_destroy_containers ; nil ; end
 
       def restart_containers
         destroy_containers

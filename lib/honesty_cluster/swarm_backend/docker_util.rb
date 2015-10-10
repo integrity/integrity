@@ -47,10 +47,14 @@ module HonestyCluster
         end
       end
 
-      def builds_constraint
+      def node_type_constraint(type)
         {
-          "constraint:grnds.node_type==builds" => nil,
+          "constraint:grnds.node_type==#{type}" => nil,
         }
+      end
+
+      def MB(bytes)
+        bytes * 2**20
       end
 
       private def label_filters(filters)

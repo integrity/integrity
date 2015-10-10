@@ -42,6 +42,10 @@ module Integrity
       logt(nil, msg)
     end
 
+    def logerr(e)
+      Integrity.logger.error "#{e.to_s}\n    " + e.backtrace.join("\n    ")
+    end
+
     def current_user
       if logged_in?
         Hashie::Mash.new(session[:user])
@@ -238,15 +242,15 @@ module Integrity
     ###############################################################
 
     get '/pancakes' do
-      @stacks = Pancakes::Stack.reverse(:created_at).map{|stack| [stack, stack.last_health_check_event] }
+      @stacks = Pancakes::Stack.reverse(:created_at).map{|stack| [stack, stack.last_health_check] }
       slim :"pancakes/stacks/index"
     end
 
     get '/pancakes/stacks/:id' do
       @stack = Pancakes::Stack[params[:id]]
-      @last_health_check = @stack.last_health_check_event
 
       if @stack
+        @last_health_check = @stack.last_health_check
         slim :"pancakes/stacks/show"
       else
         redirect pancakes_path
@@ -347,9 +351,11 @@ module Integrity
         flash[:success] = "Stack created with sha #{@stack.short_sha}"
         redirect pancakes_stack_path(@stack)
       rescue Sequel::ValidationFailed => e
+        logerr e
         flash[:error] = e.message
         redirect pancakes_path
       rescue StandardError => e
+        logerr e
         flash[:error] = "Stack create failed: #{e.message}"
         redirect pancakes_path
       end
@@ -497,8 +503,8 @@ module Integrity
       @stack = Pancakes::Stack[params[:id]]
 
       if @stack
-        @stack.check_health!
-        halt 200, @stack.last_health_check_event.status
+        last_health = @stack.check_health!
+        halt 200, last_health.to_s
       else
         halt 400, "stack(#{params[:id]}) could not be found\n"
       end

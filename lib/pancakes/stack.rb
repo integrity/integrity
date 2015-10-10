@@ -2,9 +2,7 @@ module Pancakes
   class Stack < Sequel::Model
     include ClassLogger
     include HonestyCluster::SwarmBackend::CargoGroup
-    include HonestyCluster::Health::HealthCheckable
-
-    health_check_type 'Pancakes::Stack'
+    include HonestyCluster::HealthCheckable
 
     set_dataset :pancakes_stacks
     plugin :timestamps
@@ -21,7 +19,7 @@ module Pancakes
 
     one_to_many :commits, key: :stack_id, class: :"Pancakes::Commit"
     one_to_many :units,   key: :stack_id, class: :"Pancakes::Unit"
-    one_to_many :events,  key: :stack_id, class: :"HonestyCluster::StatusEvent", order: :created_at
+    one_to_many :events,  key: :stack_id, class: :"HonestyCluster::Event", order: :timestamp
 
     add_association_dependencies commits: :destroy, units: :destroy
 
@@ -40,7 +38,7 @@ module Pancakes
     end
 
     def before_destroy
-      Pancakes::Freezer.delete_stack(self.id)
+      #Pancakes::Freezer.delete_stack(self.id)
       self.destroy_containers
       super
     end
@@ -647,12 +645,12 @@ module Pancakes
       events_dataset.destroy
     end
 
-    def service_events
-      units.map(&:events).flatten.sort{|a,b| a.created_at <=> b.created_at }
-    end
+    #def service_events
+      #units.map(&:events).flatten.sort{|a,b| b.timestamp <=> a.timestamp }
+    #end
 
     def all_events
-      (units.map(&:events).flatten + events).sort{|a,b| a.created_at <=> b.created_at }
+      (units.map(&:events).flatten + events).sort{|a,b| b.timestamp <=> a.timestamp }
     end
 
     # @api private
@@ -784,7 +782,7 @@ module Pancakes
       .map do |unit|
         [
           unit,
-          unit.last_health_check_event,
+          unit.last_health_check,
           mapped_containers[unit.service_name]
         ]
       end
@@ -792,12 +790,12 @@ module Pancakes
 
     # HealthCheckable
     def current_health
-      status_checks = units.map do |unit|
-        unit.check_health!
-      end
-        .compact
-        .map(&:to_status)
-      HonestyCluster::Health::HealthCheck.new(status_checks, name)
+      services_healthy =
+        units.map do |unit|
+          unit.check_health!.healthy?
+        end
+          .reduce(true){|memo,val| memo && val }
+      HonestyCluster::HealthCheck.new(services_healthy, services_healthy ? nil : 'one or more services are unhealthy')
     end
   end
 end

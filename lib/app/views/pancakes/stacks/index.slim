@@ -32,15 +32,15 @@
             th Message
         tbody
           - @stacks.each do |stack,last_health_check|
-            tr class=event_bootstrap_class(last_health_check)
+            tr class=health_check_bootstrap_class(last_health_check)
               td.col-xs-1
-                span.label class="label-#{event_bootstrap_class(last_health_check)}" = event_status(last_health_check)
+                span.label class="label-#{health_check_bootstrap_class(last_health_check)}" = last_health_check.health_str
                 br
-                small< = event_timestamp(last_health_check)
+                small< = pk_timestamp(last_health_check.timestamp)
               td.col-xs-1: small = pacific_time(stack.created_at).strftime("%F %r")
               td.col-xs-1.mono
                 == link_to stack.name, "/pancakes/stacks/#{stack.id}"
               td.col-xs-2
                 = poc_string(stack.pocs)
               td.col-xs-7
-                = event_message(last_health_check)
+                = last_health_check.message

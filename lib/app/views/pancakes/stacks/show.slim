@@ -11,8 +11,8 @@
       h3
         - if @last_health_check
           div
-            span.label class="label-#{event_bootstrap_class(@last_health_check)}" = event_status(@last_health_check)
-            small< = event_timestamp(@last_health_check)
+            span.label class="label-#{health_check_bootstrap_class(@last_health_check)}" = @last_health_check.health_str
+            small< = pk_timestamp(@last_health_check.timestamp)
         - else
           div no health checks found
 
@@ -86,7 +86,7 @@
       table.table.table-bordered
         thead
           tr
-            th Container
+            /th Container
             th Health
             th Actions
             th Name
@@ -94,13 +94,13 @@
         tbody
           - mapped_containers = @stack.containers_mapped_by_service_name
           - @stack.units_with_health_and_container.each do |unit,last_health_check,container|
-            tr class=event_bootstrap_class(last_health_check)
-              td.col-xs-1
+            tr class=health_check_bootstrap_class(last_health_check)
+              /td.col-xs-1
                 span.label class="label-#{container_status_bootstrap_class(container)}" = container_state(container)
               td.col-xs-1
-                span.label class="label-#{event_bootstrap_class(last_health_check)}" = event_status(last_health_check)
+                span.label class="label-#{health_check_bootstrap_class(last_health_check)}" = last_health_check.health_str
                 br
-                small< = event_timestamp(last_health_check)
+                small< = pk_timestamp(last_health_check.timestamp)
               td.col-xs-1
                 .btn-group role='group'
                   == link_to 'Logs', service_logs_url(unit), target: '_blank', class: "btn btn-sm btn-primary"
@@ -125,11 +125,11 @@
             th Status
             th Message
         tbody
-          - @stack.all_events.sort{|a,b| b.created_at <=> a.created_at }.each do |event|
+          - @stack.all_events.each do |event|
             tr
-              td.col-xs-1: small = pacific_time(event.created_at).strftime("%F %r")
+              td.col-xs-1: small = pacific_time(event.timestamp).strftime("%F %r")
               td.col-xs-1 = event.source
               td.col-xs-1 = event.type
               td.col-xs-1
-                span.label class="label-#{event_bootstrap_class(event)}" = event_status(event)
+                span.label class="label-#{event_status_bootstrap_class(event.status)}" = event.status
               td.col-xs-8 = event_message(event)

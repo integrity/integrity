@@ -37,23 +37,34 @@ module HonestyCluster
       # a hash of var => value or nil, which is added to default labels
       interface_method :container_labels
 
-      # number of cores to reserve for this cargo
-      interface_method :cpu_shares
+      # number of cores the cargo wants
+      interface_method :cpu_cores
+
+      # amount of memory the cargo wants in bytes
       interface_method :memory
 
-      # after start hook
-      interface_method :after_start
+      # return a bool for whether the container is healthy
+      #interface_method :"container_healthy?"
 
+      # return a bool for whether the stuff going on inside the container is healthy
+      #interface_method :"cargo_healthy?"
+
+      # hooks
+      interface_method :after_run_container
+
+
+
+      # Some Sensible Defaults
+      def after_run_container ; nil ; end
 
       def run_container
-        _container = create_container(container_def)
-
+        _container = create_container(container_json)
         if HonestyCluster.dry_run?
           puts "not starting because dry_run is on"
           return false
         else
           _container.start!
-          after_start
+          after_run_container
         end
       end
 
@@ -64,7 +75,7 @@ module HonestyCluster
         ).first
       end
 
-      def container_def
+      def container_json
         docker_api_container_json(
           name:          container_name,
           links:         container_links,
@@ -72,27 +83,31 @@ module HonestyCluster
           cmd:           docker_command,
           exposed_ports: exposed_ports,
           env:           container_env,
-          labels:        default_labels.merge(container_labels || {}),
-          cpu_shares:    cpu_shares,
+          labels:        all_labels,
+          cpu_shares:    cpu_cores,
           memory:        memory,
         )
       end
 
+      private def all_labels
+        default_labels.merge(container_labels || {})
+      end
+
       private def default_labels
-        labels = {
+        {
           'honesty' => '',
           'cargo-type' => cargo_type,
           'cargo-id'   => cargo_id,
-        }
-
-        if cargo_group_type
-          labels = labels.merge({
-            'cargo-group-type' => cargo_group_type,
-            'cargo-group-id'   => cargo_group_id,
-          })
-        end
-
-        labels
+        }.merge(
+            if cargo_group_id && cargo_group_type
+              {
+                'cargo-group-type' => cargo_group_type,
+                'cargo-group-id'   => cargo_group_id,
+              }
+            else
+              {}
+            end
+          )
       end
     end
   end

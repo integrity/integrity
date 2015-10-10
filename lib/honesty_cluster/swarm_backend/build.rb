@@ -43,15 +43,10 @@ module HonestyCluster
 
       def parallel_spec_jobs
         if uses_parallel_spec?
-          cpu_shares
+          cpu_cores
         else
           nil
         end
-      end
-
-      # Cargo
-      def after_start
-        nil
       end
 
       # CargoGroup
@@ -72,16 +67,6 @@ module HonestyCluster
       # Cargo, CargoGroup
       def cargo_group_id
         self.id
-      end
-
-      # CargoGroup
-      def before_run_containers
-      end
-      # CargoGroup
-      def after_run_containers
-      end
-      # CargoGroup
-      def after_destroy_containers
       end
 
       # Cargo
@@ -128,7 +113,9 @@ module HonestyCluster
           'SAUCE_ACCESS_KEY' => ':self',
           'CALLBACK_URL' => "https://#{ENV['CALLBACK_HOST']}/status.json",
           'TIMBERLAND_CMD' => self.timberland_command.run_cmd,
-        }.merge(builds_constraint)
+        }.merge(
+            node_type_constraint('builds')
+          )
       end
 
       # Cargo
@@ -151,7 +138,7 @@ module HonestyCluster
       end
 
       # Cargo
-      def cpu_shares
+      def cpu_cores
         if uses_parallel_spec?
           30
           #2
@@ -162,7 +149,7 @@ module HonestyCluster
 
       # Cargo
       def memory
-        512 * 2**20 # MB
+        MB(512)
       end
     end
   end

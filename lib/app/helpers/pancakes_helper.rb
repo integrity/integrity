@@ -3,40 +3,44 @@
 module Integrity
   module Helpers
     module PancakesHelper
-      def event_bootstrap_class(event)
-        if !event
+      def health_check_bootstrap_class(health_check)
+        if !health_check
           ''
-        elsif event.status.end_with?('_COMPLETE')
+        elsif health_check.healthy?
           'success'
-        elsif event.status.end_with?('_IN_PROGRESS')
-          'warning'
-        elsif event.status.end_with?('_FAILED')
+        else
+          'danger'
+        end
+      end
+
+      def event_status_bootstrap_class(event_status)
+        if !event_status
+          ''
+        elsif [HonestyCluster::HealthCheck::STATUS_HEALTHY].include?(event_status)
+          'success'
+        elsif [HonestyCluster::HealthCheck::STATUS_UNHEALTHY].include?(event_status)
           'danger'
         else
           ''
         end
       end
 
-      def container_status_bootstrap_class(container)
-        if !container
-          'warning'
-        elsif container.running?
-          'success'
-        elsif container.failed?
-          'danger'
-        elsif container.exited?
-          'success'
-        else
-          'warning'
-        end
-      end
+      #def container_status_bootstrap_class(container)
+        #if !container
+          #'warning'
+        #elsif container.running?
+          #'success'
+        #elsif container.failed?
+          #'danger'
+        #elsif container.exited?
+          #'success'
+        #else
+          #'warning'
+        #end
+      #end
 
-      def event_status(event)
-        event ? event.status : ''
-      end
-
-      def event_timestamp(event)
-        event ? time_ago_in_words(event.created_at) : ''
+      def pk_timestamp(timestamp)
+        timestamp ? time_ago_in_words(timestamp) : ''
       end
 
       def poc_string(pocs)
@@ -69,7 +73,7 @@ module Integrity
       def launch_button(unit, last_health_check)
         text    = unit.codebase || unit.service_name
         url     = http_url(unit)
-        enabled = last_health_check.complete?
+        enabled = last_health_check.healthy?
         launch_button_helper(
           text,
           url,
@@ -112,7 +116,7 @@ module Integrity
           end
         else
           [
-            unit.last_health_check_event.message
+            unit.last_health_check.message
           ]
         end
           .flatten
