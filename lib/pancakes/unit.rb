@@ -455,7 +455,9 @@ module Pancakes
         'SERVICE_ID'       => id,
         'PANCAKES_SHA'     => stack.short_sha,
         'HONESTY_BASE_URL' => HonestyCluster::SwarmBackend.base_url,
-      }
+      }.merge(
+            node_type_constraint('pancakes')
+          )
 
       if timberlandified?
         _env.merge('TIMBERLAND_CMD' => timberland_command.run_cmd)
