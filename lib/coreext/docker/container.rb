@@ -1,7 +1,7 @@
 class Docker::Container
 
   RUNNING_REGEXP = /Up .+/
-  EXITED_REGEXP  = /Exited \((?<exit_code>\d+)\) \d+ \w+ ago/
+  EXITED_REGEXP  = /Exited \((?<exit_code>\d+)\) .+/
 
   def info
     Hashie::Mash.new(super)
@@ -33,7 +33,7 @@ class Docker::Container
     !!status.match(EXITED_REGEXP)
   end
 
-  def failed?
+  def unclean_exit?
     exited? && exit_code != 0
   end
 

@@ -121,9 +121,9 @@ module Pancakes
       !!tcp_str
     end
 
-    def is_setup_container?
-      subtype == 'setup'
-    end
+    #def is_setup_container?
+      #subtype == 'setup'
+    #end
 
     def addr_known?
       machine_ip && port
@@ -296,16 +296,10 @@ module Pancakes
       cnt = container
       if !cnt
         [false, 'container not found']
-      elsif is_setup_container?
-        if cnt.exited?
-          if cnt.clean_exit?
-            [true, 'setup successful']
-          else
-            [false, 'setup failed']
-          end
-        else
-          [true, "setup is still running, but that's okay"]
-        end
+      elsif cnt.clean_exit?
+        [true, 'container exited cleanly']
+      elsif cnt.unclean_exit?
+        [false, 'container exited with failure']
       elsif cnt.running?
         [true, 'container running']
       else
@@ -374,7 +368,7 @@ module Pancakes
     def current_health
       health = [true, nil]
       health = update_health(health, container_health_check)
-      if http_check = http_health_check
+      if health[0] && http_check = http_health_check
         health = update_health(health, http_check)
       end
       HonestyCluster::HealthCheck.new(*health)
