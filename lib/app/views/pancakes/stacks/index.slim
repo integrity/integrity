@@ -34,13 +34,13 @@
           - @stacks.each do |stack,last_health_check|
             tr class=health_check_bootstrap_class(last_health_check)
               td.col-xs-1
-                span.label class="label-#{health_check_bootstrap_class(last_health_check)}" = last_health_check.health_str
+                span.label class="label-#{health_check_bootstrap_class(last_health_check)}" = health_check_str(last_health_check)
                 br
-                small< = pk_timestamp(last_health_check.timestamp)
+                small< = health_check_timestamp(last_health_check)
               td.col-xs-1: small = pacific_time(stack.created_at).strftime("%F %r")
               td.col-xs-1.mono
                 == link_to stack.name, "/pancakes/stacks/#{stack.id}"
               td.col-xs-2
                 = poc_string(stack.pocs)
               td.col-xs-7
-                = last_health_check.message
+                = health_check_message(last_health_check)

@@ -78,7 +78,7 @@ module Pancakes
           me.add_commit(Pancakes::Commit.create_from_git_string(Pancakes.repo_name(codebase), git_str))
         end
 
-        me.initial_health_check!
+        #me.initial_health_check!
         me
       end
     end
@@ -118,6 +118,8 @@ module Pancakes
     def name
       format("%s_%s_%d", Pancakes::NAMESPACE, self.short_sha, self.id)
     end
+    alias :resource_name :name
+
 
     # TODO break this down into smaller pieces. it's also similar in structure to bring_down.
     def bring_up(thaw_dbs: false)

@@ -42,7 +42,7 @@ module Pancakes
     def self.create_with_service_def(service_def: nil)
       me = new(service_def: service_def, ping_url: service_def[:ping_url], service_name: service_def[:name], cluster_info: {})
       me.save
-      me.initial_health_check!
+      #me.initial_health_check!
       me
     end
 
@@ -210,6 +210,7 @@ module Pancakes
     def service_name
       service_def.name
     end
+    alias :resource_name :service_name
 
     def dbs
       service_def.dbs

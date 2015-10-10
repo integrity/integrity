@@ -5,7 +5,7 @@ module Integrity
     module PancakesHelper
       def health_check_bootstrap_class(health_check)
         if !health_check
-          ''
+          'default'
         elsif health_check.healthy?
           'success'
         else
@@ -15,13 +15,13 @@ module Integrity
 
       def event_status_bootstrap_class(event_status)
         if !event_status
-          ''
+          'default'
         elsif [HonestyCluster::HealthCheck::STATUS_HEALTHY].include?(event_status)
           'success'
         elsif [HonestyCluster::HealthCheck::STATUS_UNHEALTHY].include?(event_status)
           'danger'
         else
-          ''
+          'default'
         end
       end
 
@@ -39,8 +39,16 @@ module Integrity
         #end
       #end
 
-      def pk_timestamp(timestamp)
-        timestamp ? time_ago_in_words(timestamp) : ''
+      def health_check_timestamp(health_check)
+        health_check ? time_ago_in_words(health_check.timestamp) : ''
+      end
+
+      def health_check_str(health_check)
+        health_check ? health_check.health_str : 'HEALTH_UNKNOWN'
+      end
+
+      def health_check_message(health_check)
+        health_check ? health_check.message : 'resource created'
       end
 
       def poc_string(pocs)
@@ -73,7 +81,7 @@ module Integrity
       def launch_button(unit, last_health_check)
         text    = unit.codebase || unit.service_name
         url     = http_url(unit)
-        enabled = last_health_check.healthy?
+        enabled = last_health_check && last_health_check.healthy?
         launch_button_helper(
           text,
           url,
@@ -99,8 +107,8 @@ module Integrity
         #end
       #end
 
-      def service_notes(unit)
-        if unit.healthy?
+      def service_notes(unit, last_health_check)
+        if last_health_check && last_health_check.healthy?
           if unit.service_name == 'mysql'
             [
               mysql_notes(unit),
@@ -116,7 +124,7 @@ module Integrity
           end
         else
           [
-            unit.last_health_check.message
+            health_check_message(last_health_check)
           ]
         end
           .flatten

@@ -9,12 +9,9 @@
         div: small = @stack.name
 
       h3
-        - if @last_health_check
-          div
-            span.label class="label-#{health_check_bootstrap_class(@last_health_check)}" = @last_health_check.health_str
-            small< = pk_timestamp(@last_health_check.timestamp)
-        - else
-          div no health checks found
+        div
+          span.label class="label-#{health_check_bootstrap_class(@last_health_check)}" = health_check_str(@last_health_check)
+          small< = health_check_timestamp(@last_health_check)
 
       br
 
@@ -86,21 +83,19 @@
       table.table.table-bordered
         thead
           tr
-            /th Container
             th Health
             th Actions
             th Name
+            th Container
             th Notes
         tbody
           - mapped_containers = @stack.containers_mapped_by_service_name
           - @stack.units_with_health_and_container.each do |unit,last_health_check,container|
             tr class=health_check_bootstrap_class(last_health_check)
-              /td.col-xs-1
-                span.label class="label-#{container_status_bootstrap_class(container)}" = container_state(container)
               td.col-xs-1
-                span.label class="label-#{health_check_bootstrap_class(last_health_check)}" = last_health_check.health_str
+                span.label class="label-#{health_check_bootstrap_class(last_health_check)}" = health_check_str(last_health_check)
                 br
-                small< = pk_timestamp(last_health_check.timestamp)
+                small< = health_check_timestamp(last_health_check)
               td.col-xs-1
                 .btn-group role='group'
                   == link_to 'Logs', service_logs_url(unit), target: '_blank', class: "btn btn-sm btn-primary"
@@ -108,9 +103,11 @@
                     == launch_button(unit, last_health_check)
               td.col-xs-1.mono
                 = unit.service_name
+              td.col-xs-1.mono = container_state(container)
+                /span.label class="label-#{container_status_bootstrap_class(container)}" = container_state(container)
               td.col-xs-8.mono
                 ul
-                  - service_notes(unit).each do |note|
+                  - service_notes(unit, last_health_check).each do |note|
                     li = note
 
   .row
@@ -123,6 +120,7 @@
             th Source
             th Type
             th Status
+            th Resource
             th Message
         tbody
           - @stack.all_events.each do |event|
@@ -132,4 +130,5 @@
               td.col-xs-1 = event.type
               td.col-xs-1
                 span.label class="label-#{event_status_bootstrap_class(event.status)}" = event.status
-              td.col-xs-8 = event_message(event)
+              td.col-xs-1 = event.resource_name
+              td.col-xs-7 = event_message(event)

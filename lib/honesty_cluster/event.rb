@@ -15,26 +15,17 @@ module HonestyCluster
       #validates_format STATUS_REGEX, :status
     end
 
-    def owner
+    def type
+      [resource.class, super].join('::')
+    end
+
+    def resource
       unit || stack
     end
 
-    def type
-      [owner.class, super].join('::')
+    def resource_name
+      resource.resource_name
     end
-
-    #def complete?
-      #status_state == 'COMPLETE'
-    #end
-
-    #def in_progress?
-      #status_state == 'IN_PROGRESS'
-    #end
-
-    #def failed?
-      #status_state == 'FAILED'
-    #end
-
 
     #def unit_owned?
       #!!unit
@@ -44,34 +35,8 @@ module HonestyCluster
       #!!stack
     #end
 
-    #def owner_name
-      #if unit_owned?
-        #unit.service_name
-      #elsif stack_owned?
-        #stack.name
-      #end
-    #end
-
-    #def msg(with_owner_name=false)
-      #return nil unless message
-
-      #if with_owner_name
-        #"#{message} (#{owner_name})"
-      #else
-        #message
-      #end
-    #end
-
-    #private def status_parts
-      #@__status_parts ||= STATUS_REGEX.match(status)
-    #end
-
-    #private def status_type
-      #status_parts[:status_type]
-    #end
-
-    #private def status_state
-      #status_parts[:status_state]
+    #def message_with_owner
+      #["[#{owner_name}]", message].compact.join(' ')
     #end
   end
 end

@@ -130,21 +130,23 @@ module HonestyCluster
       "HealthCheck"
     end
 
-    def initial_health_check!
-      create_event_for_health_check(HealthCheck.new(false, 'resource created'))
-    end
+    #def initial_health_check!
+      #create_event_for_health_check(HealthCheck.new(false, 'resource created'))
+    #end
 
     def last_health_check_event
       events_dataset.where(type: health_check_event_type).reverse_order(:timestamp).limit(1).first
     end
 
     def last_health_check
-      HealthCheck.new_from_event(last_health_check_event)
+      last_hc = last_health_check_event
+      last_hc ? HealthCheck.new_from_event(last_hc) : nil
     end
 
-    def healthy?
-      last_health_check.healthy?
-    end
+    #def healthy?
+      #last_hc = last_health_check
+      #last_hc && last_health_check.healthy?
+    #end
 
     def check_health!
       curr = current_health
