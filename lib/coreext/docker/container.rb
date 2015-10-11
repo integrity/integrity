@@ -53,10 +53,9 @@ class Docker::Container
     remove(force: true)
   end
 
-  # possibly deprecated
   def port_mapping
-    info.Ports.map do |port_mapping|
-      { port_mapping.PrivatePort => port_mapping.PublicPort }
+    info.Ports.map do |_port_mapping|
+      { _port_mapping.PrivatePort => _port_mapping.PublicPort }
     end.reduce(&:merge)
   end
 

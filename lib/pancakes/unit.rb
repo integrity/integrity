@@ -160,7 +160,7 @@ module Pancakes
 
     def lookup_public_port(private_port)
       _container = container
-      if _container
+      if _container && _container.port_mapping
         _container.port_mapping[private_port.to_i]
       else
         nil
