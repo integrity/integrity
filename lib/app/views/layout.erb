@@ -49,8 +49,6 @@
               <%= "timberland_branch=#{Pancakes::Fleet::Templating.config.timberland_branch}" %>
               <br>
             <% end %>
-            <%= "swarm_nodes=#{HonestyCluster::SwarmBackend.node_count}" %>
-            <br>
             <% if HonestyCluster.dry_run? %>
               <%= "dry_run=true" %>
             <% end %>
