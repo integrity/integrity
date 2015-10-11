@@ -74,25 +74,15 @@ module Integrity
       request.env['HTTP_X_FORWARDED_FOR'].to_s
     end
 
-    def restart_pancakes_stacks_after_github_push(push_event_hash)
-      branches = Pancakes.branch_info_from_push_event(push_event_hash)
+    def restart_pancakes_stacks(repo_name, branch_name)
+      return
+
+      branches = Pancakes.branch_info_from_push_event(repo_name, branch_name)
       stacks_to_update = Pancakes::Stack.with_branches(branches)
       stacks_to_update.each do |stack|
-        logger.info "restarting stack #{stack.name} after github PushEvent for branches #{branches.inspect}"
+        logger.info "restarting stack #{stack.name} for branches #{branches.inspect}"
         Delayed::Job.enqueue(Pancakes::RestartWithBranchHeadsJob.new(stack.id))
       end
-    end
-
-    # each line of this file should contain a substring to match against a branch.
-    # if the line starts with a bang, it means 'dont ignore', otherwise if the branch
-    # contains the line, it will be ignored. a blank line ignore everything. like a gitignore.
-    def ignore_branch?(branch)
-      fname = '/tmp/honesty-ignore.txt'
-      return false unless File.exists?(fname)
-      return !!File.readlines(fname).map{|l| [!l['!'], l.sub('!', '').chomp] } # [negated, line]
-        .select{ |line| branch.include?(line[1]) }                             # ignore non-matching lines
-        .map(&:first)                                                          # only care about whether the match is positive or negative
-        .last                                                                  # only the last positive/negative matters
     end
 
     not_found do
@@ -137,54 +127,43 @@ module Integrity
     end
 
     post '/hook.json', provides: :json do
-      logt :hook, 'received github webhook'
-
       @format = :json
+      logt :hook, 'received github webhook'
       payload = Payload.new(params)
 
       if payload.is_new_pull_request?
-        pull_request = payload.pull_request
-        logt :hook, "new pull request for tracker story story_id=#{pull_request[:story_id]}"
-        if story = Tracker::Story.first(id: pull_request[:story_id])
-          story.finish(pull_request[:pr_url])
-        end
+        payload.finish_story
         halt 200
       end
 
       if payload.merge_to_master?
-        logt :hook, "merge to master for tracker story merged_story=#{payload.merged_story}"
-        if story = Tracker::Story.first(id: payload.merged_story)
-          story.deliver
-        end
+        payload.deliver_story
       end
 
-      if ignore_branch?(payload.branch_name)
-        logt :hook, "ignoring branch name=#{payload.branch_name}"
+      if payload.ignore_branch?
+        logt :hook, "ignoring branch_name=#{payload.branch_name}"
         halt 200
       end
 
       if !payload.project
-        logt :hook, "params: #{params.inspect} hook.json called without project"
+        logt :hook, "missing project in payload: #{params.inspect}"
         halt 404
       end
 
       if payload.deleted?
-        logt :hook, "received branch delete notice for branch #{payload.branch_name}"
-        if branch = payload.branch
-          logt :hook, "deleting branch id=#{branch.id} name=#{branch.name}"
-          branch.destroy
-          json branch and return
-        end
+        payload.destroy_branch
+        halt 200
       end
 
       if !payload.commit
-        logt :hook, "params: #{params.inspect} hook.json called without commit"
+        logt :hook, "missing commit in payload: #{params.inspect}"
         halt 404
       end
 
-      build = payload.build!
-      #restart_pancakes_stacks_after_github_push(params)
-      json build
+      payload.run_build
+      restart_pancakes_stacks(payload.repo.full_name, payload.branch_name)
+
+      halt 200
     end
 
     post '/tracker.json', provides: :json do
