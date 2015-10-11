@@ -29,6 +29,10 @@ class Docker::Container
     info.Status
   end
 
+  def created
+    info.Created
+  end
+
   def exited?
     !!status.match(EXITED_REGEXP)
   end
@@ -47,6 +51,10 @@ class Docker::Container
 
   def running?
     !!status.match(RUNNING_REGEXP)
+  end
+
+  def created?
+    created && created > 0 && status == ''
   end
 
   def force_remove

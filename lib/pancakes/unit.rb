@@ -296,14 +296,16 @@ module Pancakes
       cnt = container
       if !cnt
         [false, 'container not found']
+      elsif cnt.created?
+        [true, 'container created but not running']
+      elsif cnt.running?
+        [true, 'container running']
       elsif cnt.clean_exit?
         [true, 'container exited cleanly']
       elsif cnt.unclean_exit?
         [false, "container exited with failure (#{cnt.exit_code})"]
-      elsif cnt.running?
-        [true, 'container running']
       else
-        [false, 'container neither running nor exited']
+        [false, 'container not nil, created, running, exited. WTF?']
       end
     end
 
