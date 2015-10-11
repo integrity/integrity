@@ -297,7 +297,7 @@ module Pancakes
       if !cnt
         [false, 'container not found']
       elsif cnt.created?
-        [true, 'container created but not running']
+        [false, 'container created but not running']
       elsif cnt.running?
         [true, 'container running']
       elsif cnt.clean_exit?
