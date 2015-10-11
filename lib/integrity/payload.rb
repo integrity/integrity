@@ -60,7 +60,7 @@ module Integrity
     end
 
     def project
-      @project ||= ProjectFinder.find(@payload.repo)
+      @project ||= ProjectFinder.find(repo)
     end
 
     def branch
