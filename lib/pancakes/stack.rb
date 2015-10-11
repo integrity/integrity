@@ -776,12 +776,15 @@ module Pancakes
       end.to_h
     end
 
-    def units_with_health_and_container
-      mapped_containers = containers_mapped_by_service_name
+    def units_sorted
       units.sort do |a,b|
         a.service_name <=> b.service_name
       end
-      .map do |unit|
+    end
+
+    def units_with_health_and_container
+      mapped_containers = containers_mapped_by_service_name
+      units_sorted.map do |unit|
         [
           unit,
           unit.last_health_check,

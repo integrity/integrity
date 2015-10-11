@@ -89,7 +89,7 @@
             /th Container
             th Notes
         tbody
-          - @stack.units.map{|u| [u, u.last_health_check]}.each do |unit,last_health_check|
+          - @stack.units_sorted.map{|u| [u, u.last_health_check]}.each do |unit,last_health_check|
             tr class=health_check_bootstrap_class(last_health_check)
               td.col-xs-1
                 span.label class="label-#{health_check_bootstrap_class(last_health_check)}" = health_check_str(last_health_check)
