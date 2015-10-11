@@ -4,10 +4,6 @@ module Integrity
 
     attr_reader :payload
 
-    def self.build(payload)
-      new(payload).build
-    end
-
     def initialize(payload)
       payload  = JSON.parse(payload) if payload.is_a?(String)
       @payload = Hashie::Mash.new(payload)
@@ -56,7 +52,7 @@ module Integrity
     end
 
     def run_build
-      @build ||= project.build(@payload.commit)
+      @build ||= project.build(commit)
     end
 
     def project
