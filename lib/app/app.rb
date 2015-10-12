@@ -268,7 +268,7 @@ module Integrity
       end
     end
 
-    get '/pancakes/stacks/:stack_id/service/:id/restart' do
+    get '/pancakes/stacks/:stack_id/services/:id/restart' do
       #@stack = Pancakes::Stack[params[:stack_id]]
       @service = Pancakes::Unit[params[:id]]
 
@@ -332,7 +332,7 @@ module Integrity
       end
     end
 
-    get '/pancakes/stacks/:stack_id/service/:id/check_health' do
+    get '/pancakes/stacks/:stack_id/services/:id/check_health' do
       @service = Pancakes::Unit[params[:id]]
 
       if @service
