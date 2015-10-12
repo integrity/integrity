@@ -126,7 +126,7 @@ module Pancakes
     #end
 
     def addr_known?
-      machine_ip && port
+      !!machine_ip && !!port
     end
 
     def name

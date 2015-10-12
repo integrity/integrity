@@ -711,7 +711,11 @@ module Pancakes
     # CargoGroup
     def before_run_containers
       refresh_commits
+      new_sha
+      save
       clear_service_addrs
+      StatHatWrapper.post_count('pancakes stacks bring_up started', 1)
+      logger.info "bring_up started for #{self.name}"
     end
 
     # CargoGroup

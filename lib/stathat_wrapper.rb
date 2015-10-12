@@ -2,6 +2,10 @@ class StatHatWrapper
   @enabled = true
   @ez_key = ENV['STATHAT_EZ_KEY']
 
+  def self.enabled?
+    @enabled && !HonestyCluster.dry_run?
+  end
+
   def self.enable
     logger.info 'enabling stathat'
     @enabled = true
@@ -24,7 +28,7 @@ class StatHatWrapper
   end
 
   def self.post_count(name, count)
-    if @enabled
+    if enabled?
       StatHat::API.ez_post_count(name, @ez_key, count)
     else
       logger.info "pretend StatHat ez_post_count: stat='#{name}' count=#{count}"
@@ -32,7 +36,7 @@ class StatHatWrapper
   end
 
   def self.post_value(name, value)
-    if @enabled
+    if enabled?
       StatHat::API.ez_post_value(name, @ez_key, value)
     else
       logger.info "pretend StatHat ez_post_value: stat='#{name}' value=#{value}"
