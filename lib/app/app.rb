@@ -334,11 +334,10 @@ module Integrity
       @service = Pancakes::Unit[params[:id]]
 
       if @service
-        puts '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^found service'
+        @service.refresh_service_addr
         @service.check_health!
         redirect pancakes_stack_path(@service.stack)
       else
-        puts '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^no service'
         flash[:error] = "Service #{params[:id]} not found"
         redirect pancakes_path
       end

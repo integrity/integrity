@@ -407,7 +407,6 @@ module Pancakes
 
     # HealthCheckable
     def current_health
-      refresh_service_addr
       HonestyCluster::HealthCheck.new(*do_health_checks)
     end
 
