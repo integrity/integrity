@@ -473,6 +473,13 @@ module Pancakes
     # Cargo
     def container_env
       _env = {
+        'AWS_SECRET_ACCESS_KEY' => ':DEV_AWS_SECRET_ACCESS_KEY',
+        'AWS_SECRET_KEY'        => ':DEV_AWS_SECRET_KEY',
+        'AWS_ACCESS_KEY_ID'     => ':DEV_AWS_ACCESS_KEY_ID',
+        'DICOMGRID_LOGIN'       => ':self',
+        'DICOMGRID_PASSWORD'    => ':self',
+        'GITHUB_READ_TOKEN'     => ':self',
+        'SEND_WITH_US_API_KEY'  => ':self',
         'PANCAKES_ID'      => stack_id,
         'STACK_ID'         => stack_id,
         'SERVICE_ID'       => id,
