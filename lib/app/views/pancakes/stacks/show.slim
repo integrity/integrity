@@ -96,10 +96,30 @@
                 br
                 small< = health_check_timestamp(last_health_check)
               td.col-xs-1
-                .btn-group role='group'
+                /.btn-group role='group'
                   == link_to 'Logs', service_logs_url(unit), target: '_blank', class: "btn btn-sm btn-primary"
+                  == link_to 'Restart', restart_service_url(unit), class: "btn btn-sm btn-primary"
+                  == link_to 'Check Health', restart_service_url(unit), class: "btn btn-sm btn-primary"
                   - if unit.user_facing?
                     == launch_button(unit, last_health_check)
+
+                .btn-group
+                  button.btn.btn-primary.dropdown-toggle type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                    | Actions
+                    span.caret<
+                  ul class="dropdown-menu"
+                    li
+                      == link_to 'Logs', service_logs_url(unit), target: '_blank'
+                    li
+                      == link_to 'Restart', service_restart_url(unit)
+                    li
+                      == link_to 'Check Health', service_check_health_url(unit)
+                    - if unit.user_facing?
+                      li
+                        == launch_button(unit, last_health_check)
+
+
+
               td.col-xs-1.mono
                 = unit.service_name
               /td.col-xs-1.mono = container_state(container)

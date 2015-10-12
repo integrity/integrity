@@ -268,6 +268,20 @@ module Integrity
       end
     end
 
+    get '/pancakes/stacks/:stack_id/service/:id/restart' do
+      #@stack = Pancakes::Stack[params[:stack_id]]
+      @service = Pancakes::Unit[params[:id]]
+
+      if @service
+        @service.restart_container
+        flash[:notice] = "#{@service.resource_name} restarted"
+        redirect pancakes_stack_path(@service.stack)
+      else
+        flash[:error] = "Service #{params[:id]} not found"
+        redirect pancakes_path
+      end
+    end
+
     #get '/pancakes/stacks/:id/restart_with_same_commits' do
       #@stack = Pancakes::Stack[params[:id]]
 
@@ -314,6 +328,18 @@ module Integrity
         redirect pancakes_stack_path(@stack)
       else
         flash[:error] = "Stack #{params[:id]} not found"
+        redirect pancakes_path
+      end
+    end
+
+    get '/pancakes/stacks/:stack_id/service/:id/check_health' do
+      @service = Pancakes::Unit[params[:id]]
+
+      if @service
+        @service.check_health!
+        redirect pancakes_stack_path(@service.stack)
+      else
+        flash[:error] = "Service #{params[:id]} not found"
         redirect pancakes_path
       end
     end

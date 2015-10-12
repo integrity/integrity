@@ -95,7 +95,7 @@ module Integrity
       #end
 
       def launch_button_helper(service_name, url, enabled)
-        link_to "Launch #{service_name}", url, target: '_blank', class: "btn btn-sm btn-primary#{enabled ? '' : ' disabled'} launch-btn"
+        link_to "Launch #{service_name}", url, target: '_blank', class: "#{enabled ? '' : 'disabled'} launch-btn"
       end
 
       #def tcp_string(commit)
@@ -214,6 +214,14 @@ module Integrity
 
       def service_logs_url(unit)
         "#{Integrity.logs_url}?q=#{unit.name}"
+      end
+
+      def service_restart_url(unit)
+        "/pancakes/stacks/#{@stack.id}/services/#{unit.id}/restart"
+      end
+
+      def service_check_health_url(unit)
+        "/pancakes/stacks/#{@stack.id}/services/#{unit.id}/check_health"
       end
 
       def pk_build_bootstrap_class(build)
