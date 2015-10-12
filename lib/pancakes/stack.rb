@@ -715,9 +715,9 @@ module Pancakes
     end
 
     # CargoGroup
-    def after_run_containers
-      refresh_service_addrs
-    end
+    #def after_run_containers
+      #refresh_service_addrs
+    #end
 
     # CargoGroup
     def after_destroy_containers
@@ -795,6 +795,7 @@ module Pancakes
 
     # HealthCheckable
     def current_health
+      refresh_service_addrs
       services_healthy =
         units.map do |unit|
           unit.check_health!.healthy?
