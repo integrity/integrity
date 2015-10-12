@@ -109,17 +109,23 @@ module Integrity
 
       def service_notes(unit, last_health_check)
         if last_health_check && last_health_check.healthy?
-          if unit.service_name == 'mysql'
-            [
-              mysql_notes(unit),
-            ]
-          elsif unit.service_name == 'postgres'
-            [
-              postgres_notes(unit),
-            ]
+          if unit.addr_known?
+            if unit.service_name == 'mysql'
+              [
+                mysql_notes(unit),
+              ]
+            elsif unit.service_name == 'postgres'
+              [
+                postgres_notes(unit),
+              ]
+            else
+              [
+                http_url(unit),
+              ]
+            end
           else
             [
-              http_url(unit),
+              "Last health was fine, but the service is missing it's address. Refresh the health.",
             ]
           end
         else
