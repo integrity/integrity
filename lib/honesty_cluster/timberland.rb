@@ -5,8 +5,8 @@ module HonestyCluster
     class Cmd
       attr_reader :boot_type, :sha, :repo, :debug, :branch, :setup_db, :service_type, :parallel_spec_jobs, :sleep
 
-      def initialize(boot_type:, service_type:, sha:, repo:, branch:nil, debug:nil, setup_db:nil, parallel_spec_jobs:nil, sleep:nil)
-        @timberland_branch = Pancakes::Fleet::Templating.config.timberland_branch
+      def initialize(timberland_branch:nil, boot_type:, service_type:, sha:, repo:, branch:nil, debug:nil, setup_db:nil, parallel_spec_jobs:nil, sleep:nil)
+        @timberland_branch = timberland_branch || Pancakes::Fleet::Templating.config.timberland_branch
         @boot_type    = boot_type
         @service_type = service_type
         @parallel_spec_jobs = parallel_spec_jobs
