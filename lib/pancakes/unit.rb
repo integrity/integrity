@@ -16,8 +16,13 @@ module Pancakes
     # /\/?(?:pancakes)_(?<branch_id>[0-9a-f]+)_no(?<serialno>\d+)_(?<service>\w+)/
     # /\/?(?<stack_name>#{Pancakes::NAMESPACE}_[0-9a-f]+)_(?<service_name>[a-z0-9\-_]+)(?:\.service)?/i
 
-    many_to_one :stack, key: :stack_id, class: :"Pancakes::Stack"
+    many_to_one :stack, class: :"Pancakes::Stack"
     one_to_many :events, key: :service_id, class: :"HonestyCluster::Event", order: :timestamp
+
+    # fix for a stackleveltoodeep error when calling #stack, like `Pancakes::Unit.last.stack`
+    def stack
+      Pancakes::Stack[stack_id]
+    end
 
     def validate
       super
@@ -56,10 +61,6 @@ module Pancakes
 
     def branch
       commit.branch
-    end
-
-    def stack_id
-      stack.id
     end
 
     def requires
