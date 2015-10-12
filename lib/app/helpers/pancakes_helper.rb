@@ -123,10 +123,12 @@ module Integrity
                 http_url(unit),
               ]
             end
-          else
+          elsif unit.user_facing?
             [
               "Last health was fine, but the service is missing it's address. Refresh the health.",
             ]
+          else
+            []
           end
         else
           [
