@@ -312,20 +312,6 @@ module Integrity
     @private_key ||= %x{cat /var/tmp/environments/etc/keys/id-rsa-honesty}
   end
 
-  #def self.sys_logger(name = :integrity, level = :debug)
-    #return logger unless production?
-    #name = (name.presence || :integrity).to_s
-    #@sys_loggers ||= {}
-    #unless @sys_loggers[name].present?
-      #syslog = Logging.logger[name]
-      #syslog.add_appenders Logging.appenders.syslog(name)
-      #syslog.level = level
-      #@sys_loggers[name] = syslog
-    #end
-    #@sys_loggers[name].level = level
-    #@sys_loggers[name]
-  #end
-
   def self.instance_manager
     InstanceManager.new
   end
