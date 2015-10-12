@@ -344,7 +344,19 @@ module Pancakes
       end
     end
 
-    private def http_health_check
+    private def addr_health_check
+      if exposed_ports
+        if addr_known?
+          [true, "container has an network address (#{tcp_str})"]
+        else
+          [false, "network address expected but not found"]
+        end
+      else
+        nil
+      end
+    end
+
+    private def http_ping_health_check
       url = ping_url
       return nil unless url
       name = service_name
@@ -366,14 +378,23 @@ module Pancakes
       ]
     end
 
+    private def do_health_checks
+      [
+        :container_health_check,
+        :addr_health_check,
+        :http_ping_health_check,
+      ].reduce([true, nil]) do |health,check_method|
+        if health[0] && check_result = send(check_method)
+          update_health(health, check_result)
+        else
+          health
+        end
+      end
+    end
+
     # HealthCheckable
     def current_health
-      health = [true, nil]
-      health = update_health(health, container_health_check)
-      if health[0] && http_check = http_health_check
-        health = update_health(health, http_check)
-      end
-      HonestyCluster::HealthCheck.new(*health)
+      HonestyCluster::HealthCheck.new(*do_health_checks)
     end
 
     private def timberland_command
