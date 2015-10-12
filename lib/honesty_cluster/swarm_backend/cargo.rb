@@ -57,7 +57,7 @@ module HonestyCluster
       # Some Sensible Defaults
       def after_run_container ; nil ; end
 
-      def run_container(overrides: {})
+      def run_container(overrides={})
         _container = create_container(container_json.deep_merge(overrides || {}))
         if HonestyCluster.dry_run?
           puts "not starting because dry_run is on"
