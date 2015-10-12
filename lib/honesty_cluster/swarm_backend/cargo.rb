@@ -58,7 +58,7 @@ module HonestyCluster
       def after_run_container ; nil ; end
 
       def run_container(overrides={})
-        _container = create_container(docker_container_json(overrides}))
+        _container = create_container(docker_container_json(overrides))
         if HonestyCluster.dry_run?
           puts "not starting because dry_run is on"
           return false
