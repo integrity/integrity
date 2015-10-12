@@ -415,12 +415,27 @@ module Pancakes
     end
 
     # Cargo
-    #def container_healthy?
-    #end
+    def before_restart_container(kontainer, cargo_json)
+      cargo_json_overrides = {}
 
-    # Cargo
-    #def cargo_healthy?
-    #end
+      if kontainer
+        if last_port_mapping = kontainer.port_mapping
+          cargo_json_overrides[:exposed_ports] = last_port_mapping.to_a
+        end
+
+        if last_node = kontainer.node
+          cargo_json_overrides[:env] = node_constraint(last_node)
+        end
+
+        if kontainer.running?
+          new_cmd = cargo_json[:cmd]
+          new_cmd.last << ' --no-setup-db'
+          cargo_json_overrides[:cmd] = new_cmd
+        end
+      end
+
+      cargo_json.deep_merge(cargo_json_overrides)
+    end
 
     # Cargo
     def cargo_group_type

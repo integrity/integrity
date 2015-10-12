@@ -49,23 +49,19 @@ module HonestyCluster
       # return a bool for whether the stuff going on inside the container is healthy
       #interface_method :"cargo_healthy?"
 
-      # hooks
+      # Hooks
+      # passes the current container and cargo_json as params, and uses the return value as the cargo_json.
+      interface_method :before_restart_container
       interface_method :after_run_container
 
 
 
       # Some Sensible Defaults
+      def before_restart_container(kontainer, cargo_json) ; nil ; end
       def after_run_container ; nil ; end
 
-      def run_container(overrides={})
-        _container = create_container(docker_container_json(overrides))
-        if HonestyCluster.dry_run?
-          puts "not starting because dry_run is on"
-          return false
-        else
-          _container.start!
-          after_run_container
-        end
+      def run_container
+        internal_run_container(docker_json)
       end
 
       def destroy_container(kontainer=container)
@@ -76,18 +72,10 @@ module HonestyCluster
 
       def restart_container
         kontainer = container
-        overrides = {}
-
-        if kontainer && last_port_mapping = kontainer.port_mapping
-          overrides[:exposed_ports] = last_port_mapping.to_a
-        end
-
-        if kontainer && last_node = kontainer.node
-          overrides[:env] = node_constraint(last_node)
-        end
-
+        old_cargo_json = cargo_json
+        new_cargo_json = before_restart_container(kontainer, old_cargo_json)
         destroy_container(kontainer)
-        run_container(overrides)
+        internal_run_container(docker_api_container_json(new_cargo_json || cargo_json))
       end
 
       def container
@@ -97,7 +85,7 @@ module HonestyCluster
         ).first
       end
 
-      def cargo_container_json
+      def cargo_json
         {
           name:          container_name,
           links:         container_links,
@@ -111,8 +99,19 @@ module HonestyCluster
         }
       end
 
-      def docker_container_json(overrides={})
-        docker_api_container_json(cargo_container_json.deep_merge(overrides || {}))
+      def docker_json(_cargo_json=cargo_json)
+        docker_api_container_json(_cargo_json)
+      end
+
+      private def internal_run_container(_docker_json)
+        _container = create_container(_docker_json)
+        if HonestyCluster.dry_run?
+          puts "not starting because dry_run is on"
+          return false
+        else
+          _container.start!
+          after_run_container
+        end
       end
 
       private def all_labels

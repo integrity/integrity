@@ -35,16 +35,16 @@ module HonestyCluster
         )
       end
 
-      def create_container(json)
-        msg = "creating container #{json['name']}"
+      def create_container(docker_json)
+        msg = "creating container #{docker_json['name']}"
         if HonestyCluster.dry_run?
           logger.info "[dry-run] #{msg}"
-          logger.info "[dry-run] json:"
-          logger.info json.ai
+          logger.info "[dry-run] docker_json:"
+          logger.info docker_json.ai
           nil
         else
           logger.info msg
-          Docker::Container.create(json, SwarmBackend.connection)
+          Docker::Container.create(docker_json, SwarmBackend.connection)
         end
       end
 
