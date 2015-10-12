@@ -179,8 +179,8 @@ module Pancakes
         frick-server
         tp-server
         banyan-server
+        wp-server
       ]
-        #wp-server
     end
 
     def netmaster

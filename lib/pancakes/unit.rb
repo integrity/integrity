@@ -407,7 +407,12 @@ module Pancakes
         branch:       branch,
         debug:        Pancakes.timberland_debug?,
         setup_db:     true,
+        wp_database_version: wp_database_version
       )
+    end
+
+    private def wp_database_version
+      self.stack.wp_database_version if resource_name == 'wp-server'
     end
 
     def timberlandified?

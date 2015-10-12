@@ -12,6 +12,7 @@ Sequel.migration do
       DateTime :state_updated_at, null: false
       String   :desired_state,    null: false
       String   :pocs,             text: true
+      String   :wp_database_version
       String   :services,         text: true
       #String   :history, text: true
 

@@ -350,6 +350,7 @@ module Integrity
           pocs:           params[:pocs],
           branches:       params[:branches],
           desired_state: :running,
+          wp_database_version: params[:wp_database_version]
         )
 
         @stack.run_containers
@@ -397,6 +398,12 @@ module Integrity
       end
 
       JSON.dump(branches)
+    end
+
+    get '/pancakes/wp_database_versions.json' do
+      client = HonestyCluster::AwsClients.s3_client :uat
+      databases = client.list_objects(bucket: 'grnds-uat-parker-databases').contents.map(&:key).select{ |filename| filename.end_with?('sql.gz') }
+      JSON.dump(databases)
     end
 
     post '/pancakes/api/vX/stacks' do

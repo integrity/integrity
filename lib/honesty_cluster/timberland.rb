@@ -3,12 +3,13 @@ module HonestyCluster
     NAME = 'timberland'
 
     class Cmd
-      attr_reader :boot_type, :sha, :repo, :debug, :branch, :setup_db, :service_type, :parallel_spec_jobs, :sleep
+      attr_reader :boot_type, :sha, :repo, :debug, :branch, :wp_database_version, :setup_db, :service_type, :parallel_spec_jobs, :sleep
 
       def initialize(timberland_branch:nil, boot_type:, service_type:, sha:, repo:, branch:nil, debug:nil, setup_db:nil, parallel_spec_jobs:nil, sleep:nil)
         @timberland_branch = timberland_branch || Pancakes::Fleet::Templating.config.timberland_branch
         @boot_type    = boot_type
         @service_type = service_type
+        @wp_database_version = wp_database_version
         @parallel_spec_jobs = parallel_spec_jobs
         @sleep        = sleep
         @sha          = sha
@@ -55,7 +56,8 @@ module HonestyCluster
           debug ? '--debug' : nil,
           parallel_spec_jobs ? "--parallel-spec-jobs #{parallel_spec_jobs}" : nil,
           sleep ? "--sleep #{sleep}" : nil,
-          (branch && !branch.empty?) ? ['--branch', branch] : nil
+          (branch && !branch.empty?) ? ['--branch', branch] : nil,
+          wp_database_version ? ['--wp-database-version', wp_database_version] : nil,
         )
       end
 

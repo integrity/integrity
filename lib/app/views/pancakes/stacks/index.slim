@@ -16,6 +16,10 @@
           .form-group
             label for="#{codebase}_branch" #{codebase} branch
             input.form-control type='text' name='[branches][#{codebase}]' id="#{codebase}_branch" placeholder='master' autocomplete='off'
+
+        .form-group
+          label for="#wp_database_version" brizo/parker database
+          input.form-control type='text' name='[wp_database_version]' id='wp_database_version' autocomplete='off'
         button.btn.btn-primary type='submit' Create stack
 
   .row
