@@ -212,18 +212,6 @@ module Integrity
         %w[jarvis frick tim tp banyan]
       end
 
-      def service_logs_url(unit)
-        "#{Integrity.logs_url}?q=#{unit.name}"
-      end
-
-      def service_restart_url(unit)
-        "/pancakes/stacks/#{@stack.id}/services/#{unit.id}/restart"
-      end
-
-      def service_check_health_url(unit)
-        "/pancakes/stacks/#{@stack.id}/services/#{unit.id}/check_health"
-      end
-
       def pk_build_bootstrap_class(build)
         if build
           build.bootstrap_class
@@ -241,4 +229,4 @@ module Integrity
       end
     end
   end
-end
+lnd

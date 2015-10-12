@@ -75,8 +75,6 @@ module Integrity
     end
 
     def restart_pancakes_stacks(repo_name, branch_name)
-      return
-
       branches = Pancakes.branch_info_from_push_event(repo_name, branch_name)
       stacks_to_update = Pancakes::Stack.with_branches(branches)
       stacks_to_update.each do |stack|
@@ -161,7 +159,7 @@ module Integrity
       end
 
       payload.run_build
-      restart_pancakes_stacks(payload.repo.full_name, payload.branch_name)
+      #restart_pancakes_stacks(payload.repo.full_name, payload.branch_name)
 
       halt 200
     end

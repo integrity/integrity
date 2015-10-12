@@ -92,10 +92,11 @@ module Integrity
         project_url(branch.project, branch.permalink, *path)
       end
 
+
       def branch_path(branch, *path)
         project_path(branch.project, branch.permalink, *path)
       end
-
+      
       def build_url(build, *path)
         project_url(build.project, 'builds', build.id, *path)
       end
@@ -115,6 +116,19 @@ module Integrity
       def pancakes_stack_path(stack)
         path('pancakes', 'stacks', stack.id)
       end
+
+      def service_logs_url(unit)
+        "#{Integrity.logs_url}?q=#{unit.name}"
+      end
+
+      def service_restart_url(service)
+        "/pancakes/stacks/#{@stack.id}/services/#{service.id}/restart"
+      end
+
+      def service_check_health_url(service)
+        "/pancakes/stacks/#{@stack.id}/services/#{service.id}/check_health"
+      end
+
 
       # Copyright (MIT) Eric Kidd -- http://github.com/emk/sinatra-url-for
       #
