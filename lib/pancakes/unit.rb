@@ -393,8 +393,21 @@ module Pancakes
       end
     end
 
+    def refresh_service_addr
+      logger.info "refreshing service addr for #{resource_name}"
+      if kont = container
+        self.machine_ip = kont.ip
+        self.port = kont.public_port
+      else
+        self.machine_ip = self.port = nil
+      end
+      save
+      nil
+    end
+
     # HealthCheckable
     def current_health
+      refresh_service_addr
       HonestyCluster::HealthCheck.new(*do_health_checks)
     end
 
