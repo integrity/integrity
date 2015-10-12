@@ -69,19 +69,25 @@ module HonestyCluster
       end
 
       def destroy_container(kontainer=container)
+        return unless kontainer
         puts "removing (with force) container #{kontainer.name}"
         kontainer.force_remove
       end
 
       def restart_container
         kontainer = container
-        last_port_mapping = kontainer.port_mapping.to_a
-        last_node = kontainer.node
+        overrides = {}
+
+        if kontainer && last_port_mapping = kontainer.port_mapping
+          overrides[:exposed_ports] = last_port_mapping.to_a
+        end
+
+        if kontainer && last_node = kontainer.node
+          overrides[:env] = node_constraint(last_node)
+        end
+
         destroy_container(kontainer)
-        run_container(
-          exposed_ports: last_port_mapping,
-          env: node_constraint(last_node),
-        )
+        run_container(overrides)
       end
 
       def container
