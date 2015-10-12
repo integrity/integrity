@@ -63,8 +63,8 @@ module HonestyCluster
       #ports should look like: [[private_port, public_port], ...]
       private def docker_api_port_bindings(ports)
         return nil unless ports
-        ports.map do |(private_port,public_port)|
-          { "#{private_port}/tcp" => [{ 'HostPort' => (public_port ? public_port.to_s : '') }] }
+        ports.map do |(priv,pub)|
+          { "#{priv}/tcp" => [{ 'HostPort' => (pub ? pub.to_s : '') }] }
         end.reduce(&:merge)
       end
 

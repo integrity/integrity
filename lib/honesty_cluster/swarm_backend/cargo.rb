@@ -58,7 +58,7 @@ module HonestyCluster
       def after_run_container ; nil ; end
 
       def run_container(overrides={})
-        _container = create_container(container_json.deep_merge(overrides || {}))
+        _container = create_container(docker_container_json(overrides}))
         if HonestyCluster.dry_run?
           puts "not starting because dry_run is on"
           return false
@@ -97,8 +97,8 @@ module HonestyCluster
         ).first
       end
 
-      def container_json
-        docker_api_container_json(
+      def cargo_container_json
+        {
           name:          container_name,
           links:         container_links,
           image:         image_name,
@@ -108,7 +108,11 @@ module HonestyCluster
           labels:        all_labels,
           cpu_shares:    cpu_cores,
           memory:        memory,
-        )
+        }
+      end
+
+      def docker_container_json(overrides={})
+        docker_api_container_json(cargo_container_json.deep_merge(overrides || {}))
       end
 
       private def all_labels
