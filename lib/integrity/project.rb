@@ -129,6 +129,8 @@ module Integrity
 
         build.run
         build
+      else
+        raise "commit identifier is not present"
       end
     end
 

@@ -139,6 +139,15 @@ module Pancakes
         http_status: 302,
         dbs: %w[pg-cache-development],
       },
+      {
+        name: 'wp-server',
+        image: 'grnds/wp_ci:latest',
+        repo: 'consultingmd/wp',
+        env: SERVICE_ENV,
+        ports: [10009],
+        ping_url: 'http://$ip:$port/',
+        http_status: 200,
+      },
     ]
 
     def get(service_name)
@@ -163,7 +172,15 @@ module Pancakes
     end
 
     def full_services
-      jarvis_services + %w[tp-server banyan-server postgres]
+      %w[
+        mysql postgres mailcatcher
+        jarvis-server jarvis-setup jarvis-delayed_job
+        tim-server tim-setup tim-delayed_job
+        frick-server
+        tp-server
+        banyan-server
+      ]
+        #wp-server
     end
 
     def netmaster

@@ -1,4 +1,6 @@
 module HonestyCluster
+  class Error < RuntimeError ; end
+
   extend ClassLogger
 
   def self.cluster
@@ -88,16 +90,14 @@ require 'interface'
 require 'coreext/docker/container'
 require 'honesty_cluster/aws_clients'
 require 'honesty_cluster/bundle_cache'
-require 'honesty_cluster/status_event'
+require 'honesty_cluster/event'
 require 'honesty_cluster/waitress'
 
 require 'honesty_cluster/swarm_backend'
 require 'honesty_cluster/swarm_backend/docker_util'
 require 'honesty_cluster/swarm_backend/cargo'
 require 'honesty_cluster/swarm_backend/cargo_group'
-require 'honesty_cluster/swarm_backend/build'
 require 'honesty_cluster/swarm_backend/build_datastore'
-require 'honesty_cluster/health/health_checkable'
+require 'honesty_cluster/health_checkable'
 
 require 'honesty_cluster/timberland'
-require 'honesty_cluster/timberland/cmd'

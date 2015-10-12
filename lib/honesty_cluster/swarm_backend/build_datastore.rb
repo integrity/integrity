@@ -13,7 +13,8 @@ module HonestyCluster
       end
 
       # Cargo
-      def after_start
+      def after_run_container
+        # give some time for docker to setup --link
         sleep 2
       end
 
@@ -54,7 +55,7 @@ module HonestyCluster
 
       # Cargo
       def container_env
-        builds_constraint
+        node_type_constraint('builds')
       end
 
       # Cargo
@@ -70,9 +71,9 @@ module HonestyCluster
       # Cargo
       def exposed_ports
         if build.datastore == 'mysql'
-          [3306]
+          [3306, nil]
         elsif build.datastore == 'postgres'
-          [5432]
+          [5432, nil]
         else
           nil
         end
@@ -84,7 +85,7 @@ module HonestyCluster
       # - i noticed the prepare_parallel_specs loops were going slower than id ever noticed
       # - during a build with 35 spec procs, mysql cpu was at 150%, and systemd-journal was at 99%
       # - now im wondering if we could get better performance out of mysql with 2 cores
-      def cpu_shares
+      def cpu_cores
         if build.uses_parallel_spec?
           7
         else
@@ -94,7 +95,7 @@ module HonestyCluster
 
       # Cargo
       def memory
-        512 * 2**20 # MB
+        MB(512)
       end
     end
   end

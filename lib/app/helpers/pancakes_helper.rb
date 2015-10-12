@@ -3,40 +3,52 @@
 module Integrity
   module Helpers
     module PancakesHelper
-      def event_bootstrap_class(event)
-        if !event
-          ''
-        elsif event.status.end_with?('_COMPLETE')
+      def health_check_bootstrap_class(health_check)
+        if !health_check
+          'default'
+        elsif health_check.healthy?
           'success'
-        elsif event.status.end_with?('_IN_PROGRESS')
-          'warning'
-        elsif event.status.end_with?('_FAILED')
-          'danger'
         else
-          ''
+          'danger'
         end
       end
 
-      def container_status_bootstrap_class(container)
-        if !container
-          'warning'
-        elsif container.running?
+      def event_status_bootstrap_class(event_status)
+        if !event_status
+          'default'
+        elsif [HonestyCluster::HealthCheck::STATUS_HEALTHY].include?(event_status)
           'success'
-        elsif container.failed?
+        elsif [HonestyCluster::HealthCheck::STATUS_UNHEALTHY].include?(event_status)
           'danger'
-        elsif container.exited?
-          'success'
         else
-          'warning'
+          'default'
         end
       end
 
-      def event_status(event)
-        event ? event.status : ''
+      #def container_status_bootstrap_class(container)
+        #if !container
+          #'warning'
+        #elsif container.running?
+          #'success'
+        #elsif container.failed?
+          #'danger'
+        #elsif container.exited?
+          #'success'
+        #else
+          #'warning'
+        #end
+      #end
+
+      def health_check_timestamp(health_check)
+        health_check ? time_ago_in_words(health_check.timestamp) : ''
       end
 
-      def event_timestamp(event)
-        event ? time_ago_in_words(event.created_at) : ''
+      def health_check_str(health_check)
+        health_check ? health_check.health_str : 'HEALTH_UNKNOWN'
+      end
+
+      def health_check_message(health_check)
+        health_check ? health_check.message : 'resource created'
       end
 
       def poc_string(pocs)
@@ -69,7 +81,7 @@ module Integrity
       def launch_button(unit, last_health_check)
         text    = unit.codebase || unit.service_name
         url     = http_url(unit)
-        enabled = last_health_check.complete?
+        enabled = last_health_check && last_health_check.healthy?
         launch_button_helper(
           text,
           url,
@@ -83,7 +95,7 @@ module Integrity
       #end
 
       def launch_button_helper(service_name, url, enabled)
-        link_to "Launch #{service_name}", url, target: '_blank', class: "btn btn-sm btn-primary#{enabled ? '' : ' disabled'} launch-btn"
+        link_to "Launch #{service_name}", url, target: '_blank', class: "#{enabled ? '' : 'disabled'} launch-btn"
       end
 
       #def tcp_string(commit)
@@ -95,24 +107,30 @@ module Integrity
         #end
       #end
 
-      def service_notes(unit)
-        if unit.healthy?
-          if unit.service_name == 'mysql'
-            [
-              mysql_notes(unit),
-            ]
-          elsif unit.service_name == 'postgres'
-            [
-              postgres_notes(unit),
-            ]
+      def service_notes(unit, last_health_check)
+        if last_health_check && last_health_check.healthy?
+          if unit.addr_known?
+            if unit.service_name == 'mysql'
+              [
+                mysql_notes(unit),
+              ]
+            elsif unit.service_name == 'postgres'
+              [
+                postgres_notes(unit),
+              ]
+            else
+              [
+                http_url(unit),
+              ]
+            end
           else
             [
-              http_url(unit),
+              "Last health was fine, but the service is missing it's address. Refresh the health.",
             ]
           end
         else
           [
-            unit.last_health_check_event.message
+            health_check_message(last_health_check)
           ]
         end
           .flatten
@@ -192,10 +210,6 @@ module Integrity
 
       def services_for_form
         %w[jarvis frick tim tp banyan wp]
-      end
-
-      def service_logs_url(unit)
-        "#{Integrity.logs_url}?q=#{unit.name}"
       end
 
       def pk_build_bootstrap_class(build)

@@ -20,7 +20,9 @@ module Integrity
     include DataMapper::Resource
     extend DataMapper::Resource::ClassMethods
     include Status
-    include HonestyCluster::SwarmBackend::Build
+    include HonestyCluster::SwarmBackend::Cargo
+    include HonestyCluster::SwarmBackend::CargoGroup
+
 
     GLOB_CHARS = '*?[]' unless defined?(GLOB_CHARS)
     MERCY_KILL_TIMESPAN = 20.minutes unless defined?(MERCY_KILL_TIMESPAN)
@@ -295,6 +297,162 @@ module Integrity
         log("mercy killing build")
         cancel_with_reason('CoreOS', 'Failed on CoreOS', 'consider_mercy_kill')
       end
+    end
+
+
+    def uses_swarm
+      File.readlines('/tmp/swarm_repos.txt').map(&:chomp).include?(self.repo.name)
+    rescue Errno::ENOENT
+      false
+    end
+
+    def timberland_command
+      HonestyCluster::Timberland::Cmd.new(
+        timberland_branch: uses_swarm ? Pancakes::Fleet::Templating.config.timberland_branch : 'master',
+        boot_type:    'build',
+        service_type: 'spec',
+        sha:          self.sha,
+        repo:         self.repo_full_name,
+        branch:       self.branch_name,
+        debug:        Pancakes.timberland_debug?,
+        parallel_spec_jobs: self.parallel_spec_jobs,
+        sleep:        500,
+      )
+    end
+
+    def datastore_cargo
+      if datastore
+        @__ds_cargo ||= BuildDatastore.new(self)
+      else
+        nil
+      end
+    end
+
+    def tmb_sleep
+      if self.branch_name.include?('/sleep')
+        500
+      else
+        nil
+      end
+    end
+
+    def timberlandified?
+      %w[ ConsultingMD ].include?(self.repo_name)
+    end
+
+    def uses_parallel_spec?
+      self.repo_full_name == "ConsultingMD/ConsultingMD"
+    end
+
+    def parallel_spec_jobs
+      if uses_parallel_spec?
+        cpu_cores
+      else
+        nil
+      end
+    end
+
+    # CargoGroup
+    def cargo_list
+      list = [self]
+      if datastore
+        list.unshift(datastore_cargo)
+      else
+        list
+      end
+    end
+
+    # Cargo, CargoGroup
+    def cargo_group_type
+      'build'
+    end
+
+    # Cargo, CargoGroup
+    def cargo_group_id
+      self.id
+    end
+
+    # Cargo
+    def cargo_type
+      'app'
+    end
+
+    # Cargo
+    def cargo_id
+      self.id
+    end
+
+    # Cargo
+    def docker_command
+      if timberlandified?
+        timberland_command.to_docker_api_cmd
+      else
+        nil
+      end
+    end
+
+    # Cargo
+    def container_name
+      [self.service_name, 'app'].join('_')
+    end
+
+    # Cargo
+    def image_name
+      "grnds/#{self.project_name}_ci:latest"
+    end
+
+    # Cargo
+    def container_env
+      {
+        'PROJECT' => self.project_name,
+        'BRANCH' => self.branch_name,
+        'SHA' => self.sha,
+        'BUILD_ID' => self.id,
+        'GITHUB_READ_TOKEN' => ':self',
+        'AWS_ACCESS_KEY_ID' => ':self',
+        'AWS_SECRET_ACCESS_KEY' => ':self',
+        'AWS_SECRET_KEY' => ':self',
+        'SAUCE_USERNAME' => ':self',
+        'SAUCE_ACCESS_KEY' => ':self',
+        'CALLBACK_URL' => "https://#{ENV['CALLBACK_HOST']}/status.json",
+        'TIMBERLAND_CMD' => self.timberland_command.run_cmd,
+      }.merge(
+          node_type_constraint('builds')
+        )
+    end
+
+    # Cargo
+    def container_labels
+      nil
+    end
+
+    # Cargo
+    def container_links
+      if datastore
+        [[datastore_cargo.container_name, datastore].join(':')]
+      else
+        nil
+      end
+    end
+
+    # Cargo
+    def exposed_ports
+      nil
+    end
+
+    # Cargo
+    def cpu_cores
+      if uses_parallel_spec?
+        30
+        #2
+      else
+        1
+      end
+    end
+
+    # Cargo
+    def memory
+      MB(512)
     end
 
     private

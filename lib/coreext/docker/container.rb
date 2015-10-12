@@ -1,7 +1,7 @@
 class Docker::Container
 
   RUNNING_REGEXP = /Up .+/
-  EXITED_REGEXP  = /Exited \((?<exit_code>\d+)\) \d+ \w+ ago/
+  EXITED_REGEXP  = /Exited \((?<exit_code>\d+)\) .+/
 
   def info
     Hashie::Mash.new(super)
@@ -11,6 +11,10 @@ class Docker::Container
     info.Names.detect do |name|
       name.split('/').size == 3
     end
+  end
+
+  def node
+    full_name.split('/')[1]
   end
 
   def name
@@ -29,11 +33,15 @@ class Docker::Container
     info.Status
   end
 
+  def created
+    info.Created
+  end
+
   def exited?
     !!status.match(EXITED_REGEXP)
   end
 
-  def failed?
+  def unclean_exit?
     exited? && exit_code != 0
   end
 
@@ -49,14 +57,17 @@ class Docker::Container
     !!status.match(RUNNING_REGEXP)
   end
 
+  def created?
+    created && created > 0 && status == ''
+  end
+
   def force_remove
     remove(force: true)
   end
 
-  # possibly deprecated
   def port_mapping
-    info.Ports.map do |port_mapping|
-      { port_mapping.PrivatePort => port_mapping.PublicPort }
+    info.Ports.map do |_port_mapping|
+      { _port_mapping.PrivatePort => _port_mapping.PublicPort }
     end.reduce(&:merge)
   end
 

@@ -1,26 +1,62 @@
 module Integrity
   class Payload
+    include ClassLogger
 
-    attr_reader :builder, :payload
-
-    def self.build(payload)
-      new(payload).build
-    end
+    attr_reader :payload
 
     def initialize(payload)
       payload  = JSON.parse(payload) if payload.is_a?(String)
       @payload = Hashie::Mash.new(payload)
-      Dir.mkdir('/tmp/payloads') unless File.directory?('/tmp/payloads')
-      File.open("/tmp/payloads/payload_#{Time.now.strftime('%Y%m%dT%H:%M:%S')}.json", 'w') {|f| f.write(JSON.dump(@payload)) }
-      @builder = PayloadBuilder.new(self)
+      dump_payload
     end
 
-    def build!
-      builder.build
+    def finish_story
+      pull_request = payload.pull_request
+      logger.info "finishing story_id=#{pull_request.story_id}"
+      if story = Tracker::Story.first(id: pull_request.story_id)
+        story.finish(pull_request.pr_url)
+      end
+    end
+
+    def deliver_story
+      logger.info "delivering story_id=#{payload.merged_story_id}"
+      if story = Tracker::Story.first(id: payload.merged_story_id)
+        story.deliver
+      end
+    end
+
+    def destroy_branch
+      if branch = payload.branch
+        logger.info "destroying branch id=#{branch.id} name=#{branch.name}"
+        branch.destroy
+      end
+    end
+
+    def dump_payload
+      Dir.mkdir('/tmp/payloads') unless File.directory?('/tmp/payloads')
+      File.open("/tmp/payloads/payload_#{Time.now.strftime('%Y%m%dT%H:%M:%S')}.json", 'w') do |f|
+        f.write(JSON.dump(@payload))
+      end
+    end
+
+    # Each line of the ignore file should contain a substring to match against a branch.
+    # If the line starts with a bang, it means 'dont ignore', otherwise if the branch
+    # contains the line, it will be ignored. A blank line ignores everything.
+    def ignore_branch?
+      fname = '/tmp/honesty-ignore.txt'
+      return false unless File.exists?(fname)
+      return !!File.readlines(fname).map{|l| [!l['!'], l.sub('!', '').chomp] } # [negated, line]
+        .select{ |line| branch_name.include?(line[1]) }                        # ignore non-matching lines
+        .map(&:first)                                                          # only care about whether the match is positive or negative
+        .last                                                                  # only the last positive/negative matters
+    end
+
+    def run_build
+      @build ||= project.build(commit)
     end
 
     def project
-      builder.project
+      @project ||= ProjectFinder.find(repo)
     end
 
     def branch
@@ -68,7 +104,7 @@ module Integrity
       @payload[:head_commit]
     end
 
-    def merged_story
+    def merged_story_id
       return unless merge_to_master?
       story_id_from_message head_commit[:message]
     end
@@ -98,10 +134,10 @@ module Integrity
         pull_request = @payload[:pull_request]
         story_id = story_id_from_message pull_request[:head][:label]
 
-        {
+        Hashie::Mash.new(
           pr_url: pull_request[:html_url],
           story_id: story_id,
-        }
+        )
       end
     end
 

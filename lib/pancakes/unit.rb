@@ -1,9 +1,7 @@
 module Pancakes
   class Unit < Sequel::Model
-    include HonestyCluster::Health::HealthCheckable
+    include HonestyCluster::HealthCheckable
     include HonestyCluster::SwarmBackend::Cargo
-
-    health_check_type 'Pancakes::Service'
 
     set_dataset :pancakes_units
     plugin :timestamps
@@ -18,8 +16,13 @@ module Pancakes
     # /\/?(?:pancakes)_(?<branch_id>[0-9a-f]+)_no(?<serialno>\d+)_(?<service>\w+)/
     # /\/?(?<stack_name>#{Pancakes::NAMESPACE}_[0-9a-f]+)_(?<service_name>[a-z0-9\-_]+)(?:\.service)?/i
 
-    many_to_one :stack, key: :stack_id, class: :"Pancakes::Stack"
-    one_to_many :events, key: :service_id, class: :"HonestyCluster::StatusEvent", order: :created_at
+    many_to_one :stack, class: :"Pancakes::Stack"
+    one_to_many :events, key: :service_id, class: :"HonestyCluster::Event", order: :timestamp
+
+    # fix for a stackleveltoodeep error when calling #stack, like `Pancakes::Unit.last.stack`
+    def stack
+      Pancakes::Stack[stack_id]
+    end
 
     def validate
       super
@@ -44,7 +47,7 @@ module Pancakes
     def self.create_with_service_def(service_def: nil)
       me = new(service_def: service_def, ping_url: service_def[:ping_url], service_name: service_def[:name], cluster_info: {})
       me.save
-      me.initial_health_check!
+      #me.initial_health_check!
       me
     end
 
@@ -58,10 +61,6 @@ module Pancakes
 
     def branch
       commit.branch
-    end
-
-    def stack_id
-      stack.id
     end
 
     def requires
@@ -123,12 +122,12 @@ module Pancakes
       !!tcp_str
     end
 
-    def is_setup_container?
-      subtype == 'setup'
-    end
+    #def is_setup_container?
+      #subtype == 'setup'
+    #end
 
     def addr_known?
-      machine_ip && port
+      !!machine_ip && !!port
     end
 
     def name
@@ -162,7 +161,7 @@ module Pancakes
 
     def lookup_public_port(private_port)
       _container = container
-      if _container
+      if _container && _container.port_mapping
         _container.port_mapping[private_port.to_i]
       else
         nil
@@ -212,6 +211,7 @@ module Pancakes
     def service_name
       service_def.name
     end
+    alias :resource_name :service_name
 
     def dbs
       service_def.dbs
@@ -293,45 +293,44 @@ module Pancakes
 
     # health checking
 
-    def container_status_check
+    def container_health_check
       cnt = container
       if !cnt
-        [:failed, "container not found"]
-      elsif is_setup_container?
-        if cnt.exited?
-          if cnt.clean_exit?
-            [:complete, "setup successful"]
-          else
-            [:failed, "setup failed"]
-          end
-        else
-          [:complete, "setup is still running, but that's okay"]
-        end
+        [false, 'container not found']
+      elsif cnt.created?
+        [false, 'container created but not running']
       elsif cnt.running?
-        [:complete, "container running"]
+        [true, 'container running']
+      elsif cnt.clean_exit?
+        [true, 'container exited cleanly']
+      elsif cnt.unclean_exit?
+        [false, "container exited with failure (#{cnt.exit_code})"]
       else
-        [:in_progress, "container neither running nor exited"]
+        [false, 'container not nil, created, running, exited. WTF?']
       end
     end
 
-    def health_check_url
-      if addr_known?
-        service_def.ping_url.sub('$ip', machine_ip).sub('$port', port.to_s)
+    def ping_url
+      if service_def.ping_url
+        if addr_known?
+          service_def.ping_url.sub('$ip', machine_ip).sub('$port', port.to_s)
+        else
+          nil
+        end
       else
         nil
       end
     end
 
-    def healthy_http_status
+    def healthy_ping_http_status
       service_def.http_status
     end
 
     def user_facing?
       !!service_def.ping_url
     end
-    alias :"has_http_status_check?" :"user_facing?"
 
-    def make_health_check_http_request(url, desired_response)
+    private def ping(url, desired_response)
       resp =
         if desired_response == 302
           Net::HTTP.get_response(URI(url))
@@ -339,44 +338,67 @@ module Pancakes
           RestClient::Request.execute(method: :get, url: url, timeout: 5, open_timeout: 5)
         end
 
-      if (resp_code = resp.code.to_i) == healthy_status
-        [:complete]
+      if (resp_code = resp.code.to_i) == healthy_ping_http_status
+        [true, nil]
       else
-        [:failed,
-         "http status check failed. required=#{healthy_status} got=#{code} url=#{url}"]
+        [false, "http health check failed. required=#{healthy_ping_http_status} got=#{code} url=#{url}"]
       end
     end
 
-    def http_status_check
-      name           = service_name
-      url            = health_check_url
-      healthy_status = healthy_http_status
-      if url
-        begin
-          make_health_check_http_request(url, healthy_status)
-        rescue StandardError => e
-          [:failed,
-           "unreachable at #{url} due to #{e.class} '#{e.message}'"]
+    private def addr_health_check
+      if exposed_ports
+        if addr_known?
+          [true, "container has an network address (#{tcp_str})"]
+        else
+          [false, "network address expected but not found"]
         end
       else
-        [:failed,
-         "http status check url is unavailable"]
+        nil
       end
     end
 
-    def status_checks
+    private def http_ping_health_check
+      url = ping_url
+      return nil unless url
+      name = service_name
+      if url
+        begin
+          ping(url, healthy_ping_http_status)
+        rescue StandardError => e
+          [false, "unreachable at #{url} due to #{e.class} '#{e.message}'"]
+        end
+      else
+        [false, "http health check url is unavailable"]
+      end
+    end
+
+    private def update_health(curr_health, new_health)
       [
-        container_status_check,
-        has_http_status_check? ? http_status_check : nil,
-      ].compact.map{|check| HonestyCluster::Health::StatusCheck.new(*check) }
+        curr_health[0] && new_health[0],
+        [curr_health[1], new_health[1]].compact.join(', '),
+      ]
+    end
+
+    private def do_health_checks
+      [
+        :container_health_check,
+        :addr_health_check,
+        :http_ping_health_check,
+      ].reduce([true, nil]) do |health,check_method|
+        if health[0] && check_result = send(check_method)
+          update_health(health, check_result)
+        else
+          health
+        end
+      end
     end
 
     # HealthCheckable
     def current_health
-      HonestyCluster::Health::HealthCheck.new(status_checks, service_name)
+      HonestyCluster::HealthCheck.new(*do_health_checks)
     end
 
-    def timberland_command
+    private def timberland_command
       HonestyCluster::Timberland::Cmd.new(
         boot_type:    'pancakes',
         service_type: subtype,
@@ -393,8 +415,25 @@ module Pancakes
     end
 
     # Cargo
-    def after_start
-      nil
+    def before_restart_container(kontainer, cargo_json)
+      cargo_json_overrides = {}
+
+      if kontainer
+        if last_port_mapping = kontainer.port_mapping
+          cargo_json_overrides[:exposed_ports] = last_port_mapping.to_a
+        end
+
+        if last_node = kontainer.node
+          cargo_json_overrides[:env] = node_constraint(last_node)
+        end
+      end
+
+      # dont setup the db when restarting
+      new_cmd = cargo_json[:cmd]
+      new_cmd.last << ' --no-setup-db'
+      cargo_json_overrides[:cmd] = new_cmd
+
+      cargo_json.deep_merge(cargo_json_overrides)
     end
 
     # Cargo
@@ -443,18 +482,28 @@ module Pancakes
 
     # Cargo
     def exposed_ports
-      ports
+      return nil unless ports
+      ports.map{|private_port| [private_port, nil] }
     end
 
     # Cargo
     def container_env
       _env = {
+        'AWS_SECRET_ACCESS_KEY' => ':DEV_AWS_SECRET_ACCESS_KEY',
+        'AWS_SECRET_KEY'        => ':DEV_AWS_SECRET_KEY',
+        'AWS_ACCESS_KEY_ID'     => ':DEV_AWS_ACCESS_KEY_ID',
+        'DICOMGRID_LOGIN'       => ':self',
+        'DICOMGRID_PASSWORD'    => ':self',
+        'GITHUB_READ_TOKEN'     => ':self',
+        'SEND_WITH_US_API_KEY'  => ':self',
         'PANCAKES_ID'      => stack_id,
         'STACK_ID'         => stack_id,
         'SERVICE_ID'       => id,
         'PANCAKES_SHA'     => stack.short_sha,
         'HONESTY_BASE_URL' => HonestyCluster::SwarmBackend.base_url,
-      }
+      }.merge(
+            node_type_constraint('pancakes')
+          )
 
       if timberlandified?
         _env.merge('TIMBERLAND_CMD' => timberland_command.run_cmd)
@@ -469,13 +518,13 @@ module Pancakes
     end
 
     # Cargo
-    def cpu_shares
+    def cpu_cores
       1
     end
 
     # Cargo
     def memory
-      512 * 2**20 # MB
+      MB(512)
     end
   end
 end

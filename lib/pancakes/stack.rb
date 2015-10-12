@@ -2,9 +2,7 @@ module Pancakes
   class Stack < Sequel::Model
     include ClassLogger
     include HonestyCluster::SwarmBackend::CargoGroup
-    include HonestyCluster::Health::HealthCheckable
-
-    health_check_type 'Pancakes::Stack'
+    include HonestyCluster::HealthCheckable
 
     set_dataset :pancakes_stacks
     plugin :timestamps
@@ -21,7 +19,7 @@ module Pancakes
 
     one_to_many :commits, key: :stack_id, class: :"Pancakes::Commit"
     one_to_many :units,   key: :stack_id, class: :"Pancakes::Unit"
-    one_to_many :events,  key: :stack_id, class: :"HonestyCluster::StatusEvent", order: :created_at
+    one_to_many :events,  key: :stack_id, class: :"HonestyCluster::Event", order: :timestamp
 
     add_association_dependencies commits: :destroy, units: :destroy
 
@@ -40,7 +38,7 @@ module Pancakes
     end
 
     def before_destroy
-      Pancakes::Freezer.delete_stack(self.id)
+      #Pancakes::Freezer.delete_stack(self.id)
       self.destroy_containers
       super
     end
@@ -80,7 +78,7 @@ module Pancakes
           me.add_commit(Pancakes::Commit.create_from_git_string(Pancakes.repo_name(codebase), git_str))
         end
 
-        me.initial_health_check!
+        #me.initial_health_check!
         me
       end
     end
@@ -120,6 +118,8 @@ module Pancakes
     def name
       format("%s_%s_%d", Pancakes::NAMESPACE, self.short_sha, self.id)
     end
+    alias :resource_name :name
+
 
     # TODO break this down into smaller pieces. it's also similar in structure to bring_down.
     def bring_up(thaw_dbs: false)
@@ -647,12 +647,12 @@ module Pancakes
       events_dataset.destroy
     end
 
-    def service_events
-      units.map(&:events).flatten.sort{|a,b| a.created_at <=> b.created_at }
-    end
+    #def service_events
+      #units.map(&:events).flatten.sort{|a,b| b.timestamp <=> a.timestamp }
+    #end
 
     def all_events
-      (units.map(&:events).flatten + events).sort{|a,b| a.created_at <=> b.created_at }
+      (units.map(&:events).flatten + events).sort{|a,b| b.timestamp <=> a.timestamp }
     end
 
     # @api private
@@ -711,13 +711,17 @@ module Pancakes
     # CargoGroup
     def before_run_containers
       refresh_commits
+      new_sha
+      save
       clear_service_addrs
+      StatHatWrapper.post_count('pancakes stacks bring_up started', 1)
+      logger.info "bring_up started for #{self.name}"
     end
 
     # CargoGroup
-    def after_run_containers
-      refresh_service_addrs
-    end
+    #def after_run_containers
+      #refresh_service_addrs
+    #end
 
     # CargoGroup
     def after_destroy_containers
@@ -776,15 +780,18 @@ module Pancakes
       end.to_h
     end
 
-    def units_with_health_and_container
-      mapped_containers = containers_mapped_by_service_name
+    def units_sorted
       units.sort do |a,b|
         a.service_name <=> b.service_name
       end
-      .map do |unit|
+    end
+
+    def units_with_health_and_container
+      mapped_containers = containers_mapped_by_service_name
+      units_sorted.map do |unit|
         [
           unit,
-          unit.last_health_check_event,
+          unit.last_health_check,
           mapped_containers[unit.service_name]
         ]
       end
@@ -792,12 +799,13 @@ module Pancakes
 
     # HealthCheckable
     def current_health
-      status_checks = units.map do |unit|
-        unit.check_health!
-      end
-        .compact
-        .map(&:to_status)
-      HonestyCluster::Health::HealthCheck.new(status_checks, name)
+      refresh_service_addrs
+      services_healthy =
+        units.map do |unit|
+          unit.check_health!.healthy?
+        end
+          .reduce(true){|memo,val| memo && val }
+      HonestyCluster::HealthCheck.new(services_healthy, services_healthy ? nil : 'one or more services are unhealthy')
     end
   end
 end
