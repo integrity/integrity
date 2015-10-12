@@ -467,7 +467,8 @@ module Pancakes
 
     # Cargo
     def exposed_ports
-      ports
+      return nil unless ports
+      ports.map{|private_port| [private_port, nil] }
     end
 
     # Cargo

@@ -16,7 +16,8 @@ module HonestyCluster
             Binds: ['/var/lib/docker/tmp:/tmp/hosttmp'],
             CpuShares: cpu_shares,
             Memory: memory,
-            PublishAllPorts: true,
+            #PublishAllPorts: true,
+            PortBindings: docker_api_port_bindings(exposed_ports),
             Links: links,
             LogConfig: { Type: 'syslog', Config: {'syslog-tag' => name} },
           },
@@ -28,7 +29,7 @@ module HonestyCluster
         Docker::Container.all(
           {
             'all' => 1,
-            filters: label_filters(filters),
+            filters: docker_api_label_filters(filters),
           },
           SwarmBackend.connection,
         )
@@ -47,17 +48,27 @@ module HonestyCluster
         end
       end
 
+      def node_constraint(node)
+        { "constraint:node==#{node}" => nil }
+      end
+
       def node_type_constraint(type)
-        {
-          "constraint:grnds.node_type==#{type}" => nil,
-        }
+        { "constraint:grnds.node_type==#{type}" => nil }
       end
 
       def MB(bytes)
         bytes * 2**20
       end
 
-      private def label_filters(filters)
+      #ports should look like: [[private_port, public_port], ...]
+      private def docker_api_port_bindings(ports)
+        return nil unless ports
+        ports.map do |(private_port,public_port)|
+          { "#{private_port}/tcp" => [{ 'HostPort' => (public_port ? public_port.to_s : '') }] }
+        end.reduce(&:merge)
+      end
+
+      private def docker_api_label_filters(filters)
         filters = filters.to_a.map do |key,value|
           [key.to_s, value.to_s].join('=')
         end
@@ -88,8 +99,8 @@ module HonestyCluster
 
       private def docker_api_transform_exposed_ports(list_of_ports)
         return nil unless list_of_ports && !list_of_ports.empty?
-        list_of_ports.map do |port|
-          {"#{port}/tcp" => {}}
+        list_of_ports.map do |(private_port,_)|
+          {"#{private_port}/tcp" => {}}
         end.reduce(&:merge)
       end
 

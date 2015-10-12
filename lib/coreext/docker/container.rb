@@ -13,6 +13,10 @@ class Docker::Container
     end
   end
 
+  def node
+    full_name.split('/')[1]
+  end
+
   def name
     full_name.split('/').last
   end

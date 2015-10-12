@@ -71,9 +71,9 @@ module HonestyCluster
       # Cargo
       def exposed_ports
         if build.datastore == 'mysql'
-          [3306]
+          [3306, nil]
         elsif build.datastore == 'postgres'
-          [5432]
+          [5432, nil]
         else
           nil
         end

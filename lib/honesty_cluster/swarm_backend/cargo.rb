@@ -57,8 +57,8 @@ module HonestyCluster
       # Some Sensible Defaults
       def after_run_container ; nil ; end
 
-      def run_container
-        _container = create_container(container_json)
+      def run_container(overrides: {})
+        _container = create_container(container_json.deep_merge(overrides || {}))
         if HonestyCluster.dry_run?
           puts "not starting because dry_run is on"
           return false
@@ -66,6 +66,22 @@ module HonestyCluster
           _container.start!
           after_run_container
         end
+      end
+
+      def destroy_container(kontainer=container)
+        puts "removing (with force) container #{kontainer.name}"
+        kontainer.force_remove
+      end
+
+      def restart_container
+        kontainer = container
+        last_port_mapping = kontainer.port_mapping.to_a
+        last_node = kontainer.node
+        destroy_container(kontainer)
+        run_container(
+          exposed_ports: last_port_mapping,
+          env: node_constraint(last_node),
+        )
       end
 
       def container
