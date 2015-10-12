@@ -191,7 +191,7 @@ module Integrity
       end
 
       def services_for_form
-        %w[jarvis frick tim tp banyan]
+        %w[jarvis frick tim tp banyan wp]
       end
 
       def service_logs_url(unit)
