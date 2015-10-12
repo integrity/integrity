@@ -20,8 +20,8 @@ module Integrity
     include DataMapper::Resource
     extend DataMapper::Resource::ClassMethods
     include Status
-    include SwarmBackend::Cargo
-    include SwarmBackend::CargoGroup
+    include HonestyCluster::SwarmBackend::Cargo
+    include HonestyCluster::SwarmBackend::CargoGroup
 
 
     GLOB_CHARS = '*?[]' unless defined?(GLOB_CHARS)
