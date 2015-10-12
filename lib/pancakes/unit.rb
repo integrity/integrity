@@ -548,7 +548,7 @@ module Pancakes
 
     # Cargo
     def memory
-      MB(512)
+      MB(750)
     end
   end
 end
