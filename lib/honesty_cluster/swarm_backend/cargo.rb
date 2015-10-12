@@ -66,8 +66,12 @@ module HonestyCluster
 
       def destroy_container(kontainer=container)
         return unless kontainer
-        puts "removing (with force) container #{kontainer.name}"
-        kontainer.force_remove
+        if HonestyCluster.dry_run?
+          puts "not starting because dry_run is on"
+        else
+          puts "removing (with force) container #{kontainer.name}"
+          kontainer.force_remove
+        end
       end
 
       def restart_container
@@ -107,7 +111,6 @@ module HonestyCluster
         _container = create_container(_docker_json)
         if HonestyCluster.dry_run?
           puts "not starting because dry_run is on"
-          return false
         else
           _container.start!
           after_run_container
