@@ -428,8 +428,11 @@ module Integrity
 
     # Cargo
     def container_links
+      # backwards compatability with exiting --link env vars
+      ds = datastore == 'postgres' ? 'db' : datastore
+
       if datastore
-        [[datastore_cargo.container_name, datastore].join(':')]
+        [[datastore_cargo.container_name, ds].join(':')]
       else
         nil
       end
