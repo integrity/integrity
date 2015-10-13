@@ -5,5 +5,7 @@ RUN apt-get update \
     && apt-get install -y php5-mysql mysql-client emacs24-nox vim git curl \
     && docker-php-ext-install mysql
 
-RUN ln -s /root/wp /var/www/html/
+COPY 000-default.conf /etc/apache2/sites-enabled/
+RUN ln -s /var/www/html/ /root/wp
+
 WORKDIR /root
