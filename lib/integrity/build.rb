@@ -404,6 +404,7 @@ module Integrity
     # Cargo
     def container_env
       {
+        'TERM' => 'xterm',
         'PROJECT' => self.project_name,
         'BRANCH' => self.branch_name,
         'SHA' => self.sha,

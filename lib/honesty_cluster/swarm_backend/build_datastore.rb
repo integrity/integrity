@@ -55,7 +55,11 @@ module HonestyCluster
 
       # Cargo
       def container_env
-        node_type_constraint('builds')
+        {
+          'TERM' => 'xterm',
+        }.merge(
+            node_type_constraint('builds')
+          )
       end
 
       # Cargo

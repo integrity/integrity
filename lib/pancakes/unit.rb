@@ -506,6 +506,7 @@ module Pancakes
     # Cargo
     def container_env
       _env = {
+        'TERM' => 'xterm',
         'AWS_SECRET_ACCESS_KEY' => ':DEV_AWS_SECRET_ACCESS_KEY',
         'AWS_SECRET_KEY'        => ':DEV_AWS_SECRET_KEY',
         'AWS_ACCESS_KEY_ID'     => ':DEV_AWS_ACCESS_KEY_ID',
