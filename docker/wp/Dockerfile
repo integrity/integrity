@@ -6,6 +6,6 @@ RUN apt-get update \
     && docker-php-ext-install mysql
 
 COPY 000-default.conf /etc/apache2/sites-enabled/
-RUN ln -s /var/www/html/ /root/wp
+COPY ports.conf /etc/apache2/
 
 WORKDIR /root
