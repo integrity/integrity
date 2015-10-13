@@ -393,6 +393,18 @@ module Pancakes
       end
     end
 
+    def refresh_service_addr
+      logger.info "refreshing service addr for #{resource_name}"
+      if kont = container
+        self.machine_ip = kont.ip
+        self.port = kont.public_port
+      else
+        self.machine_ip = self.port = nil
+      end
+      save
+      nil
+    end
+
     # HealthCheckable
     def current_health
       HonestyCluster::HealthCheck.new(*do_health_checks)
@@ -497,6 +509,12 @@ module Pancakes
         'AWS_SECRET_ACCESS_KEY' => ':DEV_AWS_SECRET_ACCESS_KEY',
         'AWS_SECRET_KEY'        => ':DEV_AWS_SECRET_KEY',
         'AWS_ACCESS_KEY_ID'     => ':DEV_AWS_ACCESS_KEY_ID',
+        'TEST_AWS_SECRET_ACCESS_KEY' => ':TEST_AWS_SECRET_ACCESS_KEY',
+        'TEST_AWS_SECRET_KEY'        => ':TEST_AWS_SECRET_KEY',
+        'TEST_AWS_ACCESS_KEY_ID'     => ':TEST_AWS_ACCESS_KEY_ID',
+        'UAT_AWS_SECRET_ACCESS_KEY' => ':UAT_AWS_SECRET_ACCESS_KEY',
+        'UAT_AWS_SECRET_KEY'        => ':UAT_AWS_SECRET_KEY',
+        'UAT_AWS_ACCESS_KEY_ID'     => ':UAT_AWS_ACCESS_KEY_ID',
         'DICOMGRID_LOGIN'       => ':self',
         'DICOMGRID_PASSWORD'    => ':self',
         'GITHUB_READ_TOKEN'     => ':self',
@@ -529,7 +547,8 @@ module Pancakes
 
     # Cargo
     def memory
-      MB(512)
+      #MB(2048)
+      nil
     end
   end
 end
