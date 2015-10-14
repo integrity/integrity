@@ -107,6 +107,10 @@ module HonestyCluster
         docker_api_container_json(_cargo_json)
       end
 
+      def pull_image
+        docker_api_pull_image(image_name)
+      end
+
       private def internal_run_container(_docker_json)
         _container = create_container(_docker_json)
         if HonestyCluster.dry_run?
