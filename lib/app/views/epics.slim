@@ -1,6 +1,5 @@
 - off_da_ranch = @report.delete(:off_da_ranch)
 - role_lineup = @report.delete(:role_lineup)
-- elves = role_lineup.delete(:elves)
 - story_counts = @report.delete(:story_counts)
 - non_epic_stories = @report.delete(:story_counts)
 - sorted_report = {NES: non_epic_stories}.merge!(@report.sort.to_h)
@@ -54,10 +53,6 @@
       .row
         .col-md-6 = role.capitalize
         .col-md-6 = user
-    .row
-      .col-md-6 = Elves
-    - elves.each do |user|
-      .col-md-6.col-md-offset-6 = user
   .col-md-4
     h2.text-center.short Stories
     ul.stories
