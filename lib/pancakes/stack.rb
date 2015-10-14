@@ -4,6 +4,8 @@ module Pancakes
     include HonestyCluster::SwarmBackend::CargoGroup
     include HonestyCluster::HealthCheckable
 
+    DEFAULT_WP_DB = 'rc-branch-2015-09-25-1443234290.sql.gz'
+
     set_dataset :pancakes_stacks
     plugin :timestamps
     plugin :serialization, :json, :pocs, :services
@@ -48,7 +50,7 @@ module Pancakes
     # constructors
     #
 
-    def self.create_with_git_strings(pocs: '', desired_state: :off, branches: nil, wp_database_version: nil, **git_strings)
+    def self.create_with_git_strings(pocs: '', desired_state: :off, branches: nil, wp_database_version: DEFAULT_WP_DB, **git_strings)
       self.db.transaction do
         pocs = (pocs || "").split(',').map(&:strip)
         services = Services.full_services
