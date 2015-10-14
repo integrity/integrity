@@ -7,5 +7,6 @@ RUN apt-get update \
 
 COPY 000-default.conf /etc/apache2/sites-enabled/
 COPY ports.conf /etc/apache2/
+COPY htaccess /etc/apache2/
 
 WORKDIR /root
