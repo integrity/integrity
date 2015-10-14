@@ -21,6 +21,14 @@ module Integrity
         Tracker::User.all(developer: true)
       end
 
+      def all_product_managers
+        Tracker::User.all(product: true)
+      end
+
+      def lineup_roles
+        ['sheriff', 'deputy', 'ranger', 'santa']
+      end
+
       def update_notifiers_of(project)
         if notifiers = params[:notifiers]
           enabled = params[:enabled_notifiers] || []

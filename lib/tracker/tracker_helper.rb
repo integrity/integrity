@@ -48,7 +48,7 @@ module Tracker
     end
 
     def self.reset_lineup
-      User.update(sheriff: false, deputy: false, santa: false, elf: false)
+      User.update(sheriff: false, ranger: false, deputy: false, santa: false)
     end
 
     def self.update_lineup(lineup)
