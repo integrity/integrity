@@ -6,5 +6,6 @@ RUN apt-get update \
     && docker-php-ext-install mysql
 
 ADD 000-default.conf /etc/apache2/sites-enabled/
+RUN a2enmod rewrite
 
 WORKDIR /root
