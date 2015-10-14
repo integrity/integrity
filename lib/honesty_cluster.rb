@@ -11,6 +11,12 @@ module HonestyCluster
     !!ENV['HONESTY_DRY_RUN']
   end
 
+  def self.setup
+    Docker.url = ENV['DOCKER_HOST'] || raise('must export DOCKER_HOST')
+    Docker.options = {}
+    Docker.logger = Logging.logger['docker']
+  end
+
   def self.run_waitresses
     puts "running waitresses"
     NodeCountWaitress.new.run_async

@@ -30,8 +30,7 @@ module HonestyCluster
           {
             'all' => 1,
             filters: docker_api_label_filters(filters),
-          },
-          SwarmBackend.connection,
+          }
         )
       end
 
@@ -44,7 +43,7 @@ module HonestyCluster
           nil
         else
           logger.info msg
-          Docker::Container.create(docker_json, SwarmBackend.connection)
+          Docker::Container.create(docker_json)
         end
       end
 

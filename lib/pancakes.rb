@@ -258,3 +258,5 @@ require 'pancakes/stack'
 require 'pancakes/unit'
 
 require 'pancakes/background'
+
+HonestyCluster.setup
