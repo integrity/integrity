@@ -13,6 +13,10 @@
           span.label class="label-#{health_check_bootstrap_class(@last_health_check)}" = health_check_str(@last_health_check)
           small< = health_check_timestamp(@last_health_check)
 
+      div.mono
+        | wp database version: 
+        = @stack.wp_database_version
+
       br
 
   .row
@@ -21,6 +25,9 @@
         .btn-group role='group'
           a.btn.btn-primary href="/pancakes/stacks/#{@stack.id}/check_health"
             | Check health
+
+        .btn-group role='group'
+          == link_to 'Logs', stack_logs_url(@stack), class: 'btn btn-primary', target: '_blank'
 
         .btn-group role='group'
           a.btn.btn-primary href="/pancakes/stacks/#{@stack.id}/restart"
@@ -77,7 +84,7 @@
               td.col-xs-7.commit-message
                 = commit.message
 
-  .row
+  .row#services
     .col-xs-12
       h3 Services
       table.table.table-bordered
@@ -108,12 +115,14 @@
                     | Actions
                     span.caret<
                   ul class="dropdown-menu"
-                    li
+                    li class=(unit.container_id ? '' : 'disabled')
                       == link_to 'Logs', service_logs_url(unit), target: '_blank'
                     li
                       == link_to 'Check Health', service_check_health_url(unit)
                     li
                       == link_to 'Restart', service_restart_url(unit)
+                    /li
+                      == link_to 'Restart idempotent', service_restart_idempotent_url(unit)
                     - if unit.user_facing?
                       li
                         == launch_button(unit, last_health_check)
@@ -122,6 +131,8 @@
 
               td.col-xs-1.mono
                 = unit.service_name
+                br
+                = unit.tcp_str
               /td.col-xs-1.mono = container_state(container)
               td.col-xs-8.mono
                 ul

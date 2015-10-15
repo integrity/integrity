@@ -107,6 +107,17 @@ module HonestyCluster
         docker_api_container_json(_cargo_json)
       end
 
+      def pull_image
+        HonestyCluster::Event.new_benchmarked_event(type: 'Docker::Pull', status: 'DOCKER_PULL', msg: "pulled docker image '#{image_name}'") do
+          docker_api_pull_image(image_name)
+        end
+      end
+
+      def container_id
+        kontainer = container
+        kontainer ? kontainer.short_id : nil
+      end
+
       private def internal_run_container(_docker_json)
         _container = create_container(_docker_json)
         if HonestyCluster.dry_run?

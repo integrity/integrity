@@ -26,13 +26,19 @@ module HonestyCluster
 
       def containers_filtered(filters)
         return [] if HonestyCluster.dry_run?
+        Docker.logger.info "getting containers: #{filters.inspect}"
         Docker::Container.all(
           {
             'all' => 1,
             filters: docker_api_label_filters(filters),
-          },
-          SwarmBackend.connection,
+          }
         )
+      end
+
+      def cache_containers(&block)
+        @__container_cache = {}
+        block.call
+        @__container_cache = {}
       end
 
       def create_container(docker_json)
@@ -44,7 +50,7 @@ module HonestyCluster
           nil
         else
           logger.info msg
-          Docker::Container.create(docker_json, SwarmBackend.connection)
+          Docker::Container.create(docker_json)
         end
       end
 
@@ -58,6 +64,24 @@ module HonestyCluster
 
       def MB(bytes)
         bytes * 2**20
+      end
+
+      def docker_api_pull_image(image_name)
+        docker_api_with_timeout(10*60) do
+          Docker.logger.info "pulling image: #{image_name}"
+          Docker::Image.create({'fromImage' => image_name})
+        end
+      #rescue Docker::Error::TimeoutError => e
+        ## image pulls may be long, so just accept it
+        #return nil
+      end
+
+      def docker_api_with_timeout(timeout, &block)
+        curr = Docker.options[:read_timeout]
+        Docker.options[:read_timeout] = timeout
+        yield
+      ensure
+        Docker.options[:read_timeout] = curr || nil
       end
 
       #ports should look like: [[private_port, public_port], ...]

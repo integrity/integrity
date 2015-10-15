@@ -50,6 +50,10 @@
               <%= "timberland_branch=#{Pancakes::Fleet::Templating.config.timberland_branch}" %>
               <br>
             <% end %>
+            <% if Integrity.config.dtest? %>
+              <%= "swarm-master=#{ENV['DOCKER_HOST']}" %>
+              <br>
+            <% end %>
             <% if HonestyCluster.dry_run? %>
               <%= "dry_run=true" %>
             <% end %>

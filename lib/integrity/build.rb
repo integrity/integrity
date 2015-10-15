@@ -353,7 +353,7 @@ module Integrity
     end
 
     # CargoGroup
-    def cargo_list
+    def cargos
       list = [self]
       if datastore
         list.unshift(datastore_cargo)
@@ -404,6 +404,7 @@ module Integrity
     # Cargo
     def container_env
       {
+        'TERM' => 'xterm',
         'PROJECT' => self.project_name,
         'BRANCH' => self.branch_name,
         'SHA' => self.sha,

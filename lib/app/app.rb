@@ -273,7 +273,7 @@ module Integrity
       if @service
         @service.restart_container
         flash[:notice] = "#{@service.resource_name} restarted"
-        redirect pancakes_stack_path(@service.stack)
+        redirect pancakes_stack_path(@service.stack) + '#services'
       else
         flash[:error] = "Service #{params[:id]} not found"
         redirect pancakes_path
@@ -336,7 +336,7 @@ module Integrity
       if @service
         @service.refresh_service_addr
         @service.check_health!
-        redirect pancakes_stack_path(@service.stack)
+        redirect pancakes_stack_path(@service.stack) + '#services'
       else
         flash[:error] = "Service #{params[:id]} not found"
         redirect pancakes_path

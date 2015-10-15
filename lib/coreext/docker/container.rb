@@ -13,6 +13,10 @@ class Docker::Container
     end
   end
 
+  def short_id
+    id ? id[0...12] : nil
+  end
+
   def node
     full_name.split('/')[1]
   end

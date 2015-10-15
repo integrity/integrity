@@ -29,7 +29,7 @@ module Pancakes
       validates_presence :service_def
       validates_includes STATES, :state, allow_blank: false, allow_nil: false
       validates_integer :port, allow_nil: true
-      errors.add(:machine_ip, "machine_ip '#{machine_ip}' is not an ip address") if (machine_ip && !IPAddr.new(machine_ip).ipv4?)
+      errors.add(:machine_ip, "machine_ip '#{machine_ip}' is not an ip address") if (machine_ip && !machine_ip.match(HonestyCluster::SwarmBackend::IP_ADDR_REGEX))
     end
 
     #
@@ -446,9 +446,9 @@ module Pancakes
       end
 
       # dont setup the db when restarting
-      new_cmd = cargo_json[:cmd]
-      new_cmd.last << ' --no-setup-db'
-      cargo_json_overrides[:cmd] = new_cmd
+      #new_cmd = cargo_json[:cmd]
+      #new_cmd.last << ' --no-setup-db'
+      #cargo_json_overrides[:cmd] = new_cmd
 
       cargo_json.deep_merge(cargo_json_overrides)
     end
@@ -506,6 +506,7 @@ module Pancakes
     # Cargo
     def container_env
       _env = {
+        'TERM' => 'xterm',
         'AWS_SECRET_ACCESS_KEY' => ':DEV_AWS_SECRET_ACCESS_KEY',
         'AWS_SECRET_KEY'        => ':DEV_AWS_SECRET_KEY',
         'AWS_ACCESS_KEY_ID'     => ':DEV_AWS_ACCESS_KEY_ID',

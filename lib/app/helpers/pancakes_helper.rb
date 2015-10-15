@@ -108,35 +108,26 @@ module Integrity
       #end
 
       def service_notes(unit, last_health_check)
-        if last_health_check && last_health_check.healthy?
-          if unit.addr_known?
-            if unit.service_name == 'mysql'
-              [
-                mysql_notes(unit),
-              ]
-            elsif unit.service_name == 'postgres'
-              [
-                postgres_notes(unit),
-              ]
+        notes = 
+          if last_health_check && last_health_check.healthy?
+            if unit.addr_known?
+              if unit.service_name == 'mysql'
+                [ mysql_notes(unit) ]
+              elsif unit.service_name == 'postgres'
+                [ postgres_notes(unit) ]
+              else
+                [ http_url(unit) ]
+              end
+            elsif unit.user_facing?
+              [ "Last health was fine, but the service is missing it's address. Refresh the health." ]
             else
-              [
-                http_url(unit),
-              ]
+              []
             end
-          elsif unit.user_facing?
-            [
-              "Last health was fine, but the service is missing it's address. Refresh the health.",
-            ]
           else
-            []
+            [ health_check_message(last_health_check) ]
           end
-        else
-          [
-            health_check_message(last_health_check)
-          ]
-        end
-          .flatten
-          .compact
+
+        [container_id_notes(unit), notes].flatten.compact
       end
 
       def mailcatcher_url(unit)
@@ -147,6 +138,16 @@ module Integrity
       #def mailcatcher_button(unit, disabled: false)
         #launch_button_helper('Mailcatcher', mailcatcher_url(unit), disabled)
       #end
+
+      def container_id_notes(unit)
+        if unit && id = unit.container_id
+          [
+            "container-id: #{id}"
+          ]
+        else
+          nil
+        end
+      end
 
       def mysql_notes(unit)
         if unit
