@@ -732,7 +732,7 @@ module Pancakes
     end
 
     # CargoGroup
-    def cargo_list
+    def cargos
       units.to_a
     end
 

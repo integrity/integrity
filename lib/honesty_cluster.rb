@@ -14,7 +14,9 @@ module HonestyCluster
   def self.setup
     Docker.url = ENV['DOCKER_HOST'] || raise('must export DOCKER_HOST')
     Docker.options = {}
-    Docker.logger = Logging.logger['docker']
+    lgr = Logging.logger['docker']
+    lgr.level = :info
+    Docker.logger = lgr
   end
 
   def self.run_waitresses

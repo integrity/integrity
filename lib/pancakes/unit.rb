@@ -446,9 +446,9 @@ module Pancakes
       end
 
       # dont setup the db when restarting
-      new_cmd = cargo_json[:cmd]
-      new_cmd.last << ' --no-setup-db'
-      cargo_json_overrides[:cmd] = new_cmd
+      #new_cmd = cargo_json[:cmd]
+      #new_cmd.last << ' --no-setup-db'
+      #cargo_json_overrides[:cmd] = new_cmd
 
       cargo_json.deep_merge(cargo_json_overrides)
     end

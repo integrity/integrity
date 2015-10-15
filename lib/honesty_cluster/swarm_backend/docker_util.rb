@@ -26,12 +26,19 @@ module HonestyCluster
 
       def containers_filtered(filters)
         return [] if HonestyCluster.dry_run?
+        Docker.logger.info "getting containers: #{filters.inspect}"
         Docker::Container.all(
           {
             'all' => 1,
             filters: docker_api_label_filters(filters),
           }
         )
+      end
+
+      def cache_containers(&block)
+        @__container_cache = {}
+        block.call
+        @__container_cache = {}
       end
 
       def create_container(docker_json)
@@ -61,6 +68,7 @@ module HonestyCluster
 
       def docker_api_pull_image(image_name)
         docker_api_with_timeout(10*60) do
+          Docker.logger.info "pulling image: #{image_name}"
           Docker::Image.create({'fromImage' => image_name})
         end
       #rescue Docker::Error::TimeoutError => e

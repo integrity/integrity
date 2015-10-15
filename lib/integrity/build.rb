@@ -353,7 +353,7 @@ module Integrity
     end
 
     # CargoGroup
-    def cargo_list
+    def cargos
       list = [self]
       if datastore
         list.unshift(datastore_cargo)

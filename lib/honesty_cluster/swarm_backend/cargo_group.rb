@@ -13,7 +13,7 @@ module HonestyCluster
       interface_method :cargo_group_id
 
       # list of Cargos
-      interface_method :cargo_list
+      interface_method :cargos
 
       # hooks
       interface_method :before_run_containers
@@ -35,7 +35,7 @@ module HonestyCluster
       def run_containers
         begin
           before_run_containers
-          cargo_list.each do |cargo|
+          cargos.each do |cargo|
             cargo.run_container
           end
           after_run_containers
@@ -56,6 +56,18 @@ module HonestyCluster
           container.force_remove
         end
         after_destroy_containers
+      end
+
+      def image_names
+        cargos.map(&:image_name).uniq
+      end
+
+      def pull_images
+        HonestyCluster::Event.new_benchmarked_event(type: 'Docker::Pull', status: 'DOCKER_PULL', msg: 'docker images pulled') do
+          image_names.each do |image_name|
+            docker_api_pull_image(image_name)
+          end
+        end
       end
 
       def containers

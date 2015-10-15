@@ -117,7 +117,7 @@ module HonestyCluster
     # @api private
     private def create_event_for_health_check(health_check)
       add_event(
-        source:    'honesty',
+        source:    HonestyCluster::EVENT_SOURCE,
         timestamp: health_check.timestamp,
         type:      health_check_event_type,
         status:    health_check.health_str,
