@@ -23,6 +23,9 @@
             | Check health
 
         .btn-group role='group'
+          == link_to 'Logs', stack_logs_url(@stack), class: 'btn btn-primary', target: '_blank'
+
+        .btn-group role='group'
           a.btn.btn-primary href="/pancakes/stacks/#{@stack.id}/restart"
             | Restart
 
@@ -108,12 +111,14 @@
                     | Actions
                     span.caret<
                   ul class="dropdown-menu"
-                    li
+                    li class=(unit.container_id ? '' : 'disabled')
                       == link_to 'Logs', service_logs_url(unit), target: '_blank'
                     li
                       == link_to 'Check Health', service_check_health_url(unit)
                     li
                       == link_to 'Restart', service_restart_url(unit)
+                    /li
+                      == link_to 'Restart idempotent', service_restart_idempotent_url(unit)
                     - if unit.user_facing?
                       li
                         == launch_button(unit, last_health_check)
