@@ -25,12 +25,13 @@ bundle exec rackup -p3000 -o0.0.0.0
 ## XenCenter swarm minions
 - run ./formation.rb with -n
 - while booted from .iso, run `systemctl stop systemd-udevd` before running coreos-install
-- remove --device=/dev/xvdh arg from metrics unit after downloading cloud config
-- set the ip of swarm-minion --advertise to eth0 ip
 - extract the cloud-config:
     ```
     cat /tmp/<cfn-template>.json | ruby -rjson -ryaml -e'puts JSON.load(STDIN.read)["Resources"].values[0]["Properties"]["UserData"]["Fn::Base64"]["Fn::Join"].flatten.reject(&:"empty?")'
     ```
+
+- [done] remove --device=/dev/xvdh arg from metrics unit after downloading cloud config
+- [done] set the ip of swarm-minion --advertise to eth0 ip
 
 - potentially useful:
   - hostnamectl set-hostname ip-$(ifconfig eth0 | head -2 | tail -1 | awk '{print $2}' | sed -e's/\./-/g').grnds-hq

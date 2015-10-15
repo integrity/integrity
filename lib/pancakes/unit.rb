@@ -543,7 +543,7 @@ module Pancakes
 
     # Cargo
     def cpu_cores
-      1
+      nil
     end
 
     # Cargo
