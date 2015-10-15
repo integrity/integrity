@@ -193,7 +193,7 @@ module Pancakes
 
         partials << machine_of(unit.machine_of) if unit.machine_of
 
-        if unit.name.include?('orchestra')
+        if unit.name.include?('setup')
           partials << service_type('oneshot')
           partials << remain_after_exit
         end

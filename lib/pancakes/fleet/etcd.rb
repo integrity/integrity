@@ -22,7 +22,7 @@ module Pancakes
     end
 
     class Etcd
-      include Pancakes::ClassLogger
+      include ClassLogger
 
       DEFAULT_WATCH_TIMEOUT = 30
       STATES_KEY = '/_coreos.com/fleet/state'

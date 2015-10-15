@@ -1,6 +1,27 @@
 module HonestyCluster
+  class Error < RuntimeError ; end
+
+  extend ClassLogger
+
   def self.cluster
     Pancakes.cluster
+  end
+
+  def self.dry_run?
+    !!ENV['HONESTY_DRY_RUN']
+  end
+
+  def self.setup
+    Docker.url = ENV['DOCKER_HOST'] || raise('must export DOCKER_HOST')
+    Docker.options = {}
+    lgr = Logging.logger['docker']
+    lgr.level = :info
+    Docker.logger = lgr
+  end
+
+  def self.run_waitresses
+    puts "running waitresses"
+    NodeCountWaitress.new.run_async
   end
 
   module Turds
@@ -72,5 +93,19 @@ done
   end
 end
 
+require 'interface'
+
+require 'coreext/docker/container'
 require 'honesty_cluster/aws_clients'
 require 'honesty_cluster/bundle_cache'
+require 'honesty_cluster/event'
+require 'honesty_cluster/waitress'
+
+require 'honesty_cluster/swarm_backend'
+require 'honesty_cluster/swarm_backend/docker_util'
+require 'honesty_cluster/swarm_backend/cargo'
+require 'honesty_cluster/swarm_backend/cargo_group'
+require 'honesty_cluster/swarm_backend/build_datastore'
+require 'honesty_cluster/health_checkable'
+
+require 'honesty_cluster/timberland'

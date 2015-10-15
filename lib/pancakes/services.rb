@@ -36,6 +36,8 @@ module Pancakes
         requires: :mysql,
         machineof: :mysql,
         ports: [1080,1025],
+        ping_url: 'http://$ip:$port/',
+        http_status: 200,
       },
       {
         name: 'freezer',
@@ -58,7 +60,7 @@ module Pancakes
         dbs: %w[frick-development ruote-development],
       },
       {
-        name: 'jarvis-orchestra',
+        name: 'jarvis-setup',
         image: 'grnds/jarvis_ci:latest',
         repo: 'consultingmd/consultingmd',
         machineof: :mysql,
@@ -71,7 +73,7 @@ module Pancakes
         image: 'grnds/jarvis_ci:latest',
         repo: 'consultingmd/consultingmd',
         machineof: :mysql,
-        requires: :"jarvis-orchestra",
+        requires: :"jarvis-setup",
         ports: [10001],
         ping_url: 'http://$ip:$port/status',
         http_status: 200,
@@ -82,11 +84,11 @@ module Pancakes
         image: 'grnds/jarvis_ci:latest',
         repo: 'consultingmd/consultingmd',
         machineof: :mysql,
-        requires: :"jarvis-orchestra",
+        requires: :"jarvis-setup",
         env: SERVICE_ENV,
       },
       {
-        name: 'tim-orchestra',
+        name: 'tim-setup',
         image: 'grnds/tim_ci:latest',
         repo: 'consultingmd/tim',
         machineof: :mysql,
@@ -99,7 +101,7 @@ module Pancakes
         image: 'grnds/tim_ci:latest',
         repo: 'consultingmd/tim',
         machineof: :mysql,
-        requires: :"tim-orchestra",
+        requires: :"tim-setup",
         ports: [10004],
         ping_url: 'http://$ip:$port/status',
         http_status: 200,
@@ -110,7 +112,7 @@ module Pancakes
         image: 'grnds/tim_ci:latest',
         repo: 'consultingmd/tim',
         machineof: :mysql,
-        requires: :"tim-orchestra",
+        requires: :"tim-setup",
         env: SERVICE_ENV,
       },
       {
@@ -137,6 +139,15 @@ module Pancakes
         http_status: 302,
         dbs: %w[pg-cache-development],
       },
+      {
+        name: 'wp-server',
+        image: 'grnds/wp_ci:latest',
+        repo: 'consultingmd/wp',
+        env: SERVICE_ENV,
+        ports: [10009],
+        ping_url: 'http://$ip:$port/',
+        http_status: 200,
+      },
     ]
 
     def get(service_name)
@@ -149,7 +160,7 @@ module Pancakes
     end
 
     def jarvis_services
-      %w[mysql mailcatcher jarvis-server jarvis-orchestra jarvis-delayed_job tim-server tim-orchestra tim-delayed_job frick-server]
+      %w[mysql mailcatcher jarvis-server jarvis-setup jarvis-delayed_job tim-server tim-setup tim-delayed_job frick-server]
     end
 
     def tp_services
@@ -161,7 +172,15 @@ module Pancakes
     end
 
     def full_services
-      jarvis_services + %w[tp-server banyan-server postgres]
+      %w[
+        mysql postgres mailcatcher
+        jarvis-server jarvis-setup jarvis-delayed_job
+        tim-server tim-setup tim-delayed_job
+        frick-server
+        tp-server
+        banyan-server
+        wp-server
+      ]
     end
 
     def netmaster

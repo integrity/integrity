@@ -78,6 +78,7 @@
   </ul>
 
   <ul class="nav navbar-right top-nav hidden-sm hidden-xs">
+    <li><p class="navbar-text"><i class="fa fa-fw fa-lg fa-server"></i> <%= HonestyCluster::SwarmBackend.node_count %></p></li>
     <% if @project.present? %>
       <li><a href="<%= project_path(@project) %>"><span style="color: white;"><strong><%= @project.name.upcase %></strong></a></li>
       <li class="dropdown">

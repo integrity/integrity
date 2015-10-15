@@ -32,7 +32,7 @@ module Integrity
       on(*%w(
         build:completed
         build:canceled
-        machine:added
+        machine_count_changed
         build:queue:all
         app:start
       )){ Builder.queue_builds! }

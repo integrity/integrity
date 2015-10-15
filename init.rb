@@ -11,6 +11,7 @@ end
 require 'i18n'
 I18n.load_path << "#{ROOT_DIR}/config/locale/dates.en.yml"
 require 'integrity'
+require 'byebug'
 
 
 # I18n Translations
@@ -34,8 +35,11 @@ raise("DATABASE_URL is not set") unless ENV['DATABASE_URL']
 app = RConfig.application
 ENV['RACK_ENV'] = (app.environment || 'production').to_s
 DTEST = ENV['HONESTY_DTEST'] == 'true'
+puts "RACK_ENV=#{ENV['RACK_ENV']}"
 puts 'environment has DTEST applied' if DTEST
+puts 'HONESTY_DRY_RUN is true' if HonestyCluster.dry_run?
 puts "TIMBERLAND_DEBUG=#{ENV['TIMBERLAND_DEBUG']}" if ENV['TIMBERLAND_DEBUG']
+puts "SWARM_ENV=#{ENV['SWARM_ENV']}" if ENV['SWARM_ENV']
 
 if app.environment == 'production'
   logging_pattern = "%.1l %c: %m\n"
@@ -60,6 +64,7 @@ puts "HONESTY_BASE_URL=#{base_url}"
 
 Logging.logger.root.appenders = Logging.appenders.stdout(layout: ::Logging::Layouts::Pattern.new(pattern: logging_pattern))
 Logging.logger['honesty'].level  = :debug
+Logging.logger['dj'].level = :debug
 
 Integrity.configure do |c|
   c.environment                 = app.environment           # Environment to run in (i.e. development, production, etc).
@@ -84,7 +89,7 @@ Integrity.configure do |c|
   c.logger                      = Logging.logger['honesty']
   c.fleet_host                  = ENV['FLEETCTL_ENDPOINT'] ? ENV['FLEETCTL_ENDPOINT'].sub(/https?:\/\//, '').split(':')[0] : raise("must set FLEETCTL_ENDPOINT")
   c.dtest                       = DTEST
-  c.run_limit                   = DTEST ? 1 : 4
+  c.run_limit                   = DTEST ? 2 : 4
   # Use https://github.com/grahamc/git-cachecow to cache repository locally
   # c.checkout_proc             = Proc.new do |runner, repo_uri, branch, sha1, target_directory|
   #   runner.run! "git scclone #{repo_uri} #{target_directory} #{sha1}"
@@ -111,4 +116,4 @@ if Delayed::Job.where(queue: 'stats').count == 0
   Delayed::Job.enqueue(Integrity::StatsJob.new)
 end
 
-Slim::Engine.set_default_options pretty: true
+Slim::Engine.set_options pretty: true

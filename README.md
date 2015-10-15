@@ -1,8 +1,41 @@
-Integrity — Continuous Integration Server
-=========================================
+Honesty CI
+==========
 
-### Intro
-Integrity is the custom-built, CI server for Grand Rounds. It is backed by CoreOS and Docker.
+# Useful Stuff
+
+```bash
+# deploy with a branch
+DEPLOY_ENV=dtest cap deploy -s branch=foobar
+
+# master will be used if no branch is specified
+DEPLOY_ENV=production cap deploy
+
+# only 'dtest', and 'production' are valid values for DEPLOY_ENV
+
+
+# how to setup a local pry session
+# you'll probably need to get this file from $GR_HOME/engineering/honesty/honesty-env.sh.gpg
+# DO NOT CHECK THIS FILE IN!!!
+source honesty-env.sh
+pry -r./init
+# or run a local web server
+bundle exec rackup -p3000 -o0.0.0.0
+```
+
+## XenCenter swarm minions
+- run ./formation.rb with -n
+- while booted from .iso, run `systemctl stop systemd-udevd` before running coreos-install
+- extract the cloud-config:
+    ```
+    cat /tmp/<cfn-template>.json | ruby -rjson -ryaml -e'puts JSON.load(STDIN.read)["Resources"].values[0]["Properties"]["UserData"]["Fn::Base64"]["Fn::Join"].flatten.reject(&:"empty?")'
+    ```
+
+- [done] remove --device=/dev/xvdh arg from metrics unit after downloading cloud config
+- [done] set the ip of swarm-minion --advertise to eth0 ip
+
+- potentially useful:
+  - hostnamectl set-hostname ip-$(ifconfig eth0 | head -2 | tail -1 | awk '{print $2}' | sed -e's/\./-/g').grnds-hq
+
 
 #### Installation
 
@@ -131,5 +164,3 @@ NOTE: Irb will load integrity application automatically
 #### Links:
 - Live: https://integrity.test.grandrounds.com
 - Code: http://github.com/ConsultingMD/honesty
-
-

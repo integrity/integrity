@@ -1,6 +1,10 @@
 module Pancakes
   class Stack < Sequel::Model
-    include Pancakes::ClassLogger
+    include ClassLogger
+    include HonestyCluster::SwarmBackend::CargoGroup
+    include HonestyCluster::HealthCheckable
+
+    DEFAULT_WP_DB = 'rc-branch-2015-09-25-1443234290.sql.gz'
 
     set_dataset :pancakes_stacks
     plugin :timestamps
@@ -17,6 +21,7 @@ module Pancakes
 
     one_to_many :commits, key: :stack_id, class: :"Pancakes::Commit"
     one_to_many :units,   key: :stack_id, class: :"Pancakes::Unit"
+    one_to_many :events,  key: :stack_id, class: :"HonestyCluster::Event", order: :timestamp
 
     add_association_dependencies commits: :destroy, units: :destroy
 
@@ -25,6 +30,7 @@ module Pancakes
       validates_includes   CLUSTER_STATES, :state,         allow_blank: false, allow_nil: false
       validates_includes   DESIRED_STATES, :desired_state, allow_blank: false, allow_nil: false
       validates_min_length 1,              :services,      allow_blank: false, allow_nil: false
+      errors.add(:"Owner", 'cannot be empty') if pocs.empty? || pocs[0].empty?
     end
 
     def before_create
@@ -34,7 +40,8 @@ module Pancakes
     end
 
     def before_destroy
-      Pancakes::Freezer.delete_stack(self.id)
+      #Pancakes::Freezer.delete_stack(self.id)
+      self.destroy_containers
       super
     end
 
@@ -43,10 +50,12 @@ module Pancakes
     # constructors
     #
 
-    def self.create_with_git_strings(services: Services.full_services, pocs: '', desired_state: :off, branches: nil, **git_strings)
+    def self.create_with_git_strings(pocs: '', desired_state: :off, branches: nil, wp_database_version: DEFAULT_WP_DB, **git_strings)
       self.db.transaction do
         pocs = (pocs || "").split(',').map(&:strip)
-        me = new(services: services.to_set.to_a, pocs: pocs, desired_state: desired_state)
+        services = Services.full_services
+        services = services - ['wp-server'] if wp_database_version.nil?
+        me = new(services: services.to_set.to_a, pocs: pocs, desired_state: desired_state, wp_database_version: wp_database_version)
         me.set_state(:off)
         me.save
 
@@ -72,6 +81,7 @@ module Pancakes
           me.add_commit(Pancakes::Commit.create_from_git_string(Pancakes.repo_name(codebase), git_str))
         end
 
+        #me.initial_health_check!
         me
       end
     end
@@ -111,6 +121,8 @@ module Pancakes
     def name
       format("%s_%s_%d", Pancakes::NAMESPACE, self.short_sha, self.id)
     end
+    alias :resource_name :name
+
 
     # TODO break this down into smaller pieces. it's also similar in structure to bring_down.
     def bring_up(thaw_dbs: false)
@@ -348,25 +360,9 @@ module Pancakes
       logger.info 'done restarting with same commits'
     end
 
-    def refresh_commits(force: false)
+    def refresh_commits
       commits.each do |ci|
-        ci.refresh_myself(force: force)
-      end
-    end
-
-    def service_addrs
-      cont = netmaster_unit.container
-
-      if cont
-        cont.port_mapping.map do |k,v|
-          [
-            Pancakes::Services.get_by_port(k)[:name].split('-')[0],
-            "#{netmaster_unit.machine_ip}:#{v}",
-          ]
-        end.to_h
-      else
-        logger.debug "netmaster_unit.container is nil"
-        nil
+        ci.refresh_branch_head
       end
     end
 
@@ -559,9 +555,9 @@ module Pancakes
 
     # @api private
     def non_netmaster_units
-      # sort orchestra units to the top
+      # sort setup units to the top
       units_dataset.exclude(service_name: Pancakes::Services.netmaster).to_a
-        .sort { |a,b| (a.name['orchestra'] && -1) || (b.name['orchestra'] && 1) || 0 }
+        .sort { |a,b| (a.name['setup'] && -1) || (b.name['setup'] && 1) || 0 }
     end
 
     # @api private
@@ -646,7 +642,21 @@ module Pancakes
       .reduce(true){|memo,val| memo && val }
     end
 
-    private
+    def clear_events
+      units.each do |unit|
+        unit.clear_events
+      end
+
+      events_dataset.destroy
+    end
+
+    #def service_events
+      #units.map(&:events).flatten.sort{|a,b| b.timestamp <=> a.timestamp }
+    #end
+
+    def all_events
+      (units.map(&:events).flatten + events).sort{|a,b| b.timestamp <=> a.timestamp }
+    end
 
     # @api private
     def self.has_only_states(actual, *allowed)
@@ -661,13 +671,11 @@ module Pancakes
       !!states.detect{|s| query.include?(s) }
     end
 
-    # @api private
-    def block_until_stack_states(states:, timeout:)
+    private def block_until_stack_states(states:, timeout:)
       Pancakes.block_until_values(obj: self, method: :state_from_cluster!, values: states, timeout: timeout)
     end
 
-    # @api private
-    def is_service_up?(unit)
+    private def is_service_up?(unit)
       name = unit.service_name
       raise "service #{name} is not pingable" unless unit.pingable?
       url = unit.ping_url
@@ -699,8 +707,108 @@ module Pancakes
       end
     end
 
-    def logger_name
+    private def logger_name
       "#{self.class}[#{self.name}]"
+    end
+
+    # CargoGroup
+    def before_run_containers
+      refresh_commits
+      new_sha
+      save
+      clear_service_addrs
+      StatHatWrapper.post_count('pancakes stacks bring_up started', 1)
+      logger.info "bring_up started for #{self.name}"
+    end
+
+    # CargoGroup
+    #def after_run_containers
+      #refresh_service_addrs
+    #end
+
+    # CargoGroup
+    def after_destroy_containers
+      clear_service_addrs
+    end
+
+    # CargoGroup
+    def cargos
+      units.to_a
+    end
+
+    # CargoGroup
+    def cargo_group_type
+      'pancakes-stack'
+    end
+
+    # CargoGroup
+    def cargo_group_id
+      self.id
+    end
+
+    def clear_service_addrs
+      units_dataset.update(machine_ip: nil, port: nil)
+    end
+
+    def refresh_service_addrs
+      logger.info 'refreshing service addresses'
+      units_with_health_and_container.each do |unit,_,container|
+        if container
+          unit.machine_ip = container.ip
+          unit.port = container.public_port
+        else
+          unit.machine_ip = unit.port = nil
+        end
+        unit.save
+      end
+      nil
+    end
+
+    def service_addrs
+      refresh_service_addrs
+      units.map do |unit|
+        next(nil) unless unit.tcp_str
+        { unit.service_type => unit.tcp_str }
+      end
+        .compact
+        .reduce(&:merge)
+    end
+
+    def containers_mapped_by_service_name
+      containers.map do |container|
+        [
+          Pancakes::Unit.parse_unit_name(container.name).service_name,
+          container
+        ]
+      end.to_h
+    end
+
+    def units_sorted
+      units.sort do |a,b|
+        a.service_name <=> b.service_name
+      end
+    end
+
+    def units_with_health_and_container
+      mapped_containers = containers_mapped_by_service_name
+      units_sorted.map do |unit|
+        [
+          unit,
+          unit.last_health_check,
+          mapped_containers[unit.service_name]
+        ]
+      end
+    end
+
+    # HealthCheckable
+    def current_health
+      refresh_service_addrs
+      services_healthy =
+        units.map do |unit|
+          unit.check_health!.healthy?
+        end
+          .reduce(true){|memo,val| memo && val }
+      HonestyCluster::HealthCheck.new(services_healthy, services_healthy ? nil : 'one or more services are unhealthy')
     end
   end
 end

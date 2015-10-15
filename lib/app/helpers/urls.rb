@@ -109,6 +109,32 @@ module Integrity
         build_path(build, 'artifacts', CGI.escape(CGI.escape(artifact)))
       end
 
+      def pancakes_path
+        path('pancakes')
+      end
+
+      def pancakes_stack_path(stack)
+        path('pancakes', 'stacks', stack.id)
+      end
+
+      def service_logs_url(unit)
+        "#{Integrity.logs_url}?q=#{unit.container_id}"
+      end
+
+      def stack_logs_url(stack)
+        query = stack.containers.map(&:short_id).join('+OR+')
+        "#{Integrity.logs_url}?q=#{query}"
+      end
+
+      def service_restart_url(service)
+        "/pancakes/stacks/#{@stack.id}/services/#{service.id}/restart"
+      end
+
+      def service_check_health_url(service)
+        "/pancakes/stacks/#{@stack.id}/services/#{service.id}/check_health"
+      end
+
+
       # Copyright (MIT) Eric Kidd -- http://github.com/emk/sinatra-url-for
       #
       # Construct a link to +url_fragment+, which should be given relative to

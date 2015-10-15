@@ -122,11 +122,6 @@ module Integrity
 
         build.save
 
-        build.reload
-        if !build.commit
-          Integrity.logger.debug "[fml] where is the commit for build id=#{build.id}"
-        end
-
         if !rebuild
           inc_pushes
           save
@@ -134,6 +129,8 @@ module Integrity
 
         build.run
         build
+      else
+        raise "commit identifier is not present"
       end
     end
 

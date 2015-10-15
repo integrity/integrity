@@ -20,6 +20,9 @@ module Integrity
     include DataMapper::Resource
     extend DataMapper::Resource::ClassMethods
     include Status
+    include HonestyCluster::SwarmBackend::Cargo
+    include HonestyCluster::SwarmBackend::CargoGroup
+
 
     GLOB_CHARS = '*?[]' unless defined?(GLOB_CHARS)
     MERCY_KILL_TIMESPAN = 20.minutes unless defined?(MERCY_KILL_TIMESPAN)
@@ -63,6 +66,14 @@ module Integrity
       branch.try(:name)
     end
 
+    def repo_full_name
+      repo.full_name
+    end
+
+    def repo_name
+      repo.name
+    end
+
     def run
       log 'run'
       Integrity::Event.trigger('build:queue', self.id)
@@ -76,21 +87,21 @@ module Integrity
 
     def complete!(result)
       success = result.respond_to?(:success) ? result.success : result
-      log "[complete!][fi] with success #{success} and result #{result}. Setting_as_complete and cleanup next!"
+      log "completing build with success=#{success} result=#{result}"
       set_as_complete(success)
       Integrity::Event.trigger('build:cleanup', self.id)
     end
 
     def cancel_with_reason(agent, reason, method_name)
-      description = "Killed by [#{agent}] because [#{reason}] in method [#{method_name}]"
-      log "[kill_with_reason][fi] #{description}"
+      description = "killed by #{agent} because #{reason} in method #{method_name}"
+      log description
       update(kill_reason: description)
       cancel!
     end
 
     def cancel_previous_builds!
       previous_in_progress_builds = branch.builds_before(self).select{|b| b.in_progress?}
-      log %Q{[cancel_previous_builds!]: #{previous_in_progress_builds.map{|b| b.id}.join(",") }}
+      log %Q{cancelling previous builds: [#{previous_in_progress_builds.map{|b| b.id}.join(",") }]}
       previous_in_progress_builds.each do |b|
         b.cancel_with_reason('Honesty', 'More recent commit on branch submitted', 'cancel_previous_builds')
       end
@@ -171,7 +182,7 @@ module Integrity
     end
 
     def set_as_complete(success = false)
-      log "[set_as_complete!][fi] with success #{success}."
+      log "setting as complete with success=#{success}"
       self.raise_on_save_failure = true
       update(completed_at: Time.now, successful: success)
       notify
@@ -278,32 +289,191 @@ module Integrity
     end
 
     def log(msg)
-      Integrity.logger.info "[Integrity::Build]:[Build:#{id}] event:#{msg}, params:#{self.inspect}"
+      Integrity.logger.info "[Integrity::Build id=#{id}] #{msg}"
     end
 
     def consider_mercy_kill
       if mercy_kill?
-        log("[consider_mercy_kill][fi] Mercy Killing Unit")
-        cancel_with_reason('Coreos', 'Failed on CoreOS', 'consider_mercy_kill')
+        log("mercy killing build")
+        cancel_with_reason('CoreOS', 'Failed on CoreOS', 'consider_mercy_kill')
       end
+    end
+
+
+    def uses_swarm
+      File.readlines('/tmp/swarm_repos.txt').map(&:chomp).include?(self.repo.name)
+    rescue Errno::ENOENT
+      false
+    end
+
+    def timberland_command
+      HonestyCluster::Timberland::Cmd.new(
+        timberland_branch: uses_swarm ? Pancakes::Fleet::Templating.config.timberland_branch : 'master',
+        boot_type:    'build',
+        service_type: 'spec',
+        sha:          self.sha,
+        repo:         self.repo_full_name,
+        branch:       self.branch_name,
+        debug:        Pancakes.timberland_debug?,
+        parallel_spec_jobs: self.parallel_spec_jobs,
+        sleep:        500,
+      )
+    end
+
+    def datastore_cargo
+      if datastore
+        @__ds_cargo ||= BuildDatastore.new(self)
+      else
+        nil
+      end
+    end
+
+    def tmb_sleep
+      if self.branch_name.include?('/sleep')
+        500
+      else
+        nil
+      end
+    end
+
+    def timberlandified?
+      %w[ ConsultingMD ].include?(self.repo_name)
+    end
+
+    def uses_parallel_spec?
+      self.repo_full_name == "ConsultingMD/ConsultingMD"
+    end
+
+    def parallel_spec_jobs
+      if uses_parallel_spec?
+        cpu_cores
+      else
+        nil
+      end
+    end
+
+    # CargoGroup
+    def cargos
+      list = [self]
+      if datastore
+        list.unshift(datastore_cargo)
+      else
+        list
+      end
+    end
+
+    # Cargo, CargoGroup
+    def cargo_group_type
+      'build'
+    end
+
+    # Cargo, CargoGroup
+    def cargo_group_id
+      self.id
+    end
+
+    # Cargo
+    def cargo_type
+      'app'
+    end
+
+    # Cargo
+    def cargo_id
+      self.id
+    end
+
+    # Cargo
+    def docker_command
+      if timberlandified?
+        timberland_command.to_docker_api_cmd
+      else
+        nil
+      end
+    end
+
+    # Cargo
+    def container_name
+      [self.service_name, 'app'].join('_')
+    end
+
+    # Cargo
+    def image_name
+      "grnds/#{self.project_name}_ci:latest"
+    end
+
+    # Cargo
+    def container_env
+      {
+        'TERM' => 'xterm',
+        'PROJECT' => self.project_name,
+        'BRANCH' => self.branch_name,
+        'SHA' => self.sha,
+        'BUILD_ID' => self.id,
+        'GITHUB_READ_TOKEN' => ':self',
+        'AWS_ACCESS_KEY_ID' => ':self',
+        'AWS_SECRET_ACCESS_KEY' => ':self',
+        'AWS_SECRET_KEY' => ':self',
+        'SAUCE_USERNAME' => ':self',
+        'SAUCE_ACCESS_KEY' => ':self',
+        'CALLBACK_URL' => "https://#{ENV['CALLBACK_HOST']}/status.json",
+        'TIMBERLAND_CMD' => self.timberland_command.run_cmd,
+      }.merge(
+          node_type_constraint('builds')
+        )
+    end
+
+    # Cargo
+    def container_labels
+      nil
+    end
+
+    # Cargo
+    def container_links
+      # backwards compatability with exiting --link env vars
+      ds = datastore == 'postgres' ? 'db' : datastore
+
+      if datastore
+        [[datastore_cargo.container_name, ds].join(':')]
+      else
+        nil
+      end
+    end
+
+    # Cargo
+    def exposed_ports
+      nil
+    end
+
+    # Cargo
+    def cpu_cores
+      if uses_parallel_spec?
+        30
+        #2
+      else
+        1
+      end
+    end
+
+    # Cargo
+    def memory
+      MB(512)
     end
 
     private
 
     def cancel!
-      log '[cancel!][fi] Starting'
       cancel_pending! if pending?
       cancel_building! if building?
       Integrity::Event.trigger('build:canceled', self.id)
     end
 
     def cancel_pending!
-      log '[cancel_pending!][fi] Build pending, change_state'
+      log 'cancelling pending build'
       update(state: 'cancelled', completed_at: Time.now)
     end
 
     def cancel_building!
-      log '[cancel!][cancel_building!][fi] Build pending, kill!'
+      log 'killing building build'
       time = completed_at || Time.now
       update(state: 'killed', completed_at: time)
       Integrity::Event.trigger('build:cleanup', self.id)

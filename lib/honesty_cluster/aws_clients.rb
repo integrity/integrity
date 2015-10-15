@@ -11,6 +11,10 @@ module HonestyCluster
         access_key_id:     'AWS_ACCESS_KEY_ID',
         secret_access_key: 'AWS_SECRET_ACCESS_KEY',
       },
+      uat: {
+        access_key_id:     'UAT_AWS_ACCESS_KEY_ID',
+        secret_access_key: 'UAT_AWS_SECRET_ACCESS_KEY',
+      },
     }
 
     def s3_client(env)

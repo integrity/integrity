@@ -14,6 +14,7 @@ require 'logging'
 require 'digest/sha1'
 require 'timeout'
 require 'ostruct'
+require 'pry'
 require 'pathname'
 require 'json'
 require 'haml'
@@ -62,6 +63,7 @@ require 'docker'
 
 require 'app/app'
 
+require 'pancakes'
 
 require 'integrity/event'
 require 'integrity/web_utils'
@@ -78,14 +80,12 @@ require 'integrity/load_utilization'
 require 'integrity/notifier'
 require 'integrity/notifier/base'
 require 'integrity/payload'
-require 'integrity/payload_builder'
 require 'integrity/checkout'
 require 'integrity/command_runner'
 require 'integrity/builder'
 require 'integrity/instance_manager'
 require 'integrity/stats_job'
 
-require 'pancakes'
 require 'tracker'
 
 DataMapper::Logger.new(STDOUT, :info)
@@ -119,6 +119,10 @@ module Integrity
     end
     def owner
       @owner.presence || Integrity.config.github_account
+    end
+
+    def full_name
+      [owner, name].join('/')
     end
   end
 
@@ -166,7 +170,7 @@ module Integrity
   end
 
   def self.human_duration(delta)
-    delta > 0 ? ChronicDuration.output(delta, format: :micro) : '0s'
+    delta && delta > 0 ? ChronicDuration.output(delta, format: :micro) : '0s'
   end
 
   # Replace or delete invalid UTF-8 characters from text, which is assumed
@@ -307,20 +311,6 @@ module Integrity
 
   def self.private_key
     @private_key ||= %x{cat /var/tmp/environments/etc/keys/id-rsa-honesty}
-  end
-
-  def self.sys_logger(name = :integrity, level = :debug)
-    return logger unless production?
-    name = (name.presence || :integrity).to_s
-    @sys_loggers ||= {}
-    unless @sys_loggers[name].present?
-      syslog = Logging.logger[name]
-      syslog.add_appenders Logging.appenders.syslog(name)
-      syslog.level = level
-      @sys_loggers[name] = syslog
-    end
-    @sys_loggers[name].level = level
-    @sys_loggers[name]
   end
 
   def self.instance_manager

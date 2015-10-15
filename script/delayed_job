@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 
+# this file is the DJ process entry point
+
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'config', 'environment'))
 require 'delayed/command'
+Integrity.config.logger = Logging.logger['dj']
 Delayed::Command.new(ARGV).daemonize

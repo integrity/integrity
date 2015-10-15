@@ -1,41 +1,50 @@
 .pancakes
-  div
-    - if flash[:error]
-      br
-      .alert.alert-danger.alert-dismissible = flash[:error]
-
-    - if flash[:notice]
-      br
-      .alert.alert-info.alert-dismissible = flash[:notice]
-
-  form.form#stacks-form action='/pancakes/stacks' method='post'
-    h3
-      | New Stack
-      br
-      small Start typing to autocomplete your branch
-      br
-      small.mono branch/commit formats: SHA | SHA:L(+|-)BRANCH | L(+|-)BRANCH branches are locked if left empty
-
-    .branch-inputs
-      - services_for_form.each do |codebase|
-        .form-group
-          label for="#{codebase}_branch" #{codebase} branch
-          input.form-control type='text' name='[branches][#{codebase}]' id="#{codebase}_branch" placeholder='master' autocomplete='off'
-      .form-group
-        label for="pocs" Points Of Contact
-        input.form-control type='text' name='pocs' id="pocs" autocomplete='off' placeholder='Rita, Jerry Garcia, Elmo'
-        p.help-block Stacks with out a POC may be deleted without notice!!!
-      button.btn.btn-primary type='submit' Create stack
-
-  h3 Stacks
   .row
     .col-xs-12
-      - @stacks.each do |stack|
-        table.table.stack
-          thead
-            tr
-              th
-              th
-              th
-          tbody
-            == slim :"pancakes/stacks/_stack", locals: { stack: stack, view: true }, layout: false
+      h3
+        | New Stack
+        /br
+        /small Start typing to autocomplete your branch
+        /br
+        /small.mono branch/commit formats: SHA | SHA:L(+|-)BRANCH | L(+|-)BRANCH branches are locked if left empty
+
+      form.form#stacks-form action='/pancakes/stacks' method='post'
+        .form-group
+          label for="pocs" Owner
+          input.form-control type='text' name='pocs' id="pocs" autocomplete='off' placeholder=''
+        - services_for_form.each do |codebase|
+          .form-group
+            label for="#{codebase}_branch" #{codebase} branch
+            input.form-control type='text' name='[branches][#{codebase}]' id="#{codebase}_branch" placeholder='master' autocomplete='off'
+
+        .form-group
+          label for="#wp_database_version" brizo/parker database
+          input.form-control type='text' name='[wp_database_version]' id='wp_database_version' placeholder=Pancakes::Stack::DEFAULT_WP_DB autocomplete='off'
+        button.btn.btn-primary type='submit' Create stack
+
+  .row
+    .col-xs-12
+      h3 Stacks
+
+      table.table.table-bordered.table-hover.stacks-list
+        thead
+          tr
+            th Health
+            th Created at
+            th Name
+            th Owner
+            th Message
+        tbody
+          - @stacks.each do |stack,last_health_check|
+            tr class=health_check_bootstrap_class(last_health_check)
+              td.col-xs-1
+                span.label class="label-#{health_check_bootstrap_class(last_health_check)}" = health_check_str(last_health_check)
+                br
+                small< = health_check_timestamp(last_health_check)
+              td.col-xs-1: small = pacific_time(stack.created_at).strftime("%F %r")
+              td.col-xs-1.mono
+                == link_to stack.name, "/pancakes/stacks/#{stack.id}"
+              td.col-xs-2
+                = poc_string(stack.pocs)
+              td.col-xs-7
+                = health_check_message(last_health_check)

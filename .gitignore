@@ -25,10 +25,15 @@
 
 # Directories
 builds
-doc
+doc/*
+!doc/honesty-ignore.txt
 log
 tags
 tmp
 bin
 coverage
+
+# developer environment files
 .env
+env
+honesty-env*

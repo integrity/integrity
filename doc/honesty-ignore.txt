@@ -1,0 +1,12 @@
+# place these at /tmp/honesty-ignore.txt
+
+# dtest (yes it's a blank line)
+```
+
+!dtest
+```
+
+# prod
+```
+dtest
+```

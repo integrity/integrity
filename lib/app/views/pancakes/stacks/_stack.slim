@@ -1,8 +1,8 @@
-tr class=human_state_row_color_class(stack)
+/tr class=health_check_bootstrap_class(last_stack_health)
   td
     .mono
-      b = stack.human_state.upcase
-      div: small: i = "updated #{time_ago_in_words(stack.state_updated_at)}"
+      b = health_check_status(last_stack_health)
+      div: small: i = health_check_timestamp(last_stack_health)
     .actions
       - if view
         div
@@ -31,28 +31,28 @@ tr class=human_state_row_color_class(stack)
             | (same commits)
   td.mono.nowrap
     div
-      b> sha:
-      = stack.short_sha
-    div
       b> id:
       = stack.id
     div
+      b> sha:
+      = stack.short_sha
+    /div
       b> uptime:
       = uptime(stack)
-    div
+    /div
       b> started:
       = time_ago_in_words(stack.started_at)
     div
       b> created:
       = time_ago_in_words(stack.created_at)
-    div
+    /div
       b> internal state:
       = stack.state
-    div
+    /div
       b> desired state:
       = stack.desired_state
     div
-      b> POCs:
+      b> Owner:
       = stack.pocs.join(', ')
   td.services
     table.table.commits

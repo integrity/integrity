@@ -27,7 +27,7 @@ module Integrity
 
       Delayed::Job.class_eval do
         def logger
-          @_logger ||= Integrity.sys_logger('delayed_job')
+          Integrity.logger
         end
       end
     end

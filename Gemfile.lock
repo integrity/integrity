@@ -26,7 +26,7 @@ GEM
       i18n (~> 0.6, >= 0.6.4)
       multi_json (~> 1.0)
     addressable (2.3.8)
-    amq-protocol (1.9.2)
+    amq-protocol (2.0.0)
     arel (3.0.3)
     awesome_print (1.6.1)
     aws-sdk (2.0.41)
@@ -55,8 +55,8 @@ GEM
       multi_json (~> 1.7)
       nap (~> 0.5)
     builder (3.0.4)
-    bunny (1.7.0)
-      amq-protocol (>= 1.9.2)
+    bunny (2.2.0)
+      amq-protocol (>= 2.0.0)
     byebug (4.0.5)
       columnize (= 0.9.0)
     capistrano (2.15.4)
@@ -139,7 +139,7 @@ GEM
       dm-core (~> 1.2.0)
     do_mysql (0.10.15)
       data_objects (= 0.10.15)
-    docker-api (1.20.0)
+    docker-api (1.22.4)
       excon (>= 0.38.0)
       json
     domain_name (0.5.24)
@@ -167,7 +167,7 @@ GEM
     ice_nine (0.11.1)
     jmespath (1.0.2)
       multi_json (~> 1.0)
-    json (1.8.2)
+    json (1.8.3)
     json_pure (1.8.2)
     jwt (1.4.1)
     kgio (2.9.3)
@@ -283,7 +283,7 @@ GEM
     temple (0.7.5)
     thread_safe (0.3.5)
     tilt (2.0.1)
-    timecop (0.7.3)
+    timecop (0.8.0)
     tracker_api (0.2.10)
       addressable
       equalizer
@@ -342,7 +342,7 @@ DEPENDENCIES
   dm-core
   dm-mysql-adapter
   dm-sweatshop!
-  docker-api (~> 1.20.0)
+  docker-api (~> 1.22.4)
   etcd (~> 0.2.4)
   extlib
   fleet-api (~> 1.2.0)

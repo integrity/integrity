@@ -1,12 +1,163 @@
 .pancakes
   div
-    == link_to h('<- Back to all stacks'), '/pancakes', class: 'btn btn-link btn-lg'
+    == link_to h('All stacks'), pancakes_path, class: 'btn btn-link btn-lg'
 
-  table.table.pancakes
-    thead
-      tr
-        th
-        th
-        th
-    tbody
-      == slim :"pancakes/stacks/_stack", locals: { stack: @stack, view: false }, layout: false
+  .row
+    .col-xs-12
+      h1
+        | Stack ##{@stack.id} #{@stack.short_sha}
+        div: small = @stack.name
+
+      h3
+        div
+          span.label class="label-#{health_check_bootstrap_class(@last_health_check)}" = health_check_str(@last_health_check)
+          small< = health_check_timestamp(@last_health_check)
+
+      div.mono
+        | wp database version: 
+        = @stack.wp_database_version
+
+      br
+
+  .row
+    .col-xs-12
+      .btn-toolbar role='toolbar'
+        .btn-group role='group'
+          a.btn.btn-primary href="/pancakes/stacks/#{@stack.id}/check_health"
+            | Check health
+
+        .btn-group role='group'
+          == link_to 'Logs', stack_logs_url(@stack), class: 'btn btn-primary', target: '_blank'
+
+        .btn-group role='group'
+          a.btn.btn-primary href="/pancakes/stacks/#{@stack.id}/restart"
+            | Restart
+
+        /.btn-group role='group'
+          /a.btn.btn-primary href="/pancakes/stacks/#{@stack.id}/restart_with_same_commits"
+            /| Restart with same commits
+
+        .btn-group role='group'
+          a.btn.btn-primary href="/pancakes/stacks/#{@stack.id}/bring_down"
+            | Bring down
+
+        .btn-group role='group'
+          a.btn.btn-danger href="/pancakes/stacks/#{@stack.id}/destroy" class=(@stack.off? ? '' : 'disabled')
+            | Destroy
+
+  .row
+    .col-xs-12
+      h3 Commits
+      table.table.table-bordered
+        thead
+          tr
+            th Codebase
+            th Lock
+            th SHA
+            th Branch
+            th Commit date
+            th Commit message
+        tbody
+          - @stack.commits.sort{|a,b| a.codebase <=> b.codebase }.each do |commit|
+            tr class=pk_build_bootstrap_class(commit.build)
+              td.col-xs-1.mono = commit.codebase
+              td.col-xs-1.lock-controls
+                span.fa> class=(commit.locked? ? 'fa-lock' : 'fa-unlock')
+                a.btn.btn-xs.btn-primary.toggle-lock-btn href="/pancakes/stacks/#{@stack.id}/#{commit.codebase}/toggle_lock"
+                  - if commit.locked?
+                    | unlock
+                  - else
+                    | lock
+              td.col-xs-1.mono
+                - if commit.build
+                  == link_to commit.short_sha, build_path(commit.build)
+                - else
+                  = commit.short_sha
+                br
+                small: i
+                  = build_notes(commit.build)
+              td.col-xs-1.mono
+                = commit.branch
+              td.col-xs-1
+                span.no-wrap
+                  = time_ago_in_words(commit.date) + ' ago by ' + commit.author
+              td.col-xs-7.commit-message
+                = commit.message
+
+  .row#services
+    .col-xs-12
+      h3 Services
+      table.table.table-bordered
+        thead
+          tr
+            th Health
+            th Actions
+            th Name
+            /th Container
+            th Notes
+        tbody
+          - @stack.units_sorted.map{|u| [u, u.last_health_check]}.each do |unit,last_health_check|
+            tr class=health_check_bootstrap_class(last_health_check)
+              td.col-xs-1
+                span.label class="label-#{health_check_bootstrap_class(last_health_check)}" = health_check_str(last_health_check)
+                br
+                small< = health_check_timestamp(last_health_check)
+              td.col-xs-1
+                /.btn-group role='group'
+                  == link_to 'Logs', service_logs_url(unit), target: '_blank', class: "btn btn-sm btn-primary"
+                  == link_to 'Restart', restart_service_url(unit), class: "btn btn-sm btn-primary"
+                  == link_to 'Check Health', restart_service_url(unit), class: "btn btn-sm btn-primary"
+                  - if unit.user_facing?
+                    == launch_button(unit, last_health_check)
+
+                .btn-group
+                  button.btn.btn-primary.dropdown-toggle type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                    | Actions
+                    span.caret<
+                  ul class="dropdown-menu"
+                    li class=(unit.container_id ? '' : 'disabled')
+                      == link_to 'Logs', service_logs_url(unit), target: '_blank'
+                    li
+                      == link_to 'Check Health', service_check_health_url(unit)
+                    li
+                      == link_to 'Restart', service_restart_url(unit)
+                    /li
+                      == link_to 'Restart idempotent', service_restart_idempotent_url(unit)
+                    - if unit.user_facing?
+                      li
+                        == launch_button(unit, last_health_check)
+
+
+
+              td.col-xs-1.mono
+                = unit.service_name
+                br
+                = unit.tcp_str
+              /td.col-xs-1.mono = container_state(container)
+              td.col-xs-8.mono
+                ul
+                  - service_notes(unit, last_health_check).each do |note|
+                    li = note
+
+  .row
+    .col-xs-12
+      h3 Events
+      table.table.table-bordered
+        thead
+          tr
+            th Timestamp
+            th Source
+            th Type
+            th Status
+            th Resource
+            th Message
+        tbody
+          - @stack.all_events.each do |event|
+            tr
+              td.col-xs-1: small = pacific_time(event.timestamp).strftime("%F %r")
+              td.col-xs-1 = event.source
+              td.col-xs-1 = event.type
+              td.col-xs-1
+                span.label class="label-#{event_status_bootstrap_class(event.status)}" = event.status
+              td.col-xs-1 = event.resource_name
+              td.col-xs-7 = event_message(event)

@@ -168,10 +168,8 @@ module Pancakes
     return nil
   end
 
-  def branch_info_from_push_event(push_event_hash)
-    repo_name = push_event_hash['repository']['name'].downcase
-    branch_name = push_event_hash['ref'].sub('refs/heads/', '')
-    { Pancakes.codebase_name(repo_name) => branch_name }
+  def branch_info_from_push_event(repo_name, branch_name)
+    { Pancakes.codebase_name(repo_name.downcase) => branch_name }
   end
 
   def gh_read_token
@@ -199,23 +197,21 @@ module Pancakes
   end
 end
 
-module Pancakes
-  module ClassLogger
-    def logger_name
-      self
-    end
+module ClassLogger
+  def logger_name
+    self
+  end
 
-    def logger
-      return @__lgr if @__lgr
-      #Logging.logger[lg_name].appenders = Pancakes.log_appender
-      #Logging.logger[lg_name].level = Pancakes.log_level
-      @__lgr = Logging.logger[logger_name]
-    end
+  def logger
+    return @__lgr if @__lgr
+    #Logging.logger[lg_name].appenders = Pancakes.log_appender
+    #Logging.logger[lg_name].level = Pancakes.log_level
+    @__lgr = Logging.logger[logger_name]
+  end
 
-    # Use this method when the stack's name changes to get a new logger with the new name.
-    def refresh_logger
-      @__lgr = nil
-    end
+  # Use this method when the stack's name changes to get a new logger with the new name.
+  def refresh_logger
+    @__lgr = nil
   end
 end
 
@@ -262,3 +258,5 @@ require 'pancakes/stack'
 require 'pancakes/unit'
 
 require 'pancakes/background'
+
+HonestyCluster.setup
