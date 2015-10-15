@@ -184,12 +184,12 @@ module Pancakes
       service_name.split('-')[0]
     end
 
-    def service_alias
+    def service_aliases
       service_type == 'jarvis' ? %w[stark jarvis] : [service_type]
     end
 
-    def to_addrs_hash
-      service_alias.map do |service|
+    def to_address_hash
+      service_aliases.map do |service|
         { service => tcp_str }
       end.reduce(:merge)
     end
