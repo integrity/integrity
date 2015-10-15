@@ -5,7 +5,9 @@ RUN apt-get update \
     && apt-get install -y php5-mysql mysql-client emacs24-nox vim git curl \
     && docker-php-ext-install mysql
 
-ADD 000-default.conf /etc/apache2/sites-enabled/
+COPY 000-default.conf /etc/apache2/sites-available/
+
 RUN a2enmod rewrite
+RUN a2ensite 000-default
 
 WORKDIR /root
