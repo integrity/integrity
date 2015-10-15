@@ -35,9 +35,11 @@ raise("DATABASE_URL is not set") unless ENV['DATABASE_URL']
 app = RConfig.application
 ENV['RACK_ENV'] = (app.environment || 'production').to_s
 DTEST = ENV['HONESTY_DTEST'] == 'true'
+puts "RACK_ENV=#{ENV['RACK_ENV']}"
 puts 'environment has DTEST applied' if DTEST
 puts 'HONESTY_DRY_RUN is true' if HonestyCluster.dry_run?
 puts "TIMBERLAND_DEBUG=#{ENV['TIMBERLAND_DEBUG']}" if ENV['TIMBERLAND_DEBUG']
+puts "SWARM_ENV=#{ENV['SWARM_ENV']}" if ENV['SWARM_ENV']
 
 if app.environment == 'production'
   logging_pattern = "%.1l %c: %m\n"
