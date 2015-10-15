@@ -44,6 +44,7 @@ module Integrity
     # contains the line, it will be ignored. A blank line ignores everything.
     def ignore_branch?
       fname = '/tmp/honesty-ignore.txt'
+      return false unless branch_name
       return false unless File.exists?(fname)
       return !!File.readlines(fname).map{|l| [!l['!'], l.sub('!', '').chomp] } # [negated, line]
         .select{ |line| branch_name.include?(line[1]) }                        # ignore non-matching lines
