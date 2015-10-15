@@ -14,6 +14,8 @@ module Tracker
     property :deputy,    Boolean
     property :santa,     Boolean
 
+    property :pr_count,  Integer
+
     has n, :story_owners
     has n, :owned_stories, 'Tracker::Story', :through => :story_owners, :via => :story
     has n, :requested_stories, :model => 'Tracker::Story', :child_key => [ :requestor_id ]
@@ -25,6 +27,22 @@ module Tracker
       user.email    = membership.email
       user.initials = membership.initials
       user.save
+    end
+
+    def self.increment_pr_count
+      return unless developer
+
+      self.pr_count += 1
+      self.save
+
+      if pr_count > 3
+        Tracker::Helper.send_nes_email(self)
+      end
+    end
+
+    def self.reset_nes_count
+      self.pr_count = 0
+      self.save
     end
   end
 end

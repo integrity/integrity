@@ -117,6 +117,13 @@ module Tracker
       self.current_state = self.type == 'chore' ?  'accepted' : 'delivered'
       self.save
       send_delivered_email
+
+      if self.epics.map(&:name).include?('NES')
+        owners.each{|owner| owner.reset_nes_count}
+      else
+        owners.each{|owner| owner.increment_pr_count}
+      end
+
       TrackerWrapper.set_state(id, current_state)
       Tracker::StoryMerge.create(id)
     end

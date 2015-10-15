@@ -17,6 +17,10 @@ module Integrity
         Integrity::Build.all(order: :created_at.desc, limit: limit)
       end
 
+      def current_santa
+        Tracker::User.first(santa: true)
+      end
+
       def all_developers
         Tracker::User.all(developer: true)
       end

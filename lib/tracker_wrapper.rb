@@ -47,4 +47,14 @@ class TrackerWrapper
   def self.client
     TrackerApi::Client.new(token: config.api_token)
   end
+
+  def self.top_nes_story
+    data = client.get("/projects/#{config.project_id}/iterations?scope=backlog").body.first
+    return unless story = data['stories'].find{|story| story['labels'].select{|label| label['name'] == 'nes'}.any? }
+    {
+      story_id: story['id'],
+      name:     story['name'],
+      url:      story['url'],
+    }
+  end
 end
