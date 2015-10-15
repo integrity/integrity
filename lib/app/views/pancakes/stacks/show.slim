@@ -13,6 +13,10 @@
           span.label class="label-#{health_check_bootstrap_class(@last_health_check)}" = health_check_str(@last_health_check)
           small< = health_check_timestamp(@last_health_check)
 
+      div.mono
+        | wp database version: 
+        = @stack.wp_database_version
+
       br
 
   .row
@@ -127,6 +131,8 @@
 
               td.col-xs-1.mono
                 = unit.service_name
+                br
+                = unit.tcp_str
               /td.col-xs-1.mono = container_state(container)
               td.col-xs-8.mono
                 ul
