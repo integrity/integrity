@@ -769,7 +769,7 @@ module Pancakes
       refresh_service_addrs
       units.map do |unit|
         next(nil) unless unit.tcp_str
-        { unit.service_type => unit.tcp_str }
+        unit.to_address_hash
       end
         .compact
         .reduce(&:merge)
