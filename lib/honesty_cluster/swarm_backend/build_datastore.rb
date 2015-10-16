@@ -75,9 +75,9 @@ module HonestyCluster
       # Cargo
       def exposed_ports
         if build.datastore == 'mysql'
-          [3306, nil]
+          [[3306, nil]]
         elsif build.datastore == 'postgres'
-          [5432, nil]
+          [[5432, nil]]
         else
           nil
         end
@@ -90,16 +90,18 @@ module HonestyCluster
       # - during a build with 35 spec procs, mysql cpu was at 150%, and systemd-journal was at 99%
       # - now im wondering if we could get better performance out of mysql with 2 cores
       def cpu_cores
-        if build.uses_parallel_spec?
-          7
-        else
-          1
-        end
+        #if build.uses_parallel_spec?
+          #7
+        #else
+          #1
+        #end
+        nil
       end
 
       # Cargo
       def memory
-        MB(512)
+        #MB(512)
+        nil
       end
     end
   end

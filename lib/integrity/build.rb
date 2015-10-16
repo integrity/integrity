@@ -301,9 +301,7 @@ module Integrity
 
 
     def uses_swarm
-      File.readlines('/tmp/swarm_repos.txt').map(&:chomp).include?(self.repo.name)
-    rescue Errno::ENOENT
-      false
+      true
     end
 
     def timberland_command
@@ -316,13 +314,13 @@ module Integrity
         branch:       self.branch_name,
         debug:        Pancakes.timberland_debug?,
         parallel_spec_jobs: self.parallel_spec_jobs,
-        sleep:        500,
+        sleep:        nil,
       )
     end
 
     def datastore_cargo
       if datastore
-        @__ds_cargo ||= BuildDatastore.new(self)
+        @__ds_cargo ||= HonestyCluster::SwarmBackend::BuildDatastore.new(self)
       else
         nil
       end
@@ -346,7 +344,8 @@ module Integrity
 
     def parallel_spec_jobs
       if uses_parallel_spec?
-        cpu_cores
+        #cpu_cores
+        24
       else
         nil
       end
@@ -446,17 +445,19 @@ module Integrity
 
     # Cargo
     def cpu_cores
-      if uses_parallel_spec?
-        30
-        #2
-      else
-        1
-      end
+      #if uses_parallel_spec?
+        #30
+        ##2
+      #else
+        #1
+      #end
+      nil
     end
 
     # Cargo
     def memory
-      MB(512)
+      #MB(512)
+      nil
     end
 
     private

@@ -20,6 +20,7 @@ module HonestyCluster
             PortBindings: docker_api_port_bindings(exposed_ports),
             Links: links,
             LogConfig: { Type: 'syslog', Config: {'syslog-tag' => name} },
+            Privileged: true,
           },
         }
       end
