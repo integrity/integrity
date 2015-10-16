@@ -36,10 +36,71 @@ module HonestyCluster
         )
       end
 
-      def cache_containers(&block)
-        @__container_cache = {}
-        block.call
-        @__container_cache = {}
+      class InMemoryCache
+        def initialize
+          off
+        end
+
+        private def cache
+          @__cache
+        end
+
+        def active?
+          !!cache
+        end
+
+        def fresh
+          @__cache = {}
+        end
+
+        def off
+          @__cache = nil
+        end
+
+        def get(key)
+          return nil unless active?
+          if rv = cache[key]
+            puts 'cache hit'
+            rv
+          else
+            puts 'cache miss'
+            nil
+          end
+        end
+
+        def put(key, value)
+          return nil unless active?
+          cache[key] = value
+        end
+      end
+
+      @@container_cache = InMemoryCache.new
+
+      def filters_cache_key(filters)
+        filters.keys.sort.map{|key| [key, filters[key]].join('=') }.join(',')
+      end
+
+      def containers_filtered_from_cache(filters)
+        filters ||= {}
+        if @@container_cache.active?
+          cache_key = filters_cache_key(filters)
+          if kontainers = @@container_cache.get(cache_key)
+            kontainers
+          else
+            kontainers = containers_filtered(filters)
+            @@container_cache.put(cache_key, kontainers)
+            kontainers
+          end
+        else
+          containers_filtered(filters)
+        end
+      end
+
+      def self.with_cached_containers(&block)
+        @@container_cache.fresh
+        rv = block.call
+        @@container_cache.off
+        rv
       end
 
       def create_container(docker_json)
