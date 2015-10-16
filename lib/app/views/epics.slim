@@ -1,4 +1,5 @@
 - off_da_ranch = @report.delete(:off_da_ranch)
+- role_lineup = @report.delete(:role_lineup)
 - story_counts = @report.delete(:story_counts)
 - non_epic_stories = @report.delete(:story_counts)
 - sorted_report = {NES: non_epic_stories}.merge!(@report.sort.to_h)
@@ -41,12 +42,18 @@
     .li
       | NES Percentage #{@nes_report[:nes_percent]}
 .row
-  .col-md-6
+  .col-md-4
     h2.text-center.short Unassigned Engineers
     ul.off-da-ranch
     - off_da_ranch.each do |user|
       li = user
-  .col-md-6
+  .col-md-4
+    h2.text-center.short Role Lineup
+    - role_lineup.each do |role, user|
+      .row
+        .col-md-6 = role.capitalize
+        .col-md-6 = user
+  .col-md-4
     h2.text-center.short Stories
     ul.stories
       li

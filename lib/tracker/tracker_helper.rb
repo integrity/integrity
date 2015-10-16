@@ -46,5 +46,18 @@ module Tracker
       epic_path = story.epics.first ? "#{story.epics.first.id}/" : ''
       "#{story.type}/#{epic_path}#{story.id}/#{branch.name}"
     end
+
+    def self.reset_lineup
+      User.update(sheriff: false, ranger: false, deputy: false, santa: false)
+    end
+
+    def self.update_lineup(lineup)
+      reset_lineup
+
+      lineup.each do |role, user_id|
+        user = User.first(id: user_id)
+        user.update(role.to_sym => true)
+      end
+    end
   end
 end

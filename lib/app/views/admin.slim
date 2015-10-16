@@ -1,0 +1,18 @@
+h2.text-center Admin
+
+form.form#stacks-form action='/admin/set_lineup' method='post'
+  .row
+    - lineup_roles.each_with_index do |role, index|
+      - users = role == 'ranger' ? all_product_managers : all_developers
+      .col-md-4 = role.capitalize
+      .col-md-4
+        select.form-control type='text' name="#{role}" id="#{role}" autocomplete='off'
+          - users.each do |user|
+            - if user.try(role.to_sym)
+              option value="#{user.id}" selected='selected' = user.name
+            - else
+              option value="#{user.id}" = user.name
+      - if index == 1
+        .row
+
+  button.btn.btn-primary type='submit' Set Lineup

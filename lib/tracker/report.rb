@@ -59,6 +59,13 @@ module Tracker
         epics[:off_da_ranch] << user.name unless on_ranch
       end
 
+      epics[:role_lineup] = {
+        sheriff: User.first(sheriff: true).try(:name),
+        ranger:  User.first(ranger: true).try(:name),
+        deputy:  User.first(deputy: true).try(:name),
+        santa:   User.first(santa: true).try(:name),
+      }
+
       epics
     end
   end
