@@ -118,11 +118,11 @@ module Integrity
       end
 
       def service_logs_url(unit)
-        "#{Integrity.logs_url}?q=#{unit.container_id}"
+        "#{Integrity.logs_url}?q=#{unit.log_identifier}"
       end
 
       def stack_logs_url(stack)
-        query = stack.containers.map(&:short_id).join('+OR+')
+        query = stack.units.map(&:log_identifier).join('+OR+')
         "#{Integrity.logs_url}?q=#{query}"
       end
 

@@ -29,7 +29,7 @@ module Pancakes
       validates_presence :service_def
       validates_includes STATES, :state, allow_blank: false, allow_nil: false
       validates_integer :port, allow_nil: true
-      errors.add(:machine_ip, "machine_ip '#{machine_ip}' is not an ip address") if (machine_ip && !machine_ip.match(HonestyCluster::SwarmBackend::IP_ADDR_REGEX))
+      errors.add(:machine_ip, "#{machine_ip.inspect} is not an ip address") if (machine_ip && !machine_ip.empty? && !machine_ip.match(HonestyCluster::SwarmBackend::IP_ADDR_REGEX))
     end
 
     #
@@ -38,6 +38,12 @@ module Pancakes
 
     def before_validation
       self.state = :off unless self.state
+    end
+
+    def before_save
+      if self.machine_ip && self.machine_ip.empty?
+        self.machine_ip = nil
+      end
     end
 
     #
@@ -212,6 +218,10 @@ module Pancakes
       service_def.name
     end
     alias :resource_name :service_name
+
+    def log_identifier
+      container_name
+    end
 
     def dbs
       service_def.dbs
