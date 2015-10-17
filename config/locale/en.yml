@@ -30,3 +30,4 @@ story:
   pr_github_link: "%{github_project_url}/compare/master...%{branch_name}?title=[# %{story_id}] %{story_name}&body=%{pr_body}"
   nes_email_subject: "It's time for %{name} to start an NES story"
   nes_email_body: "Story '%{story_name}' is at the top of the NES list, it can be found here: %{story_url}"
+  nes_email_body_missing_story: 'There is no story currently in the NES backlog, please discuss with Santa on what to take up next.'
