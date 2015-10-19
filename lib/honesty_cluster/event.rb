@@ -13,26 +13,27 @@ module HonestyCluster
 
     def self.new_benchmarked_event(type:, status:, msg:nil, &block)
       return nil unless block_given?
+
       start = Time.now.utc
       block.call
       finish = Time.now.utc
-      took_s = finish - start
-      _status = status
-      msg = format(["took %.1fs", msg].flatten.join(': '), took_s)
-    rescue RuntimeError => e
-      finish = Time.now.utc
-      took_s = finish - start
-      _status = status + '_FAILED'
-      msg = format("failed after %.1fs: #{e.inspect}", took_s)
-    ensure
-      puts :foo
       return new(
         source:    HonestyCluster::EVENT_SOURCE,
         timestamp: finish,
         type:      type,
-        status:    _status,
-        message:   msg,
+        status:    status,
+        message:   format(["took %.1fs", msg].flatten.join(': '), finish - start)
       )
+      # dont worry about error handling for now
+    #rescue RuntimeError => e
+      #finish = Time.now.utc
+      #return new(
+        #source:    HonestyCluster::EVENT_SOURCE,
+        #timestamp: finish,
+        #type:      type,
+        #status:    status + '_FAILED',
+        #message:   format("failed after %.1fs: #{e.inspect}", finish - start)
+      #)
     end
 
     def validate
