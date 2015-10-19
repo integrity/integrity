@@ -115,12 +115,14 @@ module Integrity
 
     def story_id
       if merge_to_master?
-        story_id_from_string head_commit[:message]
+        string_containing_id = head_commit[:message]
       elsif pull_request?
-        story_id_from_string pull_request[:head][:ref]
+        string_containing_id = pull_request[:head][:ref]
       else
-        story_id_from_string @payload[:ref]
+        string_containing_id = @payload[:ref]
       end
+
+      story_id_from_string string_containing_id
     end
 
     def private?
