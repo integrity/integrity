@@ -8,9 +8,10 @@ rescue LoadError
   require 'bundler/setup'
 end
 
+ll = ENV['HONESTY_LOG_LEVEL']
 $honesty_log_level =
-  if ll = ENV['HONESTY_LOG_LEVEL']
-    (ll =~ /\A\d+\z/) ? ll.to_i : ll.to_sym
+  if ll && ll.match(/debug|info|warn|error|fatal/)
+    ll.to_sym
   else
     :warn
   end
@@ -42,11 +43,13 @@ raise("DATABASE_URL is not set") unless ENV['DATABASE_URL']
 app = RConfig.application
 ENV['RACK_ENV'] = (app.environment || 'production').to_s
 DTEST = ENV['HONESTY_DTEST'] == 'true'
+puts "log level is #{$honesty_log_level}"
 puts "RACK_ENV=#{ENV['RACK_ENV']}"
 puts 'environment has DTEST applied' if DTEST
 puts 'HONESTY_DRY_RUN is true' if HonestyCluster.dry_run?
+puts "TIMBERLAND_BRANCH=#{ENV['TIMBERLAND_BRANCH']}"
 puts "TIMBERLAND_DEBUG=#{ENV['TIMBERLAND_DEBUG']}" if ENV['TIMBERLAND_DEBUG']
-puts "SWARM_ENV=#{ENV['SWARM_ENV']}" if ENV['SWARM_ENV']
+puts "DOCKER_HOST=#{ENV['DOCKER_HOST']}#{ENV['SWARM_ENV'] ? " (#{ENV['SWARM_ENV']})" : ''}"
 
 if app.environment == 'production'
   logging_pattern = "%.1l %c: %m\n"

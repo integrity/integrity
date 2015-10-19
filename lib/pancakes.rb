@@ -74,7 +74,6 @@ module Pancakes
 
     Pancakes::Fleet::Templating.configure do |c|
       c.timberland_branch = @@config.templating.timberland_branch
-      Pancakes.logger.info "TIMBERLAND_BRANCH=#{@@config.templating.timberland_branch}"
     end
   end
 
