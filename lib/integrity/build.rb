@@ -397,7 +397,15 @@ module Integrity
 
     # Cargo
     def image_name
-      "grnds/#{self.project_name}_ci:latest"
+      "grnds/#{map_project_name_to_image_name(self.project_name)}_ci:latest"
+    end
+
+    private def map_project_name_to_image_name(project_name)
+      case project_name
+      when 'parker' then 'wp'
+      else
+        project_name
+      end
     end
 
     # Cargo
