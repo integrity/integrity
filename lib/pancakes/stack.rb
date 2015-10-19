@@ -773,7 +773,7 @@ module Pancakes
       if required_addrs.empty?
         units
       else
-        units.select { |unit| required_addrs.include?(unit.resource_name) }
+        units.reject { |unit| required_addrs.to_set.intersection(unit.service_aliases).empty? }
       end
         .map(&:to_address_hash)
         .reduce(&:merge)
@@ -784,10 +784,10 @@ module Pancakes
         addrs.keys.sort == required_addrs.sort
     end
 
-    def service_addrs(required_addrs=nil, force: false)
+    def service_addrs(required_addrs=nil, allow_nil: false)
       required_addrs = Array(required_addrs)
       addrs = service_addrs_get_addrs(required_addrs)
-      if service_addrs_all_present?(addrs, required_addrs) || force
+      if service_addrs_all_present?(addrs, required_addrs) || allow_nil
         addrs
       else
         nil
