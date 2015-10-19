@@ -450,40 +450,40 @@ module Integrity
       end
     end
 
-    #get '/pancakes/api/vX/stacks/:id/tcp_info' do
-      #halt 200, '1.2.3.4:5678' if params[:dry_run]
+    get '/pancakes/api/vX/stacks/:id/tcp_info' do
+      halt 200, '1.2.3.4:5678' if params[:dry_run]
 
-      #@stack = Pancakes::Stack[params[:id]]
-      ##update_state = params[:update_state]
-      #service_name = params[:service_name]
+      @stack = Pancakes::Stack[params[:id]]
+      #update_state = params[:update_state]
+      service_name = params[:service_name]
 
-      #if !@stack
-        #logger.debug 'stack not found'
-        #halt 400, "stack not found\n"
+      if !@stack
+        logger.debug 'stack not found'
+        halt 400, "stack not found\n"
+      end
+
+      logger.info "stack found id=#{@stack.id}"
+
+      #if update_state == 'true'
+        #@stack.state_from_cluster!
       #end
 
-      #logger.info "stack found id=#{@stack.id}"
+      @stack.refresh_service_addrs
+      @unit = @stack.unit_with_service_name(service_name)
 
-      ##if update_state == 'true'
-        ##@stack.state_from_cluster!
-      ##end
-
-      #@stack.refresh_service_addrs
-      #@unit = @stack.unit_with_service_name(service_name)
-
-      #if @unit
-        #tcp_string = @unit.tcp_str
-        #if !tcp_string
-          #logger.debug 'tcp_string not found. service may not be running.'
-          #halt 400, "tcp_string not found. service may not be running.\n"
-        #else
-          #halt 200, tcp_string
-        #end
-      #else
-        #logger.debug 'unit not found'
-        #halt 400, "unit not found\n"
-      #end
-    #end
+      if @unit
+        tcp_string = @unit.tcp_str
+        if !tcp_string
+          logger.debug 'tcp_string not found. service may not be running.'
+          halt 400, "tcp_string not found. service may not be running.\n"
+        else
+          halt 200, tcp_string
+        end
+      else
+        logger.debug 'unit not found'
+        halt 400, "unit not found\n"
+      end
+    end
 
     get '/pancakes/api/vX/stacks/:id/addrs.json' do
       required_services = params[:required_services]
