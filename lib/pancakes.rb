@@ -45,7 +45,7 @@ module Pancakes
 
   def logger
     return @__lgr if @__lgr
-    Logging.logger[self].level = $honesty_log_level
+    Logging.logger[self].level = $log_levels[self.to_s]
     @__lgr = Logging.logger[self]
   end
 
@@ -181,8 +181,9 @@ module Pancakes
   end
 
   def db_connect
-    lgr = Logging.logger['sequel']
-    lgr.level = $honesty_log_level
+    name = 'sequel'
+    lgr = Logging.logger[name]
+    lgr.level = $log_levels[name]
     Pancakes.db = Sequel.connect(ENV['DATABASE_URL'], logger: lgr)
   end
 end
@@ -200,7 +201,7 @@ module ClassLogger
   end
 
   def refresh_logger
-    Logging::Repository.delete(@logger.name)
+    Logging::Repository.delete(@logger.name) if @logger
     @logger = nil
   end
 end

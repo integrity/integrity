@@ -8,13 +8,22 @@ rescue LoadError
   require 'bundler/setup'
 end
 
+$log_levels = {
+  'default' => :warn,
+  'datamapper' => :warn,
+  'Pancakes' => :info,
+  'sequel' => :debug,
+  'docker' => :debug,
+}
+
 ll = ENV['HONESTY_LOG_LEVEL']
 $honesty_log_level =
   if ll && ll.match(/debug|info|warn|error|fatal/)
     ll.to_sym
   else
-    :warn
+    $log_levels['default']
   end
+
 
 require 'i18n'
 I18n.load_path << "#{ROOT_DIR}/config/locale/dates.en.yml"

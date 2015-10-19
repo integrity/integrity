@@ -14,8 +14,9 @@ module HonestyCluster
   def self.setup
     Docker.url = ENV['DOCKER_HOST'] || raise('must export DOCKER_HOST')
     Docker.options = {}
-    lgr = Logging.logger['docker']
-    lgr.level = $honesty_log_level
+    name = 'docker'
+    lgr = Logging.logger[name]
+    lgr.level = $log_levels[name]
     Docker.logger = lgr
   end
 
