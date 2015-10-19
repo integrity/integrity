@@ -486,19 +486,13 @@ module Integrity
     end
 
     get '/pancakes/api/vX/stacks/:id/addrs.json' do
-      logger.info "looking for stack with id=#{params[:id]}"
-      @stack = Pancakes::Stack[params[:id]]
-      #@stack.state_from_cluster!
-
-      if @stack
-        logger.info "stack found id=#{@stack.id}"
-
-        if @stack.service_addrs
-          sa = @stack.service_addrs
-          raise "service_addrs is empty" if sa.empty?
-          sa = JSON.dump(sa)
-          logger.info "service_addr JSON='#{sa}'"
-          halt 200, sa
+      required_services = params[:required_services]
+      logger.debug "looking for stack with id=#{params[:id]} for required_services=#{required_services.inspect}"
+      if @stack = Pancakes::Stack[params[:id]]
+        refresh_service_addrs
+        if addrs = @stack.service_addrs(required_services)
+          logger.debug "service addrs: #{addrs.inspect}"
+          halt 200, JSON.dump(addrs)
         else
           logger.info "stack service_addrs NOT found id=#{@stack.id}"
           halt 400, "not found: service_addrs for stack id=#{params[:id]}\n"

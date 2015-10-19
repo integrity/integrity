@@ -729,7 +729,6 @@ module Pancakes
 
     # CargoGroup
     #def after_run_containers
-      #refresh_service_addrs
     #end
 
     # CargoGroup
@@ -770,14 +769,29 @@ module Pancakes
       nil
     end
 
-    def service_addrs
-      refresh_service_addrs
-      units.map do |unit|
-        next(nil) unless unit.tcp_str
-        unit.to_address_hash
+    private def service_addrs_get_addrs(required_addrs)
+      if required_addrs.empty?
+        units
+      else
+        units.select { |unit| required_addrs.include?(unit.resource_name) }
       end
-        .compact
+        .map(&:to_address_hash)
         .reduce(&:merge)
+    end
+
+    private def service_addrs_all_present?(addrs, required_addrs)
+      addrs.values.map{|v| !!v }.reduce(true){|memo,val| memo && val } &&
+        addrs.keys.sort == required_addrs.sort
+    end
+
+    def service_addrs(required_addrs=nil, force: false)
+      required_addrs = Array(required_addrs)
+      addrs = service_addrs_get_addrs(required_addrs)
+      if service_addrs_all_present?(addrs, required_addrs) || force
+        addrs
+      else
+        nil
+      end
     end
 
     def containers_mapped_by_service_name
