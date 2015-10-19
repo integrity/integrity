@@ -12,15 +12,15 @@ module Integrity
 
     def finish_story
       pull_request = payload.pull_request
-      logger.info "finishing story_id=#{pull_request.story_id}"
-      if story = Tracker::Story.first(id: pull_request.story_id)
+      logger.info "finishing story_id=#{story_id}"
+      if story = Tracker::Story.first(id: story_id)
         story.finish(pull_request.pr_url)
       end
     end
 
     def deliver_story
-      logger.info "delivering story_id=#{payload.merged_story_id}"
-      if story = Tracker::Story.first(id: payload.merged_story_id)
+      logger.info "delivering story_id=#{story_id}"
+      if story = Tracker::Story.first(id: story_id)
         story.deliver
       end
     end
@@ -101,13 +101,26 @@ module Integrity
       branch_name.eql? 'master'
     end
 
+    def pull_request?
+      @payload[:pull_request].present?
+    end
+
+    def is_new_pull_request?
+      pull_request? && @payload[:action].eql?('opened')
+    end
+
     def head_commit
       @payload[:head_commit]
     end
 
-    def merged_story_id
-      return unless merge_to_master?
-      story_id_from_message head_commit[:message]
+    def story_id
+      if merge_to_master?
+        story_id_from_string head_commit[:message]
+      elsif pull_request?
+        story_id_from_string pull_request[:head][:ref]
+      else
+        story_id_from_string @payload[:ref]
+      end
     end
 
     def private?
@@ -126,14 +139,9 @@ module Integrity
       end
     end
 
-    def is_new_pull_request?
-      @payload[:pull_request].present? && @payload[:action].eql?('opened')
-    end
-
     def pull_request
       if is_new_pull_request?
         pull_request = @payload[:pull_request]
-        story_id = story_id_from_message pull_request[:head][:label]
 
         Hashie::Mash.new(
           pr_url: pull_request[:html_url],
@@ -150,8 +158,8 @@ module Integrity
       "#{author.name} <#{author.email}>"
     end
 
-    def story_id_from_message(message)
-      message.scan(/(?=\/(\d{6,})\/)/).flatten.last
+    def story_id_from_string(string)
+      string.scan(/(?=\/(\d{6,})\/)/).flatten.last
     end
   end
 end
