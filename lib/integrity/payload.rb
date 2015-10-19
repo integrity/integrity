@@ -11,10 +11,9 @@ module Integrity
     end
 
     def finish_story
-      pull_request = payload.pull_request
       logger.info "finishing story_id=#{story_id}"
       if story = Tracker::Story.first(id: story_id)
-        story.finish(pull_request.pr_url)
+        story.finish(pull_request[:url])
       end
     end
 
@@ -105,6 +104,10 @@ module Integrity
       @payload[:pull_request].present?
     end
 
+    def pull_request
+      @payload[:pull_request]
+    end
+
     def is_new_pull_request?
       pull_request? && @payload[:action].eql?('opened')
     end
@@ -138,17 +141,6 @@ module Integrity
         "git://github.com/#{repository.full_name}"
       else
         "https://github.com/#{repository.full_name}.git"
-      end
-    end
-
-    def pull_request
-      if is_new_pull_request?
-        pull_request = @payload[:pull_request]
-
-        Hashie::Mash.new(
-          pr_url: pull_request[:html_url],
-          story_id: story_id,
-        )
       end
     end
 
