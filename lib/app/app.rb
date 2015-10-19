@@ -500,7 +500,7 @@ module Integrity
         end
       else
         logger.debug "stack not found with id=#{params[:id]}"
-        halt 400, "stack not found with id=#{params[:id]}"
+        halt 404, "stack not found with id=#{params[:id]}"
       end
     end
 

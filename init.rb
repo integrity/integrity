@@ -18,13 +18,24 @@ $log_levels = {
   'datamapper' => :warn,
 }
 
-ll = ENV['HONESTY_LOG_LEVEL']
-$honesty_log_level =
-  if ll && ll.match(/debug|info|warn|error|fatal/)
-    ll.to_sym
-  else
-    $log_levels['default']
+ENV.select do |k,v|
+  if k.end_with?('_LOG_LEVEL')
+    if v && v.match(/debug|info|warn|error|fatal/)
+      true
+    else
+      puts "WARNING: #{k} invalid"
+      false
+    end
   end
+end
+.each do |k,v|
+  component = k.split('_LOG_LEVEL').first.downcase
+  $log_levels[component] = v.to_sym
+end
+
+$log_levels.each do |comp,lvl|
+  puts "log level #{comp}=#{lvl}"
+end
 
 
 require 'i18n'
@@ -54,7 +65,6 @@ raise("DATABASE_URL is not set") unless ENV['DATABASE_URL']
 app = RConfig.application
 ENV['RACK_ENV'] = (app.environment || 'production').to_s
 DTEST = ENV['HONESTY_DTEST'] == 'true'
-puts "log level is #{$honesty_log_level}"
 puts "RACK_ENV=#{ENV['RACK_ENV']}"
 puts 'environment has DTEST applied' if DTEST
 puts 'HONESTY_DRY_RUN is true' if HonestyCluster.dry_run?
