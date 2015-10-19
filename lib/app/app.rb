@@ -458,7 +458,7 @@ module Integrity
       service_name = params[:service_name]
 
       if !@stack
-        logger.info 'stack not found'
+        logger.debug 'stack not found'
         halt 400, "stack not found\n"
       end
 
@@ -474,13 +474,13 @@ module Integrity
       if @unit
         tcp_string = @unit.tcp_str
         if !tcp_string
-          logger.info 'tcp_string not found. service may not be running.'
+          logger.debug 'tcp_string not found. service may not be running.'
           halt 400, "tcp_string not found. service may not be running.\n"
         else
           halt 200, tcp_string
         end
       else
-        logger.info 'unit not found'
+        logger.debug 'unit not found'
         halt 400, "unit not found\n"
       end
     end
@@ -494,12 +494,12 @@ module Integrity
           logger.debug "service addrs: #{addrs.inspect}"
           halt 200, JSON.dump(addrs)
         else
-          logger.info "stack service_addrs NOT found id=#{@stack.id}"
-          halt 400, "not found: service_addrs for stack id=#{params[:id]}\n"
+          logger.debug "service addrs not available for stack with id=#{@stack.id}"
+          halt 400, "service addrs not available for stack with id=#{@stack.id}\n"
         end
       else
-        logger.info "stack NOT found id=#{@stack.id}"
-        halt 400, "not found: stack id=#{params[:id]}\n"
+        logger.debug "stack not found with id=#{params[:id]}"
+        halt 400, "stack not found with id=#{params[:id]}"
       end
     end
 
