@@ -59,5 +59,21 @@ module Tracker
         user.update(role.to_sym => true)
       end
     end
+
+    def self.send_nes_email(user)
+      top_nes_story = TrackerWrapper.top_nes_story
+
+      subject = I18n.t('story.nes_email_subject', name: user.name)
+
+      if top_nes_story
+        body = I18n.t('story.nes_email_body', story_name: top_nes_story[:name], story_url: top_nes_story[:url])
+      else
+        body = I18n.t('story.nes_email_body_missing_story')
+      end
+
+      SendGridWrapper.send_mail([user.email, current_santa.email],
+        subject,
+        body)
+    end
   end
 end
