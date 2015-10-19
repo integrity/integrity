@@ -19,10 +19,11 @@ module Pancakes
     many_to_one :stack, class: :"Pancakes::Stack"
     one_to_many :events, key: :service_id, class: :"HonestyCluster::Event", order: :timestamp
 
-    # fix for a stackleveltoodeep error when calling #stack, like `Pancakes::Unit.last.stack`
-    def stack
-      Pancakes::Stack[stack_id]
-    end
+    # Fix for a StackLevelTooDeep error when calling #stack, reproduced successfully and consistently with `Pancakes::Unit.last.stack`.
+    # - not seeing this error as of oct 19
+    #def stack
+      #Pancakes::Stack[stack_id]
+    #end
 
     def validate
       super
