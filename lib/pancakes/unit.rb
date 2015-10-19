@@ -432,6 +432,7 @@ module Pancakes
 
     private def timberland_command
       HonestyCluster::Timberland::Cmd.new(
+        timberland_branch: self.stack.cargo_branch,
         boot_type:    'pancakes',
         service_type: subtype,
         sha:          sha,

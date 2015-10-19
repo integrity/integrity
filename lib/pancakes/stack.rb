@@ -50,9 +50,14 @@ module Pancakes
     # constructors
     #
 
-    def self.create_with_git_strings(pocs: '', desired_state: :off, branches: nil, wp_database_version: DEFAULT_WP_DB, **git_strings)
+    def self.create_with_git_strings(pocs: '', desired_state: :off, branches: nil, wp_database_version: DEFAULT_WP_DB, cargo_branch: nil, **git_strings)
       self.db.transaction do
         pocs = (pocs || "").split(',').map(&:strip)
+
+        if !cargo_branch || cargo_branch.empty?
+          cargo_branch = Pancakes::Fleet::Templating.config.timberland_branch
+        end
+
         services = Services.full_services
         services = services - ['wp-server'] if wp_database_version.nil?
         wp_database_version = DEFAULT_WP_DB if wp_database_version.empty?

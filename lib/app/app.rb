@@ -349,7 +349,8 @@ module Integrity
           pocs:           params[:pocs],
           branches:       params[:branches],
           desired_state: :running,
-          wp_database_version: params[:wp_database_version]
+          wp_database_version: params[:wp_database_version],
+          cargo_branch: params[:cargo_branch],
         )
 
         @stack.run_containers
