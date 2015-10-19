@@ -32,13 +32,13 @@ module Tracker
       epic = Epic.new
       epic.id = params[:id]
       epic.name = params[:name]
+      epic.label_id = params[:label_id]
       epic.save
     end
 
     def self.update_from_hook(params)
       epic = Epic.first_or_create(id: params[:id])
       epic.name  = params[:name]
-      epic.label_id = params[:label_id]
       epic.save
     end
 
