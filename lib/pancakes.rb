@@ -14,10 +14,8 @@
 # ================
 #
 # required:
-# - FLEETCTL_ENDPOINT (eg. 'http://1.2.3.4:5678')
+# - DOCKER_HOST          (eg. 'http://1.2.3.4:5678')
 # optional:
-# - PANCAKES_DRY_RUN   (eg. true)
-# - PANCAKES_LOG_LEVEL (eg. debug, 2)
 # - TIMBERLAND_BRANCH    (eg. pancakes-develop)
 # - TIMBERLAND_DEBUG     (eg. true)
 
@@ -38,7 +36,7 @@ module Pancakes
     )
 
   def cluster
-    @cluster ||= Pancakes::Fleet::Cluster.new(dry_run: ENV['PANCAKES_DRY_RUN'] || false)
+    @cluster ||= Pancakes::Fleet::Cluster.new(dry_run: ENV['HONESTY_DRY_RUN'] || false)
   end
 
   def docker
