@@ -61,7 +61,7 @@ module Pancakes
         services = Services.full_services
         services = services - ['wp-server'] if wp_database_version.nil?
         wp_database_version = DEFAULT_WP_DB if wp_database_version.empty?
-        me = new(services: services.to_set.to_a, pocs: pocs, desired_state: desired_state, wp_database_version: wp_database_version)
+        me = new(services: services.to_set.to_a, pocs: pocs, desired_state: desired_state, wp_database_version: wp_database_version, cargo_branch: cargo_branch)
         me.set_state(:off)
         me.save
 
