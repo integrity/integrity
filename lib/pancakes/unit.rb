@@ -546,6 +546,9 @@ module Pancakes
         'STACK_ID'         => stack_id,
         'SERVICE_ID'       => id,
         'PANCAKES_SHA'     => stack.short_sha,
+        'PANCAKES_STACK_SHA'  => stack.short_sha,
+        'PANCAKES_STACK_ID'   => stack_id,
+        'PANCAKES_SERVICE_ID' => id,
         'HONESTY_BASE_URL' => HonestyCluster::SwarmBackend.base_url,
       }.merge(
             node_type_constraint('pancakes')
