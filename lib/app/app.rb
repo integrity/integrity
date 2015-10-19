@@ -491,7 +491,7 @@ module Integrity
       logger.debug "looking for stack with id=#{params[:id]} for required_services=#{required_services.inspect} allow_null=#{allow_nil}"
       if @stack = Pancakes::Stack[params[:id]]
         @stack.refresh_service_addrs
-        if addrs = @stack.service_addrs(required_services, allow_null: (allow_nil == 'true'))
+        if addrs = @stack.service_addrs(required_services, allow_nil: (allow_nil == 'true'))
           logger.debug "service addrs: #{addrs.inspect}"
           halt 200, JSON.dump(addrs)
         else
