@@ -8,6 +8,13 @@ rescue LoadError
   require 'bundler/setup'
 end
 
+$honesty_log_level =
+  if ll = ENV['HONESTY_LOG_LEVEL']
+    (ll =~ /\A\d+\z/) ? ll.to_i : ll.to_sym
+  else
+    :warn
+  end
+
 require 'i18n'
 I18n.load_path << "#{ROOT_DIR}/config/locale/dates.en.yml"
 require 'integrity'
@@ -63,8 +70,8 @@ end
 puts "HONESTY_BASE_URL=#{base_url}"
 
 Logging.logger.root.appenders = Logging.appenders.stdout(layout: ::Logging::Layouts::Pattern.new(pattern: logging_pattern))
-Logging.logger['honesty'].level  = :debug
-Logging.logger['dj'].level = :debug
+Logging.logger['honesty'].level = $honesty_log_level
+Logging.logger['dj'].level = $honesty_log_level
 
 Integrity.configure do |c|
   c.environment                 = app.environment           # Environment to run in (i.e. development, production, etc).

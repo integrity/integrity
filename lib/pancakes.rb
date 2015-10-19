@@ -37,14 +37,6 @@ module Pancakes
       ),
     )
 
-  def log_level
-    if ll = ENV['PANCAKES_LOG_LEVEL']
-      ll =~ /\A\d+\z/ ? ll.to_i : ll.to_sym
-    else
-     :debug
-    end
-  end
-
   def cluster
     @cluster ||= Pancakes::Fleet::Cluster.new(dry_run: ENV['PANCAKES_DRY_RUN'] || false)
   end
@@ -55,8 +47,7 @@ module Pancakes
 
   def logger
     return @__lgr if @__lgr
-    #Logging.logger[self].appenders = log_appender
-    Logging.logger[self].level = Pancakes.log_level
+    Logging.logger[self].level = $honesty_log_level
     @__lgr = Logging.logger[self]
   end
 
@@ -194,7 +185,7 @@ module Pancakes
 
   def db_connect
     lgr = Logging.logger['sequel']
-    lgr.level= 0
+    lgr.level = $honesty_log_level
     Pancakes.db = Sequel.connect(ENV['DATABASE_URL'], logger: lgr)
   end
 end
@@ -205,22 +196,20 @@ module ClassLogger
   end
 
   def logger
-    return @__lgr if @__lgr
-    #Logging.logger[lg_name].appenders = Pancakes.log_appender
-    #Logging.logger[lg_name].level = Pancakes.log_level
-    @__lgr = Logging.logger[logger_name]
+    return @logger if @logger
+    @logger = Logging.logger[logger_name]
+    @logger.level = $honesty_log_level
+    @logger
   end
 
-  # Use this method when the stack's name changes to get a new logger with the new name.
   def refresh_logger
-    @__lgr = nil
+    Logging::Repository.delete(@logger.name)
+    @logger = nil
   end
 end
 
 require 'sequel'
 require 'sequel/plugins/serialization'
-#Logging.logger['pancakes-db'].level = Pancakes.log_level
-Logging.logger['pancakes-db'].level = 2
 Sequel.default_timezone = :utc
 #Sequel.database_timezone = :utc
 #Sequel.application_timezone = :local
