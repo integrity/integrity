@@ -193,7 +193,9 @@ module Pancakes
   end
 
   def db_connect
-    Pancakes.db = Sequel.connect(ENV['DATABASE_URL'], logger: Logging.logger['pancakes-db'])
+    lgr = Logging.logger['sequel']
+    lgr.level= 0
+    Pancakes.db = Sequel.connect(ENV['DATABASE_URL'], logger: lgr)
   end
 end
 
