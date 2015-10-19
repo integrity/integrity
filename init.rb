@@ -9,11 +9,13 @@ rescue LoadError
 end
 
 $log_levels = {
-  'default' => :warn,
-  'datamapper' => :warn,
-  'Pancakes' => :info,
   'sequel' => :debug,
   'docker' => :debug,
+  'dj'       => :info,
+  'pancakes' => :info,
+  'honesty'  => :info,
+  'default'    => :warn,
+  'datamapper' => :warn,
 }
 
 ll = ENV['HONESTY_LOG_LEVEL']
@@ -82,8 +84,8 @@ end
 puts "HONESTY_BASE_URL=#{base_url}"
 
 Logging.logger.root.appenders = Logging.appenders.stdout(layout: ::Logging::Layouts::Pattern.new(pattern: logging_pattern))
-Logging.logger['honesty'].level = $honesty_log_level
-Logging.logger['dj'].level = $honesty_log_level
+Logging.logger['honesty'].level = $log_levels['honesty']
+Logging.logger['dj'].level = $log_levels['dj']
 
 Integrity.configure do |c|
   c.environment                 = app.environment           # Environment to run in (i.e. development, production, etc).

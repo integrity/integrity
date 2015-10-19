@@ -45,8 +45,9 @@ module Pancakes
 
   def logger
     return @__lgr if @__lgr
-    Logging.logger[self].level = $log_levels[self.to_s]
-    @__lgr = Logging.logger[self]
+    name = 'pancakes'
+    Logging.logger[name].level = $log_levels[name]
+    @__lgr = Logging.logger[name]
   end
 
   def config
@@ -196,7 +197,7 @@ module ClassLogger
   def logger
     return @logger if @logger
     @logger = Logging.logger[logger_name]
-    @logger.level = $honesty_log_level
+    @logger.level = $log_levels['default']
     @logger
   end
 
