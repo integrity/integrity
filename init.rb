@@ -8,6 +8,25 @@ rescue LoadError
   require 'bundler/setup'
 end
 
+$log_levels = {
+  'sequel' => :debug,
+  'docker' => :debug,
+  'dj'       => :info,
+  'pancakes' => :info,
+  'honesty'  => :info,
+  'default'    => :warn,
+  'datamapper' => :warn,
+}
+
+ll = ENV['HONESTY_LOG_LEVEL']
+$honesty_log_level =
+  if ll && ll.match(/debug|info|warn|error|fatal/)
+    ll.to_sym
+  else
+    $log_levels['default']
+  end
+
+
 require 'i18n'
 I18n.load_path << "#{ROOT_DIR}/config/locale/dates.en.yml"
 require 'integrity'
@@ -35,11 +54,13 @@ raise("DATABASE_URL is not set") unless ENV['DATABASE_URL']
 app = RConfig.application
 ENV['RACK_ENV'] = (app.environment || 'production').to_s
 DTEST = ENV['HONESTY_DTEST'] == 'true'
+puts "log level is #{$honesty_log_level}"
 puts "RACK_ENV=#{ENV['RACK_ENV']}"
 puts 'environment has DTEST applied' if DTEST
 puts 'HONESTY_DRY_RUN is true' if HonestyCluster.dry_run?
+puts "TIMBERLAND_BRANCH=#{ENV['TIMBERLAND_BRANCH']}"
 puts "TIMBERLAND_DEBUG=#{ENV['TIMBERLAND_DEBUG']}" if ENV['TIMBERLAND_DEBUG']
-puts "SWARM_ENV=#{ENV['SWARM_ENV']}" if ENV['SWARM_ENV']
+puts "DOCKER_HOST=#{ENV['DOCKER_HOST']}#{ENV['SWARM_ENV'] ? " (#{ENV['SWARM_ENV']})" : ''}"
 
 if app.environment == 'production'
   logging_pattern = "%.1l %c: %m\n"
@@ -63,8 +84,8 @@ end
 puts "HONESTY_BASE_URL=#{base_url}"
 
 Logging.logger.root.appenders = Logging.appenders.stdout(layout: ::Logging::Layouts::Pattern.new(pattern: logging_pattern))
-Logging.logger['honesty'].level  = :debug
-Logging.logger['dj'].level = :debug
+Logging.logger['honesty'].level = $log_levels['honesty']
+Logging.logger['dj'].level = $log_levels['dj']
 
 Integrity.configure do |c|
   c.environment                 = app.environment           # Environment to run in (i.e. development, production, etc).

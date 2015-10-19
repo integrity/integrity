@@ -306,7 +306,7 @@ module Integrity
 
     def timberland_command
       HonestyCluster::Timberland::Cmd.new(
-        timberland_branch: uses_swarm ? Pancakes::Fleet::Templating.config.timberland_branch : 'master',
+        timberland_branch: Pancakes::Fleet::Templating.config.timberland_branch,
         boot_type:    'build',
         service_type: 'spec',
         sha:          self.sha,

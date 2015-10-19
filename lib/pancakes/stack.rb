@@ -50,13 +50,18 @@ module Pancakes
     # constructors
     #
 
-    def self.create_with_git_strings(pocs: '', desired_state: :off, branches: nil, wp_database_version: DEFAULT_WP_DB, **git_strings)
+    def self.create_with_git_strings(pocs: '', desired_state: :off, branches: nil, wp_database_version: DEFAULT_WP_DB, cargo_branch: nil, **git_strings)
       self.db.transaction do
         pocs = (pocs || "").split(',').map(&:strip)
+
+        if !cargo_branch || cargo_branch.empty?
+          cargo_branch = Pancakes::Fleet::Templating.config.timberland_branch
+        end
+
         services = Services.full_services
         services = services - ['wp-server'] if wp_database_version.nil?
         wp_database_version = DEFAULT_WP_DB if wp_database_version.empty?
-        me = new(services: services.to_set.to_a, pocs: pocs, desired_state: desired_state, wp_database_version: wp_database_version)
+        me = new(services: services.to_set.to_a, pocs: pocs, desired_state: desired_state, wp_database_version: wp_database_version, cargo_branch: cargo_branch)
         me.set_state(:off)
         me.save
 
@@ -724,7 +729,6 @@ module Pancakes
 
     # CargoGroup
     #def after_run_containers
-      #refresh_service_addrs
     #end
 
     # CargoGroup
@@ -765,14 +769,29 @@ module Pancakes
       nil
     end
 
-    def service_addrs
-      refresh_service_addrs
-      units.map do |unit|
-        next(nil) unless unit.tcp_str
-        unit.to_address_hash
+    private def service_addrs_get_addrs(required_addrs)
+      if required_addrs.empty?
+        units
+      else
+        units.reject { |unit| required_addrs.to_set.intersection(unit.service_aliases).empty? }
       end
-        .compact
+        .map(&:to_address_hash)
         .reduce(&:merge)
+    end
+
+    private def service_addrs_all_present?(addrs, required_addrs)
+      addrs.values.map{|v| !!v }.reduce(true){|memo,val| memo && val } &&
+        addrs.keys.sort == required_addrs.sort
+    end
+
+    def service_addrs(required_addrs=nil, allow_nil: false)
+      required_addrs = Array(required_addrs)
+      addrs = service_addrs_get_addrs(required_addrs)
+      if service_addrs_all_present?(addrs, required_addrs) || allow_nil
+        addrs
+      else
+        nil
+      end
     end
 
     def containers_mapped_by_service_name

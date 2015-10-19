@@ -19,10 +19,11 @@ module Pancakes
     many_to_one :stack, class: :"Pancakes::Stack"
     one_to_many :events, key: :service_id, class: :"HonestyCluster::Event", order: :timestamp
 
-    # fix for a stackleveltoodeep error when calling #stack, like `Pancakes::Unit.last.stack`
-    def stack
-      Pancakes::Stack[stack_id]
-    end
+    # Fix for a StackLevelTooDeep error when calling #stack, reproduced successfully and consistently with `Pancakes::Unit.last.stack`.
+    # - not seeing this error as of oct 19
+    #def stack
+      #Pancakes::Stack[stack_id]
+    #end
 
     def validate
       super
@@ -432,6 +433,7 @@ module Pancakes
 
     private def timberland_command
       HonestyCluster::Timberland::Cmd.new(
+        timberland_branch: self.stack.cargo_branch,
         boot_type:    'pancakes',
         service_type: subtype,
         sha:          sha,
@@ -544,6 +546,9 @@ module Pancakes
         'STACK_ID'         => stack_id,
         'SERVICE_ID'       => id,
         'PANCAKES_SHA'     => stack.short_sha,
+        'PANCAKES_STACK_SHA'  => stack.short_sha,
+        'PANCAKES_STACK_ID'   => stack_id,
+        'PANCAKES_SERVICE_ID' => id,
         'HONESTY_BASE_URL' => HonestyCluster::SwarmBackend.base_url,
       }.merge(
             node_type_constraint('pancakes')

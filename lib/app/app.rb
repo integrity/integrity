@@ -349,7 +349,8 @@ module Integrity
           pocs:           params[:pocs],
           branches:       params[:branches],
           desired_state: :running,
-          wp_database_version: params[:wp_database_version]
+          wp_database_version: params[:wp_database_version],
+          cargo_branch: params[:cargo_branch],
         )
 
         @stack.run_containers
@@ -457,7 +458,7 @@ module Integrity
       service_name = params[:service_name]
 
       if !@stack
-        logger.info 'stack not found'
+        logger.debug 'stack not found'
         halt 400, "stack not found\n"
       end
 
@@ -473,38 +474,33 @@ module Integrity
       if @unit
         tcp_string = @unit.tcp_str
         if !tcp_string
-          logger.info 'tcp_string not found. service may not be running.'
+          logger.debug 'tcp_string not found. service may not be running.'
           halt 400, "tcp_string not found. service may not be running.\n"
         else
           halt 200, tcp_string
         end
       else
-        logger.info 'unit not found'
+        logger.debug 'unit not found'
         halt 400, "unit not found\n"
       end
     end
 
     get '/pancakes/api/vX/stacks/:id/addrs.json' do
-      logger.info "looking for stack with id=#{params[:id]}"
-      @stack = Pancakes::Stack[params[:id]]
-      #@stack.state_from_cluster!
-
-      if @stack
-        logger.info "stack found id=#{@stack.id}"
-
-        if @stack.service_addrs
-          sa = @stack.service_addrs
-          raise "service_addrs is empty" if sa.empty?
-          sa = JSON.dump(sa)
-          logger.info "service_addr JSON='#{sa}'"
-          halt 200, sa
+      required_services = params[:required_services]
+      allow_nil = params[:allow_nil]
+      logger.debug "looking for stack with id=#{params[:id]} for required_services=#{required_services.inspect} allow_nil=#{allow_nil}"
+      if @stack = Pancakes::Stack[params[:id]]
+        @stack.refresh_service_addrs
+        if addrs = @stack.service_addrs(required_services, allow_nil: (allow_nil == 'true'))
+          logger.debug "service addrs: #{addrs.inspect}"
+          halt 200, JSON.dump(addrs)
         else
-          logger.info "stack service_addrs NOT found id=#{@stack.id}"
-          halt 400, "not found: service_addrs for stack id=#{params[:id]}\n"
+          logger.debug "service addrs not available for stack with id=#{@stack.id}"
+          halt 400, "service addrs not available for stack with id=#{@stack.id}\n"
         end
       else
-        logger.info "stack NOT found id=#{@stack.id}"
-        halt 400, "not found: stack id=#{params[:id]}\n"
+        logger.debug "stack not found with id=#{params[:id]}"
+        halt 400, "stack not found with id=#{params[:id]}"
       end
     end
 

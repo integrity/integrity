@@ -88,7 +88,7 @@ require 'integrity/stats_job'
 
 require 'tracker'
 
-DataMapper::Logger.new(STDOUT, :info)
+DataMapper::Logger.new(STDOUT, $log_levels['datamapper'])
 DataMapper.finalize
 
 Addressable::URI.class_eval do

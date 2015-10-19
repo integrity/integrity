@@ -14,10 +14,8 @@
 # ================
 #
 # required:
-# - FLEETCTL_ENDPOINT (eg. 'http://1.2.3.4:5678')
+# - DOCKER_HOST          (eg. 'http://1.2.3.4:5678')
 # optional:
-# - PANCAKES_DRY_RUN   (eg. true)
-# - PANCAKES_LOG_LEVEL (eg. debug, 2)
 # - TIMBERLAND_BRANCH    (eg. pancakes-develop)
 # - TIMBERLAND_DEBUG     (eg. true)
 
@@ -37,16 +35,8 @@ module Pancakes
       ),
     )
 
-  def log_level
-    if ll = ENV['PANCAKES_LOG_LEVEL']
-      ll =~ /\A\d+\z/ ? ll.to_i : ll.to_sym
-    else
-     :debug
-    end
-  end
-
   def cluster
-    @cluster ||= Pancakes::Fleet::Cluster.new(dry_run: ENV['PANCAKES_DRY_RUN'] || false)
+    @cluster ||= Pancakes::Fleet::Cluster.new(dry_run: ENV['HONESTY_DRY_RUN'] || false)
   end
 
   def docker
@@ -55,9 +45,9 @@ module Pancakes
 
   def logger
     return @__lgr if @__lgr
-    #Logging.logger[self].appenders = log_appender
-    Logging.logger[self].level = Pancakes.log_level
-    @__lgr = Logging.logger[self]
+    name = 'pancakes'
+    Logging.logger[name].level = $log_levels[name]
+    @__lgr = Logging.logger[name]
   end
 
   def config
@@ -85,7 +75,6 @@ module Pancakes
 
     Pancakes::Fleet::Templating.configure do |c|
       c.timberland_branch = @@config.templating.timberland_branch
-      Pancakes.logger.info "TIMBERLAND_BRANCH=#{@@config.templating.timberland_branch}"
     end
   end
 
@@ -193,7 +182,10 @@ module Pancakes
   end
 
   def db_connect
-    Pancakes.db = Sequel.connect(ENV['DATABASE_URL'], logger: Logging.logger['pancakes-db'])
+    name = 'sequel'
+    lgr = Logging.logger[name]
+    lgr.level = $log_levels[name]
+    Pancakes.db = Sequel.connect(ENV['DATABASE_URL'], logger: lgr)
   end
 end
 
@@ -203,22 +195,20 @@ module ClassLogger
   end
 
   def logger
-    return @__lgr if @__lgr
-    #Logging.logger[lg_name].appenders = Pancakes.log_appender
-    #Logging.logger[lg_name].level = Pancakes.log_level
-    @__lgr = Logging.logger[logger_name]
+    return @logger if @logger
+    @logger = Logging.logger[logger_name]
+    @logger.level = $log_levels['default']
+    @logger
   end
 
-  # Use this method when the stack's name changes to get a new logger with the new name.
   def refresh_logger
-    @__lgr = nil
+    Logging::Repository.delete(@logger.name) if @logger
+    @logger = nil
   end
 end
 
 require 'sequel'
 require 'sequel/plugins/serialization'
-#Logging.logger['pancakes-db'].level = Pancakes.log_level
-Logging.logger['pancakes-db'].level = 2
 Sequel.default_timezone = :utc
 #Sequel.database_timezone = :utc
 #Sequel.application_timezone = :local
