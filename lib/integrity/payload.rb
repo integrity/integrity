@@ -13,7 +13,7 @@ module Integrity
     def finish_story
       logger.info "finishing story_id=#{story_id}"
       if story = Tracker::Story.first(id: story_id)
-        story.finish(pull_request[:url])
+        story.finish(pull_request[:html_url])
       end
     end
 
