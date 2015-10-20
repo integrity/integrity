@@ -86,7 +86,11 @@ module Integrity
     not_found do
       Integrity.logger.info "404 in not_found block"
       status 404
-      show :not_found, title: '404'
+      if request.path.end_with?('.json')
+        response.body
+      else
+        show :not_found, title: '404'
+      end
     end
 
     error do
@@ -500,7 +504,7 @@ module Integrity
         end
       else
         logger.debug "stack not found with id=#{params[:id]}"
-        halt 404, "stack not found with id=#{params[:id]}"
+        halt 404, "stack not found with id=#{params[:id]}\n"
       end
     end
 
