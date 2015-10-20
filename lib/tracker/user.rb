@@ -14,7 +14,7 @@ module Tracker
     property :deputy,    Boolean
     property :santa,     Boolean
 
-    property :pr_count,  Integer
+    property :pr_count,  Integer, :default => 0
 
     has n, :story_owners
     has n, :owned_stories, 'Tracker::Story', :through => :story_owners, :via => :story
@@ -29,7 +29,7 @@ module Tracker
       user.save
     end
 
-    def self.increment_pr_count
+    def increment_pr_count
       return unless developer
 
       self.pr_count += 1
@@ -40,7 +40,7 @@ module Tracker
       end
     end
 
-    def self.reset_nes_count
+    def reset_nes_count
       self.pr_count = 0
       self.save
     end
