@@ -60,6 +60,10 @@ module Tracker
       end
     end
 
+    def self.current_santa
+      Tracker::User.first(santa: true)
+    end
+
     def self.send_nes_email(user)
       top_nes_story = TrackerWrapper.top_nes_story
 
@@ -71,7 +75,7 @@ module Tracker
         body = I18n.t('story.nes_email_body_missing_story')
       end
 
-      SendGridWrapper.send_mail([user.email, current_santa.email],
+      SendGridWrapper.send_mail([user.email, current_santa.try(:email)],
         subject,
         body)
     end
