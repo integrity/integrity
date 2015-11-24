@@ -9,8 +9,8 @@ module Integrity
       def self.notify_of_build_start(build, config)
         notifier = new(build, config)
         if notifier.respond_to?(:deliver_started_notification!)
+          msg = "Notifying of the start of build #{build.sha1_short} with #{to_s}"
           log_and_notify_with_timeout(msg) do
-            msg = "Notifying of the start of build #{build.sha1_short} with #{to_s}"
             notifier.deliver_started_notification!
           end
         end
