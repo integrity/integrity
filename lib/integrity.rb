@@ -30,6 +30,23 @@ require "addressable/uri"
 require "chronic_duration"
 require "bcat/ansi"
 
+# Workaround for https://github.com/datamapper/dm-core/issues/242
+if RUBY_VERSION[0] == ?2
+  class DataMapper::Property
+    alias :typecast_without_integrity_fix :typecast
+    def typecast(value)
+      rv = typecast_without_integrity_fix(value)
+      if value.nil? || !rv.nil?
+        rv
+      elsif respond_to?(:typecast_to_primitive, true)
+        typecast_to_primitive(value)
+      else
+        rv
+      end
+    end
+  end
+end
+
 require "app/app"
 
 require "integrity/configuration"
